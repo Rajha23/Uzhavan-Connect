@@ -37,7 +37,7 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <p className="text-xs text-slate-500 font-medium">
-              {currentUser.organization || 'Uzhavan Connect Verified Member'}
+              {currentUser.organization || 'Registered Member'}
             </p>
 
             <div className="flex flex-wrap items-center gap-4 text-xs text-slate-600 pt-2">
@@ -70,26 +70,26 @@ export const ProfilePage: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 text-[11px] block">Village:</span>
-                <strong className="text-slate-900">{currentUser.village || 'Sunguvarchatram'}</strong>
+                <strong className="text-slate-900">{currentUser.village || '-'}</strong>
               </div>
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 text-[11px] block">District & State:</span>
-                <strong className="text-slate-900">{currentUser.district || 'Kanchipuram'}, {currentUser.state || 'Tamil Nadu'}</strong>
+                <strong className="text-slate-900">{currentUser.district || '-'}, {currentUser.state || '-'}</strong>
               </div>
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 text-[11px] block">Farm Size:</span>
-                <strong className="text-emerald-700 font-mono font-bold">{currentUser.farmSizeAcres || 3.5} Acres</strong>
+                <strong className="text-emerald-700 font-mono font-bold">{currentUser.farmSizeAcres || 0} Acres</strong>
               </div>
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 text-[11px] block">Registered FPO:</span>
-                <strong className="text-slate-900">{currentUser.fpoName || 'GreenHarvest FPO'}</strong>
+                <strong className="text-slate-900">{currentUser.fpoName || '-'}</strong>
               </div>
             </div>
 
             <div>
               <span className="text-xs font-semibold text-slate-500 block mb-1">Main Harvest Crops:</span>
               <div className="flex gap-2">
-                {(currentUser.mainCrops || ['Tomato', 'Green Chilli', 'Capsicum']).map((c, i) => (
+                {(currentUser.mainCrops && currentUser.mainCrops.length > 0 ? currentUser.mainCrops : ['None specified']).map((c, i) => (
                   <span key={i} className="bg-emerald-50 text-emerald-800 font-semibold px-2.5 py-1 rounded-lg text-xs border border-emerald-200">
                     {c}
                   </span>
@@ -102,15 +102,15 @@ export const ProfilePage: React.FC = () => {
           <div className="grid grid-cols-3 gap-4">
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs text-center">
               <span className="text-xs text-slate-500 font-medium">Total Listings</span>
-              <p className="text-2xl font-bold font-mono text-slate-900 mt-1">{currentUser.totalListings || 4}</p>
+              <p className="text-2xl font-bold font-mono text-slate-900 mt-1">{currentUser.totalListings || 0}</p>
             </div>
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs text-center">
               <span className="text-xs text-slate-500 font-medium">Completed Orders</span>
-              <p className="text-2xl font-bold font-mono text-emerald-700 mt-1">{currentUser.completedOrders || 28}</p>
+              <p className="text-2xl font-bold font-mono text-emerald-700 mt-1">{currentUser.completedOrders || 0}</p>
             </div>
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs text-center">
               <span className="text-xs text-slate-500 font-medium">Quantity Sold</span>
-              <p className="text-2xl font-bold font-mono text-blue-700 mt-1">{(currentUser.quantitySoldKg || 14200).toLocaleString()} kg</p>
+              <p className="text-2xl font-bold font-mono text-blue-700 mt-1">{(currentUser.quantitySoldKg || 0).toLocaleString()} kg</p>
             </div>
           </div>
         </div>
@@ -125,19 +125,19 @@ export const ProfilePage: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
             <div className="p-3 bg-slate-50 rounded-xl">
               <span className="text-slate-400 text-[11px] block">Business Name:</span>
-              <strong className="text-slate-900">{currentUser.businessName || 'Consortium Procurement'}</strong>
+              <strong className="text-slate-900">{currentUser.businessName || '-'}</strong>
             </div>
             <div className="p-3 bg-slate-50 rounded-xl">
               <span className="text-slate-400 text-[11px] block">Buyer Category:</span>
-              <strong className="text-slate-900">{currentUser.buyerType || 'Supermarket Chain'}</strong>
+              <strong className="text-slate-900">{currentUser.buyerType || '-'}</strong>
             </div>
             <div className="p-3 bg-slate-50 rounded-xl">
               <span className="text-slate-400 text-[11px] block">Active Demands:</span>
-              <strong className="text-emerald-700 font-mono font-bold">2 Lots</strong>
+              <strong className="text-emerald-700 font-mono font-bold">0 Lots</strong>
             </div>
             <div className="p-3 bg-slate-50 rounded-xl">
               <span className="text-slate-400 text-[11px] block">Completed Orders:</span>
-              <strong className="text-slate-900 font-mono">{currentUser.completedOrders || 42}</strong>
+              <strong className="text-slate-900 font-mono">{currentUser.completedOrders || 0}</strong>
             </div>
           </div>
         </div>
