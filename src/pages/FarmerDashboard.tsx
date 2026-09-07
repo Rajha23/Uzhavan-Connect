@@ -76,10 +76,16 @@ export const FarmerDashboard: React.FC = () => {
     setSuccessMessage(`Listing created: ${newCropItem.quantityKg.toLocaleString()} kg of ${newCropItem.crop} @ ₹${newCropItem.expectedPricePerKg}/kg!`);
     confetti({
       particleCount: 50,
-      spread: 60,
       origin: { y: 0.6 }
     });
     setTimeout(() => setSuccessMessage(null), 4000);
+  };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
   };
 
   const handleRemove = (id: string) => {
@@ -96,7 +102,7 @@ export const FarmerDashboard: React.FC = () => {
             <span>Sunguvarchatram Cluster • Farm Size: {currentUser.farmSizeAcres || 3.5} Acres</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
-            Good morning, {(currentUser.name || 'Farmer').split(' ')[0]} 👨‍🌾
+            {getGreeting()}, {(currentUser.name || 'Farmer').split(' ')[0]} 👨‍🌾
           </h1>
           <p className="text-sm text-cream/70 mt-2 font-medium">
             Here is today's farming and selling information.

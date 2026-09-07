@@ -101,7 +101,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setIsAuthenticated(true);
     setCurrentRole(user.role);
     setCurrentUser(user);
-    setActiveTab('dashboard');
+    setActiveTab('profile');
   };
 
   const logout = () => {
