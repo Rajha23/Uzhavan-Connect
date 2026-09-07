@@ -86,6 +86,18 @@ export const apiService = {
     await new Promise((res) => setTimeout(res, 200));
 
     const mockUsers = JSON.parse(localStorage.getItem('mockUsers') || '[]');
+    
+    // Custom Admin Bypass
+    if (email === 'admin@gmail.com' && password === 'admin123') {
+      return {
+        token: `uzhavanconnect_jwt_admin_${Date.now()}`,
+        user: {
+          ...DEMO_USERS.ADMIN,
+          email: 'admin@gmail.com'
+        }
+      };
+    }
+
     const matchedUser = mockUsers.find((u: any) => (u.email === email || u.mobile === email) && u.password === password);
 
     if (matchedUser) {
