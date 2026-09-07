@@ -81,13 +81,6 @@ export const FarmerDashboard: React.FC = () => {
     setTimeout(() => setSuccessMessage(null), 4000);
   };
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
-  };
-
   const handleRemove = (id: string) => {
     setListings(listings.filter((l) => l.id !== id));
   };
@@ -102,7 +95,7 @@ export const FarmerDashboard: React.FC = () => {
             <span>Sunguvarchatram Cluster • Farm Size: {currentUser.farmSizeAcres || 3.5} Acres</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
-            {getGreeting()}, {(currentUser.name || 'Farmer').split(' ')[0]} 👨‍🌾
+            Greetings, {(currentUser.name || 'Farmer').split(' ')[0]} 👨‍🌾
           </h1>
           <p className="text-sm text-cream/70 mt-2 font-medium">
             Here is today's farming and selling information.
