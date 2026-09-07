@@ -194,8 +194,10 @@ export const LoginPage: React.FC = () => {
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:border-emerald-500"
                   >
                     <option value="FARMER">Farmer</option>
-                    <option value="BUYER">Buyer</option>
-                    <option value="OPERATIONS_ADMIN">Operations Admin</option>
+                    <option value="RETAIL_BUYER">Retail Buyer</option>
+                    <option value="FPO_AGGREGATOR">FPO Aggregator</option>
+                    <option value="LOGISTICS">Logistics Carrier Transport</option>
+                    <option value="ADMIN">Admin</option>
                   </select>
                 </div>
 
@@ -234,7 +236,9 @@ export const LoginPage: React.FC = () => {
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs font-medium focus:outline-none focus:border-emerald-500"
                   >
                     <option value="FARMER">Farmer (Producer)</option>
-                    <option value="BUYER">Buyer</option>
+                    <option value="RETAIL_BUYER">Retail Buyer</option>
+                    <option value="FPO_AGGREGATOR">FPO Aggregator</option>
+                    <option value="LOGISTICS">Logistics Carrier Transport</option>
                   </select>
                   <p className="text-[10px] text-slate-400 mt-0.5">
                     * Operations/Admin accounts are provisioned by the platform administrator.

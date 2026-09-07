@@ -117,7 +117,7 @@ export const ProfilePage: React.FC = () => {
       )}
 
       {/* Buyer Profile */}
-      {(currentRole === 'BUYER') && (
+      {(currentRole === 'RETAIL_BUYER') && (
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
           <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
             Commercial Buyer Credentials
@@ -144,7 +144,7 @@ export const ProfilePage: React.FC = () => {
       )}
 
       {/* Logistics Profile */}
-      {currentRole === 'OPERATIONS_ADMIN' && (
+      {currentRole === 'ADMIN' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
           <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
             Carrier & Fleet Credentials

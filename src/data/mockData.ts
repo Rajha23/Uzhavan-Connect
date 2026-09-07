@@ -33,7 +33,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'LOGISTICS',
     'TRACEABILITY'
   ],
-  BUYER: [
+  RETAIL_BUYER: [
     'VIEW_DASHBOARD',
     'MARKET_PRICES',
     'DEMAND_FORECAST',
@@ -45,7 +45,21 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'TRACEABILITY',
     'REPORTS'
   ],
-  OPERATIONS_ADMIN: [
+  FPO_AGGREGATOR: [
+    'VIEW_DASHBOARD',
+    'MARKET_PRICES',
+    'CROP_LISTING',
+    'ORDERS',
+    'LOGISTICS',
+    'TRACEABILITY'
+  ],
+  LOGISTICS: [
+    'VIEW_DASHBOARD',
+    'ORDERS',
+    'LOGISTICS',
+    'TRACEABILITY'
+  ],
+  ADMIN: [
     'VIEW_DASHBOARD',
     'MARKET_PRICES',
     'DEMAND_FORECAST',
@@ -80,10 +94,10 @@ export const DEMO_USERS: Record<UserRole, UserProfile> = {
     rating: 4.9,
     avatar: '👨‍🌾'
   },
-  BUYER: {
+  RETAIL_BUYER: {
     id: 'usr-buyer-01',
     name: 'Anita Sharma',
-    role: 'BUYER',
+    role: 'RETAIL_BUYER',
     phone: '+91 98840 55667',
     email: 'anita.procurement@abcretail.in',
     location: 'Koyambedu, Chennai',
@@ -95,10 +109,38 @@ export const DEMO_USERS: Record<UserRole, UserProfile> = {
     rating: 4.95,
     avatar: '🏬'
   },
-  OPERATIONS_ADMIN: {
+  FPO_AGGREGATOR: {
+    id: 'usr-fpo-01',
+    name: 'Ravi Verma',
+    role: 'FPO_AGGREGATOR',
+    phone: '+91 97700 11223',
+    email: 'ravi.fpo@uzhavanconnect.gov.in',
+    location: 'Villupuram, Tamil Nadu',
+    businessName: 'Villupuram Farmer Collective',
+    totalListings: 12,
+    completedOrders: 56,
+    organization: 'Villupuram FPO',
+    rating: 4.8,
+    avatar: '🌾'
+  },
+  LOGISTICS: {
+    id: 'usr-logistics-01',
+    name: 'Sundar Transport',
+    role: 'LOGISTICS',
+    phone: '+91 96600 22334',
+    email: 'dispatch@sundartrans.in',
+    location: 'Chennai Hub',
+    businessName: 'Sundar Logistics Co.',
+    totalListings: 0,
+    completedOrders: 145,
+    organization: 'Sundar Logistics',
+    rating: 4.7,
+    avatar: '🚚'
+  },
+  ADMIN: {
     id: 'usr-ops-01',
     name: 'Tejaswini V. (Ops Lead)',
-    role: 'OPERATIONS_ADMIN',
+    role: 'ADMIN',
     phone: '+91 99000 11223',
     email: 'admin.tejas@uzhavanconnect.gov.in',
     location: 'Uzhavan Connect Tech Operations, Chennai',
@@ -491,7 +533,7 @@ export const AUDIT_LOGS_DATA: AuditLogEntry[] = [
     id: 'AUD-902',
     timestamp: '2026-09-05 13:14:02',
     userName: 'Anita Sharma',
-    userRole: 'BUYER',
+    userRole: 'RETAIL_BUYER',
     action: 'CREATE_DEMAND',
     resource: 'Tomato Demand (3,000 kg @ ₹28/kg)',
     ipAddress: '182.74.12.9',
@@ -501,7 +543,7 @@ export const AUDIT_LOGS_DATA: AuditLogEntry[] = [
     id: 'AUD-903',
     timestamp: '2026-09-05 12:45:10',
     userName: 'GreenHarvest FPO',
-    userRole: 'OPERATIONS_ADMIN',
+    userRole: 'ADMIN',
     action: 'ACCEPT_AUCTION_BID',
     resource: 'Lot AUC-CH-TOM-3000 (3,000 kg)',
     ipAddress: '103.21.124.8',
@@ -511,7 +553,7 @@ export const AUDIT_LOGS_DATA: AuditLogEntry[] = [
     id: 'AUD-904',
     timestamp: '2026-09-05 11:30:22',
     userName: 'Karthik S.',
-    userRole: 'OPERATIONS_ADMIN',
+    userRole: 'ADMIN',
     action: 'OPTIMIZE_ROUTE',
     resource: 'Route RTE-TN-2026 (4 Stops)',
     ipAddress: '49.207.180.4',
@@ -521,7 +563,7 @@ export const AUDIT_LOGS_DATA: AuditLogEntry[] = [
     id: 'AUD-905',
     timestamp: '2026-09-05 10:15:00',
     userName: 'Dr. A. Swaminathan',
-    userRole: 'OPERATIONS_ADMIN',
+    userRole: 'ADMIN',
     action: 'GENERATE_IMPACT_REPORT',
     resource: ' Evaluation Report Q3',
     ipAddress: '164.100.24.11',
@@ -544,24 +586,24 @@ export const SYSTEM_USERS_DATA: SystemUserRecord[] = [
   {
     id: 'usr-buyer-01',
     name: 'Anita Sharma',
-    role: 'BUYER',
+    role: 'RETAIL_BUYER',
     phone: '+91 98840 55667',
     email: 'anita.procurement@abcretail.in',
     location: 'Koyambedu, Chennai',
     status: 'ACTIVE',
     joinedDate: '18 Feb 2026',
-    permissions: ROLE_PERMISSIONS.BUYER
+    permissions: ROLE_PERMISSIONS.RETAIL_BUYER
   },
   {
     id: 'usr-ops-01',
     name: 'Tejaswini V. (Ops Lead)',
-    role: 'OPERATIONS_ADMIN',
+    role: 'ADMIN',
     phone: '+91 99000 11223',
     email: 'admin.tejas@uzhavanconnect.gov.in',
     location: 'Chennai Operations Center',
     status: 'ACTIVE',
     joinedDate: '01 Jan 2026',
-    permissions: ROLE_PERMISSIONS.OPERATIONS_ADMIN
+    permissions: ROLE_PERMISSIONS.ADMIN
   }
 ];
 

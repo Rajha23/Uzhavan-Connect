@@ -1,7 +1,9 @@
 export type UserRole =
   | 'FARMER'
-  | 'BUYER'
-  | 'OPERATIONS_ADMIN';
+  | 'RETAIL_BUYER'
+  | 'FPO_AGGREGATOR'
+  | 'LOGISTICS'
+  | 'ADMIN';
 
 export type Permission =
   | 'VIEW_DASHBOARD'

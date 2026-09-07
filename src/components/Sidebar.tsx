@@ -63,7 +63,7 @@ export const Sidebar: React.FC = () => {
           { id: 'profile', label: 'Profile', icon: User, section: 'SETTINGS' }
         ];
 
-      case 'BUYER':
+      case 'RETAIL_BUYER':
         return [
           { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'MAIN' },
           { id: 'create-demand', label: 'Create Demand', icon: Sparkles, section: 'MAIN' },
@@ -75,7 +75,26 @@ export const Sidebar: React.FC = () => {
           { id: 'profile', label: 'Profile', icon: User, section: 'SETTINGS' }
         ];
 
-      case 'OPERATIONS_ADMIN':
+      case 'FPO_AGGREGATOR':
+        return [
+          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'MAIN' },
+          { id: 'my-crops', label: 'Aggregated Produce', icon: Sprout, section: 'MAIN' },
+          { id: 'demand-forecast', label: 'Demand Signals', icon: TrendingUp, section: 'MAIN' },
+          { id: 'orders', label: 'Orders', icon: Package, section: 'OPERATIONS' },
+          { id: 'traceability', label: 'Traceability', icon: QrCode, section: 'OPERATIONS' },
+          { id: 'profile', label: 'Profile', icon: User, section: 'SETTINGS' }
+        ];
+
+      case 'LOGISTICS':
+        return [
+          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'MAIN' },
+          { id: 'shipments', label: 'Shipments', icon: Truck, section: 'LOGISTICS' },
+          { id: 'route-optimization', label: 'Route Planning', icon: Navigation, section: 'LOGISTICS' },
+          { id: 'orders', label: 'Active Pickups', icon: Package, section: 'OPERATIONS' },
+          { id: 'profile', label: 'Profile', icon: User, section: 'SETTINGS' }
+        ];
+
+      case 'ADMIN':
         return [
           { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'MAIN' },
           { id: 'demand-intel', label: 'Demand Intelligence', icon: TrendingUp, section: 'MAIN' },

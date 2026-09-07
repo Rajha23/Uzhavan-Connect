@@ -76,7 +76,7 @@ export const LandingPage: React.FC = () => {
               </button>
 
               <button
-                onClick={() => { switchRole('BUYER'); setActiveTab('dashboard'); }}
+                onClick={() => { switchRole('RETAIL_BUYER'); setActiveTab('dashboard'); }}
                 className="btn-organic flex items-center gap-2.5 bg-sage text-forest font-bold px-8 py-4 border border-sage/50 hover:bg-cream shadow-sm text-sm"
               >
                 <ShoppingBag className="w-5 h-5 text-forest" />
@@ -142,7 +142,7 @@ export const LandingPage: React.FC = () => {
 
               {/* Node 3: Buyers */}
               <div
-                onClick={() => switchRole('BUYER')}
+                onClick={() => switchRole('RETAIL_BUYER')}
                 className="p-5 rounded-[1.5rem] border border-olive/30 bg-olive/10 hover:bg-olive/30 cursor-pointer transition text-center group"
               >
                 <div className="w-12 h-12 mx-auto rounded-[1rem] bg-sage text-forest flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
@@ -155,7 +155,7 @@ export const LandingPage: React.FC = () => {
 
               {/* Node 4: Logistics */}
               <div
-                onClick={() => switchRole('OPERATIONS_ADMIN')}
+                onClick={() => switchRole('ADMIN')}
                 className="p-5 rounded-[1.5rem] border border-olive/30 bg-olive/10 hover:bg-olive/30 cursor-pointer transition text-center group"
               >
                 <div className="w-12 h-12 mx-auto rounded-[1rem] bg-forest text-cream flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">

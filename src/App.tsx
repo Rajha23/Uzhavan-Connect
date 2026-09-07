@@ -27,6 +27,8 @@ import { ReverseAuctionPage } from './pages/ReverseAuctionPage';
 import { DemandIntelligencePage } from './pages/DemandIntelligencePage';
 
 import { AdminDashboard } from './pages/AdminDashboard';
+import { FpoDashboard } from './pages/FpoDashboard';
+import { LogisticsDashboard } from './pages/LogisticsDashboard';
 
 import { SettlementPage } from './pages/SettlementPage';
 import { ImpactKPIPage } from './pages/ImpactKPIPage';
@@ -61,8 +63,10 @@ const PageContent: React.FC = () => {
 
     // ── Dashboard based on Role ───────────────
     case 'dashboard':
-      if (currentRole === 'BUYER') return <BuyerDashboard />;
-      if (currentRole === 'OPERATIONS_ADMIN') return <AdminDashboard />;
+      if (currentRole === 'RETAIL_BUYER') return <BuyerDashboard />;
+      if (currentRole === 'FPO_AGGREGATOR') return <FpoDashboard />;
+      if (currentRole === 'LOGISTICS') return <LogisticsDashboard />;
+      if (currentRole === 'ADMIN') return <AdminDashboard />;
       return <FarmerDashboard />;
 
     // ── Farmer ──────────────────────────────────────
