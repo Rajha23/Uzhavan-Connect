@@ -66,7 +66,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [currentRole, setCurrentRole] = useState<UserRole>('FARMER');
   const [currentUser, setCurrentUser] = useState<UserProfile>(GUEST_USER);
-  const [activeTab, setActiveTab] = useState<string>('login');
+  const [activeTab, setActiveTab] = useState<string>('home');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
   const [isPassportModalOpen, setIsPassportModalOpen] = useState<boolean>(false);
