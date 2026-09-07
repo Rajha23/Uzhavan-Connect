@@ -33,6 +33,7 @@ export const LoginPage: React.FC = () => {
   const [regState, setRegState] = useState('');
   const [regSuccess, setRegSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleManualLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +49,7 @@ export const LoginPage: React.FC = () => {
       setActiveTab('dashboard');
     } catch (err: any) {
       setIsSubmitting(false);
-      alert(err.message || 'Login failed. Please check your credentials.');
+      setErrorMsg(err.message || 'Login failed. Please check your credentials.');
     }
   };
 
@@ -76,7 +77,7 @@ export const LoginPage: React.FC = () => {
         });
       }, 1000);
     } catch (err: any) {
-      alert(err.message || 'Registration failed. Please try again.');
+      setErrorMsg(err.message || 'Registration failed. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -105,7 +106,7 @@ export const LoginPage: React.FC = () => {
           <div className="flex items-center bg-slate-100 p-1 rounded-xl mb-5 text-xs font-semibold">
             <button
               type="button"
-              onClick={() => { setMode('LOGIN'); setRegSuccess(false); }}
+              onClick={() => { setMode('LOGIN'); setRegSuccess(false); setErrorMsg(''); }}
               className={`flex-1 py-2.5 rounded-lg transition ${
                 mode === 'LOGIN'
                   ? 'bg-white text-slate-900 shadow-sm'
@@ -116,7 +117,7 @@ export const LoginPage: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => setMode('REGISTER')}
+              onClick={() => { setMode('REGISTER'); setErrorMsg(''); }}
               className={`flex-1 py-2.5 rounded-lg transition ${
                 mode === 'REGISTER'
                   ? 'bg-white text-emerald-800 shadow-sm'
@@ -134,6 +135,12 @@ export const LoginPage: React.FC = () => {
                 <p className="font-bold text-emerald-800">Account Created Successfully!</p>
                 <p className="text-emerald-700">Connecting to Uzhavan Connect network and redirecting...</p>
               </div>
+            </div>
+          )}
+
+          {errorMsg && (
+            <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl mb-4 text-xs font-semibold animate-fadeIn">
+              {errorMsg}
             </div>
           )}
 
