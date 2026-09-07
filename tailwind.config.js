@@ -39,7 +39,7 @@ export default {
         moss: '#a3b18a',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['Outfit', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
         anton: ['Anton', 'sans-serif'],
       },
       boxShadow: {
