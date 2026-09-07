@@ -111,6 +111,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setIsAuthenticated(true);
             setActiveTab('dashboard');
           }
+        } else {
+          // Fallback: Check if there's a local mock session
+          const localFallback = localStorage.getItem('uzhavan_fallback_session');
+          if (localFallback) {
+            const parsedUser = JSON.parse(localFallback);
+            setCurrentUser(parsedUser);
+            setCurrentRole(parsedUser.role as UserRole);
+            setIsAuthenticated(true);
+            setActiveTab('dashboard');
+          }
         }
       } catch (err) {
         console.warn('Could not restore Supabase session', err);
@@ -148,6 +158,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const login = (user: UserProfile) => {
+    localStorage.setItem('uzhavan_fallback_session', JSON.stringify(user));
     setIsAuthenticated(true);
     setCurrentRole(user.role);
     setCurrentUser(user);
@@ -155,6 +166,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const registerUser = (user: UserProfile) => {
+    localStorage.setItem('uzhavan_fallback_session', JSON.stringify(user));
     setIsAuthenticated(true);
     setCurrentRole(user.role);
     setCurrentUser(user);
@@ -165,6 +177,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     try {
       await supabase.auth.signOut();
     } catch {}
+    localStorage.removeItem('uzhavan_fallback_session');
     setIsAuthenticated(false);
     setCurrentUser(GUEST_USER);
     setActiveTab('home');
