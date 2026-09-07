@@ -17,8 +17,8 @@ import {
 
 interface AppContextType {
   isAuthenticated: boolean;
-  login: (emailOrPhone: string, role?: UserRole, password?: string, resolvedName?: string) => void;
-  registerUser: (userData: Partial<UserProfile> & { role: UserRole }) => void;
+  login: (user: UserProfile) => void;
+  registerUser: (user: UserProfile) => void;
   logout: () => void;
   currentUser: UserProfile;
   currentRole: UserRole;
@@ -90,71 +90,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setActiveTab('dashboard'); // Always land on role's home dashboard
   };
 
-  const login = (emailOrPhone: string, role: UserRole = 'FARMER', password?: string, resolvedName?: string) => {
+  const login = (user: UserProfile) => {
     setIsAuthenticated(true);
-    setCurrentRole(role);
-    const roleFallback = DEMO_USERS[role] || DEMO_USERS.FARMER;
-
-    // Check localStorage for registered users matching email, phone or name
-    try {
-      const stored = JSON.parse(localStorage.getItem('uzhavanconnect_users') || '[]');
-      const found = stored.find((u: any) =>
-        (u.email && u.email.toLowerCase() === emailOrPhone.trim().toLowerCase()) ||
-        (u.phone && u.phone.trim() === emailOrPhone.trim()) ||
-        (u.name && u.name.toLowerCase() === emailOrPhone.trim().toLowerCase())
-      );
-      if (found) {
-        setCurrentUser({ ...roleFallback, ...found, role });
-        setActiveTab('dashboard');
-        return;
-      }
-    } catch {}
-
-    // Derive display name from resolved name, or parse from input (email / name)
-    let displayName = resolvedName;
-    if (!displayName && emailOrPhone) {
-      if (emailOrPhone.includes('@')) {
-        const raw = emailOrPhone.split('@')[0].split('.')[0].replace(/[0-9_-]/g, ' ').trim();
-        displayName = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : emailOrPhone.split('@')[0];
-      } else if (!/^\+?[0-9\s-]+$/.test(emailOrPhone.trim())) {
-        displayName = emailOrPhone.trim().charAt(0).toUpperCase() + emailOrPhone.trim().slice(1);
-      }
-    }
-
-    setCurrentUser({
-      ...roleFallback,
-      id: `usr_${Date.now()}`,
-      name: displayName || 'Authenticated Member',
-      role,
-      email: emailOrPhone.includes('@') ? emailOrPhone.trim() : '',
-      phone: !emailOrPhone.includes('@') ? emailOrPhone.trim() : roleFallback.phone
-    });
+    setCurrentRole(user.role);
+    setCurrentUser(user);
     setActiveTab('dashboard');
   };
 
-  const registerUser = (userData: Partial<UserProfile> & { role: UserRole }) => {
+  const registerUser = (user: UserProfile) => {
     setIsAuthenticated(true);
-    setCurrentRole(userData.role);
-    const roleFallback = DEMO_USERS[userData.role] || DEMO_USERS.FARMER;
-    const newUser: UserProfile = {
-      ...roleFallback,
-      ...userData,
-      id: userData.id || `usr_${Date.now()}`,
-      name: userData.name || 'Registered Member',
-      role: userData.role,
-      phone: userData.phone || '+91 94441 00000',
-      email: userData.email || 'user@uzhavanconnect.gov.in',
-      location: userData.location || 'Tamil Nadu, India',
-      organization: userData.organization || `${userData.role} Network`
-    };
-    setCurrentUser(newUser);
-
-    try {
-      const stored = JSON.parse(localStorage.getItem('uzhavanconnect_users') || '[]');
-      stored.push(newUser);
-      localStorage.setItem('uzhavanconnect_users', JSON.stringify(stored));
-    } catch {}
-
+    setCurrentRole(user.role);
+    setCurrentUser(user);
     setActiveTab('dashboard');
   };
 

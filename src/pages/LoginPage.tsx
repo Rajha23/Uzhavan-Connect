@@ -38,14 +38,10 @@ export const LoginPage: React.FC = () => {
   const handleManualLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    let resolvedName: string | undefined;
     try {
       const res = await apiService.login(selectedRole, identifier, password);
-      if (res?.user?.name) {
-        resolvedName = res.user.name;
-      }
       setIsSubmitting(false);
-      login(identifier, selectedRole, password, resolvedName);
+      login(res.user);
       setActiveTab('dashboard');
     } catch (err: any) {
       setIsSubmitting(false);
@@ -68,13 +64,7 @@ export const LoginPage: React.FC = () => {
       });
       setRegSuccess(true);
       setTimeout(() => {
-        registerUser({
-          name: registered.name || regName,
-          email: registered.email || regEmail,
-          phone: registered.phone || regMobile,
-          role: registered.role || regRole,
-          location: registered.location || `${regDistrict}, ${regState}`
-        });
+        registerUser(registered);
       }, 1000);
     } catch (err: any) {
       setErrorMsg(err.message || 'Registration failed. Please try again.');
