@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {
   UserProfile,
   UserRole,
@@ -14,8 +14,10 @@ import {
   MARKET_PRICES_DATA,
   SYSTEM_USERS_DATA
 } from '../data/mockData';
+import { supabase } from '../lib/supabase';
 
 interface AppContextType {
+  isInitializing: boolean;
   isAuthenticated: boolean;
   login: (user: UserProfile) => void;
   registerUser: (user: UserProfile) => void;
@@ -64,6 +66,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [currentRole, setCurrentRole] = useState<UserRole>('FARMER');
   const [currentUser, setCurrentUser] = useState<UserProfile>(GUEST_USER);
   const [activeTab, setActiveTab] = useState<string>('home');
@@ -76,6 +79,60 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isArchitectureModalOpen, setArchitectureModalOpen] = useState<boolean>(false);
   const [marketPrices, setMarketPrices] = useState<MarketPriceItem[]>(MARKET_PRICES_DATA);
   const [systemUsers, setSystemUsers] = useState<SystemUserRecord[]>(SYSTEM_USERS_DATA);
+
+  useEffect(() => {
+    const initSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+            
+          if (profile) {
+            setCurrentUser({
+              id: profile.id,
+              name: profile.name,
+              role: profile.role as UserRole,
+              phone: profile.phone || '',
+              email: profile.email || '',
+              location: profile.location || '',
+              organization: profile.organization || '',
+              village: profile.village,
+              district: profile.district,
+              state: profile.state,
+              farmSizeAcres: profile.farm_size_acres,
+              mainCrops: profile.main_crops,
+              fpoName: profile.fpo_name
+            });
+            setCurrentRole(profile.role as UserRole);
+            setIsAuthenticated(true);
+            setActiveTab('dashboard');
+          }
+        }
+      } catch (err) {
+        console.warn('Could not restore Supabase session', err);
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+
+    initSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false);
+        setCurrentUser(GUEST_USER);
+        setActiveTab('home');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const switchRole = (role: UserRole) => {
     setCurrentRole(role);
@@ -104,10 +161,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setActiveTab('profile');
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch {}
     setIsAuthenticated(false);
     setCurrentUser(GUEST_USER);
-    setActiveTab('login');
+    setActiveTab('home');
   };
 
   const hasPermission = (permission: Permission): boolean => {
@@ -173,6 +233,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   return (
     <AppContext.Provider
       value={{
+        isInitializing,
         isAuthenticated,
         login,
         registerUser,

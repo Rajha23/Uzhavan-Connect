@@ -191,7 +191,15 @@ const AuthenticatedShell: React.FC = () => {
 // ─── Root App ─────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const { isAuthenticated, activeTab } = useApp();
+  const { isInitializing, isAuthenticated, activeTab } = useApp();
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-cream">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-forest border-t-transparent"></div>
+      </div>
+    );
+  }
 
   // Public pages that always show the navbar shell
   const publicTabs = ['home', 'landing', 'login'];
