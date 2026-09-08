@@ -126,7 +126,7 @@ export const TraceabilityPage: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Produce Traceability & Passports</h1>
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">Produce Traceability & Passports</h1>
           <p className="text-xs sm:text-sm font-normal text-slate-500 mt-1">
             End-to-end farm-to-fork cryptographic ledger tracking harvest, grading lab tests, cold transit, and delivery.
           </p>
@@ -155,7 +155,7 @@ export const TraceabilityPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Batch List */}
         <div className="lg:col-span-5 space-y-3">
-          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+          <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider">
             Active Tracked Batches ({filtered.length})
           </h3>
           {filtered.map((b) => (
@@ -178,7 +178,7 @@ export const TraceabilityPage: React.FC = () => {
                       {b.qualityGrade || 'Grade A'}
                     </span>
                   </div>
-                  <p className="font-bold text-slate-900 text-base mt-2 tracking-tight">
+                  <p className="font-medium text-slate-900 text-base mt-2 tracking-tight">
                     {b.crop} {b.variety ? `(${b.variety})` : ''} — {b.quantityKg.toLocaleString()} kg
                   </p>
                   <p className="text-xs font-normal text-slate-500 mt-0.5">{b.farmerOrFpo}</p>
@@ -209,7 +209,7 @@ export const TraceabilityPage: React.FC = () => {
                       {selectedBatch.qualityGrade || 'Certified Grade A'}
                     </span>
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-900 mt-3 tracking-tight">
+                  <h2 className="text-2xl font-semibold text-slate-900 mt-3 tracking-tight">
                     {selectedBatch.crop} Batch
                   </h2>
                   <p className="text-xs font-mono font-medium text-slate-400 mt-1">
@@ -235,7 +235,7 @@ export const TraceabilityPage: React.FC = () => {
                 ].map((item) => (
                   <div key={item.label} className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70 shadow-2xs">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">{item.label}</span>
-                    <p className="font-bold text-sm text-slate-900 mt-0.5 tracking-tight truncate">{item.value}</p>
+                    <p className="font-medium text-sm text-slate-900 mt-0.5 tracking-tight truncate">{item.value}</p>
                   </div>
                 ))}
               </div>
@@ -252,15 +252,15 @@ export const TraceabilityPage: React.FC = () => {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
                     <div className="bg-white p-3 rounded-lg border border-slate-200/80">
                       <span className="text-[10px] text-slate-400 uppercase font-semibold block">Sugar (Brix)</span>
-                      <strong className="text-sm font-bold text-slate-900">{selectedBatch.inspectionMetrics.sugarBrix}° Bx</strong>
+                      <strong className="text-sm font-semibold text-slate-900">{selectedBatch.inspectionMetrics.sugarBrix}° Bx</strong>
                     </div>
                     <div className="bg-white p-3 rounded-lg border border-slate-200/80">
                       <span className="text-[10px] text-slate-400 uppercase font-semibold block">Firmness</span>
-                      <strong className="text-sm font-bold text-slate-900">{selectedBatch.inspectionMetrics.firmnessKgCm} kg/cm²</strong>
+                      <strong className="text-sm font-semibold text-slate-900">{selectedBatch.inspectionMetrics.firmnessKgCm} kg/cm²</strong>
                     </div>
                     <div className="bg-white p-3 rounded-lg border border-slate-200/80">
                       <span className="text-[10px] text-slate-400 uppercase font-semibold block">Moisture</span>
-                      <strong className="text-sm font-bold text-slate-900">{selectedBatch.inspectionMetrics.moistureContent}</strong>
+                      <strong className="text-sm font-semibold text-slate-900">{selectedBatch.inspectionMetrics.moistureContent}</strong>
                     </div>
                     <div className="bg-white p-3 rounded-lg border border-slate-200/80">
                       <span className="text-[10px] text-slate-400 uppercase font-semibold block">Pesticide Assay</span>
@@ -288,7 +288,7 @@ export const TraceabilityPage: React.FC = () => {
                                 ? 'bg-emerald-500 border-emerald-500 text-slate-950 shadow-xs ring-2 ring-emerald-500/20'
                                 : 'bg-white border-slate-200 text-slate-400'
                           }`}>
-                            {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-xs font-bold">{idx + 1}</span>}
+                            {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-xs font-medium">{idx + 1}</span>}
                           </div>
                           {idx < STATUS_STEPS.length - 1 && (
                             <div className={`absolute top-8 bottom-0 left-4 w-0.5 -ml-[1px] ${isCompleted ? 'bg-slate-900' : 'bg-slate-200'}`} />
@@ -309,7 +309,7 @@ export const TraceabilityPage: React.FC = () => {
           ) : (
             <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-12 flex flex-col items-center justify-center text-center">
               <Truck className="w-12 h-12 text-slate-300 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Select a batch to view details</h3>
+              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Select a batch to view details</h3>
               <p className="text-xs text-slate-500 mt-1">Click any batch from the list to see the full journey timeline</p>
               <button
                 onClick={() => openPassportModal('AGP-TOM-2026-001')}

@@ -39,10 +39,10 @@ export default {
         moss: '#10b981',
       },
       fontFamily: {
-        sans: ['"Google Sans"', '"Google Sans Text"', '"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-        heading: ['"Google Sans"', '"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['"Google Sans"', '"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
-        anton: ['"Google Sans"', '"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['"Google Sans Text"', '"Google Sans"', 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        heading: ['"Google Sans"', '"Google Sans Text"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['"Google Sans"', '"Google Sans Text"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        anton: ['"Google Sans"', '"Google Sans Text"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       boxShadow: {
         'xs': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',

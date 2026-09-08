@@ -150,14 +150,14 @@ export const Sidebar: React.FC = () => {
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-base font-bold tracking-tight text-white">
+                  <span className="text-base font-medium tracking-tight text-white">
                     Uzhavan Connect
                   </span>
-                  <span className="text-[9px] bg-emerald-500/20 text-emerald-300 font-semibold px-1.5 py-0.5 rounded border border-emerald-500/30">
+                  <span className="text-[9px] bg-emerald-500/20 text-emerald-300 font-medium px-1.5 py-0.5 rounded border border-emerald-500/30">
                     AI
                   </span>
                 </div>
-                <p className="text-[10px] text-emerald-400/80 font-medium tracking-normal -mt-0.5">
+                <p className="text-[10px] text-emerald-400/80 font-normal tracking-normal -mt-0.5">
                   Agricultural Intelligence
                 </p>
               </div>
@@ -175,7 +175,7 @@ export const Sidebar: React.FC = () => {
           <div className="px-4 py-2 bg-slate-900/90 border-b border-slate-800/80 flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="font-semibold text-slate-200 uppercase tracking-wider text-[10px]">
+              <span className="font-medium text-slate-200 uppercase tracking-wider text-[10px]">
                 {currentRole.replace('_', ' ')}
               </span>
             </div>
@@ -186,7 +186,7 @@ export const Sidebar: React.FC = () => {
           <nav className="p-3 space-y-4 max-h-[calc(100vh-210px)] overflow-y-auto">
             {sections.map((secName) => (
               <div key={secName} className="space-y-1">
-                <div className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1 mt-2">
+                <div className="px-3 text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1 mt-2">
                   {secName}
                 </div>
                 {menuItems
@@ -200,7 +200,7 @@ export const Sidebar: React.FC = () => {
                         onClick={() => handleSelect(item.id)}
                         className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
                           isActive
-                            ? 'bg-emerald-600 text-white font-semibold shadow-xs'
+                            ? 'bg-emerald-600 text-white shadow-xs'
                             : 'text-slate-400 hover:bg-slate-900 hover:text-slate-100'
                         }`}
                       >
@@ -222,12 +222,12 @@ export const Sidebar: React.FC = () => {
             onClick={() => handleSelect('profile')}
             className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-800/70 cursor-pointer transition"
           >
-            <div className="w-8 h-8 rounded-full bg-emerald-900/60 border border-emerald-600/40 flex items-center justify-center text-sm font-bold text-emerald-300 shadow-xs">
+            <div className="w-8 h-8 rounded-full bg-emerald-900/60 border border-emerald-600/40 flex items-center justify-center text-sm font-medium text-emerald-300 shadow-xs">
               {currentUser.avatar || '👨‍🌾'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-slate-100 truncate">{currentUser.name}</p>
-              <p className="text-[10px] text-slate-400 truncate uppercase tracking-wider font-medium">{currentUser.role.replace('_', ' ')}</p>
+              <p className="text-xs font-medium text-slate-100 truncate">{currentUser.name}</p>
+              <p className="text-[10px] text-slate-400 truncate uppercase tracking-wider font-normal">{currentUser.role.replace('_', ' ')}</p>
             </div>
           </div>
 

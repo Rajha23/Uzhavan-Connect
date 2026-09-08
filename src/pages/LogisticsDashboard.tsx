@@ -104,11 +104,11 @@ export const LogisticsDashboard: React.FC = () => {
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-md border border-emerald-900/40">
         <div>
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
             <Truck className="w-4 h-4 text-emerald-400" />
             <span>Multi-Hub Cold-Chain Logistics Control Tower</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
             {currentUser.organization || 'Sundar Logistics Control Tower'}
           </h1>
           <p className="text-sm text-slate-300 mt-2 font-normal">
@@ -123,7 +123,7 @@ export const LogisticsDashboard: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setActiveTab('route-optimization')}
-            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition uppercase tracking-wider"
+            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-medium px-5 py-2.5 rounded-xl shadow-sm transition uppercase tracking-wider cursor-pointer"
           >
             <Navigation className="w-4 h-4" />
             <span>Route Optimizer Map</span>
@@ -134,10 +134,10 @@ export const LogisticsDashboard: React.FC = () => {
       {/* Action Notification */}
       {actionNotice && (
         <div className="p-4 bg-emerald-50 border border-emerald-300 rounded-2xl flex items-center gap-3 shadow-xs animate-in fade-in">
-          <div className="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-bold text-sm shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-medium text-sm shrink-0">
             ✓
           </div>
-          <p className="text-xs font-bold text-emerald-950">{actionNotice}</p>
+          <p className="text-xs font-medium text-emerald-950">{actionNotice}</p>
         </div>
       )}
 
@@ -152,14 +152,14 @@ export const LogisticsDashboard: React.FC = () => {
           <button
             key={item.label}
             onClick={() => setActiveSection(item.section)}
-            className={`p-5 rounded-2xl border text-left transition shadow-xs ${
+            className={`p-5 rounded-2xl border text-left transition shadow-xs cursor-pointer ${
               activeSection === item.section
                 ? 'bg-white border-emerald-600 ring-2 ring-emerald-600/20 shadow-sm'
                 : 'bg-white border-slate-200 hover:border-slate-300'
             }`}
           >
             <p className="text-xs text-slate-500 font-medium">{item.label}</p>
-            <p className={`text-3xl font-black font-mono mt-1 ${item.color}`}>{item.count}</p>
+            <p className={`text-3xl font-semibold font-mono mt-1 ${item.color}`}>{item.count}</p>
             <p className="text-[11px] text-slate-400 mt-1">{item.desc}</p>
           </button>
         ))}
@@ -175,7 +175,7 @@ export const LogisticsDashboard: React.FC = () => {
           <button
             key={tab.key}
             onClick={() => setActiveSection(tab.key as any)}
-            className={`px-4 py-2 text-xs font-bold rounded-xl transition whitespace-nowrap ${
+            className={`px-4 py-2 text-xs font-medium rounded-xl transition whitespace-nowrap cursor-pointer ${
               activeSection === tab.key
                 ? 'bg-slate-900 text-white'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -191,12 +191,12 @@ export const LogisticsDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Packed Batches Ready for Carrier Assignment</h3>
+              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Packed Batches Ready for Carrier Assignment</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Assign temperature-controlled EV trucks, drivers, and delivery slots. Only orders passing Collection, Quality & Crating appear here.
               </p>
             </div>
-            <span className="text-xs font-bold text-teal-800 bg-teal-100 px-3 py-1 rounded-full border border-teal-300">
+            <span className="text-xs font-medium text-teal-800 bg-teal-100 px-3 py-1 rounded-full border border-teal-300">
               {awaitingTransportOrders.length} Ready for Pickup
             </span>
           </div>
@@ -204,7 +204,7 @@ export const LogisticsDashboard: React.FC = () => {
           {awaitingTransportOrders.length === 0 ? (
             <div className="py-12 text-center text-slate-400">
               <Truck className="w-10 h-10 mx-auto text-teal-400 mb-2" />
-              <p className="text-sm font-semibold text-slate-700">No packed batches currently awaiting transport assignment</p>
+              <p className="text-sm font-medium text-slate-700">No packed batches currently awaiting transport assignment</p>
               <p className="text-xs text-slate-400 mt-0.5">Complete FPO packaging & QR sealing in FPO Operations to advance batches here.</p>
             </div>
           ) : (
@@ -218,14 +218,14 @@ export const LogisticsDashboard: React.FC = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-slate-900">{order.id}</span>
+                          <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
                           <span className="text-slate-300">•</span>
-                          <span className="font-mono text-xs text-teal-900 font-semibold">{order.batchId}</span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider bg-teal-200 text-teal-900 px-2 py-0.5 rounded">
+                          <span className="font-mono text-xs text-teal-900 font-medium">{order.batchId}</span>
+                          <span className="text-[10px] font-medium uppercase tracking-wider bg-teal-200 text-teal-900 px-2 py-0.5 rounded">
                             Packed ({order.crateCount ? `${order.crateCount} Crates` : 'Crated'})
                           </span>
                         </div>
-                        <h4 className="text-sm font-bold text-slate-900 mt-1">
+                        <h4 className="text-sm font-medium text-slate-900 mt-1">
                           {order.crop} ({order.variety || 'Hybrid'}) — {cargoVolume.toLocaleString()} kg ({order.qualityGrade})
                         </h4>
                         <p className="text-xs text-slate-500 mt-0.5">
@@ -236,7 +236,7 @@ export const LogisticsDashboard: React.FC = () => {
                       <div className="flex items-center gap-2 self-start sm:self-auto">
                         <button
                           onClick={() => openPassportModal(order.batchId)}
-                          className="px-3 py-2 border border-slate-200 hover:border-emerald-500 text-slate-700 text-xs font-bold rounded-xl transition flex items-center gap-1"
+                          className="px-3 py-2 border border-slate-200 hover:border-emerald-500 text-slate-700 text-xs font-medium rounded-xl transition flex items-center gap-1 cursor-pointer"
                         >
                           <QrCode className="w-3.5 h-3.5" />
                           <span>QR Passport</span>
@@ -244,7 +244,7 @@ export const LogisticsDashboard: React.FC = () => {
 
                         <button
                           onClick={() => setSelectedOrderForTransport(isAssigning ? null : order.id)}
-                          className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold rounded-xl transition shadow-xs"
+                          className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium rounded-xl transition shadow-xs cursor-pointer"
                         >
                           {isAssigning ? 'Cancel Assignment' : 'Assign Vehicle →'}
                         </button>
@@ -254,7 +254,7 @@ export const LogisticsDashboard: React.FC = () => {
                     {/* Assignment Modal Form */}
                     {isAssigning && (
                       <div className="p-5 bg-white border border-teal-300 rounded-xl space-y-4 animate-in fade-in">
-                        <h5 className="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                        <h5 className="font-medium text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
                           <Zap className="w-3.5 h-3.5 text-teal-600" />
                           <span>Assign Vehicle & Carrier Fleet — Order: {order.id} ({cargoVolume.toLocaleString()} kg)</span>
                         </h5>
@@ -289,7 +289,7 @@ export const LogisticsDashboard: React.FC = () => {
                               type="text"
                               value={vehicleNumber}
                               onChange={(e) => setVehicleNumber(e.target.value)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-mono font-bold"
+                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-mono font-medium"
                             />
                           </div>
 
@@ -327,13 +327,13 @@ export const LogisticsDashboard: React.FC = () => {
                         <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
                           <button
                             onClick={() => setSelectedOrderForTransport(null)}
-                            className="px-4 py-2 border border-slate-200 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50"
+                            className="px-4 py-2 border border-slate-200 text-slate-600 text-xs font-medium rounded-lg hover:bg-slate-50 cursor-pointer"
                           >
                             Cancel
                           </button>
                           <button
                             onClick={() => handleAssignTransport(order.id)}
-                            className="px-5 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold rounded-lg transition shadow-xs flex items-center gap-1.5"
+                            className="px-5 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium rounded-lg transition shadow-xs flex items-center gap-1.5 cursor-pointer"
                           >
                             <CheckCircle2 className="w-4 h-4" />
                             <span>Confirm Carrier Assignment</span>
@@ -355,23 +355,23 @@ export const LogisticsDashboard: React.FC = () => {
           {/* Assigned Awaiting Dispatch */}
           {assignedOrders.length > 0 && (
             <div className="space-y-3">
-              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <h4 className="text-sm font-medium text-slate-900 uppercase tracking-wider flex items-center gap-2">
                 <span>Vehicles Assigned on Bay (Awaiting Departure Dispatch)</span>
-                <span className="text-[10px] bg-indigo-100 text-indigo-900 px-2 py-0.5 rounded font-bold">{assignedOrders.length}</span>
+                <span className="text-[10px] bg-indigo-100 text-indigo-900 px-2 py-0.5 rounded font-medium">{assignedOrders.length}</span>
               </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {assignedOrders.map((order) => (
                   <div key={order.id} className="p-5 border border-indigo-200 bg-indigo-50/40 rounded-2xl space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-bold text-slate-900">{order.id}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider bg-indigo-200 text-indigo-900 px-2 py-0.5 rounded">
+                      <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
+                      <span className="text-[10px] font-medium uppercase tracking-wider bg-indigo-200 text-indigo-900 px-2 py-0.5 rounded">
                         Vehicle Assigned
                       </span>
                     </div>
 
                     <div>
-                      <h5 className="font-bold text-slate-900 text-sm">{order.crop} — {(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg</h5>
+                      <h5 className="font-medium text-slate-900 text-sm">{order.crop} — {(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg</h5>
                       <p className="text-xs text-slate-600 mt-1">
                         Vehicle: <strong className="font-mono text-slate-900">{order.transportDetails?.vehicleNumber}</strong> ({order.transportDetails?.vehicleType})
                       </p>
@@ -382,7 +382,7 @@ export const LogisticsDashboard: React.FC = () => {
                     <div className="pt-3 border-t border-indigo-200/60 flex items-center justify-between">
                       <button
                         onClick={() => openPassportModal(order.batchId)}
-                        className="text-xs text-indigo-700 hover:text-indigo-900 font-bold flex items-center gap-1"
+                        className="text-xs text-indigo-700 hover:text-indigo-900 font-medium flex items-center gap-1 cursor-pointer"
                       >
                         <QrCode className="w-3.5 h-3.5" />
                         <span>Passport</span>
@@ -390,7 +390,7 @@ export const LogisticsDashboard: React.FC = () => {
 
                       <button
                         onClick={() => handleDispatch(order.id, order.transportDetails?.vehicleNumber)}
-                        className="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1.5"
+                        className="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
                       >
                         <Truck className="w-3.5 h-3.5" />
                         <span>Dispatch Shipment Now</span>
@@ -405,13 +405,13 @@ export const LogisticsDashboard: React.FC = () => {
           {/* Active In-Transit Shipments */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <h4 className="text-sm font-medium text-slate-900 uppercase tracking-wider flex items-center gap-2">
                 <span>Active In-Transit Cold-Chain Shipments</span>
-                <span className="text-[10px] bg-orange-100 text-orange-900 px-2 py-0.5 rounded font-bold">{inTransitOrders.length}</span>
+                <span className="text-[10px] bg-orange-100 text-orange-900 px-2 py-0.5 rounded font-medium">{inTransitOrders.length}</span>
               </h4>
               <button
                 onClick={() => setActiveTab('route-optimization')}
-                className="text-xs text-emerald-700 font-bold hover:underline flex items-center gap-1"
+                className="text-xs text-emerald-700 font-medium hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <span>Live Route Topology</span>
                 <Navigation className="w-3.5 h-3.5" />
@@ -421,7 +421,7 @@ export const LogisticsDashboard: React.FC = () => {
             {inTransitOrders.length === 0 ? (
               <div className="py-12 text-center text-slate-400">
                 <Truck className="w-10 h-10 mx-auto text-orange-300 mb-2" />
-                <p className="text-sm font-semibold text-slate-700">No shipments currently en route</p>
+                <p className="text-sm font-medium text-slate-700">No shipments currently en route</p>
                 <p className="text-xs text-slate-400 mt-0.5">Dispatch assigned vehicles above to monitor active transit corridors.</p>
               </div>
             ) : (
@@ -430,17 +430,17 @@ export const LogisticsDashboard: React.FC = () => {
                   <div key={order.id} className="p-5 border border-orange-200 bg-orange-50/40 rounded-2xl space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-slate-900">{order.id}</span>
+                        <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
                         <span className="text-slate-300">•</span>
-                        <span className="font-mono text-[11px] text-orange-900 font-bold">{order.batchId}</span>
+                        <span className="font-mono text-[11px] text-orange-900 font-medium">{order.batchId}</span>
                       </div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider bg-orange-200 text-orange-900 px-2 py-0.5 rounded animate-pulse">
+                      <span className="text-[10px] font-medium uppercase tracking-wider bg-orange-200 text-orange-900 px-2 py-0.5 rounded animate-pulse">
                         In Transit
                       </span>
                     </div>
 
                     <div>
-                      <h5 className="font-bold text-slate-900 text-sm">{order.crop} ({(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg)</h5>
+                      <h5 className="font-medium text-slate-900 text-sm">{order.crop} ({(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg)</h5>
                       <p className="text-xs text-slate-600 mt-1">
                         Vehicle: <strong className="font-mono text-slate-900">{order.transportDetails?.vehicleNumber || 'Reefer EV'}</strong> • Driver: {order.transportDetails?.driverName || 'Karthik S.'}
                       </p>
@@ -452,7 +452,7 @@ export const LogisticsDashboard: React.FC = () => {
                     <div className="pt-3 border-t border-orange-200/60 flex items-center justify-between">
                       <button
                         onClick={() => openPassportModal(order.batchId)}
-                        className="text-xs text-orange-800 hover:text-orange-950 font-bold flex items-center gap-1"
+                        className="text-xs text-orange-800 hover:text-orange-950 font-medium flex items-center gap-1 cursor-pointer"
                       >
                         <QrCode className="w-3.5 h-3.5" />
                         <span>Trace QR</span>
@@ -460,7 +460,7 @@ export const LogisticsDashboard: React.FC = () => {
 
                       <button
                         onClick={() => handleMarkDelivered(order.id, order.buyerName)}
-                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1.5"
+                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Arrive & Handover Delivery</span>
@@ -479,12 +479,12 @@ export const LogisticsDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Destination Deliveries & Receiving Handover</h3>
+              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Destination Deliveries & Receiving Handover</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Shipments delivered at buyer receiving facilities. Buyer verifies physical produce condition and completes digital confirmation.
               </p>
             </div>
-            <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
+            <span className="text-xs font-medium text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
               {deliveredOrders.length} Shipments Handed Over
             </span>
           </div>
@@ -496,15 +496,15 @@ export const LogisticsDashboard: React.FC = () => {
               return (
                 <div key={order.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-medium text-xs shrink-0">
                       <CheckCircle2 className="w-5 h-5 text-emerald-700" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-slate-900">{order.id}</span>
+                        <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
                         <span className="text-slate-300">•</span>
                         <span className="font-mono text-xs text-slate-500">{order.batchId}</span>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
                           isConfirmed
                             ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
                             : 'bg-sky-100 text-sky-900 border-sky-300'
@@ -512,7 +512,7 @@ export const LogisticsDashboard: React.FC = () => {
                           {isConfirmed ? 'Buyer Confirmed' : 'Buyer Confirmation Pending'}
                         </span>
                       </div>
-                      <p className="text-xs font-bold text-slate-900 mt-0.5">
+                      <p className="text-xs font-medium text-slate-900 mt-0.5">
                         {order.crop} ({(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg) delivered to <strong>{order.buyerName}</strong>
                       </p>
                       <p className="text-[11px] text-slate-500">
@@ -524,14 +524,14 @@ export const LogisticsDashboard: React.FC = () => {
                   <div className="flex items-center gap-2 self-end sm:self-auto">
                     <button
                       onClick={() => openPassportModal(order.batchId)}
-                      className="px-3 py-1.5 border border-slate-200 hover:border-emerald-500 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1"
+                      className="px-3 py-1.5 border border-slate-200 hover:border-emerald-500 text-slate-700 text-xs font-medium rounded-xl transition flex items-center gap-1 cursor-pointer"
                     >
                       <QrCode className="w-3.5 h-3.5" />
                       <span>Passport</span>
                     </button>
                     <button
                       onClick={() => setActiveTab('orders')}
-                      className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl transition"
+                      className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium rounded-xl transition cursor-pointer"
                     >
                       Order Ledger
                     </button>

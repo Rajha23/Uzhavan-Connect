@@ -216,14 +216,14 @@ export const FpoDashboard: React.FC = () => {
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-900/40">
         <div>
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
             <Users className="w-4 h-4" />
             <span>FPO Aggregator & Micro-Hub Facility</span>
-            <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
+            <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-medium px-2 py-0.5 rounded-full border border-emerald-500/30">
               Live Hub Node
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
             {currentUser.organization || 'GreenHarvest FPO Hub'}
           </h1>
           <p className="text-sm text-slate-300 mt-2 font-normal">
@@ -234,7 +234,7 @@ export const FpoDashboard: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setActiveTab('orders')}
-            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition tracking-wide"
+            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-medium px-5 py-2.5 rounded-xl shadow-sm transition tracking-wide"
           >
             <span>All Orders ({orders.length})</span>
             <ArrowRight className="w-4 h-4" />
@@ -245,10 +245,10 @@ export const FpoDashboard: React.FC = () => {
       {/* Action Notification Banner */}
       {actionSuccessMessage && (
         <div className="p-4 bg-emerald-50 border border-emerald-300 rounded-2xl flex items-center gap-3 shadow-xs animate-in fade-in">
-          <div className="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-bold text-sm shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-medium text-sm shrink-0">
             ✓
           </div>
-          <p className="text-xs font-bold text-emerald-950">{actionSuccessMessage}</p>
+          <p className="text-xs font-medium text-emerald-950">{actionSuccessMessage}</p>
         </div>
       )}
 
@@ -272,7 +272,7 @@ export const FpoDashboard: React.FC = () => {
             }`}
           >
             <p className="text-[11px] text-slate-500 font-medium truncate">{item.label}</p>
-            <p className={`text-2xl font-black font-mono mt-0.5 ${item.color}`}>{item.count}</p>
+            <p className={`text-2xl font-semibold font-mono mt-0.5 ${item.color}`}>{item.count}</p>
             <p className="text-[10px] text-slate-400 mt-0.5 truncate">{item.desc}</p>
           </button>
         ))}
@@ -291,7 +291,7 @@ export const FpoDashboard: React.FC = () => {
           <button
             key={tab.key}
             onClick={() => setActiveTabSection(tab.key as any)}
-            className={`px-4 py-2 text-xs font-bold rounded-xl transition whitespace-nowrap ${
+            className={`px-4 py-2 text-xs font-medium rounded-xl transition whitespace-nowrap ${
               activeTabSection === tab.key
                 ? 'bg-slate-900 text-white'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -309,19 +309,19 @@ export const FpoDashboard: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <Sprout className="w-5 h-5 text-emerald-600" />
-                <h3 className="text-lg font-bold text-slate-900 tracking-tight">Member Farm Produce Supply Pool</h3>
+                <h3 className="text-lg font-medium text-slate-900 tracking-tight">Member Farm Produce Supply Pool</h3>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
                 Active crop listings submitted by member farmers. Aggregated and available for Smart Matching with institutional buyers.
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
+              <span className="text-xs font-medium text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
                 {produceListings.length} Active Listings
               </span>
               <button
                 onClick={() => setActiveTab('smart-matching')}
-                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1.5"
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Open Smart Matching Engine</span>
@@ -340,8 +340,8 @@ export const FpoDashboard: React.FC = () => {
                 <div key={listing.id} className="p-5 border border-slate-200 hover:border-emerald-300 bg-white rounded-2xl space-y-3 transition shadow-xs flex flex-col justify-between">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-bold text-slate-500">{listing.id}</span>
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                      <span className="font-mono text-xs font-medium text-slate-500">{listing.id}</span>
+                      <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded ${
                         remaining <= 0
                           ? 'bg-slate-100 text-slate-600 border border-slate-300'
                           : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
@@ -351,7 +351,7 @@ export const FpoDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h4 className="font-bold text-slate-900 text-sm">
+                      <h4 className="font-medium text-slate-900 text-sm">
                         {listing.crop}
                         {listing.variety && <span className="text-slate-500 font-normal ml-1">({listing.variety})</span>}
                       </h4>
@@ -368,7 +368,7 @@ export const FpoDashboard: React.FC = () => {
                     <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 space-y-1.5">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500 font-medium">Available Supply:</span>
-                        <span className="font-bold text-emerald-700 font-mono">
+                        <span className="font-semibold text-emerald-700 font-mono">
                           {remaining.toLocaleString()} {listing.unit || 'kg'}
                         </span>
                       </div>
@@ -386,12 +386,12 @@ export const FpoDashboard: React.FC = () => {
                   </div>
 
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-700 font-mono">
+                    <span className="text-xs font-medium text-slate-700 font-mono">
                       ₹{listing.expectedPricePerKg}/kg • {listing.grade}
                     </span>
                     <button
                       onClick={() => setActiveTab('smart-matching')}
-                      className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl transition flex items-center gap-1"
+                      className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-medium rounded-xl transition flex items-center gap-1"
                     >
                       <Sparkles className="w-3 h-3" />
                       <span>Match</span>
@@ -409,12 +409,12 @@ export const FpoDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Farm Gate Produce Collection Queue</h3>
+              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Farm Gate Produce Collection Queue</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Collect harvested produce from member farms. Multi-farmer contributions and partial pickups are tracked without losing source provenance.
               </p>
             </div>
-            <span className="text-xs font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-300">
+            <span className="text-xs font-medium text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-300">
               {pendingCollectionOrders.length} Orders Awaiting Pickup
             </span>
           </div>
@@ -448,11 +448,11 @@ export const FpoDashboard: React.FC = () => {
                   <div key={order.id} className="p-5 border border-amber-200 bg-amber-50/30 rounded-2xl space-y-4 shadow-xs">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-slate-900">{order.id}</span>
+                        <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
                         <span className="text-slate-300">•</span>
                         <span className="font-mono text-[11px] text-amber-900 font-semibold">{order.batchId}</span>
                       </div>
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                      <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded border ${
                         order.status === 'Partially Collected'
                           ? 'bg-amber-200 text-amber-900 border-amber-300'
                           : 'bg-amber-100 text-amber-800 border-amber-200'
@@ -462,7 +462,7 @@ export const FpoDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h4 className="font-bold text-slate-900 text-sm">{order.crop} ({order.variety || 'Hybrid'})</h4>
+                      <h4 className="font-medium text-slate-900 text-sm">{order.crop} ({order.variety || 'Hybrid'})</h4>
                       <p className="text-xs text-slate-500 mt-0.5">
                         Buyer: <strong className="text-slate-800">{order.buyerName}</strong> ({order.deliveryLocation})
                       </p>
@@ -472,7 +472,7 @@ export const FpoDashboard: React.FC = () => {
                     <div className="bg-white p-3 rounded-xl border border-amber-100 space-y-1.5">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-600 font-medium">Collection Progress:</span>
-                        <span className="font-bold text-slate-900 font-mono">
+                        <span className="font-medium text-slate-900 font-mono">
                           {collectedKg.toLocaleString()} / {requiredKg.toLocaleString()} kg ({percentCollected}%)
                         </span>
                       </div>
@@ -484,13 +484,13 @@ export const FpoDashboard: React.FC = () => {
                       </div>
                       <div className="flex justify-between text-[11px] text-slate-500 font-mono pt-0.5">
                         <span className="text-emerald-700 font-semibold">Collected: {collectedKg.toLocaleString()} kg</span>
-                        <span className="text-amber-800 font-bold">Remaining: {remainingKg.toLocaleString()} kg</span>
+                        <span className="text-amber-800 font-medium">Remaining: {remainingKg.toLocaleString()} kg</span>
                       </div>
                     </div>
 
                     {/* Multi-Farmer Traceability Breakdown */}
                     <div className="space-y-2">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                      <p className="text-[11px] font-medium uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
                         <Users className="w-3.5 h-3.5 text-amber-700" />
                         <span>Contributing Farmer Sources ({contributions.length})</span>
                       </p>
@@ -504,17 +504,17 @@ export const FpoDashboard: React.FC = () => {
                               className="p-2.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between text-xs"
                             >
                               <div>
-                                <p className="font-bold text-slate-900">{c.farmerName}</p>
+                                <p className="font-medium text-slate-900">{c.farmerName}</p>
                                 <p className="text-[11px] text-slate-500 flex items-center gap-1">
                                   <MapPin className="w-3 h-3 text-slate-400" />
                                   <span>{c.farmerLocation}</span>
                                 </p>
                               </div>
                               <div className="text-right">
-                                <span className="font-mono font-bold text-slate-800 block">
+                                <span className="font-mono font-medium text-slate-800 block">
                                   {c.collectedQuantityKg || 0} / {c.contributedQuantityKg} kg
                                 </span>
-                                <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                                <span className={`text-[9px] font-medium uppercase px-1.5 py-0.5 rounded ${
                                   c.collectionStatus === 'FULLY_COLLECTED'
                                     ? 'bg-emerald-100 text-emerald-800'
                                     : (c.collectionStatus === 'PARTIALLY_COLLECTED' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600')
@@ -534,7 +534,7 @@ export const FpoDashboard: React.FC = () => {
                       </span>
                       <button
                         onClick={() => handleOpenCollectionModal(order)}
-                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1.5"
+                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5"
                       >
                         <Check className="w-3.5 h-3.5" />
                         <span>Record Produce Collection</span>
@@ -553,12 +553,12 @@ export const FpoDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Hub Quality Inspection & Grading Station</h3>
+              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Hub Quality Inspection & Grading Station</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Perform laboratory checks (Sugar Brix, firmness, moisture, pesticide assay) and record accepted vs rejected volumes.
               </p>
             </div>
-            <span className="text-xs font-bold text-purple-800 bg-purple-100 px-3 py-1 rounded-full border border-purple-300">
+            <span className="text-xs font-medium text-purple-800 bg-purple-100 px-3 py-1 rounded-full border border-purple-300">
               {collectedAwaitingGrading.length} Batches Ready for QA
             </span>
           </div>
@@ -580,21 +580,21 @@ export const FpoDashboard: React.FC = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-slate-900">{order.id}</span>
+                          <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
                           <span className="text-slate-300">•</span>
                           <span className="font-mono text-xs text-purple-900 font-semibold">{order.batchId}</span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider bg-purple-200 text-purple-900 px-2 py-0.5 rounded">
+                          <span className="text-[10px] font-medium uppercase tracking-wider bg-purple-200 text-purple-900 px-2 py-0.5 rounded">
                             Collected ({totalCollected.toLocaleString()} kg)
                           </span>
                         </div>
-                        <h4 className="text-sm font-bold text-slate-900 mt-1">
+                        <h4 className="text-sm font-medium text-slate-900 mt-1">
                           {order.crop} ({order.variety || 'Hybrid'}) — {totalCollected.toLocaleString()} kg from {order.farmerName}
                         </h4>
                       </div>
 
                       <button
                         onClick={() => isInspecting ? setSelectedOrderForInspection(null) : handleStartInspection(order)}
-                        className="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-xl transition shadow-xs self-start sm:self-auto"
+                        className="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-medium rounded-xl transition shadow-xs self-start sm:self-auto"
                       >
                         {isInspecting ? 'Cancel QA Form' : 'Open Inspection Form →'}
                       </button>
@@ -604,17 +604,17 @@ export const FpoDashboard: React.FC = () => {
                     {isInspecting && (
                       <div className="p-5 bg-white border border-purple-200 rounded-xl space-y-4 animate-in fade-in">
                         <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                          <h5 className="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                          <h5 className="font-medium text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
                             <ShieldCheck className="w-4 h-4 text-purple-700" />
                             <span>Quality Certification & Acceptance Entry — Batch: {order.batchId}</span>
                           </h5>
-                          <span className="text-xs font-mono font-bold text-purple-900">Total Collected: {totalCollected} kg</span>
+                          <span className="text-xs font-mono font-medium text-purple-900">Total Collected: {totalCollected} kg</span>
                         </div>
 
                         {/* Acceptance & Rejection Breakdown */}
                         <div className="p-3 bg-purple-50/50 rounded-xl border border-purple-100 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                           <div>
-                            <label className="block text-slate-700 font-bold mb-1">
+                            <label className="block text-slate-700 font-medium mb-1">
                               Accepted Quantity (kg) <span className="text-emerald-700 font-mono">(Moves to Packing)</span>
                             </label>
                             <input
@@ -627,12 +627,12 @@ export const FpoDashboard: React.FC = () => {
                                 setAcceptedKg(val);
                                 setRejectedKg(Math.max(0, totalCollected - val));
                               }}
-                              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-purple-600 font-mono font-bold text-slate-900 bg-white"
+                              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-purple-600 font-mono font-medium text-slate-900 bg-white"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-slate-700 font-bold mb-1">
+                            <label className="block text-slate-700 font-medium mb-1">
                               Rejected Quantity (kg) <span className="text-red-700 font-mono">(Defects/Shortage)</span>
                             </label>
                             <input
@@ -645,13 +645,13 @@ export const FpoDashboard: React.FC = () => {
                                 setRejectedKg(val);
                                 setAcceptedKg(Math.max(0, totalCollected - val));
                               }}
-                              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-purple-600 font-mono font-bold text-slate-900 bg-white"
+                              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-purple-600 font-mono font-medium text-slate-900 bg-white"
                             />
                           </div>
 
                           {rejectedKg > 0 && (
                             <div className="sm:col-span-2">
-                              <label className="block text-slate-700 font-bold mb-1">Rejection Reason / Defect Notes</label>
+                              <label className="block text-slate-700 font-medium mb-1">Rejection Reason / Defect Notes</label>
                               <input
                                 type="text"
                                 value={rejectionReason}
@@ -714,7 +714,7 @@ export const FpoDashboard: React.FC = () => {
                             <select
                               value={grade}
                               onChange={(e) => setGrade(e.target.value as any)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-500 font-bold"
+                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-500 font-medium"
                             >
                               <option value="Grade A">Grade A (Premium Export Quality)</option>
                               <option value="Grade B">Grade B (Retail High Grade)</option>
@@ -737,13 +737,13 @@ export const FpoDashboard: React.FC = () => {
                         <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
                           <button
                             onClick={() => setSelectedOrderForInspection(null)}
-                            className="px-4 py-2 border border-slate-200 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50"
+                            className="px-4 py-2 border border-slate-200 text-slate-600 text-xs font-medium rounded-lg hover:bg-slate-50"
                           >
                             Cancel
                           </button>
                           <button
                             onClick={() => handleSaveInspection(order.id)}
-                            className="px-5 py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg transition shadow-xs flex items-center gap-1.5"
+                            className="px-5 py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-medium rounded-lg transition shadow-xs flex items-center gap-1.5"
                           >
                             <ShieldCheck className="w-4 h-4" />
                             <span>Certify Quality & Record Accepted Volume</span>
@@ -764,12 +764,12 @@ export const FpoDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Packaging, Crating & QR Sealing</h3>
+              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Packaging, Crating & QR Sealing</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Pack quality-accepted produce into standardized agro-crates, assign batch tamper seal, and unlock Transport Readiness.
               </p>
             </div>
-            <span className="text-xs font-bold text-teal-800 bg-teal-100 px-3 py-1 rounded-full border border-teal-300">
+            <span className="text-xs font-medium text-teal-800 bg-teal-100 px-3 py-1 rounded-full border border-teal-300">
               {gradedAwaitingPacking.length} Batches Ready for Crating
             </span>
           </div>
@@ -789,14 +789,14 @@ export const FpoDashboard: React.FC = () => {
                 return (
                   <div key={order.id} className="p-5 border border-teal-200 bg-teal-50/30 rounded-2xl space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-bold text-slate-900">{order.id}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider bg-teal-200 text-teal-900 px-2.5 py-0.5 rounded">
+                      <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
+                      <span className="text-[10px] font-medium uppercase tracking-wider bg-teal-200 text-teal-900 px-2.5 py-0.5 rounded">
                         {order.qualityGrade} • {order.qualityStatus || 'Passed'}
                       </span>
                     </div>
 
                     <div>
-                      <h4 className="font-bold text-slate-900 text-sm">{order.crop} ({order.variety || 'Hybrid'})</h4>
+                      <h4 className="font-medium text-slate-900 text-sm">{order.crop} ({order.variety || 'Hybrid'})</h4>
                       <p className="text-xs text-slate-600 mt-1">
                         Accepted Volume: <strong className="font-mono text-teal-900">{acceptedVolume.toLocaleString()} kg</strong> (~{estimatedCrates} crates)
                       </p>
@@ -808,7 +808,7 @@ export const FpoDashboard: React.FC = () => {
                     <div className="pt-3 border-t border-teal-200/60 flex items-center justify-between">
                       <button
                         onClick={() => openPassportModal(order.batchId)}
-                        className="text-teal-700 hover:text-teal-900 text-xs font-bold flex items-center gap-1"
+                        className="text-teal-700 hover:text-teal-900 text-xs font-medium flex items-center gap-1"
                       >
                         <QrCode className="w-3.5 h-3.5" />
                         <span>Preview Passport</span>
@@ -816,7 +816,7 @@ export const FpoDashboard: React.FC = () => {
 
                       <button
                         onClick={() => handleOpenPackingModal(order)}
-                        className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1.5"
+                        className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5"
                       >
                         <Package className="w-3.5 h-3.5" />
                         <span>Pack & Unlock Transport →</span>
@@ -835,12 +835,12 @@ export const FpoDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Bulk Order Consolidation & Provenance Hub</h3>
+              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Bulk Order Consolidation & Provenance Hub</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Consolidated institutional volume orders maintaining 100% individual farmer source and buyer demand links.
               </p>
             </div>
-            <span className="text-xs font-bold text-blue-800 bg-blue-100 px-3 py-1 rounded-full border border-blue-300">
+            <span className="text-xs font-medium text-blue-800 bg-blue-100 px-3 py-1 rounded-full border border-blue-300">
               {bulkConsolidatedOrders.length} Consolidated Batches
             </span>
           </div>
@@ -866,16 +866,16 @@ export const FpoDashboard: React.FC = () => {
                 <div key={order.id} className="p-5 border border-blue-200 bg-blue-50/20 rounded-2xl space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-slate-900">{order.id}</span>
+                      <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
                       <span className="text-slate-300">•</span>
-                      <span className="font-mono text-xs text-blue-900 font-bold">{order.batchId}</span>
+                      <span className="font-mono text-xs text-blue-900 font-medium">{order.batchId}</span>
                       {order.aggregatedGroupId && (
-                        <span className="text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-200 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-medium bg-purple-100 text-purple-800 border border-purple-200 px-2 py-0.5 rounded">
                           Pooled: {order.aggregatedGroupId}
                         </span>
                       )}
                     </div>
-                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full border border-slate-300 bg-white text-slate-800">
+                    <span className="text-xs font-medium px-2.5 py-0.5 rounded-full border border-slate-300 bg-white text-slate-800">
                       Status: {order.status}
                     </span>
                   </div>
@@ -883,25 +883,25 @@ export const FpoDashboard: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-white p-3.5 rounded-xl border border-blue-100 text-xs">
                     <div>
                       <span className="text-slate-500 block">Total Buyer Quantity:</span>
-                      <strong className="text-sm font-bold font-mono text-slate-900">{requiredKg.toLocaleString()} kg</strong>
+                      <strong className="text-sm font-semibold font-mono text-slate-900">{requiredKg.toLocaleString()} kg</strong>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Total Collected:</span>
-                      <strong className="text-sm font-bold font-mono text-emerald-700">{collectedKg.toLocaleString()} kg</strong>
+                      <strong className="text-sm font-semibold font-mono text-emerald-700">{collectedKg.toLocaleString()} kg</strong>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Remaining Collection:</span>
-                      <strong className="text-sm font-bold font-mono text-amber-700">{remainingKg.toLocaleString()} kg</strong>
+                      <strong className="text-sm font-semibold font-mono text-amber-700">{remainingKg.toLocaleString()} kg</strong>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Total Transaction Value:</span>
-                      <strong className="text-sm font-bold font-mono text-slate-900">₹{order.totalValue.toLocaleString()}</strong>
+                      <strong className="text-sm font-semibold font-mono text-slate-900">₹{order.totalValue.toLocaleString()}</strong>
                     </div>
                   </div>
 
                   {/* Farmer Provenance Trail */}
                   <div className="space-y-2">
-                    <h5 className="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <h5 className="text-[11px] font-medium text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                       <Users className="w-3.5 h-3.5 text-blue-700" />
                       <span>Farmer Provenance & Source Allotments ({contributions.length} Producers)</span>
                     </h5>
@@ -909,7 +909,7 @@ export const FpoDashboard: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                       {contributions.map((c, i) => (
                         <div key={i} className="p-3 bg-white border border-slate-200 rounded-xl space-y-1">
-                          <div className="flex justify-between font-bold text-slate-900">
+                          <div className="flex justify-between font-medium text-slate-900">
                             <span>{c.farmerName}</span>
                             <span className="font-mono text-blue-800">{c.contributedQuantityKg.toLocaleString()} kg</span>
                           </div>
@@ -932,7 +932,7 @@ export const FpoDashboard: React.FC = () => {
                     </span>
                     <button
                       onClick={() => openPassportModal(order.batchId)}
-                      className="text-blue-700 hover:text-blue-900 font-bold flex items-center gap-1"
+                      className="text-blue-700 hover:text-blue-900 font-medium flex items-center gap-1"
                     >
                       <QrCode className="w-3.5 h-3.5" />
                       <span>View Provenance Passport</span>
@@ -950,10 +950,10 @@ export const FpoDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight">All Collective FPO Batches</h3>
+              <h3 className="text-lg font-medium text-slate-900 tracking-tight">All Collective FPO Batches</h3>
               <p className="text-xs text-slate-500 mt-0.5">Comprehensive lifecycle status across collection, quality, crating and transport</p>
             </div>
-            <span className="text-xs font-bold text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+            <span className="text-xs font-medium text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
               {orders.length} Total Batches
             </span>
           </div>
@@ -962,24 +962,24 @@ export const FpoDashboard: React.FC = () => {
             {orders.map((order) => (
               <div key={order.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-medium text-xs shrink-0">
                     <Package className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-slate-900">{order.id}</span>
+                      <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
                       <span className="text-slate-300">•</span>
                       <span className="font-mono text-xs text-slate-500">{order.batchId}</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700">
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700">
                         {order.status}
                       </span>
                       {order.isReadyForTransport && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
                           Ready for Transport
                         </span>
                       )}
                     </div>
-                    <p className="text-xs font-bold text-slate-900 mt-0.5">
+                    <p className="text-xs font-medium text-slate-900 mt-0.5">
                       {order.crop} — {order.quantityKg.toLocaleString()} kg @ ₹{order.pricePerKg}/kg (Total: ₹{order.totalValue.toLocaleString()})
                     </p>
                     <p className="text-[11px] text-slate-500">
@@ -1016,13 +1016,13 @@ export const FpoDashboard: React.FC = () => {
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
                 <Check className="w-5 h-5 text-emerald-700" />
-                <h4 className="font-bold text-slate-900 text-base tracking-tight">
+                <h4 className="font-medium text-slate-900 text-base tracking-tight">
                   Record Farm Gate Collection
                 </h4>
               </div>
               <button
                 onClick={() => setCollectionModalOrder(null)}
-                className="text-slate-400 hover:text-slate-600 font-bold"
+                className="text-slate-400 hover:text-slate-600 font-medium"
               >
                 ✕
               </button>
@@ -1030,8 +1030,8 @@ export const FpoDashboard: React.FC = () => {
 
             <form onSubmit={handleRecordCollectionSubmit} className="space-y-4 text-xs">
               <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-200 space-y-1">
-                <span className="font-mono text-[11px] text-amber-900 font-bold">Order: {collectionModalOrder.id}</span>
-                <p className="font-bold text-slate-900 text-sm">{collectionModalOrder.crop} ({collectionModalOrder.variety || 'Hybrid'})</p>
+                <span className="font-mono text-[11px] text-amber-900 font-medium">Order: {collectionModalOrder.id}</span>
+                <p className="font-medium text-slate-900 text-sm">{collectionModalOrder.crop} ({collectionModalOrder.variety || 'Hybrid'})</p>
                 <div className="flex justify-between text-slate-600 pt-1">
                   <span>Total Order Required: <strong>{collectionModalOrder.quantityKg.toLocaleString()} kg</strong></span>
                   <span>Currently Collected: <strong className="text-emerald-700">{collectionModalOrder.collectedQuantityKg || 0} kg</strong></span>
@@ -1040,7 +1040,7 @@ export const FpoDashboard: React.FC = () => {
 
               {/* Select Contributing Farmer */}
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Select Producer Farm Gate</label>
+                <label className="block text-slate-700 font-medium mb-1">Select Producer Farm Gate</label>
                 <select
                   value={selectedFarmerId}
                   onChange={(e) => {
@@ -1074,7 +1074,7 @@ export const FpoDashboard: React.FC = () => {
               {/* Collection Quantity Input */}
               <div>
                 <div className="flex justify-between mb-1">
-                  <label className="text-slate-700 font-bold">Quantity to Collect (kg)</label>
+                  <label className="text-slate-700 font-medium">Quantity to Collect (kg)</label>
                   <span className="text-slate-400">Max open balance</span>
                 </div>
                 <input
@@ -1083,14 +1083,14 @@ export const FpoDashboard: React.FC = () => {
                   max={collectionModalOrder.remainingCollectionKg || collectionModalOrder.quantityKg}
                   value={collectAmountKg}
                   onChange={(e) => setCollectAmountKg(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono font-medium text-slate-900 focus:outline-none focus:border-emerald-600"
                   required
                 />
               </div>
 
               {/* Collection Notes */}
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Field Logistics Notes</label>
+                <label className="block text-slate-700 font-medium mb-1">Field Logistics Notes</label>
                 <input
                   type="text"
                   value={collectionNotes}
@@ -1103,13 +1103,13 @@ export const FpoDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setCollectionModalOrder(null)}
-                  className="px-4 py-2 border border-slate-200 text-slate-600 text-xs font-bold rounded-xl hover:bg-slate-50"
+                  className="px-4 py-2 border border-slate-200 text-slate-600 text-xs font-medium rounded-xl hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1.5"
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5"
                 >
                   <Check className="w-4 h-4" />
                   <span>Confirm Farm Gate Pickup</span>
@@ -1127,13 +1127,13 @@ export const FpoDashboard: React.FC = () => {
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
                 <Package className="w-5 h-5 text-teal-700" />
-                <h4 className="font-bold text-slate-900 text-base tracking-tight">
+                <h4 className="font-medium text-slate-900 text-base tracking-tight">
                   Crating, Batch QR & Transport Readiness
                 </h4>
               </div>
               <button
                 onClick={() => setPackingModalOrder(null)}
-                className="text-slate-400 hover:text-slate-600 font-bold"
+                className="text-slate-400 hover:text-slate-600 font-medium"
               >
                 ✕
               </button>
@@ -1141,8 +1141,8 @@ export const FpoDashboard: React.FC = () => {
 
             <form onSubmit={handleRecordPackingSubmit} className="space-y-4 text-xs">
               <div className="p-3 bg-teal-50/60 rounded-xl border border-teal-200 space-y-1">
-                <span className="font-mono text-[11px] text-teal-900 font-bold">Order: {packingModalOrder.id} • Batch: {packingModalOrder.batchId}</span>
-                <p className="font-bold text-slate-900 text-sm">{packingModalOrder.crop} ({packingModalOrder.variety || 'Hybrid'})</p>
+                <span className="font-mono text-[11px] text-teal-900 font-medium">Order: {packingModalOrder.id} • Batch: {packingModalOrder.batchId}</span>
+                <p className="font-medium text-slate-900 text-sm">{packingModalOrder.crop} ({packingModalOrder.variety || 'Hybrid'})</p>
                 <div className="flex justify-between text-slate-600 pt-1">
                   <span>Quality Grade: <strong className="text-purple-800">{packingModalOrder.qualityGrade}</strong></span>
                   <span>Accepted Quantity: <strong className="text-teal-800 font-mono">{packingModalOrder.acceptedQuantityKg || packingModalOrder.quantityKg} kg</strong></span>
@@ -1150,14 +1150,14 @@ export const FpoDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Packed Quantity (kg)</label>
+                <label className="block text-slate-700 font-medium mb-1">Packed Quantity (kg)</label>
                 <input
                   type="number"
                   min="1"
                   max={packingModalOrder.acceptedQuantityKg || packingModalOrder.quantityKg}
                   value={packQuantityKg}
                   onChange={(e) => setPackQuantityKg(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono font-bold text-slate-900 focus:outline-none focus:border-teal-600"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono font-medium text-slate-900 focus:outline-none focus:border-teal-600"
                   required
                 />
                 <p className="text-[11px] text-slate-400 mt-1 font-mono">
@@ -1166,7 +1166,7 @@ export const FpoDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Packaging Specification</label>
+                <label className="block text-slate-700 font-medium mb-1">Packaging Specification</label>
                 <select
                   value={crateType}
                   onChange={(e) => setCrateType(e.target.value)}
@@ -1179,7 +1179,7 @@ export const FpoDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Tamper-Proof Batch Barcode Note</label>
+                <label className="block text-slate-700 font-medium mb-1">Tamper-Proof Batch Barcode Note</label>
                 <input
                   type="text"
                   value={packNotes}
@@ -1192,13 +1192,13 @@ export const FpoDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setPackingModalOrder(null)}
-                  className="px-4 py-2 border border-slate-200 text-slate-600 text-xs font-bold rounded-xl hover:bg-slate-50"
+                  className="px-4 py-2 border border-slate-200 text-slate-600 text-xs font-medium rounded-xl hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1.5"
+                  className="px-5 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5"
                 >
                   <Package className="w-4 h-4" />
                   <span>Crate & Seal (Ready for Transport)</span>

@@ -141,11 +141,11 @@ export const SettlementPage: React.FC = () => {
       {/* Header */}
       <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-900/40">
         <div>
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
             <CreditCard className="w-4 h-4" />
             <span>Automated Escrow Disbursement Ledger</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
             Settlement & Net Realization
           </h1>
           <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed font-normal">
@@ -156,7 +156,7 @@ export const SettlementPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={handleDownloadInvoice}
-            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition"
+            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-medium px-5 py-2.5 rounded-xl shadow-sm transition"
           >
             <Download className="w-4 h-4" />
             <span>{downloading ? 'Exporting PDF...' : 'Download Tax Invoice'}</span>
@@ -170,7 +170,7 @@ export const SettlementPage: React.FC = () => {
           <AlertCircle className="w-4 h-4 text-amber-800" />
         </div>
         <div className="space-y-1">
-          <strong className="text-sm font-bold text-amber-900 block">
+          <strong className="text-sm font-medium text-amber-900 block">
             Prototype Architecture & Honest Operational Scope
           </strong>
           <p className="leading-relaxed text-[11px] text-amber-900/90 font-normal">
@@ -184,10 +184,10 @@ export const SettlementPage: React.FC = () => {
       {/* Aggregate KPI Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs hover:border-slate-300 transition">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
+          <span className="text-xs font-medium uppercase tracking-wider text-slate-400 block mb-1">
             Total Settled Payouts
           </span>
-          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+          <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">
             ₹{totalSettledAmount.toLocaleString()}
           </p>
           <span className="text-xs text-slate-500 font-medium mt-1 block">
@@ -196,10 +196,10 @@ export const SettlementPage: React.FC = () => {
         </div>
 
         <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs hover:border-slate-300 transition">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
+          <span className="text-xs font-medium uppercase tracking-wider text-slate-400 block mb-1">
             Locked in Escrow (Awaiting Payout)
           </span>
-          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-amber-700">
+          <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-amber-700">
             ₹{totalPendingAmount.toLocaleString()}
           </p>
           <span className="text-xs text-amber-700 font-medium mt-1 block">
@@ -208,10 +208,10 @@ export const SettlementPage: React.FC = () => {
         </div>
 
         <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs hover:border-slate-300 transition">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
+          <span className="text-xs font-medium uppercase tracking-wider text-slate-400 block mb-1">
             Average Farmer Net Realization
           </span>
-          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-emerald-700">
+          <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-emerald-700">
             88.9%
           </p>
           <span className="text-xs text-slate-500 font-medium mt-1 block">
@@ -277,7 +277,7 @@ export const SettlementPage: React.FC = () => {
                       {s.status}
                     </span>
                   </div>
-                  <h4 className="font-bold text-lg text-slate-900 tracking-tight">
+                  <h4 className="font-medium text-lg text-slate-900 tracking-tight">
                     {s.crop} • {s.quantityKg.toLocaleString()} kg
                   </h4>
                   <p className="text-xs text-slate-600 font-normal mt-1">
@@ -291,7 +291,7 @@ export const SettlementPage: React.FC = () => {
                 <div className="mt-4 pt-3.5 border-t border-slate-100 flex items-center justify-between">
                   <div>
                     <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block">Net Payout</span>
-                    <span className="text-base font-bold text-slate-900">₹{s.farmerAmount.toLocaleString()}</span>
+                    <span className="text-base font-semibold text-slate-900">₹{s.farmerAmount.toLocaleString()}</span>
                   </div>
 
                   {!isDone ? (
@@ -338,7 +338,7 @@ export const SettlementPage: React.FC = () => {
                   ESCROW: {activeSettlement.status}
                 </span>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mt-2">
+              <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 mt-2">
                 {activeSettlement.crop} • {activeSettlement.quantityKg.toLocaleString()} kg
               </h3>
               <p className="text-xs sm:text-sm font-normal text-slate-500 mt-1">
@@ -351,7 +351,7 @@ export const SettlementPage: React.FC = () => {
                 <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block mb-0.5">
                   Total Landed Order Value
                 </span>
-                <span className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
+                <span className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900">
                   ₹{activeSettlement.totalOrderValue.toLocaleString()}
                 </span>
                 <span className="text-xs text-slate-500 block font-medium font-mono mt-0.5">
@@ -436,7 +436,7 @@ export const SettlementPage: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold font-mono">STEP {st.stage}</span>
+                    <span className="text-[10px] font-medium font-mono">STEP {st.stage}</span>
                     {st.isDone && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
                   </div>
                   <p className="font-semibold text-xs leading-tight text-slate-900">{st.title}</p>
@@ -509,7 +509,7 @@ export const SettlementPage: React.FC = () => {
                     <Users className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Member Farm Granular Accounting</span>
                   </div>
-                  <h4 className="text-lg font-bold text-slate-900 tracking-tight">
+                  <h4 className="text-lg font-medium text-slate-900 tracking-tight">
                     Multi-Farmer Settlement Ledger
                   </h4>
                   <p className="text-xs text-slate-500 font-normal">
@@ -552,7 +552,7 @@ export const SettlementPage: React.FC = () => {
                           ₹{farmer.grossAmount.toLocaleString()}
                         </td>
                         <td className="p-3">
-                          <span className="font-bold text-sm text-emerald-800 block">
+                          <span className="font-medium text-sm text-emerald-800 block">
                             ₹{farmer.netFarmerAmount.toLocaleString()}
                           </span>
                           <span className="text-[10px] text-slate-400 font-mono">{farmer.bankAccountMasked || 'Direct NEFT Account'}</span>
@@ -607,11 +607,11 @@ export const SettlementPage: React.FC = () => {
                     <span className="text-xs font-semibold text-emerald-300 uppercase tracking-wider">
                       Farmer Net Realization
                     </span>
-                    <span className="text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
+                    <span className="text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
                       {activeSettlement.farmerRealizationPercentage}%
                     </span>
                   </div>
-                  <p className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                  <p className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
                     ₹{activeSettlement.farmerAmount.toLocaleString()}
                   </p>
                   <p className="text-xs text-slate-300 mt-2 font-mono font-medium">
@@ -640,7 +640,7 @@ export const SettlementPage: React.FC = () => {
                       {((activeSettlement.logisticsAmount / (activeSettlement.totalOrderValue || 1)) * 100).toFixed(1)}%
                     </span>
                   </div>
-                  <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+                  <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">
                     ₹{activeSettlement.logisticsAmount.toLocaleString()}
                   </p>
                   <p className="text-xs text-slate-500 mt-2 font-medium">
@@ -665,7 +665,7 @@ export const SettlementPage: React.FC = () => {
                       {((activeSettlement.platformAmount / (activeSettlement.totalOrderValue || 1)) * 100).toFixed(1)}%
                     </span>
                   </div>
-                  <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+                  <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">
                     ₹{activeSettlement.platformAmount.toLocaleString()}
                   </p>
                   <p className="text-xs text-slate-500 mt-2 font-medium">
@@ -684,11 +684,11 @@ export const SettlementPage: React.FC = () => {
           {/* Traditional Mandi vs Uzhavan Connect Net Comparison */}
           <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-6 sm:p-7 mt-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-              <h5 className="text-xs font-bold uppercase tracking-wider text-emerald-900 flex items-center gap-2">
+              <h5 className="text-xs font-medium uppercase tracking-wider text-emerald-900 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-emerald-600" />
                 <span>Measurable Economic Gain for Smallholder Farmers</span>
               </h5>
-              <span className="text-xs font-bold text-emerald-900 bg-emerald-100 border border-emerald-300 px-3 py-1 rounded-full">
+              <span className="text-xs font-medium text-emerald-900 bg-emerald-100 border border-emerald-300 px-3 py-1 rounded-full">
                 +{activeSettlement.earningsGainPercentage}% Extra Net Realization
               </span>
             </div>
@@ -698,7 +698,7 @@ export const SettlementPage: React.FC = () => {
                 <span className="text-slate-400 text-[11px] font-semibold uppercase tracking-wider block">
                   Traditional 5-Tier Mandi Intermediary Outcome:
                 </span>
-                <p className="text-xl font-bold text-slate-700 tracking-tight mt-1">
+                <p className="text-xl font-semibold text-slate-700 tracking-tight mt-1">
                   ₹{activeSettlement.traditionalFarmerEarnings.toLocaleString()}{' '}
                   <span className="text-xs font-normal text-slate-400 font-mono">
                     (₹{(activeSettlement.traditionalFarmerEarnings / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg)
@@ -713,7 +713,7 @@ export const SettlementPage: React.FC = () => {
                 <span className="text-emerald-800 font-semibold text-[11px] uppercase tracking-wider block">
                   Uzhavan Connect Direct Realization:
                 </span>
-                <p className="text-2xl font-bold text-emerald-800 tracking-tight mt-1">
+                <p className="text-2xl font-semibold text-emerald-800 tracking-tight mt-1">
                   ₹{activeSettlement.farmerAmount.toLocaleString()}{' '}
                   <span className="text-xs font-normal text-emerald-600 font-mono">
                     (₹{(activeSettlement.farmerAmount / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg)

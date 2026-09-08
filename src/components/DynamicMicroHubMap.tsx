@@ -26,7 +26,7 @@ export const DynamicMicroHubMap: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5" />
             <span>AI Dynamic Centroid Optimization</span>
           </div>
-          <h3 className="text-xl font-bold tracking-tight text-slate-900">
+          <h3 className="text-xl font-semibold tracking-tight text-slate-900">
             Dynamic Micro-Hub Selection Engine
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -164,7 +164,7 @@ export const DynamicMicroHubMap: React.FC = () => {
         {/* Right: Selected Hub Decision Matrix */}
         <div className="lg:col-span-5 p-6 flex flex-col justify-between bg-slate-50 space-y-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-400">
               Candidate Hub Analysis
             </span>
 
@@ -185,10 +185,10 @@ export const DynamicMicroHubMap: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Warehouse className={`w-4 h-4 ${hub.isRecommended ? 'text-emerald-700' : 'text-slate-500'}`} />
-                        <span className="text-xs font-bold text-slate-900">{hub.name}</span>
+                        <span className="text-xs font-medium text-slate-900">{hub.name}</span>
                       </div>
                       {hub.isRecommended && (
-                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded border border-emerald-300">
+                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-medium px-2 py-0.5 rounded border border-emerald-300">
                           BEST CHOICE
                         </span>
                       )}
@@ -216,8 +216,8 @@ export const DynamicMicroHubMap: React.FC = () => {
             {/* Detailed Rationale for Selected Hub */}
             <div className="mt-4 p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-900">Optimization Verdict</span>
-                <span className="text-xs font-mono font-bold text-emerald-700">
+                <span className="text-xs font-medium text-slate-900">Optimization Verdict</span>
+                <span className="text-xs font-mono font-semibold text-emerald-700">
                   Confidence Score: {selectedHub.score}%
                 </span>
               </div>

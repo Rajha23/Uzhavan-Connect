@@ -157,14 +157,14 @@ export const BuyerDashboard: React.FC = () => {
       {/* Header */}
       <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-900/40">
         <div>
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
             <ShoppingBag className="w-4 h-4" />
             <span>Institutional Procurement Hub</span>
-            <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
+            <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-medium px-2 py-0.5 rounded-full border border-emerald-500/30">
               Demand Aggregation Active
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
             Buyer Dashboard
           </h1>
           <p className="text-sm text-slate-300 mt-2 font-normal">
@@ -175,7 +175,7 @@ export const BuyerDashboard: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition tracking-wide"
+            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-medium px-5 py-2.5 rounded-xl shadow-sm transition tracking-wide"
           >
             <Plus className="w-4 h-4" />
             <span>Create Demand</span>
@@ -183,7 +183,7 @@ export const BuyerDashboard: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('demand-pool')}
-            className="flex items-center gap-2 bg-white/10 hover:bg-white/15 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/20 transition tracking-wide"
+            className="flex items-center gap-2 bg-white/10 hover:bg-white/15 text-white text-xs font-medium px-4 py-2.5 rounded-xl border border-white/20 transition tracking-wide"
           >
             <Layers className="w-4 h-4 text-emerald-400" />
             <span>Demand Pool</span>
@@ -210,26 +210,26 @@ export const BuyerDashboard: React.FC = () => {
       {/* Procurement Metrics Overview Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition">
-          <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-1">Active Demands</span>
-          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">{demands.length}</p>
+          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider block mb-1">Active Demands</span>
+          <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">{demands.length}</p>
           <span className="text-xs text-slate-500 font-medium">Across {activeCropsCount} Commodities</span>
         </div>
 
         <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition">
-          <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-1">Unmet Target Volume</span>
-          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">{totalDemandVolumeKg.toLocaleString()} <span className="text-sm font-normal text-slate-500">kg</span></p>
+          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider block mb-1">Unmet Target Volume</span>
+          <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">{totalDemandVolumeKg.toLocaleString()} <span className="text-sm font-normal text-slate-500">kg</span></p>
           <span className="text-xs text-emerald-700 font-semibold">Open for Allocation</span>
         </div>
 
         <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition">
-          <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-1">Allocated Volume</span>
-          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">{totalAllocatedVolumeKg.toLocaleString()} <span className="text-sm font-normal text-slate-500">kg</span></p>
+          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider block mb-1">Allocated Volume</span>
+          <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">{totalAllocatedVolumeKg.toLocaleString()} <span className="text-sm font-normal text-slate-500">kg</span></p>
           <span className="text-xs text-slate-500 font-medium">Under Contract</span>
         </div>
 
         <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition">
-          <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-1">Aggregation Ready</span>
-          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">100%</p>
+          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider block mb-1">Aggregation Ready</span>
+          <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">100%</p>
           <span className="text-xs text-emerald-700 font-semibold uppercase tracking-wider">Coordinated Logistics</span>
         </div>
       </div>
@@ -238,7 +238,7 @@ export const BuyerDashboard: React.FC = () => {
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="p-6 sm:p-7 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+            <h3 className="text-xl sm:text-2xl font-medium tracking-tight text-slate-900">
               Active Institutional Demands
             </h3>
             <p className="text-xs text-slate-500 mt-1 font-normal">Forward procurement commitments ready for multi-buyer aggregation and farmer matching</p>
@@ -294,7 +294,7 @@ export const BuyerDashboard: React.FC = () => {
                       <span className="text-[11px] text-slate-500 font-normal">{dem.variety || 'Certified Hybrid'}</span>
                     </td>
                     <td className="p-4">
-                      <span className="font-bold text-slate-900 text-sm block">
+                      <span className="font-medium text-slate-900 text-sm block">
                         {dem.quantityKg.toLocaleString()} kg
                       </span>
                       {isPartiallyFulfilled && (
@@ -321,7 +321,7 @@ export const BuyerDashboard: React.FC = () => {
                       <span className="text-[11px] text-slate-500 block">{dem.deliveryTimeWindow}</span>
                       <span className="text-[11px] text-slate-400 truncate max-w-[140px] block">{dem.location}</span>
                     </td>
-                    <td className="p-4 font-bold text-slate-900 text-sm">
+                    <td className="p-4 font-medium text-slate-900 text-sm">
                       ₹{dem.maxTargetPricePerKg} <span className="text-xs font-normal text-slate-400">/kg</span>
                     </td>
                     <td className="p-4">
@@ -386,7 +386,7 @@ export const BuyerDashboard: React.FC = () => {
               <Truck className="w-4 h-4 text-emerald-600" />
               <span>Inbound Logistics & Receiving Bay</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+            <h3 className="text-xl sm:text-2xl font-medium tracking-tight text-slate-900">
               Active Procurement Shipments & Gate Receiving
             </h3>
             <p className="text-xs text-slate-500 font-normal mt-0.5">
@@ -432,7 +432,7 @@ export const BuyerDashboard: React.FC = () => {
                         <span className="text-[10px] text-slate-300">•</span>
                         <span className="text-xs text-slate-500 font-medium">{order.date}</span>
                       </div>
-                      <h4 className="text-lg font-bold text-slate-900 tracking-tight mt-0.5">
+                      <h4 className="text-lg font-medium text-slate-900 tracking-tight mt-0.5">
                         {order.crop} <span className="text-xs font-normal text-slate-500">({order.variety || 'Hybrid'})</span>
                       </h4>
                       <p className="text-xs text-slate-600">
@@ -456,7 +456,7 @@ export const BuyerDashboard: React.FC = () => {
                       }`}>
                         <span>{order.status}</span>
                       </span>
-                      <span className="text-base font-bold text-slate-900 mt-1">
+                      <span className="text-base font-semibold text-slate-900 mt-1">
                         ₹{order.totalValue.toLocaleString()}
                       </span>
                       <span className="text-[11px] text-slate-400">₹{order.pricePerKg}/kg • {order.quantityKg.toLocaleString()} kg</span>
@@ -470,7 +470,7 @@ export const BuyerDashboard: React.FC = () => {
                         <Building2 className="w-3.5 h-3.5 text-slate-500" />
                         <span>Farm Consolidation ({farmerCount} Member Farmer{farmerCount > 1 ? 's' : ''})</span>
                       </span>
-                      <span className="font-mono text-slate-700 font-bold text-[11px]">
+                      <span className="font-mono text-slate-700 font-medium text-[11px]">
                         {collectedKg.toLocaleString()} / {order.quantityKg.toLocaleString()} kg ({percentCollected}%)
                       </span>
                     </div>
@@ -605,7 +605,7 @@ export const BuyerDashboard: React.FC = () => {
                   <ShoppingBag className="w-5 h-5 text-emerald-700" />
                 </div>
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+                  <h3 className="text-xl sm:text-2xl font-medium tracking-tight text-slate-900">
                     Create Forward Demand Request
                   </h3>
                   <p className="text-xs text-slate-500 font-normal">
@@ -615,7 +615,7 @@ export const BuyerDashboard: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 transition text-lg font-bold p-1 rounded-lg hover:bg-slate-100"
+                className="text-slate-400 hover:text-slate-700 transition text-lg font-medium p-1 rounded-lg hover:bg-slate-100"
               >
                 ✕
               </button>
@@ -707,7 +707,7 @@ export const BuyerDashboard: React.FC = () => {
               {unit !== 'kg' && (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-900 font-semibold">
                   <span>Standardized Agricultural Volume:</span>
-                  <span className="font-mono text-sm font-bold">{calculatedKg.toLocaleString()} kg</span>
+                  <span className="font-mono text-sm font-semibold">{calculatedKg.toLocaleString()} kg</span>
                 </div>
               )}
 
@@ -815,7 +815,7 @@ export const BuyerDashboard: React.FC = () => {
                   <FileCheck2 className="w-5 h-5 text-emerald-700" />
                 </div>
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+                  <h3 className="text-xl sm:text-2xl font-medium tracking-tight text-slate-900">
                     Dockside Produce Inspection & Receiving Handover
                   </h3>
                   <p className="text-xs text-slate-500 font-normal">
@@ -825,7 +825,7 @@ export const BuyerDashboard: React.FC = () => {
               </div>
               <button
                 onClick={() => setDeliveryReceiptOrder(null)}
-                className="text-slate-400 hover:text-slate-700 transition text-lg font-bold p-1 rounded-lg hover:bg-slate-100"
+                className="text-slate-400 hover:text-slate-700 transition text-lg font-medium p-1 rounded-lg hover:bg-slate-100"
               >
                 ✕
               </button>
@@ -835,12 +835,12 @@ export const BuyerDashboard: React.FC = () => {
             <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
               <div>
                 <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Produce</span>
-                <strong className="text-slate-900 text-sm font-bold">{deliveryReceiptOrder.crop}</strong>
+                <strong className="text-slate-900 text-sm font-medium">{deliveryReceiptOrder.crop}</strong>
                 <span className="text-[11px] text-slate-500 block">({deliveryReceiptOrder.variety})</span>
               </div>
               <div>
                 <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Delivered Volume</span>
-                <strong className="text-slate-900 text-sm font-bold">
+                <strong className="text-slate-900 text-sm font-semibold">
                   {(deliveryReceiptOrder.packedQuantityKg || deliveryReceiptOrder.quantityKg).toLocaleString()} kg
                 </strong>
                 <span className="text-[11px] text-slate-500 block">
@@ -849,7 +849,7 @@ export const BuyerDashboard: React.FC = () => {
               </div>
               <div>
                 <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Contract Rate</span>
-                <strong className="text-slate-900 text-sm font-bold">₹{deliveryReceiptOrder.pricePerKg}/kg</strong>
+                <strong className="text-slate-900 text-sm font-semibold">₹{deliveryReceiptOrder.pricePerKg}/kg</strong>
                 <span className="text-[11px] text-slate-500 block">Grade {deliveryReceiptOrder.qualityGrade || 'A'}</span>
               </div>
               <div>
@@ -878,7 +878,7 @@ export const BuyerDashboard: React.FC = () => {
                       setReceivedKg(val);
                       setAcceptedKg(Math.max(0, val - rejectedKg));
                     }}
-                    className="input-modern font-bold text-base text-slate-900"
+                    className="input-modern font-medium text-base text-slate-900"
                     required
                   />
                 </div>
@@ -898,7 +898,7 @@ export const BuyerDashboard: React.FC = () => {
                       else if (val > 0) setAcceptanceStatus('ACCEPTED_PARTIAL');
                       else setAcceptanceStatus('REJECTED');
                     }}
-                    className="input-modern font-bold text-base text-emerald-800 border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
+                    className="input-modern font-medium text-base text-emerald-800 border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
                     required
                   />
                 </div>
@@ -918,7 +918,7 @@ export const BuyerDashboard: React.FC = () => {
                       else if (val >= receivedKg) setAcceptanceStatus('REJECTED');
                       else setAcceptanceStatus('ACCEPTED_PARTIAL');
                     }}
-                    className="input-modern font-bold text-base text-rose-800 border-rose-300 focus:border-rose-500 focus:ring-rose-500"
+                    className="input-modern font-medium text-base text-rose-800 border-rose-300 focus:border-rose-500 focus:ring-rose-500"
                   />
                 </div>
               </div>
@@ -963,14 +963,14 @@ export const BuyerDashboard: React.FC = () => {
                       className={`p-3 rounded-xl border text-left transition ${
                         acceptanceStatus === opt.id
                           ? opt.id === 'ACCEPTED_FULL'
-                            ? 'bg-emerald-50 border-emerald-400 text-emerald-950 font-bold shadow-xs'
+                            ? 'bg-emerald-50 border-emerald-400 text-emerald-950 font-medium shadow-xs'
                             : opt.id === 'ACCEPTED_PARTIAL'
-                            ? 'bg-amber-50 border-amber-400 text-amber-950 font-bold shadow-xs'
-                            : 'bg-rose-50 border-rose-400 text-rose-950 font-bold shadow-xs'
+                            ? 'bg-amber-50 border-amber-400 text-amber-950 font-medium shadow-xs'
+                            : 'bg-rose-50 border-rose-400 text-rose-950 font-medium shadow-xs'
                           : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                       }`}
                     >
-                      <p className="font-bold text-xs">{opt.label}</p>
+                      <p className="font-medium text-xs">{opt.label}</p>
                       <p className="text-[10px] opacity-75 mt-0.5">{opt.desc}</p>
                     </button>
                   ))}
@@ -1039,7 +1039,7 @@ export const BuyerDashboard: React.FC = () => {
 
               {/* Settlement Impact Notice */}
               <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-950 space-y-1">
-                <div className="flex items-center gap-2 font-bold text-emerald-900">
+                <div className="flex items-center gap-2 font-medium text-emerald-900">
                   <ShieldCheck className="w-4 h-4 text-emerald-700" />
                   <span>Transparent Escrow Payout Impact</span>
                 </div>

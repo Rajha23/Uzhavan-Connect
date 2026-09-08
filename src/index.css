@@ -4,26 +4,27 @@
 
 @layer base {
   body {
-    @apply bg-[#f8faf9] text-slate-800 font-sans;
+    @apply bg-[#f8faf9] text-slate-800 font-sans font-normal;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   h1 {
-    @apply font-sans font-bold tracking-tight text-slate-900;
+    @apply font-heading font-semibold tracking-tight text-slate-900;
   }
 
   h2 {
-    @apply font-sans font-semibold tracking-tight text-slate-900;
+    @apply font-heading font-semibold tracking-tight text-slate-900;
   }
 
   h3 {
-    @apply font-sans font-semibold tracking-tight text-slate-900;
+    @apply font-heading font-medium tracking-normal text-slate-900;
   }
 
   h4, h5, h6 {
-    @apply font-sans font-medium tracking-tight text-slate-900;
+    @apply font-heading font-medium tracking-normal text-slate-900;
   }
 }
 
@@ -58,7 +59,7 @@
 
   /* Standard Buttons */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs tracking-wide bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs hover:shadow-sm transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-xs tracking-wide bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs hover:shadow-sm transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
@@ -129,7 +130,7 @@
 .blur-reveal-btn {
   transform: translateY(20px);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  @apply bg-white text-forest uppercase tracking-widest font-bold px-6 py-3 rounded-full shadow-forest;
+  @apply bg-white text-forest uppercase tracking-widest font-medium px-6 py-3 rounded-full shadow-forest;
 }
 .blur-reveal-container:hover .blur-reveal-btn {
   transform: translateY(0);

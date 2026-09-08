@@ -72,12 +72,12 @@ export const ArchitectureModal: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] bg-emerald-400/20 text-emerald-300 px-2 py-0.5 rounded font-mono font-bold border border-emerald-400/30">
+                <span className="text-[10px] bg-emerald-400/20 text-emerald-300 px-2 py-0.5 rounded font-mono font-medium border border-emerald-400/30">
                    ARCHITECTURE
                 </span>
                 <span className="text-xs text-slate-300">Production-Ready Enterprise Blueprint</span>
               </div>
-              <h3 className="text-xl font-bold tracking-tight text-white mt-0.5">
+              <h3 className="text-xl font-semibold tracking-tight text-white mt-0.5">
                 Microservices, Kafka Events & REST API Contracts
               </h3>
             </div>
@@ -141,7 +141,7 @@ export const ArchitectureModal: React.FC = () => {
                 {services.map((srv, idx) => (
                   <div key={idx} className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white transition shadow-2xs">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <h4 className="text-xs font-medium text-slate-900 flex items-center gap-1.5">
                         <Server className="w-3.5 h-3.5 text-emerald-700" />
                         <span>{srv.name}</span>
                       </h4>
@@ -170,7 +170,7 @@ export const ArchitectureModal: React.FC = () => {
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <Radio className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                        <span className="font-mono font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                        <span className="font-mono font-medium text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                           {top.topic}
                         </span>
                       </div>
@@ -199,7 +199,7 @@ export const ArchitectureModal: React.FC = () => {
                 {restEndpoints.map((ep, idx) => (
                   <div key={idx} className="p-2.5 hover:bg-slate-50 flex items-center justify-between gap-2 text-xs">
                     <div className="flex items-center gap-2">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-medium font-mono ${
                         ep.method === 'POST' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
                       }`}>
                         {ep.method}

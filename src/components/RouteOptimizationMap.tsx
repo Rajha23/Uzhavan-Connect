@@ -143,7 +143,7 @@ export const RouteOptimizationMap: React.FC = () => {
             )}
           </div>
 
-          <h3 className="text-xl font-bold tracking-tight text-slate-900">
+          <h3 className="text-xl font-medium tracking-tight text-slate-900">
             Multi-Stop Route & Logistics Optimization
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -206,7 +206,7 @@ export const RouteOptimizationMap: React.FC = () => {
             <MapPin className="w-3.5 h-3.5 text-blue-600" />
             <span>Optimized Distance</span>
           </div>
-          <p className="text-xl font-bold font-mono text-slate-900 mt-1">
+          <p className="text-xl font-semibold font-mono text-slate-900 mt-1">
             {routePlan?.total_distance_km ?? 42.6} km
           </p>
           <span className="text-[11px] text-slate-500 font-medium">
@@ -219,7 +219,7 @@ export const RouteOptimizationMap: React.FC = () => {
             <Gauge className="w-3.5 h-3.5 text-emerald-600" />
             <span>Distance Saved</span>
           </div>
-          <p className="text-xl font-bold font-mono text-emerald-700 mt-1">
+          <p className="text-xl font-semibold font-mono text-emerald-700 mt-1">
             {routePlan?.distance_saved_km ?? 16.4} km
           </p>
           <span className="text-[11px] text-emerald-700 font-medium">
@@ -232,7 +232,7 @@ export const RouteOptimizationMap: React.FC = () => {
             <Leaf className="w-3.5 h-3.5 text-purple-600" />
             <span>Fuel & Cost Savings</span>
           </div>
-          <p className="text-xl font-bold font-mono text-slate-900 mt-1">
+          <p className="text-xl font-semibold font-mono text-slate-900 mt-1">
             ₹{routePlan?.fuel_cost_savings_inr?.toLocaleString() ?? '1,850'} Saved
           </p>
           <span className="text-[11px] text-purple-600">
@@ -245,7 +245,7 @@ export const RouteOptimizationMap: React.FC = () => {
             <Clock className="w-3.5 h-3.5 text-amber-600" />
             <span>Estimated Duration</span>
           </div>
-          <p className="text-xl font-bold font-mono text-slate-900 mt-1">
+          <p className="text-xl font-semibold font-mono text-slate-900 mt-1">
             {Math.floor((routePlan?.estimated_time_minutes ?? 135) / 60)}h {(routePlan?.estimated_time_minutes ?? 135) % 60}m
           </p>
           <span className="text-[11px] text-amber-700 font-medium">
@@ -259,7 +259,7 @@ export const RouteOptimizationMap: React.FC = () => {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-emerald-700" />
-            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+            <h4 className="text-xs font-medium text-slate-800 uppercase tracking-wider">
               Active Optimization Constraints (Google OR-Tools Formulation)
             </h4>
           </div>
@@ -275,7 +275,7 @@ export const RouteOptimizationMap: React.FC = () => {
               className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-800">{constraint.name}</span>
+                <span className="text-xs font-medium text-slate-800">{constraint.name}</span>
                 <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
                   {constraint.status}
                 </span>
@@ -398,7 +398,7 @@ export const RouteOptimizationMap: React.FC = () => {
               <span className="w-2.5 h-2.5 rounded-full bg-blue-400" />
               <span>Buyer Wholesale Drop</span>
             </span>
-            <span className="text-emerald-400 font-mono font-bold">
+            <span className="text-emerald-400 font-mono font-medium">
               Payload: {totalConsolidatedCargoKg.toLocaleString()} / {vehicleCapacityKg.toLocaleString()} kg
             </span>
           </div>
@@ -407,7 +407,7 @@ export const RouteOptimizationMap: React.FC = () => {
         {/* Right: Waypoint Sequence List */}
         <div className="lg:col-span-5 p-6 bg-slate-50 space-y-3">
           <div className="flex items-center justify-between">
-            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <h4 className="text-xs font-medium text-slate-400 uppercase tracking-wider">
               Sequenced Stops & Unloading
             </h4>
             <span className="text-[11px] text-slate-500 font-mono">
@@ -431,12 +431,12 @@ export const RouteOptimizationMap: React.FC = () => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center text-white ${
+                      <span className={`w-5 h-5 rounded-full text-[10px] font-medium flex items-center justify-center text-white ${
                         stop.type === 'PICKUP' ? 'bg-emerald-700' : stop.type === 'HUB' ? 'bg-teal-700' : 'bg-blue-700'
                       }`}>
                         {stop.stopOrder}
                       </span>
-                      <span className="text-xs font-bold text-slate-900 truncate max-w-[200px]" title={stop.name}>
+                      <span className="text-xs font-medium text-slate-900 truncate max-w-[200px]" title={stop.name}>
                         {stop.name}
                       </span>
                     </div>

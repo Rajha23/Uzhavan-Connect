@@ -121,7 +121,7 @@ export const OrdersPage: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Order Fulfillment & Tracking</h1>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">Order Fulfillment & Tracking</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             End-to-end transaction lifecycle from crop reservation to delivery and settlement
           </p>
@@ -130,7 +130,7 @@ export const OrdersPage: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setActiveTab('smart-matching')}
-            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-sm flex items-center gap-1.5"
+            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition shadow-sm flex items-center gap-1.5"
           >
             <span>Match More Produce</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -148,7 +148,7 @@ export const OrdersPage: React.FC = () => {
         ].map((card) => (
           <div key={card.label} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
             <p className="text-xs text-slate-500">{card.label}</p>
-            <p className={`text-xl font-bold font-mono mt-1 ${card.color}`}>{card.value}</p>
+            <p className={`text-xl font-semibold font-mono mt-1 ${card.color}`}>{card.value}</p>
           </div>
         ))}
       </div>
@@ -170,7 +170,7 @@ export const OrdersPage: React.FC = () => {
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`px-3.5 py-2 text-xs font-semibold rounded-xl border transition ${
+              className={`px-3.5 py-2 text-xs font-medium rounded-xl border transition ${
                 filter === s
                   ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
                   : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300'
@@ -187,7 +187,7 @@ export const OrdersPage: React.FC = () => {
         {filtered.length === 0 ? (
           <div className="py-16 text-center">
             <Package className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-            <p className="text-sm font-semibold text-slate-600">No matching orders found</p>
+            <p className="text-sm font-medium text-slate-600">No matching orders found</p>
             <p className="text-xs text-slate-400 mt-1">Try changing search filters or create a new order via Smart Matching</p>
           </div>
         ) : (
@@ -206,26 +206,26 @@ export const OrdersPage: React.FC = () => {
                     className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0 font-bold">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0 font-medium">
                         <Package className="w-5 h-5" />
                       </div>
 
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-slate-900">{order.id}</span>
+                          <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
                           <span className="text-slate-300">•</span>
-                          <span className="font-mono text-[11px] text-slate-500 font-semibold">{order.batchId}</span>
-                          <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${STATUS_STYLES[order.status] || 'bg-slate-100 text-slate-700'}`}>
+                          <span className="font-mono text-[11px] text-slate-500 font-medium">{order.batchId}</span>
+                          <span className={`text-[10px] font-medium px-2.5 py-0.5 rounded-full border ${STATUS_STYLES[order.status] || 'bg-slate-100 text-slate-700'}`}>
                             {order.status}
                           </span>
                         </div>
 
-                        <h4 className="text-sm font-bold text-slate-900 mt-1">
+                        <h4 className="text-sm font-medium text-slate-900 mt-1">
                           {order.crop} ({order.variety || 'Hybrid'}) • {order.quantityKg.toLocaleString()} kg @ ₹{order.pricePerKg}/kg
                         </h4>
 
                         <p className="text-xs text-slate-500 mt-0.5">
-                          From: <strong className="text-slate-700">{order.farmerName}</strong> ({order.farmerLocation}) ➔ To: <strong className="text-slate-700">{order.buyerName}</strong> ({order.deliveryLocation})
+                          From: <strong className="text-slate-700 font-medium">{order.farmerName}</strong> ({order.farmerLocation}) ➔ To: <strong className="text-slate-700 font-medium">{order.buyerName}</strong> ({order.deliveryLocation})
                         </p>
                       </div>
                     </div>
@@ -234,7 +234,7 @@ export const OrdersPage: React.FC = () => {
                     <div className="flex items-center gap-4 self-end md:self-center">
                       <div className="text-right">
                         <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Order Value</span>
-                        <span className="text-base font-black font-mono text-slate-900">₹{order.totalValue.toLocaleString()}</span>
+                        <span className="text-base font-semibold font-mono text-slate-900">₹{order.totalValue.toLocaleString()}</span>
                       </div>
 
                       {/* Interactive Buyer Acceptance Button */}
@@ -244,7 +244,7 @@ export const OrdersPage: React.FC = () => {
                             e.stopPropagation();
                             openVerifyModal(order);
                           }}
-                          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1.5 animate-pulse"
+                          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5 animate-pulse"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>Accept & Confirm</span>
@@ -252,7 +252,7 @@ export const OrdersPage: React.FC = () => {
                       )}
 
                       {order.buyerConfirmation && (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 px-3 py-1.5 rounded-xl">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-800 bg-emerald-50 border border-emerald-300 px-3 py-1.5 rounded-xl">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                           <span>Receipt Confirmed ({order.buyerConfirmation.acceptedQuantityKg} kg)</span>
                         </span>
@@ -265,7 +265,7 @@ export const OrdersPage: React.FC = () => {
                             e.stopPropagation();
                             setActiveTab('settlement');
                           }}
-                          className="px-3 py-1.5 bg-forest text-cream hover:bg-forest/90 text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1"
+                          className="px-3 py-1.5 bg-forest text-cream hover:bg-forest/90 text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1"
                         >
                           <CreditCard className="w-3.5 h-3.5" />
                           <span>{isCompleted ? 'Receipt' : 'Escrow Payout'}</span>
@@ -295,24 +295,24 @@ export const OrdersPage: React.FC = () => {
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* 1. Transaction Details */}
                         <div className="bg-white p-4 rounded-xl border border-slate-200 text-xs space-y-2">
-                          <h5 className="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2">Transaction Metadata</h5>
+                          <h5 className="font-medium text-slate-900 text-xs uppercase tracking-wider mb-2">Transaction Metadata</h5>
                           <div className="flex justify-between text-slate-600">
                             <span>Agreement ID:</span>
-                            <strong className="font-mono text-slate-800">{order.agreementId || 'AGR-DIRECT'}</strong>
+                            <strong className="font-mono text-slate-800 font-medium">{order.agreementId || 'AGR-DIRECT'}</strong>
                           </div>
                           <div className="flex justify-between text-slate-600">
                             <span>Quality Grade:</span>
-                            <strong className="text-emerald-800">{order.qualityGrade}</strong>
+                            <strong className="text-emerald-800 font-medium">{order.qualityGrade}</strong>
                           </div>
                           <div className="flex justify-between text-slate-600">
                             <span>Order Date:</span>
-                            <strong className="text-slate-800">{order.date}</strong>
+                            <strong className="text-slate-800 font-medium">{order.date}</strong>
                           </div>
                           <div className="flex justify-between text-slate-600">
                             <span>Batch QR:</span>
                             <button
                               onClick={() => openPassportModal(order.batchId)}
-                              className="text-emerald-700 font-bold hover:underline flex items-center gap-1"
+                              className="text-emerald-700 font-medium hover:underline flex items-center gap-1"
                             >
                               <span>{order.batchId}</span>
                               <ExternalLink className="w-3 h-3" />
@@ -320,51 +320,51 @@ export const OrdersPage: React.FC = () => {
                           </div>
                           {order.transportDetails && (
                             <div className="mt-3 pt-3 border-t border-slate-100 space-y-1">
-                              <span className="font-bold text-slate-800 block">Assigned Transport:</span>
-                              <p className="text-[11px] text-slate-600">
+                              <span className="font-medium text-slate-800 block">Assigned Transport:</span>
+                              <p className="text-[11px] text-slate-600 font-normal">
                                 {order.transportDetails.carrierName} • {order.transportDetails.vehicleNumber} ({order.transportDetails.vehicleType})
                               </p>
-                              <p className="text-[11px] text-slate-500">Driver: {order.transportDetails.driverName}</p>
+                              <p className="text-[11px] text-slate-500 font-normal">Driver: {order.transportDetails.driverName}</p>
                             </div>
                           )}
                         </div>
 
                         {/* 2. Quality Metrics if checked */}
                         <div className="bg-white p-4 rounded-xl border border-slate-200 text-xs space-y-2">
-                          <h5 className="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2">Quality & Grading Verification</h5>
+                          <h5 className="font-medium text-slate-900 text-xs uppercase tracking-wider mb-2">Quality & Grading Verification</h5>
                           {order.inspectionMetrics ? (
                             <div className="space-y-1.5 text-slate-600">
                               <div className="flex justify-between">
                                 <span>Sugar Content (Brix):</span>
-                                <strong className="text-slate-800">{order.inspectionMetrics.sugarBrix}° Bx</strong>
+                                <strong className="text-slate-800 font-medium">{order.inspectionMetrics.sugarBrix}° Bx</strong>
                               </div>
                               <div className="flex justify-between">
                                 <span>Firmness:</span>
-                                <strong className="text-slate-800">{order.inspectionMetrics.firmnessKgCm} kg/cm²</strong>
+                                <strong className="text-slate-800 font-medium">{order.inspectionMetrics.firmnessKgCm} kg/cm²</strong>
                               </div>
                               <div className="flex justify-between">
                                 <span>Moisture:</span>
-                                <strong className="text-slate-800">{order.inspectionMetrics.moistureContent}</strong>
+                                <strong className="text-slate-800 font-medium">{order.inspectionMetrics.moistureContent}</strong>
                               </div>
                               <div className="flex justify-between">
                                 <span>Pesticide Residue:</span>
-                                <strong className="text-emerald-700 font-bold">{order.inspectionMetrics.pesticideResidueTest}</strong>
+                                <strong className="text-emerald-700 font-semibold">{order.inspectionMetrics.pesticideResidueTest}</strong>
                               </div>
-                              <div className="mt-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500">
-                                Certified by: <strong className="text-slate-700">{order.inspectionMetrics.inspectorName}</strong> ({order.inspectionMetrics.hubLocation})
+                              <div className="mt-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500 font-normal">
+                                Certified by: <strong className="text-slate-700 font-medium">{order.inspectionMetrics.inspectorName}</strong> ({order.inspectionMetrics.hubLocation})
                               </div>
                             </div>
                           ) : (
                             <div className="py-6 text-center text-slate-400">
                               <ShieldCheck className="w-6 h-6 mx-auto mb-1 text-slate-300" />
-                              <p className="text-[11px]">Quality inspection pending at FPO Aggregation Hub</p>
+                              <p className="text-[11px] font-normal">Quality inspection pending at FPO Aggregation Hub</p>
                             </div>
                           )}
                         </div>
 
                         {/* 3. Real-Time Workflow Timeline */}
                         <div className="bg-white p-4 rounded-xl border border-slate-200 text-xs">
-                          <h5 className="font-bold text-slate-900 text-xs uppercase tracking-wider mb-3">Workflow Lifecycle Events</h5>
+                          <h5 className="font-medium text-slate-900 text-xs uppercase tracking-wider mb-3">Workflow Lifecycle Events</h5>
                           <div className="space-y-3 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
                             {order.timeline.map((event, idx) => (
                               <div key={idx} className="flex items-start gap-3 relative">
@@ -378,14 +378,14 @@ export const OrdersPage: React.FC = () => {
                                   {event.completed && <CheckCircle2 className="w-3 h-3" />}
                                 </div>
                                 <div className="space-y-0.5">
-                                  <p className={`text-xs font-bold ${event.completed ? 'text-slate-900' : 'text-slate-400'}`}>
+                                  <p className={`text-xs font-medium ${event.completed ? 'text-slate-900' : 'text-slate-400'}`}>
                                     {event.title}
                                   </p>
-                                  <p className="text-[10px] text-slate-500">
+                                  <p className="text-[10px] text-slate-500 font-normal">
                                     {event.location} • <span className="font-mono">{event.timestamp}</span>
                                   </p>
                                   {event.operator && (
-                                    <p className="text-[10px] text-slate-400">By: {event.operator}</p>
+                                    <p className="text-[10px] text-slate-400 font-normal">By: {event.operator}</p>
                                   )}
                                 </div>
                               </div>
@@ -412,17 +412,17 @@ export const OrdersPage: React.FC = () => {
                   <FileCheck2 className="w-6 h-6 text-emerald-700" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xl font-semibold text-slate-900 tracking-tight">
                     Dockside Produce Inspection & Receiving Handover
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Order <span className="font-mono font-bold text-slate-800">{verifyOrder.id}</span> • Batch <span className="font-mono font-bold text-slate-800">{verifyOrder.batchId}</span>
+                    Order <span className="font-mono font-medium text-slate-800">{verifyOrder.id}</span> • Batch <span className="font-mono font-medium text-slate-800">{verifyOrder.batchId}</span>
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setVerifyOrder(null)}
-                className="text-slate-400 hover:text-slate-600 text-lg font-bold"
+                className="text-slate-400 hover:text-slate-600 text-lg font-medium"
               >
                 ✕
               </button>
@@ -431,30 +431,30 @@ export const OrdersPage: React.FC = () => {
             {/* Shipment Summary */}
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
               <div>
-                <span className="text-[10px] text-slate-400 font-bold uppercase block">Produce</span>
-                <strong className="text-slate-800 text-sm">{verifyOrder.crop}</strong>
-                <span className="text-[10px] text-slate-500 block">({verifyOrder.variety})</span>
+                <span className="text-[10px] text-slate-400 font-medium uppercase block">Produce</span>
+                <strong className="text-slate-800 text-sm font-medium">{verifyOrder.crop}</strong>
+                <span className="text-[10px] text-slate-500 block font-normal">({verifyOrder.variety})</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 font-bold uppercase block">Delivered Volume</span>
-                <strong className="text-slate-800 text-sm">
+                <span className="text-[10px] text-slate-400 font-medium uppercase block">Delivered Volume</span>
+                <strong className="text-slate-800 text-sm font-semibold">
                   {(verifyOrder.packedQuantityKg || verifyOrder.quantityKg).toLocaleString()} kg
                 </strong>
-                <span className="text-[10px] text-slate-500 block">
+                <span className="text-[10px] text-slate-500 block font-normal">
                   {verifyOrder.crateCount || Math.ceil((verifyOrder.packedQuantityKg || verifyOrder.quantityKg) / 25)} Crates
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 font-bold uppercase block">Contract Rate</span>
-                <strong className="text-slate-800 text-sm">₹{verifyOrder.pricePerKg}/kg</strong>
-                <span className="text-[10px] text-slate-500 block">Grade {verifyOrder.qualityGrade || 'A'}</span>
+                <span className="text-[10px] text-slate-400 font-medium uppercase block">Contract Rate</span>
+                <strong className="text-slate-800 text-sm font-semibold">₹{verifyOrder.pricePerKg}/kg</strong>
+                <span className="text-[10px] text-slate-500 block font-normal">Grade {verifyOrder.qualityGrade || 'A'}</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 font-bold uppercase block">Inbound Carrier</span>
-                <strong className="text-slate-800 text-xs truncate block">
+                <span className="text-[10px] text-slate-400 font-medium uppercase block">Inbound Carrier</span>
+                <strong className="text-slate-800 text-xs truncate block font-medium">
                   {verifyOrder.transportDetails?.carrierName || 'Cold-Chain Express'}
                 </strong>
-                <span className="text-[10px] text-slate-500 block">
+                <span className="text-[10px] text-slate-500 block font-normal">
                   {verifyOrder.transportDetails?.vehicleNumber || 'TN-38-BZ-4419'}
                 </span>
               </div>
@@ -463,7 +463,7 @@ export const OrdersPage: React.FC = () => {
             <form onSubmit={handleConfirmVerification} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
+                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
                     Gross Received (kg)
                   </label>
                   <input
@@ -474,13 +474,13 @@ export const OrdersPage: React.FC = () => {
                       setReceivedKg(val);
                       setAcceptedKg(Math.max(0, val - rejectedKg));
                     }}
-                    className="w-full bg-white border border-slate-200 rounded-xl p-2.5 font-bold text-base text-slate-900 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-white border border-slate-200 rounded-xl p-2.5 font-medium text-base text-slate-900 focus:outline-none focus:border-emerald-500"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="font-bold text-emerald-800 uppercase tracking-wider block mb-1 text-[10px]">
+                  <label className="font-medium text-emerald-800 uppercase tracking-wider block mb-1 text-[10px]">
                     Accepted Volume (kg)
                   </label>
                   <input
@@ -494,13 +494,13 @@ export const OrdersPage: React.FC = () => {
                       else if (val > 0) setAcceptanceStatus('ACCEPTED_PARTIAL');
                       else setAcceptanceStatus('REJECTED');
                     }}
-                    className="w-full bg-white border border-emerald-400 rounded-xl p-2.5 font-bold text-base text-emerald-800 focus:outline-none focus:border-emerald-600"
+                    className="w-full bg-white border border-emerald-400 rounded-xl p-2.5 font-medium text-base text-emerald-800 focus:outline-none focus:border-emerald-600"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="font-bold text-red-700 uppercase tracking-wider block mb-1 text-[10px]">
+                  <label className="font-medium text-red-700 uppercase tracking-wider block mb-1 text-[10px]">
                     Rejected (kg)
                   </label>
                   <input
@@ -514,13 +514,13 @@ export const OrdersPage: React.FC = () => {
                       else if (val >= receivedKg) setAcceptanceStatus('REJECTED');
                       else setAcceptanceStatus('ACCEPTED_PARTIAL');
                     }}
-                    className="w-full bg-white border border-red-200 rounded-xl p-2.5 font-bold text-base text-red-700 focus:outline-none focus:border-red-400"
+                    className="w-full bg-white border border-red-200 rounded-xl p-2.5 font-medium text-base text-red-700 focus:outline-none focus:border-red-400"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">
+                <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">
                   Quality Gate Signoff Decision
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -546,14 +546,14 @@ export const OrdersPage: React.FC = () => {
                       className={`p-3 rounded-xl border text-left transition ${
                         acceptanceStatus === opt.id
                           ? opt.id === 'ACCEPTED_FULL'
-                            ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold'
+                            ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-medium'
                             : opt.id === 'ACCEPTED_PARTIAL'
-                            ? 'bg-amber-50 border-amber-500 text-amber-900 font-bold'
-                            : 'bg-red-50 border-red-500 text-red-900 font-bold'
+                            ? 'bg-amber-50 border-amber-500 text-amber-900 font-medium'
+                            : 'bg-red-50 border-red-500 text-red-900 font-medium'
                           : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                       }`}
                     >
-                      <p className="font-bold text-xs">{opt.label}</p>
+                      <p className="font-medium text-xs">{opt.label}</p>
                       <p className="text-[10px] opacity-75 mt-0.5">{opt.desc}</p>
                     </button>
                   ))}
@@ -561,53 +561,53 @@ export const OrdersPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
+                <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
                   Receiving Inspection Remarks & Cold-Chain Observations
                 </label>
                 <textarea
                   value={issuesReported}
                   onChange={(e) => setIssuesReported(e.target.value)}
                   rows={2}
-                  className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-800 font-medium focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-800 font-normal focus:outline-none focus:border-emerald-500"
                   placeholder="Record cold-chain temp log, crate condition, or defect notes..."
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
+                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
                     Receiving Officer Name
                   </label>
                   <input
                     type="text"
                     value={receiverName}
                     onChange={(e) => setReceiverName(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-xl p-2.5 font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-white border border-slate-200 rounded-xl p-2.5 font-medium text-slate-800 focus:outline-none focus:border-emerald-500"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
+                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
                     Officer Designation
                   </label>
                   <input
                     type="text"
                     value={receiverRole}
                     onChange={(e) => setReceiverRole(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-xl p-2.5 font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-white border border-slate-200 rounded-xl p-2.5 font-medium text-slate-800 focus:outline-none focus:border-emerald-500"
                     required
                   />
                 </div>
               </div>
 
               <div className="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200 text-xs text-emerald-950 space-y-1">
-                <div className="flex items-center gap-2 font-bold text-emerald-900">
+                <div className="flex items-center gap-2 font-medium text-emerald-900">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
                   <span>Transparent Escrow Payout Impact</span>
                 </div>
                 <p className="text-[11px] leading-relaxed">
-                  Signing locks accepted volume at <strong>{acceptedKg.toLocaleString()} kg</strong> (₹{(acceptedKg * verifyOrder.pricePerKg).toLocaleString()}).
+                  Signing locks accepted volume at <strong className="font-medium">{acceptedKg.toLocaleString()} kg</strong> (₹{(acceptedKg * verifyOrder.pricePerKg).toLocaleString()}).
                   Escrow automatically releases 89% to member farmers / FPO and 8% to cold-chain logistics.
                 </p>
               </div>
@@ -616,13 +616,13 @@ export const OrdersPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setVerifyOrder(null)}
-                  className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl font-bold uppercase tracking-wider transition"
+                  className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl font-medium uppercase tracking-wider transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-xs transition uppercase tracking-wider flex items-center gap-1.5"
+                  className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-xl shadow-xs transition uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
                 >
                   <FileCheck2 className="w-4 h-4" />
                   <span>Confirm Receipt & Release Escrow</span>

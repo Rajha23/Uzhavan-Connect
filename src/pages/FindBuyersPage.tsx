@@ -90,11 +90,11 @@ export const FindBuyersPage: React.FC = () => {
       {/* Header */}
       <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-md border border-emerald-900/40">
         <div>
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
             <Search className="w-4 h-4 text-emerald-400" />
             <span>Direct Buyer Requirements & Contracts</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
             Find Buyers & Direct Demands
           </h1>
           <p className="text-sm text-slate-300 mt-2 font-normal">
@@ -104,7 +104,7 @@ export const FindBuyersPage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('demand-forecast')}
-          className="self-start sm:self-auto bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/20 transition uppercase tracking-wider"
+          className="self-start sm:self-auto bg-white/10 hover:bg-white/20 text-white text-xs font-medium px-4 py-2.5 rounded-xl border border-white/20 transition uppercase tracking-wider cursor-pointer"
         >
           Check Today's Demand Forecast →
         </button>
@@ -114,11 +114,11 @@ export const FindBuyersPage: React.FC = () => {
         <div className="p-5 bg-sage/20 border border-sage/60 text-forest rounded-[1.5rem] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
           <div className="flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-forest shrink-0" />
-            <span className="text-xs font-bold">{offerSuccess}</span>
+            <span className="text-xs font-medium">{offerSuccess}</span>
           </div>
           <button
             onClick={() => setActiveTab('orders')}
-            className="px-4 py-2 bg-forest text-cream text-[10px] font-bold uppercase tracking-widest rounded-[0.8rem] shadow-sm hover:bg-[#023120] transition whitespace-nowrap self-start sm:self-auto"
+            className="px-4 py-2 bg-forest text-cream text-[10px] font-medium uppercase tracking-widest rounded-[0.8rem] shadow-sm hover:bg-[#023120] transition whitespace-nowrap self-start sm:self-auto cursor-pointer"
           >
             Track in Orders Pipeline →
           </button>
@@ -129,12 +129,12 @@ export const FindBuyersPage: React.FC = () => {
       <div className="bg-cream rounded-[2.5rem] border border-olive/30 shadow-forest p-8 space-y-6">
         <div className="flex items-center justify-between border-b border-olive/20 pb-4">
           <div>
-            <h3 className="text-2xl font-bold text-forest">
+            <h3 className="text-2xl font-semibold text-forest">
               Direct Buyer Offers for Your Produce
             </h3>
-            <p className="text-xs text-forest/60 mt-1 font-bold uppercase tracking-widest">Retailers bidding directly on your listings</p>
+            <p className="text-xs text-forest/60 mt-1 font-medium uppercase tracking-widest">Retailers bidding directly on your listings</p>
           </div>
-          <span className="text-[10px] font-bold text-forest bg-sage/30 px-3 py-1 rounded-full border border-sage/50 uppercase tracking-widest">
+          <span className="text-[10px] font-medium text-forest bg-sage/30 px-3 py-1 rounded-full border border-sage/50 uppercase tracking-widest">
             {offers.filter((o) => o.status === 'PENDING').length} Pending
           </span>
         </div>
@@ -154,8 +154,8 @@ export const FindBuyersPage: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h4 className="font-extrabold text-lg text-slate-900 tracking-tight">{off.buyerName}</h4>
-                    <span className="text-[9px] bg-slate-900 text-emerald-400 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    <h4 className="font-medium text-lg text-slate-900 tracking-tight">{off.buyerName}</h4>
+                    <span className="text-[9px] bg-slate-900 text-emerald-400 font-medium px-2 py-0.5 rounded-full uppercase tracking-wider">
                       VERIFIED BUYER
                     </span>
                   </div>
@@ -163,34 +163,34 @@ export const FindBuyersPage: React.FC = () => {
                 </div>
 
                 <div className="text-right">
-                  <span className="text-xl font-extrabold text-slate-900 tracking-tight">₹{off.offeredPricePerKg}<span className="text-xs font-normal text-slate-500">/kg</span></span>
-                  <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">{off.quantityKg.toLocaleString()} kg</span>
+                  <span className="text-xl font-semibold text-slate-900 tracking-tight">₹{off.offeredPricePerKg}<span className="text-xs font-normal text-slate-500">/kg</span></span>
+                  <span className="text-[11px] text-slate-500 font-medium uppercase tracking-wider block">{off.quantityKg.toLocaleString()} kg</span>
                 </div>
               </div>
 
               <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
                 <span className="text-slate-600 font-medium uppercase tracking-wider text-[11px]">
-                  Total Value: <strong className="text-slate-900 text-sm font-bold">₹{(off.quantityKg * off.offeredPricePerKg).toLocaleString()}</strong>
+                  Total Value: <strong className="text-slate-900 text-sm font-medium">₹{(off.quantityKg * off.offeredPricePerKg).toLocaleString()}</strong>
                 </span>
 
                 {off.status === 'PENDING' ? (
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleAcceptOffer(off)}
-                      className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl shadow-xs transition uppercase tracking-wider text-xs"
+                      className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-medium rounded-xl shadow-xs transition uppercase tracking-wider text-xs cursor-pointer"
                     >
                       Accept & Contract
                     </button>
                     <button
                       onClick={() => handleRejectOffer(off.id)}
-                      className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition uppercase tracking-wider text-xs"
+                      className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition uppercase tracking-wider text-xs cursor-pointer"
                     >
                       Decline
                     </button>
                   </div>
                 ) : (
                   <span
-                    className={`font-bold px-3 py-1 rounded-full text-[10px] uppercase tracking-wider ${
+                    className={`font-medium px-3 py-1 rounded-full text-[10px] uppercase tracking-wider ${
                       off.status === 'ACCEPTED'
                         ? 'bg-emerald-100 text-emerald-800'
                         : 'bg-rose-100 text-rose-800'
@@ -207,7 +207,7 @@ export const FindBuyersPage: React.FC = () => {
 
       {/* 2. Active Buyer Demands */}
       <div className="space-y-4">
-        <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">
+        <h3 className="text-xl font-semibold text-slate-900 tracking-tight">
           Active Forward Procurement Demands
         </h3>
 
@@ -219,42 +219,42 @@ export const FindBuyersPage: React.FC = () => {
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 uppercase tracking-wider">
+                  <span className="text-[9px] font-medium text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 uppercase tracking-wider">
                     BUYER DEMAND
                   </span>
-                  <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                  <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
                     {opp.quality}
                   </span>
                 </div>
 
                 <div>
-                  <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{opp.crop}</h4>
+                  <h4 className="text-xl font-medium text-slate-900 tracking-tight">{opp.crop}</h4>
                   <p className="text-xs text-slate-600 font-normal mt-1">Buyer: <strong className="text-slate-800">{opp.buyerName}</strong></p>
                 </div>
 
-                <div className="space-y-2 text-xs text-slate-700 bg-slate-50/80 p-4 rounded-xl border border-slate-200/80 font-medium">
+                <div className="space-y-2 text-xs text-slate-700 bg-slate-50/80 p-4 rounded-xl border border-slate-200/80 font-normal">
                   <div className="flex justify-between items-center border-b border-slate-200/60 pb-2">
-                    <span className="uppercase tracking-wider text-[10px] font-semibold text-slate-500">Required:</span>
-                    <strong className="text-slate-900 text-sm font-bold">{opp.requiredQuantityKg.toLocaleString()} kg</strong>
+                    <span className="uppercase tracking-wider text-[10px] font-medium text-slate-500">Required:</span>
+                    <strong className="text-slate-900 text-sm font-medium">{opp.requiredQuantityKg.toLocaleString()} kg</strong>
                   </div>
                   <div className="flex justify-between items-center border-b border-slate-200/60 py-2">
-                    <span className="uppercase tracking-wider text-[10px] font-semibold text-slate-500">Max Price:</span>
-                    <strong className="text-slate-900 text-sm font-bold">₹{opp.maxPricePerKg} / kg</strong>
+                    <span className="uppercase tracking-wider text-[10px] font-medium text-slate-500">Max Price:</span>
+                    <strong className="text-slate-900 text-sm font-medium">₹{opp.maxPricePerKg} / kg</strong>
                   </div>
                   <div className="flex justify-between items-center border-b border-slate-200/60 py-2">
-                    <span className="uppercase tracking-wider text-[10px] font-semibold text-slate-500">Location:</span>
+                    <span className="uppercase tracking-wider text-[10px] font-medium text-slate-500">Location:</span>
                     <span>{opp.location}</span>
                   </div>
                   <div className="flex justify-between items-center pt-2">
-                    <span className="uppercase tracking-wider text-[10px] font-semibold text-slate-500">Req Date:</span>
-                    <strong className="text-slate-900 font-bold">{opp.requiredDate}</strong>
+                    <span className="uppercase tracking-wider text-[10px] font-medium text-slate-500">Req Date:</span>
+                    <strong className="text-slate-900 font-medium">{opp.requiredDate}</strong>
                   </div>
                 </div>
               </div>
 
               <button
                 onClick={() => handleMakeOffer(opp)}
-                className="w-full py-2.5 bg-slate-900 hover:bg-emerald-950 text-white font-bold rounded-xl text-xs transition shadow-2xs uppercase tracking-wider mt-2"
+                className="w-full py-2.5 bg-slate-900 hover:bg-emerald-950 text-white font-medium rounded-xl text-xs transition shadow-2xs uppercase tracking-wider mt-2 cursor-pointer"
               >
                 Make Offer
               </button>

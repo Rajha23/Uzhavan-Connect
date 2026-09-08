@@ -92,21 +92,21 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
         <div>
           {/* Uzhavan Connect Brand Header */}
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-11 h-11 rounded-xl bg-emerald-700 flex items-center justify-center text-white font-bold shadow-md shadow-emerald-900/10">
+            <div className="w-11 h-11 rounded-xl bg-emerald-700 flex items-center justify-center text-white font-medium shadow-md shadow-emerald-900/10">
               <Sprout className="w-6 h-6" />
             </div>
             <div>
-              <span className="text-xl font-bold tracking-tight text-slate-900 tracking-tight block">
+              <span className="text-xl font-medium tracking-tight text-slate-900 block">
                 Uzhavan Connect
               </span>
-              <span className="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider block">
+              <span className="text-[10px] text-emerald-700 font-medium uppercase tracking-wider block">
                 Ministry of Consumer Affairs • 
               </span>
             </div>
           </div>
 
           {/* Mode Switcher Tabs: Sign In | Create Account */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl mb-5 text-xs font-semibold">
+          <div className="flex items-center bg-slate-100 p-1 rounded-xl mb-5 text-xs font-medium">
             <button
               type="button"
               onClick={() => { setMode('LOGIN'); setRegSuccess(false); setErrorMsg(''); }}
@@ -135,14 +135,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
             <div className="p-4 bg-emerald-50 border border-emerald-300 rounded-2xl mb-4 flex items-center gap-3 text-xs text-emerald-900 animate-fadeIn">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
               <div>
-                <p className="font-bold text-emerald-800">Account Created Successfully!</p>
+                <p className="font-medium text-emerald-800">Account Created Successfully!</p>
                 <p className="text-emerald-700">Connecting to Uzhavan Connect network and redirecting...</p>
               </div>
             </div>
           )}
 
           {errorMsg && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl mb-4 text-xs font-semibold animate-fadeIn">
+            <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl mb-4 text-xs font-medium animate-fadeIn">
               {errorMsg}
             </div>
           )}
@@ -150,7 +150,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
           {mode === 'LOGIN' ? (
             <div>
               <div className="space-y-1 mb-5">
-                <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
                   Welcome to Uzhavan Connect
                 </h2>
                 <p className="text-xs text-slate-500">
@@ -218,7 +218,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-xs"
+                    className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-xl shadow-md transition flex items-center justify-center gap-2 text-xs"
                   >
                     <span>{isSubmitting ? 'Authenticating...' : 'Login to Uzhavan Connect'}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -230,7 +230,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
             /* Create Account Form */
             <div>
               <div className="space-y-1 mb-4">
-                <h2 className="text-xl font-bold tracking-tight text-slate-900">
+                <h2 className="text-xl font-semibold tracking-tight text-slate-900">
                   Create Your Account
                 </h2>
                 <p className="text-xs text-slate-500">
@@ -362,7 +362,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-xs"
+                    className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-xl shadow-md transition flex items-center justify-center gap-2 text-xs"
                   >
                     <UserPlus className="w-4 h-4" />
                     <span>{isSubmitting ? 'Creating Profile...' : 'Complete Registration'}</span>
@@ -379,7 +379,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
               <span>New to Uzhavan Connect?</span>
               <button
                 onClick={() => setMode('REGISTER')}
-                className="text-emerald-700 font-bold hover:underline"
+                className="text-emerald-700 font-medium hover:underline"
               >
                 Create Account
               </button>
@@ -389,7 +389,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
               <span>Already registered?</span>
               <button
                 onClick={() => setMode('LOGIN')}
-                className="text-emerald-700 font-bold hover:underline"
+                className="text-emerald-700 font-medium hover:underline"
               >
                 Continue to Sign In
               </button>
