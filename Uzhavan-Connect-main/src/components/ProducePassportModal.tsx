@@ -18,12 +18,12 @@ import {
 } from 'lucide-react';
 
 export const ProducePassportModal: React.FC = () => {
-  const { isPassportModalOpen, closePassportModal, selectedPassportBatchId } = useApp();
+  const { isPassportModalOpen, closePassportModal, selectedPassportBatchId, producePassports } = useApp();
   const [copied, setCopied] = useState(false);
 
   if (!isPassportModalOpen) return null;
 
-  const passport = DEMO_PRODUCE_PASSPORT;
+  const passport = producePassports.find((p) => p.batchId === selectedPassportBatchId) || DEMO_PRODUCE_PASSPORT;
 
   const handleCopy = () => {
     navigator.clipboard?.writeText(passport.qrCodeUrl);

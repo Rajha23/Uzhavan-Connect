@@ -18,7 +18,11 @@ import {
   AuditLogEntry,
   SystemUserRecord,
   UserRole,
-  Permission
+  Permission,
+  WorkflowOrder,
+  WorkflowAgreement,
+  QualityInspectionData,
+  TransportAssignment
 } from '../types';
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
@@ -508,7 +512,7 @@ export const DEMO_PRODUCE_PASSPORT: ProducePassport = {
 
 export const DEMO_SETTLEMENT: SettlementRecord = {
   id: 'SETTLE-2026-9082',
-  orderId: 'ORD-TN-3000-TOM',
+  orderId: 'ORD-TN-001',
   batchId: 'AGP-TOM-2026-001',
   crop: 'Tomato',
   quantityKg: 3000,
@@ -525,6 +529,320 @@ export const DEMO_SETTLEMENT: SettlementRecord = {
   settlementDate: '2026-09-06 07:12 AM',
   utrNumber: 'AGRITXN20260906881920'
 };
+
+export const INITIAL_ORDERS: WorkflowOrder[] = [
+  {
+    id: 'ORD-TN-001',
+    agreementId: 'AGR-TN-001',
+    produceListingId: 'LST-001',
+    demandRequestId: 'DEM-TN-001',
+    batchId: 'AGP-TOM-2026-001',
+    farmerId: 'usr-farmer-01',
+    farmerName: 'GreenHarvest FPO',
+    buyerId: 'BUYER-01',
+    buyerName: 'ABC Retail Stores',
+    crop: 'Tomato',
+    variety: 'Pusa Ruby Hybrid',
+    quantityKg: 3000,
+    pricePerKg: 28.0,
+    totalValue: 84000,
+    status: 'Delivered',
+    date: '08 Sep 2026',
+    deliveryLocation: 'Chennai ABC Retail Depot',
+    farmerLocation: 'Sunguvarchatram, Kanchipuram',
+    fpoName: 'GreenHarvest FPO',
+    qualityGrade: 'Standard',
+    inspectionMetrics: {
+      sugarBrix: 4.85,
+      firmnessKgCm: 3.42,
+      pesticideResidueTest: 'PASS - Organic / ND',
+      moistureContent: '94.2%',
+      verifiedGrade: 'Standard',
+      inspectorName: 'Dr. R. Malathi',
+      inspectionDate: '06 Sep 2026',
+      hubLocation: 'Sriperumbudur Rural Hub'
+    },
+    transportDetails: {
+      carrierName: 'Sundar Logistics',
+      vehicleNumber: 'TN-11-AGRI-4402',
+      driverName: 'Karthik S.',
+      driverPhone: '+91 98410 44021',
+      vehicleType: 'CoolReefer EV 3.5T',
+      assignedAt: '06 Sep 2026, 12:30 PM',
+      estimatedArrival: '07 Sep 2026, 06:00 AM'
+    },
+    timeline: [
+      { step: 'LISTED', title: 'Crop Listed', location: 'Sunguvarchatram Fields', timestamp: '05 Sep 2026, 08:00 AM', operator: 'Rajesh Kumar', completed: true },
+      { step: 'MATCHED', title: 'Matched & Agreed', location: 'Uzhavan AI Engine', timestamp: '05 Sep 2026, 11:30 AM', operator: 'System', completed: true },
+      { step: 'COLLECTED', title: 'Produce Collected', location: 'Farm Gate (Sunguvarchatram)', timestamp: '06 Sep 2026, 07:00 AM', operator: 'GreenHarvest FPO Team', completed: true },
+      { step: 'QUALITY_CHECKED', title: 'Quality Graded & Tested', location: 'Sriperumbudur Mobile Cell', timestamp: '06 Sep 2026, 08:30 AM', operator: 'Dr. R. Malathi', completed: true },
+      { step: 'PACKED', title: 'Crated & QR Generated', location: 'Sriperumbudur Rural Hub', timestamp: '06 Sep 2026, 11:00 AM', operator: 'FPO Packing Unit', completed: true },
+      { step: 'IN_TRANSIT', title: 'Transport Dispatched', location: 'NH-48 Expressway', timestamp: '06 Sep 2026, 04:30 PM', operator: 'Karthik S. (Sundar Logistics)', completed: true },
+      { step: 'DELIVERED', title: 'Delivered at Buyer Hub', location: 'Chennai ABC Retail Depot', timestamp: '07 Sep 2026, 06:15 AM', operator: 'Receiving Team', completed: true }
+    ],
+    settlementId: 'SETTLE-2026-9082'
+  },
+  {
+    id: 'ORD-TN-002',
+    agreementId: 'AGR-TN-002',
+    produceListingId: 'LST-002',
+    demandRequestId: 'DEM-TN-002',
+    batchId: 'AGP-TOM-2026-002',
+    farmerId: 'usr-farmer-02',
+    farmerName: 'Rajesh Kumar',
+    buyerId: 'BUYER-02',
+    buyerName: 'Grand Hospitality Group',
+    crop: 'Tomato',
+    variety: 'Roma Supreme',
+    quantityKg: 1500,
+    pricePerKg: 27.0,
+    totalValue: 40500,
+    status: 'In Transit',
+    date: '08 Sep 2026',
+    deliveryLocation: 'Grand Hospitality, Chennai',
+    farmerLocation: 'Salem Agricultural Belt',
+    fpoName: 'Salem Agro Producers Co.',
+    qualityGrade: 'Grade A',
+    inspectionMetrics: {
+      sugarBrix: 5.1,
+      firmnessKgCm: 3.8,
+      pesticideResidueTest: 'PASS - Organic / ND',
+      moistureContent: '92.5%',
+      verifiedGrade: 'Grade A',
+      inspectorName: 'S. Shanmugam',
+      inspectionDate: '07 Sep 2026',
+      hubLocation: 'Salem West Hub'
+    },
+    transportDetails: {
+      carrierName: 'Sundar Logistics',
+      vehicleNumber: 'TN-30-AGRI-1092',
+      driverName: 'Ganesan P.',
+      driverPhone: '+91 97890 22101',
+      vehicleType: 'Electric Reefer Van 2T',
+      assignedAt: '07 Sep 2026, 03:00 PM',
+      estimatedArrival: '08 Sep 2026, 07:30 AM'
+    },
+    timeline: [
+      { step: 'LISTED', title: 'Crop Listed', location: 'Salem Farm', timestamp: '06 Sep 2026', operator: 'Rajesh Kumar', completed: true },
+      { step: 'MATCHED', title: 'Matched & Agreed', location: 'Uzhavan AI Engine', timestamp: '06 Sep 2026', operator: 'System', completed: true },
+      { step: 'COLLECTED', title: 'Produce Collected', location: 'Salem Farm Gate', timestamp: '07 Sep 2026', operator: 'FPO Field Agent', completed: true },
+      { step: 'QUALITY_CHECKED', title: 'Quality Graded', location: 'Salem Agro Hub', timestamp: '07 Sep 2026', operator: 'S. Shanmugam', completed: true },
+      { step: 'PACKED', title: 'Crated & QR Generated', location: 'Salem Agro Hub', timestamp: '07 Sep 2026', operator: 'Packing Unit', completed: true },
+      { step: 'IN_TRANSIT', title: 'In Transit to Chennai', location: 'Salem-Chennai Highway', timestamp: '08 Sep 2026, 02:00 AM', operator: 'Ganesan P.', completed: true }
+    ]
+  },
+  {
+    id: 'ORD-TN-003',
+    produceListingId: 'LST-003',
+    demandRequestId: 'DEM-TN-003',
+    batchId: 'AGP-CAR-2026-003',
+    farmerId: 'usr-farmer-03',
+    farmerName: 'Murugan FPO',
+    buyerId: 'BUYER-03',
+    buyerName: 'Metro Cash & Carry',
+    crop: 'Carrot',
+    variety: 'Kuroda Select',
+    quantityKg: 1200,
+    pricePerKg: 24.0,
+    totalValue: 28800,
+    status: 'Packed',
+    date: '08 Sep 2026',
+    deliveryLocation: 'Metro Cash & Carry, T. Nagar, Chennai',
+    farmerLocation: 'Ooty / Nilgiris Foothills',
+    fpoName: 'Nilgiri Horticulture FPO',
+    qualityGrade: 'Grade A',
+    inspectionMetrics: {
+      sugarBrix: 8.4,
+      firmnessKgCm: 4.6,
+      pesticideResidueTest: 'PASS - Standard Compliant',
+      moistureContent: '88.0%',
+      verifiedGrade: 'Grade A',
+      inspectorName: 'V. Ramanathan',
+      inspectionDate: '08 Sep 2026',
+      hubLocation: 'Coimbatore Agro Junction'
+    },
+    timeline: [
+      { step: 'LISTED', title: 'Crop Listed', location: 'Nilgiri Terrace Farm', timestamp: '07 Sep 2026', operator: 'Murugan FPO', completed: true },
+      { step: 'MATCHED', title: 'Matched & Agreed', location: 'Uzhavan AI Engine', timestamp: '07 Sep 2026', operator: 'System', completed: true },
+      { step: 'COLLECTED', title: 'Produce Collected', location: 'Nilgiri Cluster Hub', timestamp: '08 Sep 2026, 06:00 AM', operator: 'FPO Logistics Unit', completed: true },
+      { step: 'QUALITY_CHECKED', title: 'Quality Graded & Certified', location: 'Nilgiri Mobile Lab', timestamp: '08 Sep 2026, 08:30 AM', operator: 'V. Ramanathan', completed: true },
+      { step: 'PACKED', title: 'Crated & Batch QR Generated', location: 'Hub Dispatch Bay 1', timestamp: '08 Sep 2026, 11:00 AM', operator: 'FPO Packing Unit', completed: true }
+    ]
+  },
+  {
+    id: 'ORD-TN-004',
+    produceListingId: 'LST-004',
+    demandRequestId: 'DEM-TN-004',
+    batchId: 'AGP-ONI-2026-004',
+    farmerId: 'usr-farmer-04',
+    farmerName: 'Kaveri Cluster',
+    buyerId: 'BUYER-04',
+    buyerName: 'Spencer\'s Retail',
+    crop: 'Onion',
+    variety: 'Nashik Red Hybrid',
+    quantityKg: 2000,
+    pricePerKg: 22.0,
+    totalValue: 44000,
+    status: 'Produce Collection Pending',
+    date: '08 Sep 2026',
+    deliveryLocation: 'Spencer\'s Retail, Vadapalani, Chennai',
+    farmerLocation: 'Dindigul Farmer Collective',
+    fpoName: 'Kaveri Valley FPO',
+    qualityGrade: 'Standard',
+    timeline: [
+      { step: 'LISTED', title: 'Crop Listed', location: 'Dindigul Farm Fields', timestamp: '08 Sep 2026, 07:00 AM', operator: 'Kaveri Cluster', completed: true },
+      { step: 'MATCHED', title: 'Matched & Order Created', location: 'Uzhavan AI Engine', timestamp: '08 Sep 2026, 09:30 AM', operator: 'System', completed: true },
+      { step: 'COLLECTED', title: 'Awaiting FPO Collection', location: 'Dindigul Farm Gate', timestamp: 'Pending', operator: 'FPO Collection Agent', completed: false }
+    ]
+  }
+];
+
+export const INITIAL_AGREEMENTS: WorkflowAgreement[] = [
+  {
+    id: 'AGR-TN-001',
+    demandRequestId: 'DEM-TN-001',
+    produceListingId: 'LST-001',
+    farmerId: 'usr-farmer-01',
+    farmerName: 'GreenHarvest FPO',
+    buyerId: 'BUYER-01',
+    buyerName: 'ABC Retail Stores',
+    crop: 'Tomato',
+    agreedQuantityKg: 3000,
+    agreedPricePerKg: 28.0,
+    totalAgreedValue: 84000,
+    agreementDate: '05 Sep 2026',
+    status: 'CONFIRMED'
+  },
+  {
+    id: 'AGR-TN-002',
+    demandRequestId: 'DEM-TN-002',
+    produceListingId: 'LST-002',
+    farmerId: 'usr-farmer-02',
+    farmerName: 'Rajesh Kumar',
+    buyerId: 'BUYER-02',
+    buyerName: 'Grand Hospitality Group',
+    crop: 'Tomato',
+    agreedQuantityKg: 1500,
+    agreedPricePerKg: 27.0,
+    totalAgreedValue: 40500,
+    agreementDate: '06 Sep 2026',
+    status: 'CONFIRMED'
+  }
+];
+
+export const INITIAL_PASSPORTS: ProducePassport[] = [
+  DEMO_PRODUCE_PASSPORT,
+  {
+    batchId: 'AGP-TOM-2026-002',
+    crop: 'Tomato',
+    variety: 'Roma Supreme',
+    farmerOrFpo: 'Rajesh Kumar & Salem Agro Producers',
+    farmLocation: 'Salem Agricultural Belt, Tamil Nadu',
+    harvestDate: '06 Sep 2026',
+    quantityKg: 1500,
+    qualityGrade: 'Grade A',
+    inspectionMetrics: {
+      sugarBrix: 5.1,
+      firmnessKgCm: 3.8,
+      pesticideResidueTest: 'PASS - Organic / ND',
+      moistureContent: '92.5%'
+    },
+    collectionHub: 'Salem West Hub (Bay 1)',
+    shipmentId: 'SHP-TN-9083',
+    vehicleNumber: 'TN-30-AGRI-1092',
+    destination: 'Grand Hospitality Central Commissary, Chennai',
+    qrCodeUrl: 'https://uzhavanconnect.gov.in/trace/AGP-TOM-2026-002',
+    currentStatus: 'In Transit',
+    timeline: [
+      { step: 'HARVESTED', title: 'Harvested at Source Farm', location: 'Salem Farm (Rajesh Kumar)', timestamp: '06 Sep 2026, 06:00 AM', operator: 'Rajesh Kumar', completed: true },
+      { step: 'QUALITY_CHECKED', title: 'Quality Checked & Certified', location: 'Salem Agro Hub', timestamp: '07 Sep 2026, 09:15 AM', operator: 'S. Shanmugam', completed: true },
+      { step: 'PACKED', title: 'Crated & Barcode Sealed', location: 'Salem Agro Hub', timestamp: '07 Sep 2026, 12:00 PM', operator: 'FPO Packing Unit', completed: true },
+      { step: 'IN_TRANSIT', title: 'En Route via Reefer EV', location: 'NH-44 / NH-48 Express Corridor', timestamp: '08 Sep 2026, 02:00 AM', operator: 'Driver: Ganesan P.', completed: true },
+      { step: 'DELIVERED', title: 'Awaiting Arrival at Buyer Depot', location: 'Grand Hospitality, Chennai', timestamp: 'ETA 08 Sep 2026, 07:30 AM', operator: 'Receiving Officer', completed: false }
+    ]
+  },
+  {
+    batchId: 'AGP-CAR-2026-003',
+    crop: 'Carrot',
+    variety: 'Kuroda Select',
+    farmerOrFpo: 'Murugan FPO & Nilgiri Farmers',
+    farmLocation: 'Nilgiri Foothills, Tamil Nadu',
+    harvestDate: '07 Sep 2026',
+    quantityKg: 1200,
+    qualityGrade: 'Grade A',
+    inspectionMetrics: {
+      sugarBrix: 8.4,
+      firmnessKgCm: 4.6,
+      pesticideResidueTest: 'PASS - Standard Compliant',
+      moistureContent: '88.0%'
+    },
+    collectionHub: 'Coimbatore Agro Junction',
+    shipmentId: 'SHP-TN-9084',
+    vehicleNumber: 'TN-38-AGRI-7721',
+    destination: 'Metro Cash & Carry, T. Nagar, Chennai',
+    qrCodeUrl: 'https://uzhavanconnect.gov.in/trace/AGP-CAR-2026-003',
+    currentStatus: 'Packed',
+    timeline: [
+      { step: 'HARVESTED', title: 'Harvested at Nilgiri Farm', location: 'Ooty Terrace', timestamp: '07 Sep 2026', operator: 'Murugan FPO', completed: true },
+      { step: 'QUALITY_CHECKED', title: 'Quality Certified', location: 'Nilgiri Mobile Lab', timestamp: '08 Sep 2026, 08:30 AM', operator: 'V. Ramanathan', completed: true },
+      { step: 'PACKED', title: 'Packed in Ventilated Crates', location: 'Hub Dispatch Bay 1', timestamp: '08 Sep 2026, 11:00 AM', operator: 'Packing Team', completed: true },
+      { step: 'IN_TRANSIT', title: 'Awaiting Transport Assignment', location: 'Hub Bay 1', timestamp: 'Scheduled', operator: 'Pending Logistics', completed: false },
+      { step: 'DELIVERED', title: 'Pending Delivery', location: 'Metro Cash & Carry', timestamp: 'Scheduled', operator: 'Pending', completed: false }
+    ]
+  },
+  {
+    batchId: 'AGP-ONI-2026-004',
+    crop: 'Onion',
+    variety: 'Nashik Red Hybrid',
+    farmerOrFpo: 'Kaveri Valley FPO & Cluster Farmers',
+    farmLocation: 'Dindigul Valley, Tamil Nadu',
+    harvestDate: '08 Sep 2026',
+    quantityKg: 2000,
+    qualityGrade: 'Standard',
+    inspectionMetrics: {
+      sugarBrix: 6.2,
+      firmnessKgCm: 4.1,
+      pesticideResidueTest: 'PASS - Organic / ND',
+      moistureContent: '85.5%'
+    },
+    collectionHub: 'Dindigul Central Agro-Hub',
+    shipmentId: 'SHP-TN-9085',
+    vehicleNumber: 'Pending Allocation',
+    destination: 'Spencer\'s Retail, Vadapalani, Chennai',
+    qrCodeUrl: 'https://uzhavanconnect.gov.in/trace/AGP-ONI-2026-004',
+    currentStatus: 'Harvested',
+    timeline: [
+      { step: 'HARVESTED', title: 'Harvested at Farm Gate', location: 'Dindigul Farm Fields', timestamp: '08 Sep 2026, 07:00 AM', operator: 'Kaveri Cluster Farmers', completed: true },
+      { step: 'QUALITY_CHECKED', title: 'Pending FPO Inspection', location: 'Dindigul Farm Gate', timestamp: 'Pending', operator: 'FPO Quality Inspector', completed: false },
+      { step: 'PACKED', title: 'Pending Crating', location: 'Hub', timestamp: 'Pending', operator: 'Packing Unit', completed: false },
+      { step: 'IN_TRANSIT', title: 'Pending Dispatch', location: 'Expressway', timestamp: 'Pending', operator: 'Carrier', completed: false },
+      { step: 'DELIVERED', title: 'Pending Arrival', location: 'Spencer\'s Retail', timestamp: 'Pending', operator: 'Buyer Receiving', completed: false }
+    ]
+  }
+];
+
+export const INITIAL_SETTLEMENTS: SettlementRecord[] = [
+  DEMO_SETTLEMENT,
+  {
+    id: 'SETTLE-2026-9083',
+    orderId: 'ORD-TN-002',
+    batchId: 'AGP-TOM-2026-002',
+    crop: 'Tomato',
+    quantityKg: 1500,
+    buyerName: 'Grand Hospitality Group',
+    farmerOrFpoName: 'Rajesh Kumar (Salem Agro)',
+    totalOrderValue: 40500,
+    farmerAmount: 36000,
+    logisticsAmount: 3300,
+    platformAmount: 1200,
+    farmerRealizationPercentage: 88.88,
+    traditionalFarmerEarnings: 27000,
+    earningsGainPercentage: 33.33,
+    status: 'PENDING',
+    settlementDate: 'Scheduled Upon Delivery Acceptance',
+    utrNumber: 'ESCROW_LOCKED_TXN9083'
+  }
+];
 
 export const CROP_RECOMMENDATIONS: CropRecommendation[] = [
   {

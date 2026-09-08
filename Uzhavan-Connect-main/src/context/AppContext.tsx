@@ -8,7 +8,14 @@ import {
   SystemUserRecord,
   ProduceListing,
   DemandRequest,
-  NetworkSyncStatus
+  NetworkSyncStatus,
+  WorkflowOrder,
+  WorkflowAgreement,
+  QualityInspectionData,
+  TransportAssignment,
+  ProducePassport,
+  SettlementRecord,
+  OrderTimelineEvent
 } from '../types';
 import {
   DEMO_USERS,
@@ -17,7 +24,11 @@ import {
   MARKET_PRICES_DATA,
   SYSTEM_USERS_DATA,
   INITIAL_FARMER_LISTINGS,
-  INITIAL_DEMAND_REQUESTS
+  INITIAL_DEMAND_REQUESTS,
+  INITIAL_ORDERS,
+  INITIAL_AGREEMENTS,
+  INITIAL_PASSPORTS,
+  INITIAL_SETTLEMENTS
 } from '../data/mockData';
 import { supabase } from '../lib/supabase';
 import { onInstallableChange, promptAppInstall } from '../services/serviceWorkerRegistration';
@@ -62,6 +73,24 @@ interface AppContextType {
   deleteProduceListing: (id: string) => void;
   addDemandRequest: (demand: DemandRequest) => void;
   deleteDemandRequest: (id: string) => void;
+  orders: WorkflowOrder[];
+  agreements: WorkflowAgreement[];
+  producePassports: ProducePassport[];
+  settlements: SettlementRecord[];
+  confirmMatchAndCreateOrder: (
+    listingId: string,
+    demandId: string,
+    agreedPrice?: number,
+    agreedQty?: number
+  ) => WorkflowOrder | null;
+  fpoCollectProduce: (orderId: string, hubLocation?: string) => void;
+  fpoQualityCheck: (orderId: string, metrics: QualityInspectionData) => void;
+  fpoPackProduce: (orderId: string, notes?: string) => void;
+  assignTransport: (orderId: string, transport: TransportAssignment) => void;
+  dispatchShipment: (orderId: string) => void;
+  markDelivered: (orderId: string) => void;
+  buyerConfirmReceipt: (orderId: string) => void;
+  settlePayment: (orderId: string) => void;
   isOnline: boolean;
   syncStatus: NetworkSyncStatus;
   pendingSyncCount: number;
@@ -147,6 +176,98 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       console.warn('Failed to persist demand requests to localStorage', e);
     }
   }, [demandRequests]);
+
+  // Persistent Orders
+  const [orders, setOrders] = useState<WorkflowOrder[]>(() => {
+    try {
+      const saved = localStorage.getItem('uzhavan_orders');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved orders from localStorage', e);
+    }
+    return INITIAL_ORDERS;
+  });
+
+  // Persistent Agreements
+  const [agreements, setAgreements] = useState<WorkflowAgreement[]>(() => {
+    try {
+      const saved = localStorage.getItem('uzhavan_agreements');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved agreements from localStorage', e);
+    }
+    return INITIAL_AGREEMENTS;
+  });
+
+  // Persistent Passports
+  const [producePassports, setProducePassports] = useState<ProducePassport[]>(() => {
+    try {
+      const saved = localStorage.getItem('uzhavan_passports');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved passports from localStorage', e);
+    }
+    return INITIAL_PASSPORTS;
+  });
+
+  // Persistent Settlements
+  const [settlements, setSettlements] = useState<SettlementRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem('uzhavan_settlements');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved settlements from localStorage', e);
+    }
+    return INITIAL_SETTLEMENTS;
+  });
+
+  // Automatically sync orders to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('uzhavan_orders', JSON.stringify(orders));
+    } catch (e) {
+      console.warn('Failed to persist orders to localStorage', e);
+    }
+  }, [orders]);
+
+  // Automatically sync agreements to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('uzhavan_agreements', JSON.stringify(agreements));
+    } catch (e) {
+      console.warn('Failed to persist agreements to localStorage', e);
+    }
+  }, [agreements]);
+
+  // Automatically sync produce passports to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('uzhavan_passports', JSON.stringify(producePassports));
+    } catch (e) {
+      console.warn('Failed to persist passports to localStorage', e);
+    }
+  }, [producePassports]);
+
+  // Automatically sync settlements to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('uzhavan_settlements', JSON.stringify(settlements));
+    } catch (e) {
+      console.warn('Failed to persist settlements to localStorage', e);
+    }
+  }, [settlements]);
 
   // Network connectivity and offline sync status
   const [isOnline, setIsOnline] = useState<boolean>(() => {
@@ -267,6 +388,560 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const deleteDemandRequest = (id: string) => {
     setDemandRequests((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // CONNECTED TRANSACTION LIFECYCLE WORKFLOW MUTATORS
+  // ─────────────────────────────────────────────────────────────
+
+  // Step 3 & 4 & 5: Match Confirmed -> Agreement Created -> Order Initialized
+  const confirmMatchAndCreateOrder = (
+    listingId: string,
+    demandId: string,
+    agreedPrice?: number,
+    agreedQty?: number
+  ): WorkflowOrder | null => {
+    const listing = produceListings.find((l) => l.id === listingId);
+    const demand = demandRequests.find((d) => d.id === demandId);
+    if (!listing || !demand) return null;
+
+    const finalPrice = agreedPrice || listing.expectedPricePerKg || demand.maxTargetPricePerKg;
+    const finalQty = agreedQty || Math.min(listing.quantityKg, demand.quantityKg);
+    const totalVal = finalPrice * finalQty;
+    const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const nowTimestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    const randomSeq = Math.floor(100 + Math.random() * 900);
+    const orderId = `ORD-TN-${randomSeq}`;
+    const agreementId = `AGR-TN-${randomSeq}`;
+    const batchId = `AGP-${listing.crop.slice(0, 3).toUpperCase()}-2026-${randomSeq}`;
+
+    const newAgreement: WorkflowAgreement = {
+      id: agreementId,
+      demandRequestId: demand.id,
+      produceListingId: listing.id,
+      farmerId: listing.farmerId,
+      farmerName: listing.farmerName,
+      buyerId: demand.buyerId,
+      buyerName: demand.buyerName,
+      crop: listing.crop,
+      agreedQuantityKg: finalQty,
+      agreedPricePerKg: finalPrice,
+      totalAgreedValue: totalVal,
+      agreementDate: dateStr,
+      status: 'CONFIRMED'
+    };
+
+    const newOrder: WorkflowOrder = {
+      id: orderId,
+      agreementId,
+      produceListingId: listing.id,
+      demandRequestId: demand.id,
+      batchId,
+      farmerId: listing.farmerId,
+      farmerName: listing.farmerName,
+      buyerId: demand.buyerId,
+      buyerName: demand.buyerName,
+      crop: listing.crop,
+      variety: listing.variety || 'Certified Hybrid',
+      quantityKg: finalQty,
+      pricePerKg: finalPrice,
+      totalValue: totalVal,
+      status: 'Produce Collection Pending',
+      date: dateStr,
+      deliveryLocation: demand.location,
+      farmerLocation: listing.location,
+      fpoName: currentUser.fpoName || 'GreenHarvest FPO',
+      qualityGrade: listing.grade,
+      timeline: [
+        {
+          step: 'LISTED',
+          title: 'Crop Listed',
+          location: listing.location,
+          timestamp: listing.harvestDate || nowTimestamp,
+          operator: listing.farmerName,
+          completed: true
+        },
+        {
+          step: 'MATCHED',
+          title: 'Matched & Agreement Confirmed',
+          location: 'Uzhavan AI Engine',
+          timestamp: nowTimestamp,
+          operator: 'System Matcher',
+          completed: true
+        },
+        {
+          step: 'COLLECTED',
+          title: 'Produce Collection Queued',
+          location: listing.location,
+          timestamp: 'Scheduled for Pickup',
+          operator: 'FPO Aggregator Agent',
+          completed: false
+        }
+      ]
+    };
+
+    const newPassport: ProducePassport = {
+      batchId,
+      crop: listing.crop,
+      variety: listing.variety || 'Certified Hybrid',
+      farmerOrFpo: listing.farmerName,
+      farmLocation: listing.location,
+      harvestDate: listing.harvestDate || dateStr,
+      quantityKg: finalQty,
+      qualityGrade: listing.grade === 'Grade C' ? 'Standard' : listing.grade,
+      currentStatus: 'Harvested',
+      inspectionMetrics: {
+        sugarBrix: 4.8,
+        firmnessKgCm: 3.5,
+        pesticideResidueTest: 'PASS - Organic / ND',
+        moistureContent: '92.0%'
+      },
+      collectionHub: `${listing.location} Collection Point`,
+      shipmentId: `SHP-TN-${randomSeq}`,
+      vehicleNumber: 'Pending Carrier Assignment',
+      destination: demand.location,
+      qrCodeUrl: `https://uzhavanconnect.gov.in/trace/${batchId}`,
+      timeline: [
+        {
+          step: 'HARVESTED',
+          title: 'Harvested at Source Farm',
+          location: listing.location,
+          timestamp: nowTimestamp,
+          operator: listing.farmerName,
+          completed: true
+        },
+        {
+          step: 'QUALITY_CHECKED',
+          title: 'Pending Quality Inspection',
+          location: 'Regional FPO Hub',
+          timestamp: 'Awaiting',
+          operator: 'Quality Assessor',
+          completed: false
+        },
+        {
+          step: 'PACKED',
+          title: 'Pending Crating & QR Sealing',
+          location: 'FPO Hub',
+          timestamp: 'Awaiting',
+          operator: 'Packing Team',
+          completed: false
+        },
+        {
+          step: 'IN_TRANSIT',
+          title: 'Pending Dispatch',
+          location: 'Transit Route',
+          timestamp: 'Scheduled',
+          operator: 'Logistics Partner',
+          completed: false
+        },
+        {
+          step: 'DELIVERED',
+          title: 'Pending Buyer Receiving',
+          location: demand.location,
+          timestamp: demand.deliveryDate,
+          operator: 'Receiving Officer',
+          completed: false
+        }
+      ]
+    };
+
+    // Transition produce listing status to Reserved
+    setProduceListings((prev) =>
+      prev.map((p) => (p.id === listing.id ? { ...p, status: 'Reserved' } : p))
+    );
+
+    // Transition demand status to Order Created
+    setDemandRequests((prev) =>
+      prev.map((d) => (d.id === demand.id ? { ...d, status: 'Order Created' } : d))
+    );
+
+    setAgreements((prev) => [newAgreement, ...prev]);
+    setOrders((prev) => [newOrder, ...prev]);
+    setProducePassports((prev) => [newPassport, ...prev]);
+
+    // Send notification
+    const newNotif: AppNotification = {
+      id: `notif-${Date.now()}`,
+      title: 'Match Confirmed & Order Created!',
+      message: `Order ${orderId} created for ${finalQty.toLocaleString()} kg of ${listing.crop} @ ₹${finalPrice}/kg. Produce reserved.`,
+      timestamp: 'Just now',
+      targetRole: 'ALL',
+      read: false,
+      type: 'ORDER' as any,
+      actionUrl: '/orders'
+    };
+    setNotifications((prev) => [newNotif, ...prev]);
+
+    return newOrder;
+  };
+
+  // Step 6: FPO Collects Produce
+  const fpoCollectProduce = (orderId: string, hubLocation = 'Sriperumbudur Rural Hub') => {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    let targetBatchId = '';
+    let targetListingId = '';
+
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+        targetBatchId = o.batchId;
+        targetListingId = o.produceListingId;
+        const updatedTimeline: OrderTimelineEvent[] = [
+          ...o.timeline.map((t) => (t.step === 'COLLECTED' ? { ...t, completed: true, timestamp, location: `${o.farmerLocation} -> ${hubLocation}` } : t)),
+          { step: 'QUALITY_PENDING', title: 'Awaiting Hub Quality Inspection', location: hubLocation, timestamp, operator: 'FPO Quality Lab', completed: false }
+        ];
+        return { ...o, status: 'Collected', timeline: updatedTimeline };
+      })
+    );
+
+    if (targetListingId) {
+      setProduceListings((prev) =>
+        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Collected' } : p))
+      );
+    }
+    if (targetBatchId) {
+      setProducePassports((prev) =>
+        prev.map((pass) => (pass.batchId === targetBatchId ? { ...pass, currentStatus: 'Harvested' } : pass))
+      );
+    }
+  };
+
+  // Step 7: Quality Check & Grading
+  const fpoQualityCheck = (orderId: string, metrics: QualityInspectionData) => {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    let targetBatchId = '';
+    let targetListingId = '';
+
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+        targetBatchId = o.batchId;
+        targetListingId = o.produceListingId;
+        const updatedTimeline: OrderTimelineEvent[] = [
+          ...o.timeline,
+          {
+            step: 'QUALITY_CHECKED',
+            title: `Quality Tested & Certified (${metrics.verifiedGrade})`,
+            location: metrics.hubLocation,
+            timestamp,
+            operator: metrics.inspectorName,
+            completed: true,
+            notes: `Brix: ${metrics.sugarBrix}, Firmness: ${metrics.firmnessKgCm} kg/cm², Pesticide: ${metrics.pesticideResidueTest}`
+          }
+        ];
+        return {
+          ...o,
+          status: 'Quality Checked',
+          qualityGrade: metrics.verifiedGrade,
+          inspectionMetrics: metrics,
+          timeline: updatedTimeline
+        };
+      })
+    );
+
+    if (targetListingId) {
+      setProduceListings((prev) =>
+        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Quality Checked', grade: metrics.verifiedGrade } : p))
+      );
+    }
+    if (targetBatchId) {
+      setProducePassports((prev) =>
+        prev.map((pass) =>
+          pass.batchId === targetBatchId
+            ? {
+                ...pass,
+                currentStatus: 'Quality Checked',
+                qualityGrade: metrics.verifiedGrade === 'Grade C' ? 'Standard' : metrics.verifiedGrade,
+                inspectionMetrics: {
+                  sugarBrix: metrics.sugarBrix,
+                  firmnessKgCm: metrics.firmnessKgCm,
+                  pesticideResidueTest: metrics.pesticideResidueTest,
+                  moistureContent: metrics.moistureContent
+                },
+                timeline: pass.timeline.map((t) =>
+                  t.step === 'QUALITY_CHECKED' ? { ...t, completed: true, timestamp, operator: metrics.inspectorName } : t
+                )
+              }
+            : pass
+        )
+      );
+    }
+  };
+
+  // Step 8: Packing & Crating
+  const fpoPackProduce = (orderId: string, notes?: string) => {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    let targetBatchId = '';
+    let targetListingId = '';
+
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+        targetBatchId = o.batchId;
+        targetListingId = o.produceListingId;
+        const updatedTimeline: OrderTimelineEvent[] = [
+          ...o.timeline,
+          {
+            step: 'PACKED',
+            title: 'Packed in Ventilated Crates & QR Assigned',
+            location: 'FPO Packing Bay',
+            timestamp,
+            operator: 'FPO Packing Unit',
+            completed: true,
+            notes: notes || `Batch ID: ${o.batchId}`
+          }
+        ];
+        return { ...o, status: 'Packed', timeline: updatedTimeline };
+      })
+    );
+
+    if (targetListingId) {
+      setProduceListings((prev) =>
+        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Packed' } : p))
+      );
+    }
+    if (targetBatchId) {
+      setProducePassports((prev) =>
+        prev.map((pass) =>
+          pass.batchId === targetBatchId
+            ? {
+                ...pass,
+                currentStatus: 'Packed',
+                timeline: pass.timeline.map((t) =>
+                  t.step === 'PACKED' ? { ...t, completed: true, timestamp, operator: 'FPO Packing Unit' } : t
+                )
+              }
+            : pass
+        )
+      );
+    }
+  };
+
+  // Step 9a: Transport Assignment
+  const assignTransport = (orderId: string, transport: TransportAssignment) => {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+        const updatedTimeline: OrderTimelineEvent[] = [
+          ...o.timeline,
+          {
+            step: 'TRANSPORT_ASSIGNED',
+            title: `Transport Assigned (${transport.vehicleType} - ${transport.vehicleNumber})`,
+            location: 'Dispatch Hub',
+            timestamp,
+            operator: `${transport.carrierName} (Driver: ${transport.driverName})`,
+            completed: true
+          }
+        ];
+        return {
+          ...o,
+          status: 'Transport Assigned',
+          transportDetails: transport,
+          timeline: updatedTimeline
+        };
+      })
+    );
+  };
+
+  // Step 9b: Dispatch Shipment
+  const dispatchShipment = (orderId: string) => {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    let targetBatchId = '';
+    let targetListingId = '';
+
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+        targetBatchId = o.batchId;
+        targetListingId = o.produceListingId;
+        const updatedTimeline: OrderTimelineEvent[] = [
+          ...o.timeline,
+          {
+            step: 'IN_TRANSIT',
+            title: 'Dispatched & En Route via Expressway',
+            location: 'National Highway NH-48',
+            timestamp,
+            operator: o.transportDetails?.driverName || 'Carrier Driver',
+            completed: true
+          }
+        ];
+        return { ...o, status: 'In Transit', timeline: updatedTimeline };
+      })
+    );
+
+    if (targetListingId) {
+      setProduceListings((prev) =>
+        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'In Transit' } : p))
+      );
+    }
+    if (targetBatchId) {
+      setProducePassports((prev) =>
+        prev.map((pass) =>
+          pass.batchId === targetBatchId
+            ? {
+                ...pass,
+                currentStatus: 'In Transit',
+                timeline: pass.timeline.map((t) =>
+                  t.step === 'IN_TRANSIT' ? { ...t, completed: true, timestamp, operator: 'Carrier Driver' } : t
+                )
+              }
+            : pass
+        )
+      );
+    }
+  };
+
+  // Step 10: Delivered to Buyer
+  const markDelivered = (orderId: string) => {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    let targetBatchId = '';
+    let targetListingId = '';
+
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+        targetBatchId = o.batchId;
+        targetListingId = o.produceListingId;
+        const updatedTimeline: OrderTimelineEvent[] = [
+          ...o.timeline,
+          {
+            step: 'DELIVERED',
+            title: 'Delivered at Buyer Receiving Facility',
+            location: o.deliveryLocation,
+            timestamp,
+            operator: 'Carrier & Receiving Team',
+            completed: true
+          }
+        ];
+        return { ...o, status: 'Delivered', timeline: updatedTimeline };
+      })
+    );
+
+    if (targetListingId) {
+      setProduceListings((prev) =>
+        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Delivered' } : p))
+      );
+    }
+    if (targetBatchId) {
+      setProducePassports((prev) =>
+        prev.map((pass) =>
+          pass.batchId === targetBatchId
+            ? {
+                ...pass,
+                currentStatus: 'Delivered',
+                timeline: pass.timeline.map((t) =>
+                  t.step === 'DELIVERED' ? { ...t, completed: true, timestamp, operator: 'Receiving Officer' } : t
+                )
+              }
+            : pass
+        )
+      );
+    }
+  };
+
+  // Step 11: Buyer Confirms Receipt
+  const buyerConfirmReceipt = (orderId: string) => {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    const order = orders.find((o) => o.id === orderId);
+    if (!order) return;
+
+    const createdSettleId = `SETTLE-2026-${order.id.replace('ORD-TN-', '')}`;
+    const updatedTimeline: OrderTimelineEvent[] = [
+      ...order.timeline,
+      {
+        step: 'BUYER_CONFIRMED',
+        title: 'Buyer Digitally Acknowledged Receipt & Verified Quality',
+        location: order.deliveryLocation,
+        timestamp,
+        operator: `${order.buyerName} Inspection Officer`,
+        completed: true
+      },
+      {
+        step: 'PAYMENT_PENDING',
+        title: 'Escrow Automated Payout Queued',
+        location: 'RBI e-RUPI / Bank Gateway',
+        timestamp,
+        operator: 'Uzhavan Escrow Smart Ledger',
+        completed: false
+      }
+    ];
+
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === orderId
+          ? { ...o, status: 'Payment Pending', settlementId: createdSettleId, timeline: updatedTimeline }
+          : o
+      )
+    );
+
+    const farmerShare = Math.round(order.totalValue * 0.89);
+    const logisticsShare = Math.round(order.totalValue * 0.08);
+    const platformShare = order.totalValue - farmerShare - logisticsShare;
+    const traditionalShare = Math.round(order.totalValue * 0.55);
+    const gainPct = Number((((farmerShare - traditionalShare) / (traditionalShare || 1)) * 100).toFixed(1));
+
+    const newSettlement: SettlementRecord = {
+      id: createdSettleId,
+      orderId: order.id,
+      batchId: order.batchId,
+      crop: order.crop,
+      quantityKg: order.quantityKg,
+      buyerName: order.buyerName,
+      farmerOrFpoName: order.farmerName,
+      totalOrderValue: order.totalValue,
+      farmerAmount: farmerShare,
+      logisticsAmount: logisticsShare,
+      platformAmount: platformShare,
+      farmerRealizationPercentage: 89.0,
+      traditionalFarmerEarnings: traditionalShare,
+      earningsGainPercentage: gainPct,
+      status: 'PENDING',
+      settlementDate: 'Scheduled - Awaiting Trigger',
+      utrNumber: 'ESCROW_LOCKED_PENDING'
+    };
+
+    setSettlements((prev) => [newSettlement, ...prev.filter((s) => s.orderId !== order.id)]);
+    setDemandRequests((prev) =>
+      prev.map((d) => (d.id === order.demandRequestId ? { ...d, status: 'Fulfilled' } : d))
+    );
+  };
+
+  // Step 12: Payment Settled
+  const settlePayment = (orderId: string) => {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    const utr = `AGRITXN${Date.now()}`;
+    let targetListingId = '';
+
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+        targetListingId = o.produceListingId;
+        const updatedTimeline: OrderTimelineEvent[] = [
+          ...o.timeline.map((t) => (t.step === 'PAYMENT_PENDING' ? { ...t, completed: true, timestamp } : t)),
+          {
+            step: 'SETTLED',
+            title: `Digital Payout Settled to Farmer Account (UTR: ${utr})`,
+            location: 'National Clearing Gateway',
+            timestamp,
+            operator: 'Escrow Settlement Smart Contract',
+            completed: true
+          }
+        ];
+        return { ...o, status: 'Completed', timeline: updatedTimeline };
+      })
+    );
+
+    if (targetListingId) {
+      setProduceListings((prev) =>
+        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Completed' } : p))
+      );
+    }
+    setSettlements((prev) =>
+      prev.map((s) =>
+        s.orderId === orderId ? { ...s, status: 'COMPLETED', settlementDate: timestamp, utrNumber: utr } : s
+      )
+    );
   };
 
   useEffect(() => {
@@ -488,6 +1163,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         deleteProduceListing,
         addDemandRequest,
         deleteDemandRequest,
+        orders,
+        agreements,
+        producePassports,
+        settlements,
+        confirmMatchAndCreateOrder,
+        fpoCollectProduce,
+        fpoQualityCheck,
+        fpoPackProduce,
+        assignTransport,
+        dispatchShipment,
+        markDelivered,
+        buyerConfirmReceipt,
+        settlePayment,
         isOnline,
         syncStatus,
         pendingSyncCount,
