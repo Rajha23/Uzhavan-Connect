@@ -18,29 +18,67 @@ import {
 import confetti from 'canvas-confetti';
 
 export const FindBuyersPage: React.FC = () => {
-  const { setActiveTab } = useApp();
+  const { setActiveTab, demandRequests, produceListings, confirmMatchAndCreateOrder } = useApp();
 
-  const [opportunities, setOpportunities] = useState<BuyerDemandOpportunity[]>(BUYER_DEMAND_OPPORTUNITIES);
   const [offers, setOffers] = useState<FarmerOfferItem[]>(FARMER_OFFERS_DATA);
   const [offerSuccess, setOfferSuccess] = useState<string | null>(null);
 
+  // Combine static demonstration opportunities with live buyer demands from AppContext
+  const combinedDemands: BuyerDemandOpportunity[] = [
+    ...demandRequests
+      .filter((d) => d.status === 'Created' || d.status === 'OPEN' || d.status === 'MATCHING' || d.status === 'Aggregating')
+      .map((d) => ({
+        id: d.id,
+        buyerName: d.buyerName,
+        crop: d.crop,
+        requiredQuantityKg: d.quantityKg,
+        maxPricePerKg: d.maxTargetPricePerKg,
+        location: d.location,
+        requiredDate: d.deliveryDate,
+        quality: d.qualityRequirement
+      })),
+    ...BUYER_DEMAND_OPPORTUNITIES.filter((b) => !demandRequests.some((d) => d.id === b.id))
+  ];
+
   const handleMakeOffer = (opp: BuyerDemandOpportunity) => {
-    setOfferSuccess(`Offer of ₹${opp.maxPricePerKg}/kg submitted to ${opp.buyerName} for ${opp.requiredQuantityKg.toLocaleString()} kg of ${opp.crop}!`);
+    // Find matching listing or create agreement
+    const matchingListing =
+      produceListings.find((p) => p.crop.toLowerCase() === opp.crop.toLowerCase()) || produceListings[0];
+    if (matchingListing) {
+      confirmMatchAndCreateOrder(matchingListing.id, opp.id, opp.maxPricePerKg, opp.requiredQuantityKg);
+    }
+    setOfferSuccess(
+      `Agreement reached with ${opp.buyerName}! Confirmed Order created for ${opp.requiredQuantityKg.toLocaleString()} kg of ${opp.crop} at ₹${opp.maxPricePerKg}/kg.`
+    );
     confetti({
-      particleCount: 50,
-      spread: 60,
+      particleCount: 70,
+      spread: 70,
       origin: { y: 0.6 }
     });
-    setTimeout(() => setOfferSuccess(null), 4000);
+    setTimeout(() => setOfferSuccess(null), 6000);
   };
 
-  const handleAcceptOffer = (id: string) => {
-    setOffers(offers.map((o) => (o.id === id ? { ...o, status: 'ACCEPTED' } : o)));
+  const handleAcceptOffer = (off: FarmerOfferItem) => {
+    const matchingListing =
+      produceListings.find((p) => p.crop.toLowerCase() === off.crop.toLowerCase()) || produceListings[0];
+    if (matchingListing) {
+      confirmMatchAndCreateOrder(
+        matchingListing.id,
+        off.demandId || `DEM-2026-${Date.now().toString().slice(-4)}`,
+        off.offeredPricePerKg,
+        off.quantityKg
+      );
+    }
+    setOffers(offers.map((o) => (o.id === off.id ? { ...o, status: 'ACCEPTED' } : o)));
+    setOfferSuccess(
+      `Offer accepted! Order created for ${off.quantityKg.toLocaleString()} kg of ${off.crop} at ₹${off.offeredPricePerKg}/kg. Track it in Orders pipeline.`
+    );
     confetti({
       particleCount: 60,
       spread: 70,
       origin: { y: 0.6 }
     });
+    setTimeout(() => setOfferSuccess(null), 6000);
   };
 
   const handleRejectOffer = (id: string) => {
@@ -54,7 +92,7 @@ export const FindBuyersPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-sage text-xs font-bold uppercase tracking-widest mb-2">
             <Search className="w-4 h-4" />
-            <span>Direct Buyer Requirements</span>
+            <span>Direct Buyer Requirements & Contracts</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
             Find Buyers & Direct Demands
@@ -73,9 +111,17 @@ export const FindBuyersPage: React.FC = () => {
       </div>
 
       {offerSuccess && (
-        <div className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-semibold flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>{offerSuccess}</span>
+        <div className="p-5 bg-sage/20 border border-sage/60 text-forest rounded-[1.5rem] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-forest shrink-0" />
+            <span className="text-xs font-bold">{offerSuccess}</span>
+          </div>
+          <button
+            onClick={() => setActiveTab('orders')}
+            className="px-4 py-2 bg-forest text-cream text-[10px] font-bold uppercase tracking-widest rounded-[0.8rem] shadow-sm hover:bg-[#023120] transition whitespace-nowrap self-start sm:self-auto"
+          >
+            Track in Orders Pipeline →
+          </button>
         </div>
       )}
 
@@ -130,10 +176,10 @@ export const FindBuyersPage: React.FC = () => {
                 {off.status === 'PENDING' ? (
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleAcceptOffer(off.id)}
+                      onClick={() => handleAcceptOffer(off)}
                       className="px-5 py-2.5 bg-sage hover:bg-cream text-forest font-bold rounded-[1rem] shadow-sm transition uppercase tracking-widest"
                     >
-                      Accept
+                      Accept & Contract
                     </button>
                     <button
                       onClick={() => handleRejectOffer(off.id)}
@@ -155,15 +201,25 @@ export const FindBuyersPage: React.FC = () => {
 
       {/* 2. Active Buyer Demands */}
       <div className="bg-cream rounded-[2.5rem] border border-olive/30 shadow-forest overflow-hidden">
-        <div className="p-8 border-b border-olive/20">
-          <h3 className="text-2xl font-bold text-forest">
-            Open Buyer Requirements Near You
-          </h3>
-          <p className="text-xs text-forest/60 mt-1 font-bold uppercase tracking-widest">Respond directly with your produce availability</p>
+        <div className="p-8 border-b border-olive/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 className="text-2xl font-bold text-forest">
+              Open Buyer Requirements Near You
+            </h3>
+            <p className="text-xs text-forest/60 mt-1 font-bold uppercase tracking-widest">
+              Live demands from institutional buyers & food processors ({combinedDemands.length})
+            </p>
+          </div>
+          <button
+            onClick={() => setActiveTab('buyer-demand')}
+            className="text-[10px] font-bold uppercase tracking-widest text-forest bg-sage/30 px-4 py-2 rounded-[0.8rem] border border-sage/50 hover:bg-sage/50 transition self-start sm:self-auto"
+          >
+            Post New Demand →
+          </button>
         </div>
 
         <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          {opportunities.map((opp) => (
+          {combinedDemands.map((opp) => (
             <div
               key={opp.id}
               className="p-6 rounded-[1.5rem] border border-olive/30 bg-olive/10 hover:shadow-forest transition space-y-4 flex flex-col justify-between"

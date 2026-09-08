@@ -50,6 +50,125 @@ export interface UserProfile {
 
 export type NetworkSyncStatus = 'idle' | 'offline_saved' | 'syncing' | 'synced';
 
+export type ProduceStatus =
+  | 'Listed'
+  | 'Matched'
+  | 'Reserved'
+  | 'Collected'
+  | 'Quality Checked'
+  | 'Packed'
+  | 'In Transit'
+  | 'Delivered'
+  | 'Completed'
+  | 'AVAILABLE'
+  | 'POOLED'
+  | 'DISPATCHED'
+  | 'SETTLED';
+
+export type BuyerDemandStatus =
+  | 'Created'
+  | 'Aggregating'
+  | 'Matched'
+  | 'Agreement Pending'
+  | 'Confirmed'
+  | 'Order Created'
+  | 'Fulfilled'
+  | 'OPEN'
+  | 'POOLED'
+  | 'MATCHING'
+  | 'AUCTION_ACTIVE'
+  | 'ALLOCATED';
+
+export type OrderStatus =
+  | 'Created'
+  | 'Produce Collection Pending'
+  | 'Collected'
+  | 'Quality Checked'
+  | 'Packed'
+  | 'Transport Assigned'
+  | 'In Transit'
+  | 'Delivered'
+  | 'Buyer Confirmed'
+  | 'Payment Pending'
+  | 'Completed'
+  | 'Pending'
+  | 'Confirmed';
+
+export interface QualityInspectionData {
+  sugarBrix: number;
+  firmnessKgCm: number;
+  pesticideResidueTest: 'PASS - Organic / ND' | 'PASS - Standard Compliant';
+  moistureContent: string;
+  verifiedGrade: 'Grade A' | 'Grade B' | 'Grade C' | 'Standard' | 'Premium';
+  inspectorName: string;
+  inspectionDate: string;
+  hubLocation: string;
+}
+
+export interface TransportAssignment {
+  carrierName: string;
+  vehicleNumber: string;
+  driverName: string;
+  driverPhone: string;
+  vehicleType: string;
+  departureTime?: string;
+  estimatedArrival?: string;
+  assignedAt: string;
+}
+
+export interface WorkflowAgreement {
+  id: string;
+  demandRequestId: string;
+  produceListingId: string;
+  farmerId: string;
+  farmerName: string;
+  buyerId: string;
+  buyerName: string;
+  crop: string;
+  agreedQuantityKg: number;
+  agreedPricePerKg: number;
+  totalAgreedValue: number;
+  agreementDate: string;
+  status: 'PENDING' | 'CONFIRMED' | 'REJECTED';
+}
+
+export interface OrderTimelineEvent {
+  step: string;
+  title: string;
+  location: string;
+  timestamp: string;
+  operator: string;
+  completed: boolean;
+  notes?: string;
+}
+
+export interface WorkflowOrder {
+  id: string;
+  agreementId?: string;
+  produceListingId: string;
+  demandRequestId: string;
+  batchId: string;
+  farmerId: string;
+  farmerName: string;
+  buyerId: string;
+  buyerName: string;
+  crop: string;
+  variety?: string;
+  quantityKg: number;
+  pricePerKg: number;
+  totalValue: number;
+  status: OrderStatus;
+  date: string;
+  deliveryLocation: string;
+  farmerLocation: string;
+  fpoName?: string;
+  qualityGrade: 'Grade A' | 'Grade B' | 'Grade C' | 'Standard' | 'Premium';
+  inspectionMetrics?: QualityInspectionData;
+  transportDetails?: TransportAssignment;
+  timeline: OrderTimelineEvent[];
+  settlementId?: string;
+}
+
 export interface ProduceListing {
   id: string;
   farmerId: string;
@@ -62,7 +181,7 @@ export interface ProduceListing {
   harvestDate: string;
   availabilityDate: string;
   location: string;
-  status: 'AVAILABLE' | 'POOLED' | 'MATCHED' | 'DISPATCHED' | 'SETTLED';
+  status: ProduceStatus;
   coordinates?: { lat: number; lng: number };
   imageUrl?: string;
   syncStatus?: 'SYNCED' | 'PENDING_SYNC';
@@ -81,7 +200,7 @@ export interface DemandRequest {
   deliveryDate: string;
   deliveryTimeWindow: string;
   maxTargetPricePerKg: number;
-  status: 'OPEN' | 'POOLED' | 'MATCHING' | 'AUCTION_ACTIVE' | 'ALLOCATED' | 'FULFILLED';
+  status: BuyerDemandStatus;
   createdAt: string;
   coordinates?: { lat: number; lng: number };
   syncStatus?: 'SYNCED' | 'PENDING_SYNC';

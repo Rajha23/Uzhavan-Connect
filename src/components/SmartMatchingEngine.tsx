@@ -48,7 +48,7 @@ const isQualityCompatible = (produceGrade: string, buyerRequirement: string): bo
 };
 
 export const SmartMatchingEngine: React.FC = () => {
-  const { produceListings, demandRequests } = useApp();
+  const { produceListings, demandRequests, confirmMatchAndCreateOrder, setActiveTab } = useApp();
 
   // Configurable weights (sum or proportional)
   const [weights, setWeights] = useState({
@@ -69,6 +69,7 @@ export const SmartMatchingEngine: React.FC = () => {
   // Selected farmer listing under active detailed comparison
   const [selectedListingId, setSelectedListingId] = useState<string>('');
   const [allocatedId, setAllocatedId] = useState<string>('');
+  const [createdOrderNotice, setCreatedOrderNotice] = useState<{ id: string; crop: string; qty: number; price: number } | null>(null);
 
   const currentDemand: DemandRequest | undefined = useMemo(() => {
     return demandRequests.find((d) => d.id === selectedDemandId) || demandRequests[0];
@@ -495,7 +496,23 @@ export const SmartMatchingEngine: React.FC = () => {
 
             <button
               data-testid="confirm-allocate-btn"
-              onClick={() => setAllocatedId(evaluatedListing.id)}
+              onClick={() => {
+                setAllocatedId(evaluatedListing.id);
+                const order = confirmMatchAndCreateOrder(
+                  evaluatedListing.id,
+                  currentDemand.id,
+                  evaluatedListing.expectedPricePerKg,
+                  contribKg
+                );
+                if (order) {
+                  setCreatedOrderNotice({
+                    id: order.id,
+                    crop: order.crop,
+                    qty: order.quantityKg,
+                    price: order.pricePerKg
+                  });
+                }
+              }}
               className={`px-6 py-3 rounded-xl text-xs font-bold transition shadow-sm self-start md:self-auto uppercase tracking-wider whitespace-nowrap ${
                 allocatedId === evaluatedListing.id
                   ? 'bg-emerald-400 text-emerald-950 flex items-center gap-2'
@@ -512,6 +529,32 @@ export const SmartMatchingEngine: React.FC = () => {
               )}
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Order Created Success Banner */}
+      {createdOrderNotice && (
+        <div className="mx-6 mt-4 p-4 bg-emerald-50 border border-emerald-300 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold">
+              ✓
+            </div>
+            <div>
+              <p className="text-xs font-bold text-emerald-900">
+                Match Confirmed & Order Generated: <span className="font-mono">{createdOrderNotice.id}</span>
+              </p>
+              <p className="text-[11px] text-emerald-700">
+                {createdOrderNotice.qty.toLocaleString()} kg of {createdOrderNotice.crop} @ ₹{createdOrderNotice.price}/kg allocated. Produce collection queued for FPO Aggregator.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setActiveTab('orders')}
+            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 self-start sm:self-auto shrink-0"
+          >
+            <span>Track in Orders</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
@@ -603,6 +646,21 @@ export const SmartMatchingEngine: React.FC = () => {
                         e.stopPropagation();
                         setSelectedListingId(candidate.listing.id);
                         setAllocatedId(candidate.listing.id);
+                        const cardContribKg = Math.min(candidate.listing.quantityKg, currentDemand.quantityKg);
+                        const order = confirmMatchAndCreateOrder(
+                          candidate.listing.id,
+                          currentDemand.id,
+                          candidate.listing.expectedPricePerKg,
+                          cardContribKg
+                        );
+                        if (order) {
+                          setCreatedOrderNotice({
+                            id: order.id,
+                            crop: order.crop,
+                            qty: order.quantityKg,
+                            price: order.pricePerKg
+                          });
+                        }
                       }}
                       className={`px-4 py-2 rounded-xl text-xs font-semibold transition shadow-xs ${
                         isAllocated
