@@ -20,7 +20,9 @@ import {
   Info,
   Scale,
   DollarSign,
-  HeartHandshake
+  HeartHandshake,
+  Lock,
+  UserPlus
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
@@ -68,19 +70,19 @@ export const LandingPage: React.FC = () => {
             {/* CTA Buttons */}
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
               <button
-                onClick={() => { switchRole('FARMER'); setActiveTab('dashboard'); }}
+                onClick={() => setActiveTab('login')}
                 className="btn-organic flex items-center gap-2.5 bg-forest text-cream font-bold px-8 py-4 shadow-forest hover:shadow-lg text-sm"
               >
-                <Sprout className="w-5 h-5 text-sage" />
-                <span>Farmer Login</span>
+                <Lock className="w-5 h-5 text-sage" />
+                <span>Login</span>
               </button>
 
               <button
-                onClick={() => { switchRole('RETAIL_BUYER'); setActiveTab('dashboard'); }}
+                onClick={() => setActiveTab('register')}
                 className="btn-organic flex items-center gap-2.5 bg-sage text-forest font-bold px-8 py-4 border border-sage/50 hover:bg-cream shadow-sm text-sm"
               >
-                <ShoppingBag className="w-5 h-5 text-forest" />
-                <span>Buyer Login</span>
+                <UserPlus className="w-5 h-5 text-forest" />
+                <span>Register</span>
               </button>
 
             </div>

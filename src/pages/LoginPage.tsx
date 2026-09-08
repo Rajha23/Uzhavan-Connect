@@ -13,10 +13,19 @@ import {
   UserPlus
 } from 'lucide-react';
 
-export const LoginPage: React.FC = () => {
+interface LoginPageProps {
+  initialMode?: 'LOGIN' | 'REGISTER';
+}
+
+export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) => {
   const { login, registerUser, setActiveTab } = useApp();
 
-  const [mode, setMode] = useState<'LOGIN' | 'REGISTER'>('LOGIN');
+  const [mode, setMode] = useState<'LOGIN' | 'REGISTER'>(initialMode);
+
+  // Update mode if prop changes
+  React.useEffect(() => {
+    setMode(initialMode);
+  }, [initialMode]);
 
   // Login form state
   const [identifier, setIdentifier] = useState('');

@@ -48,8 +48,8 @@ import { SmartMatchingEngine } from './components/SmartMatchingEngine';
 const PageContent: React.FC = () => {
   const { activeTab, currentRole, hasPermission, isAuthenticated } = useApp();
 
-  // Unauthenticated users can only view landing or the login page
-  if (!isAuthenticated && activeTab !== 'home' && activeTab !== 'landing') {
+  // Unauthenticated users can only view landing or the login/register page
+  if (!isAuthenticated && activeTab !== 'home' && activeTab !== 'landing' && activeTab !== 'register') {
     return <LoginPage />;
   }
 
@@ -59,7 +59,9 @@ const PageContent: React.FC = () => {
     case 'landing':
       return <LandingPage />;
     case 'login':
-      return <LoginPage />;
+      return <LoginPage initialMode="LOGIN" />;
+    case 'register':
+      return <LoginPage initialMode="REGISTER" />;
 
     // ── Dashboard based on Role ───────────────
     case 'dashboard':
