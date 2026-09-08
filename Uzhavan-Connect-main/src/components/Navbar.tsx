@@ -29,25 +29,7 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-cream/95 backdrop-blur-md border-b border-olive/30 shadow-forest">
-      {/* Top Ministry & Announcement Banner */}
-      <div className="bg-gradient-to-r from-forest to-[#023120] text-cream text-xs py-1.5 px-4">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="bg-sage/20 text-sage font-semibold px-2 py-0.5 rounded text-[11px] border border-sage/30">
-              • SIH26033
-            </span>
-            <span className="text-sage/70 hidden sm:inline">
-              Ministry of Consumer Affairs, Food & Public Distribution
-            </span>
-            <span className="text-sage/40 hidden md:inline">|</span>
-            <span className="text-olive font-medium italic hidden md:inline">
-              "Don't wait for the market. Let the market tell the farmer what to grow."
-            </span>
-          </div>
-        </div>
-      </div>
-
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
       {/* Main Navigation Bar */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">

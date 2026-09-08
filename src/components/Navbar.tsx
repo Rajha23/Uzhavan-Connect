@@ -30,24 +30,6 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
-      {/* Top Ministry & Announcement Banner */}
-      <div className="bg-slate-950 text-slate-300 text-xs py-1.5 px-4 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="bg-emerald-500/20 text-emerald-400 font-semibold px-2 py-0.5 rounded text-[11px] border border-emerald-500/30">
-              • SIH26033
-            </span>
-            <span className="text-slate-400 hidden sm:inline text-[11px]">
-              Ministry of Consumer Affairs, Food & Public Distribution
-            </span>
-            <span className="text-slate-700 hidden md:inline">|</span>
-            <span className="text-emerald-400/90 font-medium italic hidden md:inline text-[11px]">
-              "Don't wait for the market. Let the market tell the farmer what to grow."
-            </span>
-          </div>
-        </div>
-      </div>
-
       {/* Main Navigation Bar */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
