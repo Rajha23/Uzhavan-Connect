@@ -51,6 +51,10 @@ export const LoginPage: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (regMobile.length !== 10) {
+      setErrorMsg('Mobile number must be exactly 10 digits.');
+      return;
+    }
     setIsSubmitting(true);
     try {
       const registered = await apiService.register({
@@ -264,8 +268,11 @@ export const LoginPage: React.FC = () => {
                       <input
                         type="tel"
                         value={regMobile}
-                        onChange={(e) => setRegMobile(e.target.value)}
-                        placeholder="+91 98765 43210"
+                        onChange={(e) => setRegMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                        placeholder="9876543210"
+                        maxLength={10}
+                        minLength={10}
+                        pattern="[0-9]{10}"
                         required
                         className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-8 pr-2 py-2 text-xs"
                       />
