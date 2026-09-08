@@ -45,6 +45,8 @@ export default {
         anton: ['"Google Sans"', '"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
       },
       boxShadow: {
+        'xs': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        '2xs': '0 1px 1px 0 rgba(0, 0, 0, 0.03)',
         'forest': '0 4px 20px -2px rgba(10, 46, 31, 0.08)',
         'forest-lg': '0 10px 25px -5px rgba(10, 46, 31, 0.12)',
         'ai-card': '0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02)',

@@ -5,8 +5,10 @@ export interface AiInsightProps {
   type?: 'recommendation' | 'insight' | 'warning' | 'market';
   badgeText?: string;
   title: string;
-  description: string;
-  metrics?: { label: string; value: string; positive?: boolean }[];
+  description?: string;
+  subtitle?: string;
+  recommendation?: string;
+  metrics?: { label: string; value: string; positive?: boolean; trend?: string }[];
   actionLabel?: string;
   onAction?: () => void;
   className?: string;
@@ -18,12 +20,15 @@ export const AiInsightCard: React.FC<AiInsightProps> = ({
   badgeText = '✦ Smart AI Insight',
   title,
   description,
+  subtitle,
+  recommendation,
   metrics,
   actionLabel,
   onAction,
   className = '',
   variant = 'light'
 }) => {
+  const descText = description || [subtitle, recommendation].filter(Boolean).join(' ');
   if (variant === 'dark') {
     return (
       <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-950 via-slate-950 to-emerald-900 text-white p-5 border border-emerald-500/20 shadow-sm ${className}`}>
@@ -34,7 +39,7 @@ export const AiInsightCard: React.FC<AiInsightProps> = ({
               <span>{badgeText}</span>
             </div>
             <h4 className="text-base font-semibold text-white tracking-tight">{title}</h4>
-            <p className="text-xs text-slate-300 leading-relaxed max-w-2xl">{description}</p>
+            {descText && <p className="text-xs text-slate-300 leading-relaxed max-w-2xl">{descText}</p>}
 
             {metrics && metrics.length > 0 && (
               <div className="flex flex-wrap gap-4 pt-2">
@@ -71,7 +76,7 @@ export const AiInsightCard: React.FC<AiInsightProps> = ({
             <span>{badgeText}</span>
           </div>
           <h4 className="text-base font-semibold text-slate-900 tracking-tight">{title}</h4>
-          <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">{description}</p>
+          {descText && <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">{descText}</p>}
 
           {metrics && metrics.length > 0 && (
             <div className="flex flex-wrap gap-3 pt-1.5">

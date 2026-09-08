@@ -1604,6 +1604,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       localStorage.setItem('uzhavan_fallback_session', JSON.stringify(updated));
       return updated;
     });
+    setIsAuthenticated(true);
     setActiveTab('dashboard'); // Always land on role's home dashboard
   };
 
