@@ -153,6 +153,7 @@ export interface WorkflowOrder {
   agreementId?: string;
   produceListingId: string;
   demandRequestId: string;
+  aggregatedGroupId?: string;
   batchId: string;
   farmerId: string;
   farmerName: string;
@@ -205,7 +206,11 @@ export interface DemandRequest {
   buyerName: string;
   buyerType: 'Supermarket' | 'Retailer' | 'Bulk Purchaser' | 'Hospitality' | 'Food Processor' | 'Consumer Coop';
   crop: string;
+  variety?: string;
   quantityKg: number;
+  initialQuantityKg?: number;
+  allocatedQuantityKg?: number;
+  unit?: string;
   qualityRequirement: 'Standard' | 'Premium' | 'Grade A' | 'Grade B' | 'Any';
   location: string;
   deliveryDate: string;
@@ -216,6 +221,25 @@ export interface DemandRequest {
   coordinates?: { lat: number; lng: number };
   syncStatus?: 'SYNCED' | 'PENDING_SYNC';
   offlineCreated?: boolean;
+  aggregatedGroupId?: string;
+}
+
+export interface AggregatedDemandGroup {
+  id: string;
+  crop: string;
+  variety?: string;
+  qualityRequirement: string;
+  region: string;
+  targetDate: string;
+  deliveryTimeWindow?: string;
+  totalQuantityKg: number;
+  initialQuantityKg?: number;
+  contributingDemands: DemandRequest[];
+  contributingDemandIds: string[];
+  buyersCount: number;
+  avgMaxPricePerKg: number;
+  status: 'FORMED' | 'MATCHING' | 'PARTIALLY_MATCHED' | 'ALLOCATED';
+  compatibilityReasons: string[];
 }
 
 export interface DemandPool {

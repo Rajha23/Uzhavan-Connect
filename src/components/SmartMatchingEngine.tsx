@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
-import { ProduceListing, DemandRequest } from '../types';
+import { ProduceListing, DemandRequest, AggregatedDemandGroup, WorkflowOrder } from '../types';
+import confetti from 'canvas-confetti';
 import {
   Sliders,
   Sparkles,
@@ -16,7 +17,10 @@ import {
   Calendar,
   Check,
   Layers,
-  Sprout
+  Sprout,
+  X,
+  FileText,
+  AlertCircle
 } from 'lucide-react';
 
 // Distance estimator based on common regional agricultural corridors
@@ -48,7 +52,13 @@ const isQualityCompatible = (produceGrade: string, buyerRequirement: string): bo
 };
 
 export const SmartMatchingEngine: React.FC = () => {
-  const { produceListings, demandRequests, confirmMatchAndCreateOrder, setActiveTab } = useApp();
+  const {
+    produceListings,
+    demandRequests,
+    aggregatedDemandGroups,
+    confirmMatchAndCreateOrder,
+    setActiveTab
+  } = useApp();
 
   // Configurable weights (sum or proportional)
   const [weights, setWeights] = useState({
@@ -59,43 +69,117 @@ export const SmartMatchingEngine: React.FC = () => {
     capacity: 10
   });
 
-  // Selected demand to match against
-  const [selectedDemandId, setSelectedDemandId] = useState<string>(() => {
-    // Default to a Tomato demand if available, else first demand
-    const tomatoDemand = demandRequests.find((d) => d.crop.toLowerCase() === 'tomato');
-    return tomatoDemand ? tomatoDemand.id : demandRequests[0]?.id || '';
+  // Selected target key: either "group:POOL-..." or "demand:DEM-..."
+  const [selectedTargetKey, setSelectedTargetKey] = useState<string>(() => {
+    if (aggregatedDemandGroups.length > 0) {
+      return `group:${aggregatedDemandGroups[0].id}`;
+    }
+    return demandRequests[0] ? `demand:${demandRequests[0].id}` : '';
   });
 
   // Selected farmer listing under active detailed comparison
   const [selectedListingId, setSelectedListingId] = useState<string>('');
   const [allocatedId, setAllocatedId] = useState<string>('');
-  const [createdOrderNotice, setCreatedOrderNotice] = useState<{ id: string; crop: string; qty: number; price: number } | null>(null);
+  const [createdOrderNotice, setCreatedOrderNotice] = useState<{
+    id: string;
+    crop: string;
+    qty: number;
+    price: number;
+  } | null>(null);
 
-  const currentDemand: DemandRequest | undefined = useMemo(() => {
-    return demandRequests.find((d) => d.id === selectedDemandId) || demandRequests[0];
-  }, [demandRequests, selectedDemandId]);
+  // 5-Step Connected Agreement & Order Modal state
+  const [agreementModal, setAgreementModal] = useState<{
+    isOpen: boolean;
+    listing: ProduceListing | null;
+    agreedQty: number;
+    agreedPrice: number;
+    step: 'TERMS' | 'CONFIRMED';
+    createdOrder: WorkflowOrder | null;
+  }>({
+    isOpen: false,
+    listing: null,
+    agreedQty: 0,
+    agreedPrice: 0,
+    step: 'TERMS',
+    createdOrder: null
+  });
+
+  // Unified Demand Target (whether an Aggregated Group or an Individual Demand)
+  const currentTarget = useMemo(() => {
+    if (selectedTargetKey.startsWith('group:')) {
+      const gId = selectedTargetKey.replace('group:', '');
+      const grp = aggregatedDemandGroups.find((g) => g.id === gId) || aggregatedDemandGroups[0];
+      if (grp) {
+        return {
+          id: grp.id,
+          displayName: `[Aggregated Pool] ${grp.id}: ${grp.crop} - ${grp.region} (${grp.totalQuantityKg.toLocaleString()} kg from ${grp.buyersCount} buyers)`,
+          isGroup: true,
+          groupId: grp.id,
+          underlyingDemandId: grp.contributingDemands[0]?.id || demandRequests[0]?.id || '',
+          buyerName: `${grp.buyersCount} Consolidated Institutional Buyers (${grp.region})`,
+          buyerType: 'Institutional Consortium',
+          crop: grp.crop,
+          variety: grp.variety || 'Certified Commercial Hybrid',
+          quantityKg: grp.totalQuantityKg,
+          initialQuantityKg: grp.initialQuantityKg || grp.totalQuantityKg,
+          qualityRequirement: grp.qualityRequirement,
+          location: grp.region,
+          deliveryDate: grp.targetDate,
+          deliveryTimeWindow: grp.deliveryTimeWindow || '05:30 AM - 08:30 AM',
+          maxTargetPricePerKg: grp.avgMaxPricePerKg,
+          contributingDemands: grp.contributingDemands
+        };
+      }
+    }
+
+    const dId = selectedTargetKey.replace('demand:', '');
+    const dem = demandRequests.find((d) => d.id === dId) || demandRequests[0];
+    if (dem) {
+      return {
+        id: dem.id,
+        displayName: `[Individual Demand] ${dem.id}: ${dem.crop} - ${dem.buyerName} (${dem.quantityKg.toLocaleString()} kg @ max ₹${dem.maxTargetPricePerKg})`,
+        isGroup: false,
+        groupId: undefined,
+        underlyingDemandId: dem.id,
+        buyerName: dem.buyerName,
+        buyerType: dem.buyerType,
+        crop: dem.crop,
+        variety: dem.variety || 'Certified Hybrid',
+        quantityKg: dem.quantityKg,
+        initialQuantityKg: dem.initialQuantityKg || dem.quantityKg,
+        qualityRequirement: dem.qualityRequirement,
+        location: dem.location,
+        deliveryDate: dem.deliveryDate,
+        deliveryTimeWindow: dem.deliveryTimeWindow,
+        maxTargetPricePerKg: dem.maxTargetPricePerKg,
+        contributingDemands: [dem]
+      };
+    }
+
+    return null;
+  }, [selectedTargetKey, aggregatedDemandGroups, demandRequests]);
 
   const totalWeight = weights.price + weights.distance + weights.quality + weights.reliability + weights.capacity;
 
-  // Dynamically evaluate all farmer produce listings against current buyer demand
+  // Dynamically evaluate all farmer produce listings against current unified target
   const evaluatedCandidates = useMemo(() => {
-    if (!currentDemand) return [];
+    if (!currentTarget) return [];
 
     return produceListings.map((listing) => {
-      const cropMatch = listing.crop.toLowerCase() === currentDemand.crop.toLowerCase();
-      const qualityMatch = isQualityCompatible(listing.grade, currentDemand.qualityRequirement);
-      const distanceKm = getEstimatedDistance(listing.location, currentDemand.location);
-      const priceCompatible = listing.expectedPricePerKg <= currentDemand.maxTargetPricePerKg;
+      const cropMatch = listing.crop.toLowerCase() === currentTarget.crop.toLowerCase();
+      const qualityMatch = isQualityCompatible(listing.grade, currentTarget.qualityRequirement);
+      const distanceKm = getEstimatedDistance(listing.location, currentTarget.location);
+      const priceCompatible = listing.expectedPricePerKg <= currentTarget.maxTargetPricePerKg;
 
       // Price score: reward offer within or below buyer max price
       let priceScore = 70;
-      if (currentDemand.maxTargetPricePerKg > 0) {
+      if (currentTarget.maxTargetPricePerKg > 0) {
         if (priceCompatible) {
-          const savings = currentDemand.maxTargetPricePerKg - listing.expectedPricePerKg;
-          priceScore = Math.min(100, 85 + Math.round((savings / currentDemand.maxTargetPricePerKg) * 50));
+          const savings = currentTarget.maxTargetPricePerKg - listing.expectedPricePerKg;
+          priceScore = Math.min(100, 85 + Math.round((savings / currentTarget.maxTargetPricePerKg) * 50));
         } else {
-          const excess = listing.expectedPricePerKg - currentDemand.maxTargetPricePerKg;
-          priceScore = Math.max(20, 70 - Math.round((excess / currentDemand.maxTargetPricePerKg) * 100));
+          const excess = listing.expectedPricePerKg - currentTarget.maxTargetPricePerKg;
+          priceScore = Math.max(20, 70 - Math.round((excess / currentTarget.maxTargetPricePerKg) * 100));
         }
       }
 
@@ -104,7 +188,7 @@ export const SmartMatchingEngine: React.FC = () => {
 
       // Quality score
       let qualityScore = 80;
-      if (listing.grade === currentDemand.qualityRequirement) {
+      if (listing.grade === currentTarget.qualityRequirement) {
         qualityScore = 95;
       } else if (listing.grade === 'Grade A' || listing.grade === 'Premium') {
         qualityScore = 98;
@@ -118,7 +202,7 @@ export const SmartMatchingEngine: React.FC = () => {
       const reliabilityScore = 92;
 
       // Capacity contribution score: how much of the demand volume this listing satisfies
-      const contribRatio = Math.min(1, listing.quantityKg / (currentDemand.quantityKg || 1));
+      const contribRatio = Math.min(1, listing.quantityKg / (currentTarget.quantityKg || 1));
       const capacityScore = Math.min(100, Math.round(contribRatio * 100));
 
       const rawScore = (
@@ -131,7 +215,6 @@ export const SmartMatchingEngine: React.FC = () => {
 
       // Penalize heavily if crop doesn't match
       const totalMatchScore = cropMatch ? Math.min(99, Math.max(45, Math.round(rawScore))) : 20;
-
       const isEligible = cropMatch && qualityMatch && priceCompatible;
 
       return {
@@ -153,7 +236,7 @@ export const SmartMatchingEngine: React.FC = () => {
       if (a.cropMatch !== b.cropMatch) return a.cropMatch ? -1 : 1;
       return b.totalMatchScore - a.totalMatchScore;
     });
-  }, [produceListings, currentDemand, weights, totalWeight]);
+  }, [produceListings, currentTarget, weights, totalWeight]);
 
   // Active evaluated candidate (default to highest scored matching candidate)
   const activeEvaluation = useMemo(() => {
@@ -164,24 +247,69 @@ export const SmartMatchingEngine: React.FC = () => {
     return evaluatedCandidates[0];
   }, [evaluatedCandidates, selectedListingId]);
 
-  if (!currentDemand) {
+  if (!currentTarget) {
     return (
       <div className="bg-white rounded-2xl p-8 text-center text-slate-500 border border-slate-200">
-        <p className="text-sm font-semibold">No buyer demands currently registered for smart matching.</p>
+        <p className="text-sm font-semibold">No active demands or aggregated pools available for matching.</p>
       </div>
     );
   }
 
   const evaluatedListing = activeEvaluation?.listing;
-  const contribKg = evaluatedListing ? Math.min(evaluatedListing.quantityKg, currentDemand.quantityKg) : 0;
+  const contribKg = evaluatedListing ? Math.min(evaluatedListing.quantityKg, currentTarget.quantityKg) : 0;
   const contribPct = evaluatedListing
-    ? Math.round((evaluatedListing.quantityKg / (currentDemand.quantityKg || 1)) * 100)
+    ? Math.round((contribKg / (currentTarget.quantityKg || 1)) * 100)
     : 0;
-  const priceSavings = evaluatedListing ? currentDemand.maxTargetPricePerKg - evaluatedListing.expectedPricePerKg : 0;
+  const priceSavings = evaluatedListing ? currentTarget.maxTargetPricePerKg - evaluatedListing.expectedPricePerKg : 0;
+  const isPartialMatch = evaluatedListing ? evaluatedListing.quantityKg < currentTarget.quantityKg : false;
+
+  const handleOpenAgreementModal = (candidateListing: ProduceListing) => {
+    if (candidateListing.quantityKg <= 0) return;
+    const defaultAgreedQty = Math.min(candidateListing.quantityKg, currentTarget.quantityKg);
+    const defaultAgreedPrice = candidateListing.expectedPricePerKg;
+
+    setAgreementModal({
+      isOpen: true,
+      listing: candidateListing,
+      agreedQty: defaultAgreedQty,
+      agreedPrice: defaultAgreedPrice,
+      step: 'TERMS',
+      createdOrder: null
+    });
+  };
+
+  const handleConfirmAndIssueOrder = () => {
+    if (!agreementModal.listing || agreementModal.agreedQty <= 0) return;
+
+    const listing = agreementModal.listing;
+    const order = confirmMatchAndCreateOrder(
+      listing.id,
+      currentTarget.underlyingDemandId,
+      agreementModal.agreedPrice,
+      agreementModal.agreedQty,
+      currentTarget.isGroup ? currentTarget.groupId : undefined
+    );
+
+    if (order) {
+      setAllocatedId(listing.id);
+      setCreatedOrderNotice({
+        id: order.id,
+        crop: order.crop,
+        qty: order.quantityKg,
+        price: order.pricePerKg
+      });
+      setAgreementModal((prev) => ({
+        ...prev,
+        step: 'CONFIRMED',
+        createdOrder: order
+      }));
+      confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden space-y-0">
-      {/* 1. Engine Header & Demand Selector */}
+      {/* 1. Engine Header & Demand Target Selector */}
       <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-1">
@@ -192,28 +320,41 @@ export const SmartMatchingEngine: React.FC = () => {
             Smart Matching & Allocation Engine
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            Evaluating real-time farmer produce listings against active institutional buyer demands.
+            Evaluating real-time farmer produce listings against active buyer demands & aggregated groups.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {/* Buyer Demand Selector */}
+          {/* Target Selector: Supports both Aggregated Groups and Individual Demands */}
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Demand:</span>
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Target:</span>
             <select
-              value={currentDemand.id}
+              value={selectedTargetKey}
               onChange={(e) => {
-                setSelectedDemandId(e.target.value);
+                setSelectedTargetKey(e.target.value);
                 setSelectedListingId('');
               }}
-              aria-label="Target Buyer Demand Selection"
-              className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
+              aria-label="Target Demand or Aggregated Pool Selection"
+              className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer max-w-[280px] truncate"
             >
-              {demandRequests.map((dem) => (
-                <option key={dem.id} value={dem.id}>
-                  {dem.id}: {dem.crop} ({dem.quantityKg.toLocaleString()} kg @ max ₹{dem.maxTargetPricePerKg})
-                </option>
-              ))}
+              {aggregatedDemandGroups.length > 0 && (
+                <optgroup label="📦 Aggregated Demand Pools">
+                  {aggregatedDemandGroups.map((grp) => (
+                    <option key={`group:${grp.id}`} value={`group:${grp.id}`}>
+                      [Group] {grp.id}: {grp.crop} - {grp.region} ({grp.totalQuantityKg.toLocaleString()} kg from {grp.buyersCount} buyers)
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              {demandRequests.length > 0 && (
+                <optgroup label="🏢 Individual Buyer Demands">
+                  {demandRequests.map((dem) => (
+                    <option key={`demand:${dem.id}`} value={`demand:${dem.id}`}>
+                      [Individual] {dem.id}: {dem.crop} - {dem.buyerName} ({dem.quantityKg.toLocaleString()} kg @ max ₹{dem.maxTargetPricePerKg})
+                    </option>
+                  ))}
+                </optgroup>
+              )}
             </select>
           </div>
 
@@ -323,7 +464,7 @@ export const SmartMatchingEngine: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. PROMPT REQUIRED: DYNAMIC MATCH RESULT SHOWCASE CARD */}
+      {/* 3. DYNAMIC MATCH RESULT SHOWCASE CARD */}
       {evaluatedListing && (
         <div className="p-6 bg-gradient-to-br from-emerald-950 via-[#01472e] to-teal-950 text-white rounded-2xl m-6 space-y-6 shadow-xl border border-emerald-800/40">
           {/* Header Row: Match Status & Dynamic Score */}
@@ -339,7 +480,7 @@ export const SmartMatchingEngine: React.FC = () => {
                 </span>
               </div>
               <p className="text-xs text-emerald-200/80 font-medium pt-1">
-                Evaluating Farmer Supply ID: <span className="font-mono text-white font-bold">{evaluatedListing.id}</span> against Buyer Demand ID: <span className="font-mono text-white font-bold">{currentDemand.id}</span>
+                Evaluating Farmer Supply: <span className="font-mono text-white font-bold">{evaluatedListing.id} ({evaluatedListing.farmerName})</span> against Target: <span className="font-mono text-white font-bold">{currentTarget.id}</span>
               </p>
             </div>
 
@@ -351,7 +492,7 @@ export const SmartMatchingEngine: React.FC = () => {
             </div>
           </div>
 
-          {/* Prompt Required: Two Evaluated Entities Side-by-Side */}
+          {/* TWO EVALUATED ENTITIES SIDE-BY-SIDE */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* 1. FARMER SUPPLY CARD */}
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 space-y-3">
@@ -359,7 +500,7 @@ export const SmartMatchingEngine: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <Sprout className="w-4 h-4 text-emerald-300" />
                   <span className="text-xs font-black uppercase tracking-wider text-emerald-200">
-                    FARMER SUPPLY
+                    FARMER SUPPLY DETAILS
                   </span>
                 </div>
                 <span className="text-[11px] text-emerald-200/80 font-mono font-medium">
@@ -375,14 +516,14 @@ export const SmartMatchingEngine: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Available Quantity:</span>
+                  <span className="text-emerald-200/80">Available Supply:</span>
                   <div className="text-right">
                     <span className={`font-bold text-sm ${evaluatedListing.quantityKg > 0 ? 'text-emerald-300' : 'text-amber-300'}`}>
                       {evaluatedListing.quantityKg.toLocaleString()} {evaluatedListing.unit || 'kg'}
                     </span>
                     {evaluatedListing.allocatedQuantityKg && evaluatedListing.allocatedQuantityKg > 0 ? (
                       <span className="block text-[10px] text-emerald-200/70">
-                        ({evaluatedListing.allocatedQuantityKg.toLocaleString()} {evaluatedListing.unit || 'kg'} already allocated in orders)
+                        ({evaluatedListing.allocatedQuantityKg.toLocaleString()} {evaluatedListing.unit || 'kg'} allocated)
                       </span>
                     ) : null}
                   </div>
@@ -392,7 +533,7 @@ export const SmartMatchingEngine: React.FC = () => {
                   <span className="font-bold text-white">{evaluatedListing.grade}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Location:</span>
+                  <span className="text-emerald-200/80">Farm Location:</span>
                   <span className="font-bold text-white">{evaluatedListing.location}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
@@ -400,89 +541,108 @@ export const SmartMatchingEngine: React.FC = () => {
                   <span className="font-bold text-emerald-300 text-sm">₹{evaluatedListing.expectedPricePerKg}/kg</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Harvest Date:</span>
-                  <span className="font-medium text-white">{evaluatedListing.harvestDate}</span>
+                  <span className="text-emerald-200/80">Harvest / Ready Date:</span>
+                  <span className="font-medium text-white">{evaluatedListing.harvestDate || evaluatedListing.availabilityDate}</span>
                 </div>
                 {evaluatedListing.fpoName && (
                   <div className="flex justify-between py-1">
-                    <span className="text-emerald-200/80">FPO Collective:</span>
+                    <span className="text-emerald-200/80">Affiliated FPO:</span>
                     <span className="font-medium text-emerald-200">{evaluatedListing.fpoName}</span>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* 2. MATCHED BUYER DEMAND CARD */}
+            {/* 2. MATCHED BUYER / AGGREGATED DEMAND CARD */}
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 space-y-3">
               <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="w-4 h-4 text-emerald-300" />
                   <span className="text-xs font-black uppercase tracking-wider text-emerald-200">
-                    MATCHED BUYER DEMAND
+                    {currentTarget.isGroup ? 'AGGREGATED POOL DETAILS' : 'BUYER DEMAND DETAILS'}
                   </span>
                 </div>
-                <span className="text-[11px] text-emerald-200/80 font-mono font-medium">
-                  {currentDemand.buyerName}
+                <span className="text-[11px] text-emerald-200/80 font-mono font-medium truncate max-w-[180px]">
+                  {currentTarget.buyerName}
                 </span>
               </div>
 
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Crop:</span>
-                  <span className="font-bold text-white text-sm">{currentDemand.crop}</span>
+                  <span className="text-emerald-200/80">Commodity & Variety:</span>
+                  <span className="font-bold text-white text-sm">
+                    {currentTarget.crop} ({currentTarget.variety || 'Commercial Grade'})
+                  </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Required Quantity:</span>
-                  <span className="font-bold text-emerald-300 text-sm">{currentDemand.quantityKg.toLocaleString()} kg</span>
+                  <span className="text-emerald-200/80">Target Demanded Qty:</span>
+                  <span className="font-bold text-emerald-300 text-sm">
+                    {currentTarget.quantityKg.toLocaleString()} kg
+                  </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Quality:</span>
-                  <span className="font-bold text-white">{currentDemand.qualityRequirement}</span>
+                  <span className="text-emerald-200/80">Required Grade:</span>
+                  <span className="font-bold text-white">{currentTarget.qualityRequirement}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Delivery Location:</span>
-                  <span className="font-bold text-white">{currentDemand.location}</span>
+                  <span className="text-emerald-200/80">Delivery Destination / Corridor:</span>
+                  <span className="font-bold text-white">{currentTarget.location}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Maximum Target Price:</span>
-                  <span className="font-bold text-emerald-300 text-sm">₹{currentDemand.maxTargetPricePerKg}/kg</span>
+                  <span className="text-emerald-200/80">Ceiling Target Price:</span>
+                  <span className="font-bold text-emerald-300 text-sm">₹{currentTarget.maxTargetPricePerKg}/kg</span>
                 </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-emerald-200/80">Delivery Date:</span>
-                  <span className="font-medium text-white">{currentDemand.deliveryDate} ({currentDemand.deliveryTimeWindow})</span>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-emerald-200/80">Delivery Date & Window:</span>
+                  <span className="font-medium text-white">{currentTarget.deliveryDate} ({currentTarget.deliveryTimeWindow})</span>
                 </div>
+                {currentTarget.isGroup && (
+                  <div className="flex justify-between py-1">
+                    <span className="text-emerald-200/80">Contributing Demands:</span>
+                    <span className="font-medium text-emerald-200">{currentTarget.contributingDemands?.length || 1} buyers pooled</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Volume Contribution Strip */}
-          <div className="bg-white/10 rounded-xl p-4 border border-white/10 space-y-2">
+          {/* PARTIAL MATCH TRANSPARENCY & ARITHMETIC BANNER */}
+          <div className="p-4 bg-white/10 rounded-xl border border-white/15 space-y-2">
             <div className="flex justify-between items-center text-xs">
-              <span className="font-bold text-emerald-200 uppercase tracking-wider text-[11px]">
-                Demand Fulfillment Contribution:
+              <span className="font-bold text-emerald-200 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <Scale className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Volume Contribution & Allocation Arithmetic</span>
               </span>
               <span className="font-mono font-bold text-emerald-300">
-                {evaluatedListing.quantityKg.toLocaleString()} kg / {currentDemand.quantityKg.toLocaleString()} kg ({contribPct}%)
+                {contribKg.toLocaleString()} kg allocated ({contribPct}% of {currentTarget.quantityKg.toLocaleString()} kg)
               </span>
             </div>
+
             <div className="w-full bg-emerald-950/80 h-2.5 rounded-full overflow-hidden border border-emerald-700/50">
               <div
                 className="bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500"
                 style={{ width: `${Math.min(100, contribPct)}%` }}
               />
             </div>
-            <p className="text-[11px] text-emerald-200/80">
-              {contribPct >= 100
-                ? '✓ Farmer supply satisfies 100% of this institutional buyer demand.'
-                : `Farmer supply provides ${contribKg.toLocaleString()} kg (${contribPct}%) toward satisfying the ${currentDemand.quantityKg.toLocaleString()} kg pooled buyer demand.`}
-            </p>
+
+            <div className="text-xs text-emerald-100/90 leading-relaxed pt-1">
+              {isPartialMatch ? (
+                <p>
+                  ⚡ <strong className="text-amber-300 font-semibold">Partial Match:</strong> Farmer supply offers <strong>{evaluatedListing.quantityKg.toLocaleString()} kg</strong> against the total demand of <strong>{currentTarget.quantityKg.toLocaleString()} kg</strong>. Once agreed, <strong>{contribKg.toLocaleString()} kg</strong> will be allocated; the remaining <strong>{(currentTarget.quantityKg - contribKg).toLocaleString()} kg</strong> will remain open for further supplier allocation.
+                </p>
+              ) : (
+                <p>
+                  ✓ <strong className="text-emerald-300 font-semibold">Full Match:</strong> Farmer listing offers <strong>{evaluatedListing.quantityKg.toLocaleString()} kg</strong> which satisfies 100% of this <strong>{currentTarget.quantityKg.toLocaleString()} kg</strong> demand. The remaining <strong>{(evaluatedListing.quantityKg - contribKg).toLocaleString()} kg</strong> stays available for other buyer requests.
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Prompt Required: Clear MATCH EXPLANATION Checklist */}
+          {/* MATCH EXPLANATION CHECKLIST */}
           <div className="pt-4 border-t border-emerald-800/60 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
               <p className="text-xs font-bold text-emerald-200 uppercase tracking-wider">
-                MATCH EXPLANATION
+                MATCH EXPLANATION BREAKDOWN
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-xs text-emerald-100">
                 <span className="flex items-center gap-1.5">
@@ -491,22 +651,26 @@ export const SmartMatchingEngine: React.FC = () => {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Quality requirement compatible ({evaluatedListing.grade} satisfies {currentDemand.qualityRequirement})</span>
+                  <span>Quality requirement compatible ({evaluatedListing.grade} satisfies {currentTarget.qualityRequirement})</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Farmer quantity contributes to required demand ({evaluatedListing.quantityKg.toLocaleString()} kg provides {contribPct}%)</span>
+                  <span>Volume contribution ({contribKg.toLocaleString()} kg satisfies {contribPct}% of need)</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>
-                    Farmer expected price is within buyer target price (₹{evaluatedListing.expectedPricePerKg}/kg ≤ ₹{currentDemand.maxTargetPricePerKg}/kg
-                    {priceSavings > 0 ? ` • ₹${priceSavings}/kg savings` : ''})
+                    Price advantage: ₹{evaluatedListing.expectedPricePerKg}/kg ≤ max ₹{currentTarget.maxTargetPricePerKg}/kg
+                    {priceSavings > 0 ? ` (₹${priceSavings}/kg buyer savings)` : ''}
                   </span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Regional route: {evaluatedListing.location} → {currentDemand.location} (~{activeEvaluation.distanceKm} km)</span>
+                  <span>Regional corridor route: {evaluatedListing.location} → {currentTarget.location} (~{activeEvaluation.distanceKm} km)</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Delivery aligned for {currentTarget.deliveryDate} ({currentTarget.deliveryTimeWindow})</span>
                 </span>
               </div>
             </div>
@@ -514,30 +678,13 @@ export const SmartMatchingEngine: React.FC = () => {
             <button
               data-testid="confirm-allocate-btn"
               disabled={evaluatedListing.quantityKg <= 0 || allocatedId === evaluatedListing.id}
-              onClick={() => {
-                if (evaluatedListing.quantityKg <= 0) return;
-                setAllocatedId(evaluatedListing.id);
-                const order = confirmMatchAndCreateOrder(
-                  evaluatedListing.id,
-                  currentDemand.id,
-                  evaluatedListing.expectedPricePerKg,
-                  contribKg
-                );
-                if (order) {
-                  setCreatedOrderNotice({
-                    id: order.id,
-                    crop: order.crop,
-                    qty: order.quantityKg,
-                    price: order.pricePerKg
-                  });
-                }
-              }}
-              className={`px-6 py-3 rounded-xl text-xs font-bold transition shadow-sm self-start md:self-auto uppercase tracking-wider whitespace-nowrap ${
+              onClick={() => handleOpenAgreementModal(evaluatedListing)}
+              className={`px-6 py-3.5 rounded-xl text-xs font-bold transition shadow-sm self-start md:self-auto uppercase tracking-wider whitespace-nowrap flex items-center gap-2 ${
                 evaluatedListing.quantityKg <= 0
                   ? 'bg-slate-700/80 text-slate-300 cursor-not-allowed'
                   : allocatedId === evaluatedListing.id
-                  ? 'bg-emerald-400 text-emerald-950 flex items-center gap-2'
-                  : 'bg-white text-emerald-950 hover:bg-emerald-100'
+                  ? 'bg-emerald-400 text-emerald-950 cursor-default'
+                  : 'bg-white text-emerald-950 hover:bg-emerald-100 cursor-pointer'
               }`}
             >
               {evaluatedListing.quantityKg <= 0 ? (
@@ -548,14 +695,16 @@ export const SmartMatchingEngine: React.FC = () => {
                   <span>Allocated to Demand</span>
                 </>
               ) : (
-                <span>Confirm Match & Allocate →</span>
+                <>
+                  <span>Confirm Match & Agreement →</span>
+                </>
               )}
             </button>
           </div>
         </div>
       )}
 
-      {/* Order Created Success Banner */}
+      {/* Order Created Success Notice */}
       {createdOrderNotice && (
         <div className="mx-6 mt-4 p-4 bg-emerald-50 border border-emerald-300 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-3">
@@ -564,10 +713,10 @@ export const SmartMatchingEngine: React.FC = () => {
             </div>
             <div>
               <p className="text-xs font-bold text-emerald-900">
-                Match Confirmed & Order Generated: <span className="font-mono">{createdOrderNotice.id}</span>
+                Match Agreement Finalized & Order Created: <span className="font-mono">{createdOrderNotice.id}</span>
               </p>
               <p className="text-[11px] text-emerald-700">
-                {createdOrderNotice.qty.toLocaleString()} kg of {createdOrderNotice.crop} @ ₹{createdOrderNotice.price}/kg allocated. Produce collection queued for FPO Aggregator.
+                {createdOrderNotice.qty.toLocaleString()} kg of {createdOrderNotice.crop} @ ₹{createdOrderNotice.price}/kg reserved. Produce collection queued for FPO Aggregator.
               </p>
             </div>
           </div>
@@ -589,7 +738,7 @@ export const SmartMatchingEngine: React.FC = () => {
               Ranked Farmer & FPO Candidates ({evaluatedCandidates.length})
             </h4>
             <p className="text-xs text-slate-500">
-              Evaluated against Buyer Demand: {currentDemand.crop} ({currentDemand.quantityKg.toLocaleString()} kg @ ₹{currentDemand.maxTargetPricePerKg}/kg)
+              Evaluated against Target Demand: {currentTarget.crop} ({currentTarget.quantityKg.toLocaleString()} kg @ ₹{currentTarget.maxTargetPricePerKg}/kg)
             </p>
           </div>
           <span className="text-xs text-slate-500 font-mono">Live multi-factor ranking</span>
@@ -688,22 +837,7 @@ export const SmartMatchingEngine: React.FC = () => {
                         e.stopPropagation();
                         if (candidate.listing.quantityKg <= 0) return;
                         setSelectedListingId(candidate.listing.id);
-                        setAllocatedId(candidate.listing.id);
-                        const cardContribKg = Math.min(candidate.listing.quantityKg, currentDemand.quantityKg);
-                        const order = confirmMatchAndCreateOrder(
-                          candidate.listing.id,
-                          currentDemand.id,
-                          candidate.listing.expectedPricePerKg,
-                          cardContribKg
-                        );
-                        if (order) {
-                          setCreatedOrderNotice({
-                            id: order.id,
-                            crop: order.crop,
-                            qty: order.quantityKg,
-                            price: order.pricePerKg
-                          });
-                        }
+                        handleOpenAgreementModal(candidate.listing);
                       }}
                       className={`px-4 py-2 rounded-xl text-xs font-semibold transition shadow-xs ${
                         candidate.listing.quantityKg <= 0
@@ -799,6 +933,250 @@ export const SmartMatchingEngine: React.FC = () => {
           })}
         </div>
       </div>
+
+      {/* 5. INTERACTIVE MATCH AGREEMENT & ORDER CONFIRMATION MODAL */}
+      {agreementModal.isOpen && agreementModal.listing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#01472e]/60 backdrop-blur-md p-4 animate-in fade-in">
+          <div className="bg-cream rounded-[2.5rem] shadow-forest border border-olive/30 p-8 max-w-2xl w-full space-y-6 max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-olive/20">
+              <div className="flex items-center gap-3">
+                <FileText className="w-6 h-6 text-forest" />
+                <div>
+                  <h3 className="text-2xl font-anton text-forest tracking-wide">
+                    {agreementModal.step === 'TERMS' ? 'Digital Match Agreement & Order Initiation' : 'Match Confirmed & Order Created'}
+                  </h3>
+                  <p className="text-xs text-forest/60 font-medium">
+                    {agreementModal.step === 'TERMS'
+                      ? 'Connected Transaction Lifecycle (Step 3: Matching → Step 4: Agreement → Step 5: Order)'
+                      : 'Produce allocated and scheduled for FPO collection.'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setAgreementModal((prev) => ({ ...prev, isOpen: false }))}
+                className="text-forest/50 hover:text-forest transition font-bold text-lg"
+              >
+                ✕
+              </button>
+            </div>
+
+            {agreementModal.step === 'TERMS' ? (
+              <div className="space-y-6">
+                {/* 5-Step Lifecycle Progress Tracker */}
+                <div className="grid grid-cols-5 gap-2 text-center text-[10px] font-bold uppercase tracking-wider">
+                  <div className="p-2 bg-emerald-100 text-emerald-900 rounded-lg border border-emerald-300">
+                    1. Match
+                  </div>
+                  <div className="p-2 bg-emerald-700 text-white rounded-lg font-bold shadow-xs">
+                    2. Agreement
+                  </div>
+                  <div className="p-2 bg-olive/20 text-forest/70 rounded-lg">
+                    3. Quantities
+                  </div>
+                  <div className="p-2 bg-olive/20 text-forest/70 rounded-lg">
+                    4. Price
+                  </div>
+                  <div className="p-2 bg-olive/20 text-forest/70 rounded-lg">
+                    5. Order
+                  </div>
+                </div>
+
+                {/* Agreement Parties Summary */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Farmer Party */}
+                  <div className="p-4 rounded-xl bg-olive/10 border border-olive/30 space-y-2 text-xs">
+                    <span className="text-[10px] font-bold text-forest/60 uppercase tracking-wider block">Seller (Farmer / FPO)</span>
+                    <p className="font-bold text-forest text-sm">{agreementModal.listing.farmerName}</p>
+                    <p className="text-forest/70 font-medium">
+                      {agreementModal.listing.crop} ({agreementModal.listing.variety || 'Certified'}) • {agreementModal.listing.grade}
+                    </p>
+                    <p className="text-[11px] text-forest/60">
+                      Location: {agreementModal.listing.location}
+                    </p>
+                    <p className="text-xs font-bold text-emerald-800">
+                      Available: {agreementModal.listing.quantityKg.toLocaleString()} kg
+                    </p>
+                  </div>
+
+                  {/* Buyer Party */}
+                  <div className="p-4 rounded-xl bg-sage/15 border border-sage/40 space-y-2 text-xs">
+                    <span className="text-[10px] font-bold text-forest/60 uppercase tracking-wider block">Buyer / Procurement Pool</span>
+                    <p className="font-bold text-forest text-sm">{currentTarget.buyerName}</p>
+                    <p className="text-forest/70 font-medium">
+                      Destination: {currentTarget.location}
+                    </p>
+                    <p className="text-[11px] text-forest/60">
+                      Required by: {currentTarget.deliveryDate} ({currentTarget.deliveryTimeWindow})
+                    </p>
+                    <p className="text-xs font-bold text-forest">
+                      Demanded: {currentTarget.quantityKg.toLocaleString()} kg @ max ₹{currentTarget.maxTargetPricePerKg}/kg
+                    </p>
+                  </div>
+                </div>
+
+                {/* Agreement Negotiation Inputs */}
+                <div className="bg-cream rounded-2xl p-5 border border-olive/30 space-y-4">
+                  <h4 className="text-xs font-bold text-forest uppercase tracking-wider">
+                    Contractual Terms Confirmation
+                  </h4>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">
+                        Agreed Contract Quantity (kg)
+                      </label>
+                      <input
+                        type="number"
+                        value={agreementModal.agreedQty}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setAgreementModal((prev) => ({
+                            ...prev,
+                            agreedQty: Math.max(1, Math.min(val, agreementModal.listing!.quantityKg))
+                          }));
+                        }}
+                        max={agreementModal.listing.quantityKg}
+                        min="1"
+                        className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none text-sm"
+                        required
+                      />
+                      <span className="text-[10px] text-forest/60 mt-1 block">
+                        Max allocatable from listing: {agreementModal.listing.quantityKg.toLocaleString()} kg
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">
+                        Agreed Settlement Price (₹/kg)
+                      </label>
+                      <input
+                        type="number"
+                        value={agreementModal.agreedPrice}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setAgreementModal((prev) => ({
+                            ...prev,
+                            agreedPrice: Math.max(1, val)
+                          }));
+                        }}
+                        step="0.5"
+                        min="1"
+                        className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none text-sm"
+                        required
+                      />
+                      <span className="text-[10px] text-forest/60 mt-1 block">
+                        Farmer expected: ₹{agreementModal.listing.expectedPricePerKg}/kg • Buyer max: ₹{currentTarget.maxTargetPricePerKg}/kg
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Total Value Banner */}
+                  <div className="p-4 bg-forest text-cream rounded-xl flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-sage block">
+                        Total Agreed Transaction Value
+                      </span>
+                      <span className="text-2xl font-anton text-cream tracking-wide">
+                        ₹{(agreementModal.agreedQty * agreementModal.agreedPrice).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] text-sage font-bold uppercase tracking-wider block">Realization</span>
+                      <span className="text-xs font-bold text-cream">100% Direct to Farmer</span>
+                    </div>
+                  </div>
+
+                  {/* Double Allocation & Arithmetic Note */}
+                  <div className="p-3 bg-olive/10 rounded-xl border border-olive/30 text-[11px] text-forest/80 font-medium">
+                    ⚡ <strong>Atomic Inventory Invariant:</strong> Confirming this agreement immediately reserves {agreementModal.agreedQty.toLocaleString()} kg of produce, decrements available farmer inventory, and transitions demand status without double-allocation risk.
+                  </div>
+                </div>
+
+                {/* Modal Footer Actions */}
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-olive/20">
+                  <button
+                    type="button"
+                    onClick={() => setAgreementModal((prev) => ({ ...prev, isOpen: false }))}
+                    className="px-5 py-3 text-forest/70 hover:bg-olive/10 rounded-[1rem] font-bold uppercase tracking-widest text-xs transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    data-testid="finalize-order-btn"
+                    onClick={handleConfirmAndIssueOrder}
+                    className="px-6 py-3.5 bg-forest hover:bg-[#023120] text-cream font-bold rounded-[1rem] shadow-sm transition uppercase tracking-widest text-xs flex items-center gap-2"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-sage" />
+                    <span>Confirm Agreement & Issue Order →</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Success View */
+              <div className="space-y-6 text-center py-4">
+                <div className="w-16 h-16 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-300">
+                  ✓
+                </div>
+
+                <div>
+                  <h4 className="text-2xl font-anton text-forest tracking-wide">
+                    Order Successfully Initialized!
+                  </h4>
+                  <p className="text-xs text-forest/70 mt-1 font-medium">
+                    Agreement confirmed. Produce inventory has been atomically reserved and queued for FPO collection.
+                  </p>
+                </div>
+
+                {agreementModal.createdOrder && (
+                  <div className="bg-olive/10 rounded-2xl p-6 border border-olive/30 text-left text-xs space-y-3">
+                    <div className="flex justify-between border-b border-olive/20 pb-2">
+                      <span className="text-forest/60 font-bold uppercase text-[10px]">Official Order ID:</span>
+                      <span className="font-mono font-bold text-forest">{agreementModal.createdOrder.id}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-olive/20 pb-2">
+                      <span className="text-forest/60 font-bold uppercase text-[10px]">Contract Agreement ID:</span>
+                      <span className="font-mono font-bold text-forest">{agreementModal.createdOrder.agreementId}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-olive/20 pb-2">
+                      <span className="text-forest/60 font-bold uppercase text-[10px]">QR Traceability Batch ID:</span>
+                      <span className="font-mono font-bold text-emerald-800">{agreementModal.createdOrder.batchId}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-olive/20 pb-2">
+                      <span className="text-forest/60 font-bold uppercase text-[10px]">Allocated Volume:</span>
+                      <span className="font-bold text-forest">{agreementModal.createdOrder.quantityKg.toLocaleString()} kg @ ₹{agreementModal.createdOrder.pricePerKg}/kg</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-forest/60 font-bold uppercase text-[10px]">Total Contract Value:</span>
+                      <span className="font-anton text-base text-forest">₹{agreementModal.createdOrder.totalValue.toLocaleString()}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 border-t border-olive/20">
+                  <button
+                    onClick={() => {
+                      setAgreementModal((prev) => ({ ...prev, isOpen: false }));
+                      setActiveTab('orders');
+                    }}
+                    className="w-full sm:w-auto px-6 py-3.5 bg-forest hover:bg-[#023120] text-cream font-bold rounded-[1rem] shadow-sm transition uppercase tracking-widest text-xs flex items-center justify-center gap-2"
+                  >
+                    <span>Track in Active Orders</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setAgreementModal((prev) => ({ ...prev, isOpen: false }))}
+                    className="w-full sm:w-auto px-6 py-3.5 bg-olive/20 hover:bg-olive/30 text-forest font-bold rounded-[1rem] transition uppercase tracking-widest text-xs"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

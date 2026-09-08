@@ -34,14 +34,29 @@ export const BuyerDashboard: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Form state pre-populated with the primary scenario
+  // Form state with variety, unit conversion, quality, delivery, and buyer info
   const [crop, setCrop] = useState('Tomato');
-  const [quantityKg, setQuantityKg] = useState<number>(1000);
-  const [quality, setQuality] = useState<'Grade A' | 'Grade B' | 'Any'>('Grade A');
+  const [variety, setVariety] = useState('Sivam Hybrid');
+  const [rawQuantity, setRawQuantity] = useState<number>(1000);
+  const [unit, setUnit] = useState<'kg' | 'Quintal' | 'Crates' | 'Ton'>('kg');
+  const [quality, setQuality] = useState<'Grade A' | 'Grade B' | 'Standard' | 'Premium' | 'Any'>('Grade A');
   const [location, setLocation] = useState('Chennai Distribution Terminal');
   const [deliveryDate, setDeliveryDate] = useState('2026-09-08');
   const [deliveryWindow, setDeliveryWindow] = useState('05:30 AM - 08:30 AM');
   const [maxPrice, setMaxPrice] = useState<number>(30.0);
+  const [buyerName, setBuyerName] = useState(currentUser.organization || currentUser.name || 'ABC Retail Stores');
+
+  // Convert quantity to standard kg based on unit
+  const getUnitMultiplier = (u: 'kg' | 'Quintal' | 'Crates' | 'Ton'): number => {
+    switch (u) {
+      case 'Quintal': return 100;
+      case 'Crates': return 25;
+      case 'Ton': return 1000;
+      default: return 1;
+    }
+  };
+
+  const calculatedKg = rawQuantity * getUnitMultiplier(unit);
 
   const handleCreateDemand = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,10 +64,14 @@ export const BuyerDashboard: React.FC = () => {
     const newReq: DemandRequest = {
       id: `DEM-TN-${Date.now().toString().slice(-3)}`,
       buyerId: currentUser.id || 'BUYER-01',
-      buyerName: currentUser.organization || currentUser.name || 'Institutional Procurement',
+      buyerName: buyerName || currentUser.organization || 'Institutional Procurement',
       buyerType: 'Supermarket',
       crop,
-      quantityKg: Number(quantityKg),
+      variety,
+      quantityKg: Number(calculatedKg),
+      initialQuantityKg: Number(calculatedKg),
+      allocatedQuantityKg: 0,
+      unit,
       qualityRequirement: quality,
       location,
       deliveryDate,
@@ -72,6 +91,10 @@ export const BuyerDashboard: React.FC = () => {
     });
   };
 
+  const totalDemandVolumeKg = demands.reduce((sum, d) => sum + d.quantityKg, 0);
+  const totalAllocatedVolumeKg = demands.reduce((sum, d) => sum + (d.allocatedQuantityKg || 0), 0);
+  const activeCropsCount = new Set(demands.map((d) => d.crop)).size;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
@@ -85,7 +108,7 @@ export const BuyerDashboard: React.FC = () => {
             Buyer Dashboard
           </h1>
           <p className="text-sm text-cream/70 mt-2 font-medium">
-            {currentUser.organization} • Active Multi-Buyer Forward Demands
+            {currentUser.organization || 'Uzhavan Institutional Network'} • Active Multi-Buyer Forward Demands
           </p>
         </div>
 
@@ -108,7 +131,32 @@ export const BuyerDashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Procurement Metrics Overview Strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-cream p-5 rounded-[1.5rem] border border-olive/30 shadow-sm">
+          <span className="text-[10px] text-forest/60 font-bold uppercase tracking-widest block mb-1">Active Demands</span>
+          <p className="text-3xl font-anton text-forest">{demands.length}</p>
+          <span className="text-[10px] text-forest/70 font-medium">Across {activeCropsCount} Commodities</span>
+        </div>
 
+        <div className="bg-cream p-5 rounded-[1.5rem] border border-olive/30 shadow-sm">
+          <span className="text-[10px] text-forest/60 font-bold uppercase tracking-widest block mb-1">Unmet Target Volume</span>
+          <p className="text-3xl font-anton text-forest">{totalDemandVolumeKg.toLocaleString()} <span className="text-sm font-sans">kg</span></p>
+          <span className="text-[10px] text-emerald-800 font-bold">Open for Allocation</span>
+        </div>
+
+        <div className="bg-cream p-5 rounded-[1.5rem] border border-olive/30 shadow-sm">
+          <span className="text-[10px] text-forest/60 font-bold uppercase tracking-widest block mb-1">Allocated Volume</span>
+          <p className="text-3xl font-anton text-forest">{totalAllocatedVolumeKg.toLocaleString()} <span className="text-sm font-sans">kg</span></p>
+          <span className="text-[10px] text-forest/70 font-medium">Under Contract</span>
+        </div>
+
+        <div className="bg-cream p-5 rounded-[1.5rem] border border-olive/30 shadow-sm">
+          <span className="text-[10px] text-forest/60 font-bold uppercase tracking-widest block mb-1">Aggregation Ready</span>
+          <p className="text-3xl font-anton text-forest">100%</p>
+          <span className="text-[10px] text-sage font-bold uppercase tracking-widest">Coordinated Logistics</span>
+        </div>
+      </div>
 
       {/* Active Demands Table */}
       <div className="bg-cream rounded-[2.5rem] border border-olive/30 shadow-forest overflow-hidden">
@@ -120,7 +168,14 @@ export const BuyerDashboard: React.FC = () => {
             <p className="text-xs text-forest/60 mt-1 font-bold uppercase tracking-widest">Forward procurement commitments ready for matching</p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setActiveTab('smart-matching')}
+              className="text-xs font-bold text-cream hover:bg-forest/90 bg-forest px-5 py-3 rounded-[1rem] transition shadow-sm uppercase tracking-widest flex items-center gap-2"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-sage" />
+              <span>Launch Smart Matching</span>
+            </button>
             <button
               onClick={() => setActiveTab('reverse-auction')}
               className="text-xs font-bold text-forest hover:bg-cream bg-sage px-5 py-3 rounded-[1rem] transition shadow-sm uppercase tracking-widest"
@@ -136,57 +191,112 @@ export const BuyerDashboard: React.FC = () => {
               <tr className="bg-olive/10 border-b border-olive/20 text-forest/70 font-bold uppercase tracking-widest">
                 <th className="p-5">Demand ID</th>
                 <th className="p-5">Buyer Entity</th>
-                <th className="p-5">Crop</th>
-                <th className="p-5">Target Qty</th>
+                <th className="p-5">Crop & Variety</th>
+                <th className="p-5">Target Qty (kg)</th>
                 <th className="p-5">Quality</th>
-                <th className="p-5">Delivery</th>
-                <th className="p-5">Max Price</th>
+                <th className="p-5">Delivery Corridor</th>
+                <th className="p-5">Ceiling Price</th>
                 <th className="p-5">Status</th>
                 <th className="p-5 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-olive/20">
-              {demands.map((dem) => (
-                <tr key={dem.id} className="hover:bg-olive/10 transition">
-                  <td className="p-5 font-bold text-forest/60">{dem.id}</td>
-                  <td className="p-5 font-bold text-forest">{dem.buyerName}</td>
-                  <td className="p-5 font-bold text-forest">{dem.crop}</td>
-                  <td className="p-5 font-bold text-forest">{dem.quantityKg.toLocaleString()} kg</td>
-                  <td className="p-5">
-                    <span className="bg-sage/20 text-forest px-3 py-1.5 rounded-full font-bold text-[10px] uppercase tracking-widest border border-sage/40">
-                      {dem.qualityRequirement}
-                    </span>
-                  </td>
-                  <td className="p-5 text-forest/70 font-medium">
-                    <span className="block font-bold text-forest">{dem.deliveryDate}</span>
-                    <span className="text-[10px] uppercase tracking-widest">{dem.deliveryTimeWindow}</span>
-                  </td>
-                  <td className="p-5 font-anton text-lg text-forest tracking-wide">₹{dem.maxTargetPricePerKg} <span className="text-sm font-sans tracking-normal">/kg</span></td>
-                  <td className="p-5">
-                    <div className="flex flex-col gap-1 items-start">
-                      <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-forest bg-sage/30 px-3 py-1.5 rounded-full border border-sage/50 uppercase tracking-widest">
-                        <span className="w-1.5 h-1.5 rounded-full bg-forest animate-pulse" />
-                        <span>{dem.status}</span>
+              {demands.map((dem) => {
+                const initialQty = dem.initialQuantityKg || dem.quantityKg;
+                const isPartiallyFulfilled = dem.status === 'Partially Fulfilled';
+                const isFullyFulfilled = dem.status === 'Order Created' || dem.status === 'Fulfilled';
+
+                return (
+                  <tr key={dem.id} className="hover:bg-olive/10 transition">
+                    <td className="p-5 font-bold text-forest/60 font-mono">{dem.id}</td>
+                    <td className="p-5">
+                      <span className="font-bold text-forest block">{dem.buyerName}</span>
+                      <span className="text-[10px] text-forest/60 font-medium">{dem.buyerType}</span>
+                    </td>
+                    <td className="p-5">
+                      <span className="font-bold text-forest block">{dem.crop}</span>
+                      <span className="text-[10px] text-forest/70 font-medium">{dem.variety || 'Certified Hybrid'}</span>
+                    </td>
+                    <td className="p-5">
+                      <span className="font-bold text-forest text-sm font-anton tracking-wide block">
+                        {dem.quantityKg.toLocaleString()} kg
                       </span>
-                      {dem.syncStatus === 'PENDING_SYNC' && (
-                        <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full uppercase tracking-wider" title="Saved locally on device. Will sync once connected.">
-                          <CloudOff className="w-2.5 h-2.5 text-amber-700" />
-                          <span>Saved Offline</span>
+                      {isPartiallyFulfilled && (
+                        <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full block mt-0.5">
+                          {dem.quantityKg.toLocaleString()} of {initialQty.toLocaleString()} kg remaining
                         </span>
                       )}
-                    </div>
-                  </td>
-                  <td className="p-5 text-right">
-                    <button
-                      onClick={() => deleteDemandRequest(dem.id)}
-                      className="p-1.5 text-forest/40 hover:text-red-700 bg-olive/10 hover:bg-olive/20 rounded-lg transition"
-                      title="Remove Demand"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                      {isFullyFulfilled && (
+                        <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full block mt-0.5">
+                          {initialQty.toLocaleString()} kg 100% Ordered
+                        </span>
+                      )}
+                      {dem.unit && dem.unit !== 'kg' && (
+                        <span className="text-[10px] text-forest/60">({(initialQty / getUnitMultiplier(dem.unit as any)).toLocaleString()} {dem.unit})</span>
+                      )}
+                    </td>
+                    <td className="p-5">
+                      <span className="bg-sage/20 text-forest px-3 py-1.5 rounded-full font-bold text-[10px] uppercase tracking-widest border border-sage/40">
+                        {dem.qualityRequirement}
+                      </span>
+                    </td>
+                    <td className="p-5 text-forest/70 font-medium">
+                      <span className="block font-bold text-forest">{dem.deliveryDate}</span>
+                      <span className="text-[10px] uppercase tracking-widest block">{dem.deliveryTimeWindow}</span>
+                      <span className="text-[10px] text-forest/60 truncate max-w-[140px] block">{dem.location}</span>
+                    </td>
+                    <td className="p-5 font-anton text-lg text-forest tracking-wide">
+                      ₹{dem.maxTargetPricePerKg} <span className="text-sm font-sans tracking-normal">/kg</span>
+                    </td>
+                    <td className="p-5">
+                      <div className="flex flex-col gap-1 items-start">
+                        <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 rounded-full border uppercase tracking-widest ${
+                          isFullyFulfilled
+                            ? 'text-emerald-900 bg-emerald-100 border-emerald-300'
+                            : isPartiallyFulfilled
+                            ? 'text-amber-900 bg-amber-100 border-amber-300'
+                            : 'text-forest bg-sage/30 border-sage/50'
+                        }`}>
+                          <span className="w-1.5 h-1.5 rounded-full bg-forest animate-pulse" />
+                          <span>{dem.status}</span>
+                        </span>
+                        {dem.syncStatus === 'PENDING_SYNC' && (
+                          <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full uppercase tracking-wider" title="Saved locally on device. Will sync once connected.">
+                            <CloudOff className="w-2.5 h-2.5 text-amber-700" />
+                            <span>Saved Offline</span>
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-5 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => setActiveTab('smart-matching')}
+                          className="px-3 py-1.5 bg-forest hover:bg-forest/90 text-cream text-[10px] font-bold rounded-lg transition uppercase tracking-wider flex items-center gap-1 shadow-xs"
+                          title="Smart Match this Demand"
+                        >
+                          <Sparkles className="w-3 h-3 text-sage" />
+                          <span>Match</span>
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('demand-pool')}
+                          className="px-3 py-1.5 bg-olive/20 hover:bg-olive/30 text-forest text-[10px] font-bold rounded-lg transition uppercase tracking-wider"
+                          title="View in Aggregation Pool"
+                        >
+                          Pool
+                        </button>
+                        <button
+                          onClick={() => deleteDemandRequest(dem.id)}
+                          className="p-1.5 text-forest/40 hover:text-red-700 bg-olive/10 hover:bg-olive/20 rounded-lg transition"
+                          title="Remove Demand"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -195,63 +305,131 @@ export const BuyerDashboard: React.FC = () => {
       {/* Create Demand Modal Dialog */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#01472e]/60 backdrop-blur-md p-4 animate-in fade-in">
-          <div className="bg-cream rounded-[2.5rem] shadow-forest border border-olive/30 p-8 max-w-xl w-full space-y-6">
+          <div className="bg-cream rounded-[2.5rem] shadow-forest border border-olive/30 p-8 max-w-2xl w-full space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-olive/20">
               <div className="flex items-center gap-3">
                 <ShoppingBag className="w-6 h-6 text-forest" />
-                <h3 className="text-2xl font-anton text-forest tracking-wide">
-                  Create Forward Demand Request
-                </h3>
+                <div>
+                  <h3 className="text-2xl font-anton text-forest tracking-wide">
+                    Create Forward Demand Request
+                  </h3>
+                  <p className="text-xs text-forest/60 font-medium">
+                    Register institutional procurement specifications for pooling and smart farmer matching.
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-forest/50 hover:text-forest transition"
+                className="text-forest/50 hover:text-forest transition text-lg font-bold"
               >
                 ✕
               </button>
             </div>
 
             <form onSubmit={handleCreateDemand} className="space-y-5 text-xs">
-              <div className="grid grid-cols-2 gap-4">
+              {/* Buyer Entity Representation */}
+              <div>
+                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Buyer Entity Name</label>
+                <input
+                  type="text"
+                  value={buyerName}
+                  onChange={(e) => setBuyerName(e.target.value)}
+                  placeholder="e.g. ABC Retail Stores, Koyambedu Fresh Mart"
+                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  required
+                />
+              </div>
+
+              {/* Crop Commodity & Variety */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Crop Commodity</label>
                   <select
                     value={crop}
-                    onChange={(e) => setCrop(e.target.value)}
+                    onChange={(e) => {
+                      const newCrop = e.target.value;
+                      setCrop(newCrop);
+                      if (newCrop === 'Tomato') setVariety('Sivam Hybrid');
+                      else if (newCrop === 'Green Chilli') setVariety('G4 Hot');
+                      else if (newCrop === 'Capsicum') setVariety('Bell Pepper (Green Wonder)');
+                      else if (newCrop === 'Maize') setVariety('Sweet Corn Hybrid');
+                    }}
                     className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
                   >
-                    <option value="Tomato">Tomato (Grade A)</option>
-                    <option value="Green Chilli">Green Chilli (G4)</option>
-                    <option value="Capsicum">Capsicum (Bell Pepper)</option>
+                    <option value="Tomato">Tomato</option>
+                    <option value="Green Chilli">Green Chilli</option>
+                    <option value="Capsicum">Capsicum</option>
                     <option value="Maize">Maize (Sweet Corn)</option>
+                    <option value="Onion">Onion (Bellary)</option>
+                    <option value="Potato">Potato (Kufri Jyoti)</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Target Quantity (kg)</label>
+                  <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Variety / Cultivar</label>
                   <input
-                    type="number"
-                    value={quantityKg}
-                    onChange={(e) => setQuantityKg(Number(e.target.value))}
+                    type="text"
+                    value={variety}
+                    onChange={(e) => setVariety(e.target.value)}
+                    placeholder="e.g. Sivam Hybrid, PKM-1, G4"
                     className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
-                    min="200"
-                    step="100"
                     required
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* Target Quantity & Unit */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Quality Grade Required</label>
+                  <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Target Quantity</label>
+                  <input
+                    type="number"
+                    value={rawQuantity}
+                    onChange={(e) => setRawQuantity(Number(e.target.value))}
+                    className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                    min="1"
+                    step="1"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Measurement Unit</label>
+                  <select
+                    value={unit}
+                    onChange={(e) => setUnit(e.target.value as any)}
+                    className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  >
+                    <option value="kg">Kilograms (kg)</option>
+                    <option value="Quintal">Quintals (100 kg)</option>
+                    <option value="Crates">Crates (25 kg standard)</option>
+                    <option value="Ton">Metric Tonnes (1,000 kg)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Converted kg preview */}
+              {unit !== 'kg' && (
+                <div className="p-3 bg-sage/20 border border-sage/40 rounded-[1rem] flex items-center justify-between text-xs text-forest font-bold">
+                  <span>Standardized Agricultural Volume:</span>
+                  <span className="font-mono text-sm">{calculatedKg.toLocaleString()} kg</span>
+                </div>
+              )}
+
+              {/* Quality & Ceiling Price */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Quality Grade Requirement</label>
                   <select
                     value={quality}
                     onChange={(e) => setQuality(e.target.value as any)}
                     className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
                   >
-                    <option value="Grade A">Grade A (Brix &gt; 4.5, Firm)</option>
+                    <option value="Grade A">Grade A (Premium Brix &gt; 4.5, Firm)</option>
                     <option value="Grade B">Grade B (Standard Commercial)</option>
-                    <option value="Any">Any Grade</option>
+                    <option value="Premium">Premium Export Standard</option>
+                    <option value="Standard">Standard Domestic Market</option>
+                    <option value="Any">Any Grade (Accept All)</option>
                   </select>
                 </div>
 
@@ -263,23 +441,27 @@ export const BuyerDashboard: React.FC = () => {
                     onChange={(e) => setMaxPrice(Number(e.target.value))}
                     className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
                     step="0.5"
+                    min="1"
                     required
                   />
                 </div>
               </div>
 
+              {/* Delivery Hub Location */}
               <div>
-                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Delivery Destination Hub</label>
+                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Delivery Destination Hub / Corridor</label>
                 <input
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g. Chennai Distribution Terminal, Koyambedu Hub"
                   className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* Delivery Date & Time Window */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Required Delivery Date</label>
                   <input
@@ -297,6 +479,7 @@ export const BuyerDashboard: React.FC = () => {
                     type="text"
                     value={deliveryWindow}
                     onChange={(e) => setDeliveryWindow(e.target.value)}
+                    placeholder="e.g. 05:30 AM - 08:30 AM"
                     className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
                     required
                   />
@@ -304,7 +487,7 @@ export const BuyerDashboard: React.FC = () => {
               </div>
 
               <div className="p-4 bg-olive/10 rounded-[1.5rem] border border-olive/30 text-xs text-forest/80 leading-relaxed font-medium">
-                ⚡ <strong className="text-forest">Demand-First Automation:</strong> Once submitted, Uzhavan Connect pools this demand with related regional requests, queries the forecast model, and initiates supplier allocation.
+                ⚡ <strong className="text-forest">Connected Lifecycle Integration:</strong> Once created, this demand is instantly persisted in shared storage, eligible for multi-buyer aggregation in the Demand Pool, and ranked in real-time by the Smart Matching Engine.
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-olive/20">

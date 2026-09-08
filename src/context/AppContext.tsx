@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import {
   UserProfile,
   UserRole,
@@ -16,7 +16,8 @@ import {
   TransportAssignment,
   ProducePassport,
   SettlementRecord,
-  OrderTimelineEvent
+  OrderTimelineEvent,
+  AggregatedDemandGroup
 } from '../types';
 import {
   DEMO_USERS,
@@ -70,6 +71,7 @@ interface AppContextType {
   toggleUserPermission: (userId: string, permission: Permission) => void;
   produceListings: ProduceListing[];
   demandRequests: DemandRequest[];
+  aggregatedDemandGroups: AggregatedDemandGroup[];
   addProduceListing: (listing: ProduceListing) => void;
   deleteProduceListing: (id: string) => void;
   addDemandRequest: (demand: DemandRequest) => void;
@@ -82,7 +84,8 @@ interface AppContextType {
     listingId: string,
     demandId: string,
     agreedPrice?: number,
-    agreedQty?: number
+    agreedQty?: number,
+    aggregatedGroupId?: string
   ) => WorkflowOrder | null;
   fpoCollectProduce: (orderId: string, hubLocation?: string) => void;
   fpoQualityCheck: (orderId: string, metrics: QualityInspectionData) => void;
@@ -99,6 +102,86 @@ interface AppContextType {
   isInstallable: boolean;
   promptInstall: () => Promise<boolean>;
 }
+
+export const identifyCompatibleDemandGroups = (demands: DemandRequest[]): AggregatedDemandGroup[] => {
+  // Only consider active demands with remaining quantity or in aggregatable state
+  const activeDemands = demands.filter(
+    (d) => d.quantityKg > 0 && d.status !== 'Order Created' && d.status !== 'Fulfilled'
+  );
+  if (activeDemands.length === 0) return [];
+
+  const getCorridor = (location: string): string => {
+    const loc = (location || '').toLowerCase();
+    if (loc.includes('chennai') || loc.includes('koyambedu') || loc.includes('guindy')) return 'Chennai Corridor';
+    if (loc.includes('salem') || loc.includes('attur')) return 'Salem Corridor';
+    if (loc.includes('kanchipuram') || loc.includes('sunguvarchatram') || loc.includes('sriperumbudur')) return 'Kanchipuram Corridor';
+    if (loc.includes('coimbatore') || loc.includes('pollachi')) return 'Coimbatore Corridor';
+    if (loc.includes('dharmapuri')) return 'Dharmapuri Corridor';
+    const firstWord = (location || 'Regional').split(',')[0].split(' ')[0].trim();
+    return `${firstWord || 'Regional'} Corridor`;
+  };
+
+  const groupsMap = new Map<string, DemandRequest[]>();
+
+  activeDemands.forEach((demand) => {
+    const cropKey = demand.crop.trim().toLowerCase();
+    const corridor = getCorridor(demand.location);
+    const gradeKey = demand.qualityRequirement === 'Any' || !demand.qualityRequirement ? 'Grade A' : demand.qualityRequirement;
+    const dateKey = demand.deliveryDate ? demand.deliveryDate.slice(0, 7) : '2026-09';
+
+    const groupKey = `${cropKey}__${corridor}__${gradeKey}__${dateKey}`;
+    if (!groupsMap.has(groupKey)) {
+      groupsMap.set(groupKey, []);
+    }
+    groupsMap.get(groupKey)!.push(demand);
+  });
+
+  const aggregatedGroups: AggregatedDemandGroup[] = [];
+
+  groupsMap.forEach((groupedDemands) => {
+    const first = groupedDemands[0];
+    const cropName = first.crop;
+    const corridor = getCorridor(first.location);
+    const qualityReq = first.qualityRequirement || 'Grade A';
+    const totalQty = groupedDemands.reduce((sum, d) => sum + d.quantityKg, 0);
+    const initialQty = groupedDemands.reduce((sum, d) => sum + (d.initialQuantityKg || d.quantityKg), 0);
+    const buyersSet = new Set(groupedDemands.map((d) => d.buyerName));
+    const avgPrice = groupedDemands.reduce((sum, d) => sum + (d.maxTargetPricePerKg || 0), 0) / (groupedDemands.length || 1);
+    const primaryDate = first.deliveryDate || '2026-09-08';
+
+    const cropShort = cropName.slice(0, 3).toUpperCase();
+    const corridorShort = corridor.split(' ')[0].slice(0, 3).toUpperCase();
+    const groupId = `POOL-${cropShort}-${corridorShort}-${Math.round(totalQty)}`;
+
+    const hubCities = Array.from(new Set(groupedDemands.map((d) => d.location.split(' ')[0]))).join(', ');
+    const reasons: string[] = [
+      `Identical Commodity: ${cropName} (${first.variety || 'Commercial Grade Standard'})`,
+      `Quality Standard Alignment: ${qualityReq} (Institutional Specifications)`,
+      `Logistics Corridor Consolidation: ${corridor} (${hubCities})`,
+      `Synchronized Delivery Window: ${primaryDate} (${groupedDemands.length} buyers consolidated)`
+    ];
+
+    aggregatedGroups.push({
+      id: groupId,
+      crop: cropName,
+      variety: first.variety || 'Certified Hybrid',
+      qualityRequirement: qualityReq,
+      region: corridor,
+      targetDate: primaryDate,
+      deliveryTimeWindow: first.deliveryTimeWindow || '05:30 AM - 08:30 AM',
+      totalQuantityKg: totalQty,
+      initialQuantityKg: initialQty,
+      contributingDemands: groupedDemands,
+      contributingDemandIds: groupedDemands.map((d) => d.id),
+      buyersCount: buyersSet.size,
+      avgMaxPricePerKg: Math.round(avgPrice * 100) / 100,
+      status: totalQty <= 0 ? 'ALLOCATED' : (totalQty < initialQty ? 'PARTIALLY_MATCHED' : 'FORMED'),
+      compatibilityReasons: reasons
+    });
+  });
+
+  return aggregatedGroups;
+};
 
 const GUEST_USER: UserProfile = {
   id: '',
@@ -176,6 +259,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     } catch (e) {
       console.warn('Failed to persist demand requests to localStorage', e);
     }
+  }, [demandRequests]);
+
+  // Dynamically group compatible regional buyer demands without mutating individual demands
+  const aggregatedDemandGroups = useMemo(() => {
+    return identifyCompatibleDemandGroups(demandRequests);
   }, [demandRequests]);
 
   // Persistent Orders
@@ -374,8 +462,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addDemandRequest = (demand: DemandRequest) => {
     const isCurrentlyOnline = isOnline && (typeof navigator !== 'undefined' ? navigator.onLine : true);
+    const initialQty = demand.initialQuantityKg || demand.quantityKg;
     const enrichedDemand: DemandRequest = {
       ...demand,
+      initialQuantityKg: initialQty,
+      allocatedQuantityKg: demand.allocatedQuantityKg || 0,
+      unit: demand.unit || 'kg',
+      variety: demand.variety || 'Certified Hybrid',
       syncStatus: isCurrentlyOnline ? 'SYNCED' : 'PENDING_SYNC',
       offlineCreated: !isCurrentlyOnline
     };
@@ -405,15 +498,39 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     listingId: string,
     demandId: string,
     agreedPrice?: number,
-    agreedQty?: number
+    agreedQty?: number,
+    aggregatedGroupId?: string
   ): WorkflowOrder | null => {
     const listing = produceListings.find((l) => l.id === listingId);
     const demand = demandRequests.find((d) => d.id === demandId);
-    if (!listing || !demand) return null;
+    if (!listing || !demand) {
+      console.warn('[UZHAVAN MATCH] Matching failed: Listing or Demand not found', { listingId, demandId });
+      return null;
+    }
 
-    const finalPrice = agreedPrice || listing.expectedPricePerKg || demand.maxTargetPricePerKg;
-    const finalQty = agreedQty !== undefined ? Math.min(listing.quantityKg, Number(agreedQty)) : Math.min(listing.quantityKg, demand.quantityKg);
-    const totalVal = finalPrice * finalQty;
+    // Double-allocation prevention: if listing has already been fully allocated, abort
+    if (listing.quantityKg <= 0) {
+      console.warn('[UZHAVAN MATCH] Double-allocation rejected: Listing has 0 kg available', listingId);
+      return null;
+    }
+
+    // Demand already fully satisfied
+    if (demand.quantityKg <= 0) {
+      console.warn('[UZHAVAN MATCH] Demand already completely fulfilled: 0 kg remaining', demandId);
+      return null;
+    }
+
+    const finalPrice = agreedPrice !== undefined ? Number(agreedPrice) : (listing.expectedPricePerKg || demand.maxTargetPricePerKg);
+    const maxPossibleQty = Math.min(listing.quantityKg, demand.quantityKg);
+    const requestedAgreedQty = agreedQty !== undefined ? Number(agreedQty) : maxPossibleQty;
+    const finalQty = Math.min(maxPossibleQty, requestedAgreedQty);
+
+    if (finalQty <= 0) {
+      console.warn('[UZHAVAN MATCH] Cannot create order with non-positive quantity:', finalQty);
+      return null;
+    }
+
+    const totalVal = Math.round(finalPrice * finalQty * 100) / 100;
     const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
     const nowTimestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     const randomSeq = Math.floor(100 + Math.random() * 900);
@@ -442,13 +559,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       agreementId,
       produceListingId: listing.id,
       demandRequestId: demand.id,
+      aggregatedGroupId: aggregatedGroupId || demand.aggregatedGroupId,
       batchId,
       farmerId: listing.farmerId,
       farmerName: listing.farmerName,
       buyerId: demand.buyerId,
       buyerName: demand.buyerName,
       crop: listing.crop,
-      variety: listing.variety || 'Certified Hybrid',
+      variety: listing.variety || demand.variety || 'Certified Hybrid',
       quantityKg: finalQty,
       pricePerKg: finalPrice,
       totalValue: totalVal,
@@ -456,7 +574,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       date: dateStr,
       deliveryLocation: demand.location,
       farmerLocation: listing.location,
-      fpoName: currentUser.fpoName || 'GreenHarvest FPO',
+      fpoName: currentUser.fpoName || listing.fpoName || 'GreenHarvest FPO',
       qualityGrade: listing.grade,
       timeline: [
         {
@@ -489,7 +607,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const newPassport: ProducePassport = {
       batchId,
       crop: listing.crop,
-      variety: listing.variety || 'Certified Hybrid',
+      variety: listing.variety || demand.variety || 'Certified Hybrid',
       farmerOrFpo: listing.farmerName,
       farmLocation: listing.location,
       harvestDate: listing.harvestDate || dateStr,
@@ -575,10 +693,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setDemandRequests((prev) =>
       prev.map((d) => {
         if (d.id !== demand.id) return d;
+        const initialQty = d.initialQuantityKg || d.quantityKg;
+        const prevAllocated = d.allocatedQuantityKg || 0;
+        const newAllocated = prevAllocated + finalQty;
         const remainingDemand = Math.max(0, d.quantityKg - finalQty);
+
         return {
           ...d,
-          quantityKg: remainingDemand > 0 ? remainingDemand : d.quantityKg,
+          initialQuantityKg: initialQty,
+          allocatedQuantityKg: newAllocated,
+          quantityKg: remainingDemand,
           status: remainingDemand <= 0 ? 'Order Created' : 'Partially Fulfilled'
         };
       })
@@ -1188,6 +1312,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         toggleUserPermission,
         produceListings,
         demandRequests,
+        aggregatedDemandGroups,
         addProduceListing,
         deleteProduceListing,
         addDemandRequest,
