@@ -88,17 +88,32 @@ export type BuyerDemandStatus =
 export type OrderStatus =
   | 'Created'
   | 'Produce Collection Pending'
+  | 'Partially Collected'
   | 'Collected'
   | 'Quality Checked'
+  | 'Quality Rejected'
   | 'Packed'
   | 'Transport Assigned'
   | 'In Transit'
   | 'Delivered'
+  | 'Buyer Confirmation Pending'
   | 'Buyer Confirmed'
   | 'Payment Pending'
   | 'Completed'
   | 'Pending'
   | 'Confirmed';
+
+export interface FarmerContribution {
+  farmerId: string;
+  farmerName: string;
+  farmerLocation: string;
+  produceListingId: string;
+  contributedQuantityKg: number;
+  collectedQuantityKg: number;
+  collectionStatus: 'PENDING' | 'PARTIALLY_COLLECTED' | 'FULLY_COLLECTED';
+  collectedAt?: string;
+  notes?: string;
+}
 
 export interface QualityInspectionData {
   sugarBrix: number;
@@ -109,6 +124,25 @@ export interface QualityInspectionData {
   inspectorName: string;
   inspectionDate: string;
   hubLocation: string;
+  status?: 'PASSED' | 'REJECTED' | 'CONDITIONALLY_PASSED';
+  acceptedQuantityKg?: number;
+  rejectedQuantityKg?: number;
+  rejectionReason?: string;
+  inspectionNotes?: string;
+}
+
+export interface BuyerDeliveryConfirmation {
+  orderId: string;
+  deliveredQuantityKg: number;
+  receivedQuantityKg: number;
+  acceptedQuantityKg: number;
+  rejectedQuantityKg?: number;
+  acceptanceStatus: 'ACCEPTED_FULL' | 'ACCEPTED_PARTIAL' | 'REJECTED';
+  issuesReported?: string;
+  receiverName: string;
+  receiverRole: string;
+  confirmedAt: string;
+  signatureOrOtp?: string;
 }
 
 export interface TransportAssignment {
@@ -174,6 +208,30 @@ export interface WorkflowOrder {
   transportDetails?: TransportAssignment;
   timeline: OrderTimelineEvent[];
   settlementId?: string;
+
+  // Collection tracking (Part B & C)
+  farmerContributions?: FarmerContribution[];
+  collectionStatus?: 'Collection Pending' | 'Partially Collected' | 'Fully Collected';
+  collectedQuantityKg?: number;
+  remainingCollectionKg?: number;
+
+  // Quality & Grading tracking (Part D)
+  qualityStatus?: 'Pending' | 'Passed' | 'Rejected' | 'Conditionally Passed';
+  acceptedQuantityKg?: number;
+  rejectedQuantityKg?: number;
+
+  // Packing tracking (Part E)
+  packingStatus?: 'Packing Pending' | 'Packing In Progress' | 'Packed';
+  packedQuantityKg?: number;
+  crateCount?: number;
+  packageType?: string;
+  isReadyForTransport?: boolean;
+
+  // Transport tracking (Part F)
+  transportStatus?: 'Transport Pending' | 'Vehicle Assigned' | 'Ready for Pickup' | 'In Transit' | 'Delivered';
+
+  // Buyer Delivery Confirmation (Part G)
+  buyerConfirmation?: BuyerDeliveryConfirmation;
 }
 
 export interface ProduceListing {

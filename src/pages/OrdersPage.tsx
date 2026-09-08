@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { WorkflowOrder, BuyerDeliveryConfirmation } from '../types';
 import {
   Package,
   CheckCircle2,
@@ -14,7 +15,9 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowRight,
-  ExternalLink
+  ExternalLink,
+  FileCheck2,
+  AlertTriangle
 } from 'lucide-react';
 
 const STATUS_STYLES: Record<string, string> = {
@@ -38,6 +41,7 @@ export const OrdersPage: React.FC = () => {
     currentRole,
     orders,
     buyerConfirmReceipt,
+    buyerConfirmDelivery,
     openPassportModal,
     setActiveTab
   } = useApp();
@@ -45,6 +49,48 @@ export const OrdersPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+
+  // Delivery confirmation modal state
+  const [verifyOrder, setVerifyOrder] = useState<WorkflowOrder | null>(null);
+  const [receivedKg, setReceivedKg] = useState<number>(1000);
+  const [acceptedKg, setAcceptedKg] = useState<number>(1000);
+  const [rejectedKg, setRejectedKg] = useState<number>(0);
+  const [acceptanceStatus, setAcceptanceStatus] = useState<'ACCEPTED_FULL' | 'ACCEPTED_PARTIAL' | 'REJECTED'>('ACCEPTED_FULL');
+  const [issuesReported, setIssuesReported] = useState<string>('All crates inspected and accepted in good condition.');
+  const [receiverName, setReceiverName] = useState<string>('Receiving Officer');
+  const [receiverRole, setReceiverRole] = useState<string>('Receiving Logistics In-Charge');
+
+  const openVerifyModal = (order: WorkflowOrder) => {
+    const qty = order.packedQuantityKg || order.acceptedQuantityKg || order.quantityKg;
+    setVerifyOrder(order);
+    setReceivedKg(qty);
+    setAcceptedKg(qty);
+    setRejectedKg(0);
+    setAcceptanceStatus('ACCEPTED_FULL');
+    setIssuesReported('All crates inspected and accepted in good condition.');
+    setReceiverName(`${order.buyerName} Dock Officer`);
+    setReceiverRole('Receiving Logistics In-Charge');
+  };
+
+  const handleConfirmVerification = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!verifyOrder) return;
+    const conf: BuyerDeliveryConfirmation = {
+      orderId: verifyOrder.id,
+      deliveredQuantityKg: Number(verifyOrder.packedQuantityKg || verifyOrder.quantityKg),
+      receivedQuantityKg: Number(receivedKg),
+      acceptedQuantityKg: Number(acceptedKg),
+      rejectedQuantityKg: Number(rejectedKg),
+      acceptanceStatus,
+      issuesReported,
+      receiverName,
+      receiverRole,
+      confirmedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+      signatureOrOtp: `OTP-CONFIRMED-${Math.floor(100000 + Math.random() * 900000)}`
+    };
+    buyerConfirmDelivery(verifyOrder.id, conf);
+    setVerifyOrder(null);
+  };
 
   const filtered = orders.filter((o) => {
     const matchesSearch =
@@ -196,13 +242,20 @@ export const OrdersPage: React.FC = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            buyerConfirmReceipt(order.id);
+                            openVerifyModal(order);
                           }}
-                          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1.5"
+                          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1.5 animate-pulse"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>Accept & Confirm</span>
                         </button>
+                      )}
+
+                      {order.buyerConfirmation && (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 px-3 py-1.5 rounded-xl">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Receipt Confirmed ({order.buyerConfirmation.acceptedQuantityKg} kg)</span>
+                        </span>
                       )}
 
                       {/* Payment Pending / Settle Shortcut */}
@@ -348,6 +401,237 @@ export const OrdersPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Dockside Delivery Verification & Receipt Modal */}
+      {verifyOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 sm:p-8 max-w-2xl w-full space-y-6 max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-emerald-100 rounded-2xl border border-emerald-200">
+                  <FileCheck2 className="w-6 h-6 text-emerald-700" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 font-['Outfit']">
+                    Dockside Produce Inspection & Receiving Handover
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Order <span className="font-mono font-bold text-slate-800">{verifyOrder.id}</span> • Batch <span className="font-mono font-bold text-slate-800">{verifyOrder.batchId}</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setVerifyOrder(null)}
+                className="text-slate-400 hover:text-slate-600 text-lg font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Shipment Summary */}
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div>
+                <span className="text-[10px] text-slate-400 font-bold uppercase block">Produce</span>
+                <strong className="text-slate-800 text-sm">{verifyOrder.crop}</strong>
+                <span className="text-[10px] text-slate-500 block">({verifyOrder.variety})</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-400 font-bold uppercase block">Delivered Volume</span>
+                <strong className="text-slate-800 text-sm">
+                  {(verifyOrder.packedQuantityKg || verifyOrder.quantityKg).toLocaleString()} kg
+                </strong>
+                <span className="text-[10px] text-slate-500 block">
+                  {verifyOrder.crateCount || Math.ceil((verifyOrder.packedQuantityKg || verifyOrder.quantityKg) / 25)} Crates
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-400 font-bold uppercase block">Contract Rate</span>
+                <strong className="text-slate-800 text-sm">₹{verifyOrder.pricePerKg}/kg</strong>
+                <span className="text-[10px] text-slate-500 block">Grade {verifyOrder.qualityGrade || 'A'}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-400 font-bold uppercase block">Inbound Carrier</span>
+                <strong className="text-slate-800 text-xs truncate block">
+                  {verifyOrder.transportDetails?.carrierName || 'Cold-Chain Express'}
+                </strong>
+                <span className="text-[10px] text-slate-500 block">
+                  {verifyOrder.transportDetails?.vehicleNumber || 'TN-38-BZ-4419'}
+                </span>
+              </div>
+            </div>
+
+            <form onSubmit={handleConfirmVerification} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
+                    Gross Received (kg)
+                  </label>
+                  <input
+                    type="number"
+                    value={receivedKg}
+                    onChange={(e) => {
+                      const val = Math.max(0, Number(e.target.value));
+                      setReceivedKg(val);
+                      setAcceptedKg(Math.max(0, val - rejectedKg));
+                    }}
+                    className="w-full bg-white border border-slate-200 rounded-xl p-2.5 font-bold text-base text-slate-900 focus:outline-none focus:border-emerald-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-emerald-800 uppercase tracking-wider block mb-1 text-[10px]">
+                    Accepted Volume (kg)
+                  </label>
+                  <input
+                    type="number"
+                    value={acceptedKg}
+                    onChange={(e) => {
+                      const val = Math.max(0, Number(e.target.value));
+                      setAcceptedKg(val);
+                      setRejectedKg(Math.max(0, receivedKg - val));
+                      if (val === receivedKg) setAcceptanceStatus('ACCEPTED_FULL');
+                      else if (val > 0) setAcceptanceStatus('ACCEPTED_PARTIAL');
+                      else setAcceptanceStatus('REJECTED');
+                    }}
+                    className="w-full bg-white border border-emerald-400 rounded-xl p-2.5 font-bold text-base text-emerald-800 focus:outline-none focus:border-emerald-600"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-red-700 uppercase tracking-wider block mb-1 text-[10px]">
+                    Rejected (kg)
+                  </label>
+                  <input
+                    type="number"
+                    value={rejectedKg}
+                    onChange={(e) => {
+                      const val = Math.max(0, Number(e.target.value));
+                      setRejectedKg(val);
+                      setAcceptedKg(Math.max(0, receivedKg - val));
+                      if (val === 0) setAcceptanceStatus('ACCEPTED_FULL');
+                      else if (val >= receivedKg) setAcceptanceStatus('REJECTED');
+                      else setAcceptanceStatus('ACCEPTED_PARTIAL');
+                    }}
+                    className="w-full bg-white border border-red-200 rounded-xl p-2.5 font-bold text-base text-red-700 focus:outline-none focus:border-red-400"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">
+                  Quality Gate Signoff Decision
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {[
+                    { id: 'ACCEPTED_FULL', label: 'Full Acceptance (100%)', desc: 'Conforms to Grade A standard' },
+                    { id: 'ACCEPTED_PARTIAL', label: 'Partial Acceptance', desc: 'Deduct defective volume' },
+                    { id: 'REJECTED', label: 'Consignment Rejected', desc: 'Quality failure or damage' }
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        const s = opt.id as any;
+                        setAcceptanceStatus(s);
+                        if (s === 'ACCEPTED_FULL') {
+                          setAcceptedKg(receivedKg);
+                          setRejectedKg(0);
+                        } else if (s === 'REJECTED') {
+                          setAcceptedKg(0);
+                          setRejectedKg(receivedKg);
+                        }
+                      }}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        acceptanceStatus === opt.id
+                          ? opt.id === 'ACCEPTED_FULL'
+                            ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold'
+                            : opt.id === 'ACCEPTED_PARTIAL'
+                            ? 'bg-amber-50 border-amber-500 text-amber-900 font-bold'
+                            : 'bg-red-50 border-red-500 text-red-900 font-bold'
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <p className="font-bold text-xs">{opt.label}</p>
+                      <p className="text-[10px] opacity-75 mt-0.5">{opt.desc}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
+                  Receiving Inspection Remarks & Cold-Chain Observations
+                </label>
+                <textarea
+                  value={issuesReported}
+                  onChange={(e) => setIssuesReported(e.target.value)}
+                  rows={2}
+                  className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-800 font-medium focus:outline-none focus:border-emerald-500"
+                  placeholder="Record cold-chain temp log, crate condition, or defect notes..."
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
+                    Receiving Officer Name
+                  </label>
+                  <input
+                    type="text"
+                    value={receiverName}
+                    onChange={(e) => setReceiverName(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-xl p-2.5 font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
+                    Officer Designation
+                  </label>
+                  <input
+                    type="text"
+                    value={receiverRole}
+                    onChange={(e) => setReceiverRole(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-xl p-2.5 font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200 text-xs text-emerald-950 space-y-1">
+                <div className="flex items-center gap-2 font-bold text-emerald-900">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <span>Transparent Escrow Payout Impact</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  Signing locks accepted volume at <strong>{acceptedKg.toLocaleString()} kg</strong> (₹{(acceptedKg * verifyOrder.pricePerKg).toLocaleString()}).
+                  Escrow automatically releases 89% to member farmers / FPO and 8% to cold-chain logistics.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setVerifyOrder(null)}
+                  className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl font-bold uppercase tracking-wider transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-xs transition uppercase tracking-wider flex items-center gap-1.5"
+                >
+                  <FileCheck2 className="w-4 h-4" />
+                  <span>Confirm Receipt & Release Escrow</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

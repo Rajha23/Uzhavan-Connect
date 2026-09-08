@@ -11,13 +11,16 @@ import {
   DemandRequest,
   NetworkSyncStatus,
   WorkflowOrder,
+  OrderStatus,
   WorkflowAgreement,
   QualityInspectionData,
   TransportAssignment,
   ProducePassport,
   SettlementRecord,
   OrderTimelineEvent,
-  AggregatedDemandGroup
+  AggregatedDemandGroup,
+  FarmerContribution,
+  BuyerDeliveryConfirmation
 } from '../types';
 import {
   DEMO_USERS,
@@ -87,12 +90,16 @@ interface AppContextType {
     agreedQty?: number,
     aggregatedGroupId?: string
   ) => WorkflowOrder | null;
+  fpoRecordCollection: (orderId: string, farmerId: string, quantityToCollect: number, notes?: string) => boolean;
   fpoCollectProduce: (orderId: string, hubLocation?: string) => void;
+  fpoRecordQualityGrading: (orderId: string, metrics: QualityInspectionData) => boolean;
   fpoQualityCheck: (orderId: string, metrics: QualityInspectionData) => void;
+  fpoRecordPacking: (orderId: string, packDetails?: { packedQuantityKg?: number; packageType?: string; crateCount?: number; notes?: string }) => boolean;
   fpoPackProduce: (orderId: string, notes?: string) => void;
   assignTransport: (orderId: string, transport: TransportAssignment) => void;
   dispatchShipment: (orderId: string) => void;
   markDelivered: (orderId: string) => void;
+  buyerConfirmDelivery: (orderId: string, confirmation: BuyerDeliveryConfirmation) => void;
   buyerConfirmReceipt: (orderId: string) => void;
   settlePayment: (orderId: string) => void;
   isOnline: boolean;
@@ -576,6 +583,27 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       farmerLocation: listing.location,
       fpoName: currentUser.fpoName || listing.fpoName || 'GreenHarvest FPO',
       qualityGrade: listing.grade,
+      farmerContributions: [
+        {
+          farmerId: listing.farmerId,
+          farmerName: listing.farmerName,
+          farmerLocation: listing.location,
+          produceListingId: listing.id,
+          contributedQuantityKg: finalQty,
+          collectedQuantityKg: 0,
+          collectionStatus: 'PENDING'
+        }
+      ],
+      collectionStatus: 'Collection Pending',
+      collectedQuantityKg: 0,
+      remainingCollectionKg: finalQty,
+      qualityStatus: 'Pending',
+      acceptedQuantityKg: 0,
+      rejectedQuantityKg: 0,
+      packingStatus: 'Packing Pending',
+      packedQuantityKg: 0,
+      isReadyForTransport: false,
+      transportStatus: 'Transport Pending',
       timeline: [
         {
           step: 'LISTED',
@@ -728,76 +756,192 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return newOrder;
   };
 
-  // Step 6: FPO Collects Produce
-  const fpoCollectProduce = (orderId: string, hubLocation = 'Sriperumbudur Rural Hub') => {
+  // Step 6: FPO Collects Produce with Multi-Farmer Traceability & Partial Collection
+  const fpoRecordCollection = (orderId: string, farmerId: string, quantityToCollect: number, notes?: string): boolean => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    let success = false;
     let targetBatchId = '';
     let targetListingId = '';
 
     setOrders((prev) =>
       prev.map((o) => {
         if (o.id !== orderId) return o;
+
+        // Existing or initialized contributions
+        const contributions: FarmerContribution[] = o.farmerContributions && o.farmerContributions.length > 0
+          ? o.farmerContributions
+          : [
+              {
+                farmerId: o.farmerId,
+                farmerName: o.farmerName,
+                farmerLocation: o.farmerLocation,
+                produceListingId: o.produceListingId,
+                contributedQuantityKg: o.quantityKg,
+                collectedQuantityKg: o.collectedQuantityKg || 0,
+                collectionStatus: (o.collectionStatus === 'Fully Collected' ? 'FULLY_COLLECTED' : (o.collectionStatus === 'Partially Collected' ? 'PARTIALLY_COLLECTED' : 'PENDING')) as any
+              }
+            ];
+
+        // Find contribution for farmerId (or first if farmerId matches or only 1)
+        const targetContribIdx = contributions.findIndex(
+          (c) => c.farmerId === farmerId || c.produceListingId === farmerId || contributions.length === 1
+        );
+
+        if (targetContribIdx === -1) {
+          console.warn('[FPO COLLECTION] Farmer contribution not found for order', { orderId, farmerId });
+          return o;
+        }
+
+        const contrib = contributions[targetContribIdx];
+        const remainingForFarmer = Math.max(0, contrib.contributedQuantityKg - (contrib.collectedQuantityKg || 0));
+
+        if (quantityToCollect <= 0 || remainingForFarmer <= 0) {
+          console.warn('[FPO COLLECTION] Invalid quantity to collect or already fully collected', {
+            quantityToCollect,
+            remainingForFarmer
+          });
+          return o;
+        }
+
+        // Prevent collected quantity from exceeding confirmed quantity
+        const finalCollectKg = Math.min(quantityToCollect, remainingForFarmer);
+        const newFarmerCollected = (contrib.collectedQuantityKg || 0) + finalCollectKg;
+        const newContribStatus = newFarmerCollected >= contrib.contributedQuantityKg ? 'FULLY_COLLECTED' : 'PARTIALLY_COLLECTED';
+
+        const updatedContributions: FarmerContribution[] = contributions.map((c, idx) => {
+          if (idx !== targetContribIdx) return c;
+          return {
+            ...c,
+            collectedQuantityKg: newFarmerCollected,
+            collectionStatus: newContribStatus,
+            collectedAt: timestamp,
+            notes: notes || c.notes
+          };
+        });
+
+        const totalCollectedKg = updatedContributions.reduce((sum, c) => sum + (c.collectedQuantityKg || 0), 0);
+        const totalRequiredKg = o.quantityKg;
+        const remainingKg = Math.max(0, totalRequiredKg - totalCollectedKg);
+        const isFullyCollected = remainingKg <= 0 && updatedContributions.every((c) => c.collectionStatus === 'FULLY_COLLECTED');
+
+        const newOrderStatus: OrderStatus = isFullyCollected ? 'Collected' : 'Partially Collected';
+        const newCollectionStatus = isFullyCollected ? 'Fully Collected' : 'Partially Collected';
+
         targetBatchId = o.batchId;
-        targetListingId = o.produceListingId;
-        const updatedTimeline: OrderTimelineEvent[] = [
-          ...o.timeline.map((t) => (t.step === 'COLLECTED' ? { ...t, completed: true, timestamp, location: `${o.farmerLocation} -> ${hubLocation}` } : t)),
-          { step: 'QUALITY_PENDING', title: 'Awaiting Hub Quality Inspection', location: hubLocation, timestamp, operator: 'FPO Quality Lab', completed: false }
-        ];
-        return { ...o, status: 'Collected', timeline: updatedTimeline };
-      })
-    );
+        targetListingId = contrib.produceListingId || o.produceListingId;
+        success = true;
 
-    if (targetListingId) {
-      setProduceListings((prev) =>
-        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Collected' } : p))
-      );
-    }
-    if (targetBatchId) {
-      setProducePassports((prev) =>
-        prev.map((pass) => (pass.batchId === targetBatchId ? { ...pass, currentStatus: 'Harvested' } : pass))
-      );
-    }
-  };
-
-  // Step 7: Quality Check & Grading
-  const fpoQualityCheck = (orderId: string, metrics: QualityInspectionData) => {
-    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
-    let targetBatchId = '';
-    let targetListingId = '';
-
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id !== orderId) return o;
-        targetBatchId = o.batchId;
-        targetListingId = o.produceListingId;
         const updatedTimeline: OrderTimelineEvent[] = [
           ...o.timeline,
           {
-            step: 'QUALITY_CHECKED',
-            title: `Quality Tested & Certified (${metrics.verifiedGrade})`,
-            location: metrics.hubLocation,
+            step: isFullyCollected ? 'COLLECTED' : 'PARTIAL_COLLECTION',
+            title: isFullyCollected
+              ? `Produce Fully Collected (${totalCollectedKg.toLocaleString()} kg)`
+              : `Partial Farm Pickup: ${finalCollectKg.toLocaleString()} kg collected (${remainingKg.toLocaleString()} kg remaining)`,
+            location: `${contrib.farmerLocation || o.farmerLocation} -> FPO Hub`,
             timestamp,
-            operator: metrics.inspectorName,
+            operator: `FPO Logistics Agent (${contrib.farmerName})`,
             completed: true,
-            notes: `Brix: ${metrics.sugarBrix}, Firmness: ${metrics.firmnessKgCm} kg/cm², Pesticide: ${metrics.pesticideResidueTest}`
+            notes: notes || `Farmer: ${contrib.farmerName}, Collected: ${finalCollectKg} kg`
           }
         ];
+
         return {
           ...o,
-          status: 'Quality Checked',
-          qualityGrade: metrics.verifiedGrade,
-          inspectionMetrics: metrics,
+          status: newOrderStatus,
+          collectionStatus: newCollectionStatus,
+          collectedQuantityKg: totalCollectedKg,
+          remainingCollectionKg: remainingKg,
+          farmerContributions: updatedContributions,
           timeline: updatedTimeline
         };
       })
     );
 
-    if (targetListingId) {
+    if (success && targetListingId) {
+      setProduceListings((prev) =>
+        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Collected' } : p))
+      );
+    }
+    if (success && targetBatchId) {
+      setProducePassports((prev) =>
+        prev.map((pass) => (pass.batchId === targetBatchId ? { ...pass, currentStatus: 'Harvested' } : pass))
+      );
+    }
+
+    return success;
+  };
+
+  const fpoCollectProduce = (orderId: string, hubLocation = 'Sriperumbudur Rural Hub') => {
+    const order = orders.find((o) => o.id === orderId);
+    if (!order) return;
+    const remainingToCollect = order.remainingCollectionKg !== undefined ? order.remainingCollectionKg : order.quantityKg;
+    fpoRecordCollection(orderId, order.farmerId, remainingToCollect, `Collected at farm gate for ${hubLocation}`);
+  };
+
+  // Step 7: Quality Check & Grading with Accepted/Rejected Tracking
+  const fpoRecordQualityGrading = (orderId: string, metrics: QualityInspectionData): boolean => {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    let success = false;
+    let targetBatchId = '';
+    let targetListingId = '';
+
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+
+        const collectedKg = o.collectedQuantityKg || o.quantityKg;
+        const acceptedKg = metrics.acceptedQuantityKg !== undefined ? Number(metrics.acceptedQuantityKg) : collectedKg;
+        const rejectedKg = metrics.rejectedQuantityKg !== undefined ? Number(metrics.rejectedQuantityKg) : Math.max(0, collectedKg - acceptedKg);
+
+        const qualityStatus = acceptedKg <= 0
+          ? 'Rejected'
+          : (rejectedKg > 0 ? 'Conditionally Passed' : 'Passed');
+
+        const newOrderStatus: OrderStatus = qualityStatus === 'Rejected' ? 'Quality Rejected' : 'Quality Checked';
+
+        targetBatchId = o.batchId;
+        targetListingId = o.produceListingId;
+        success = true;
+
+        const updatedTimeline: OrderTimelineEvent[] = [
+          ...o.timeline,
+          {
+            step: 'QUALITY_CHECKED',
+            title: `Quality Assessed: ${qualityStatus.toUpperCase()} (${metrics.verifiedGrade})`,
+            location: metrics.hubLocation || 'FPO Quality Station',
+            timestamp,
+            operator: metrics.inspectorName || 'QA Assessor',
+            completed: true,
+            notes: `Accepted: ${acceptedKg.toLocaleString()} kg, Rejected: ${rejectedKg.toLocaleString()} kg. Brix: ${metrics.sugarBrix}°, Firmness: ${metrics.firmnessKgCm} kg/cm²${metrics.rejectionReason ? ` [Reason: ${metrics.rejectionReason}]` : ''}`
+          }
+        ];
+
+        return {
+          ...o,
+          status: newOrderStatus,
+          qualityGrade: metrics.verifiedGrade,
+          qualityStatus,
+          acceptedQuantityKg: acceptedKg,
+          rejectedQuantityKg: rejectedKg,
+          inspectionMetrics: {
+            ...metrics,
+            status: qualityStatus === 'Rejected' ? 'REJECTED' : (qualityStatus === 'Conditionally Passed' ? 'CONDITIONALLY_PASSED' : 'PASSED'),
+            acceptedQuantityKg: acceptedKg,
+            rejectedQuantityKg: rejectedKg
+          },
+          packingStatus: qualityStatus === 'Rejected' ? 'Packing Pending' : (o.packingStatus || 'Packing Pending'),
+          timeline: updatedTimeline
+        };
+      })
+    );
+
+    if (success && targetListingId) {
       setProduceListings((prev) =>
         prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Quality Checked', grade: metrics.verifiedGrade } : p))
       );
     }
-    if (targetBatchId) {
+    if (success && targetBatchId) {
       setProducePassports((prev) =>
         prev.map((pass) =>
           pass.batchId === targetBatchId
@@ -819,41 +963,79 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         )
       );
     }
+
+    return success;
   };
 
-  // Step 8: Packing & Crating
-  const fpoPackProduce = (orderId: string, notes?: string) => {
+  const fpoQualityCheck = (orderId: string, metrics: QualityInspectionData) => {
+    fpoRecordQualityGrading(orderId, metrics);
+  };
+
+  // Step 8: Packing & Crating Station with Transport Readiness Gate
+  const fpoRecordPacking = (
+    orderId: string,
+    packDetails?: { packedQuantityKg?: number; packageType?: string; crateCount?: number; notes?: string }
+  ): boolean => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    let success = false;
     let targetBatchId = '';
     let targetListingId = '';
 
     setOrders((prev) =>
       prev.map((o) => {
         if (o.id !== orderId) return o;
+
+        // Gate: Order must have passed quality inspection with accepted quantity > 0
+        if (o.qualityStatus === 'Rejected' || (o.acceptedQuantityKg !== undefined && o.acceptedQuantityKg <= 0)) {
+          console.warn('[FPO PACKING] Cannot pack quality rejected order:', orderId);
+          return o;
+        }
+
+        const maxPackable = o.acceptedQuantityKg !== undefined ? o.acceptedQuantityKg : (o.collectedQuantityKg || o.quantityKg);
+        const requestedPacked = packDetails?.packedQuantityKg !== undefined ? Number(packDetails.packedQuantityKg) : maxPackable;
+        const finalPackedKg = Math.min(maxPackable, requestedPacked);
+
+        const packageType = packDetails?.packageType || 'Ventilated 25kg Agro-Crates with tamper-evident QR seal';
+        const defaultCrates = Math.ceil(finalPackedKg / 25);
+        const crateCount = packDetails?.crateCount !== undefined ? Number(packDetails.crateCount) : defaultCrates;
+
         targetBatchId = o.batchId;
         targetListingId = o.produceListingId;
+        success = true;
+
         const updatedTimeline: OrderTimelineEvent[] = [
           ...o.timeline,
           {
             step: 'PACKED',
-            title: 'Packed in Ventilated Crates & QR Assigned',
+            title: `Packed & QR Sealed (${finalPackedKg.toLocaleString()} kg in ${crateCount} crates)`,
             location: 'FPO Packing Bay',
             timestamp,
             operator: 'FPO Packing Unit',
             completed: true,
-            notes: notes || `Batch ID: ${o.batchId}`
+            notes: packDetails?.notes || `Type: ${packageType}. Batch Seal: ${o.batchId}`
           }
         ];
-        return { ...o, status: 'Packed', timeline: updatedTimeline };
+
+        return {
+          ...o,
+          status: 'Packed',
+          packingStatus: 'Packed',
+          packedQuantityKg: finalPackedKg,
+          packageType,
+          crateCount,
+          isReadyForTransport: true,
+          transportStatus: 'Transport Pending',
+          timeline: updatedTimeline
+        };
       })
     );
 
-    if (targetListingId) {
+    if (success && targetListingId) {
       setProduceListings((prev) =>
         prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Packed' } : p))
       );
     }
-    if (targetBatchId) {
+    if (success && targetBatchId) {
       setProducePassports((prev) =>
         prev.map((pass) =>
           pass.batchId === targetBatchId
@@ -868,14 +1050,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         )
       );
     }
+
+    return success;
   };
 
-  // Step 9a: Transport Assignment
+  const fpoPackProduce = (orderId: string, notes?: string) => {
+    fpoRecordPacking(orderId, { notes });
+  };
+
+  // Step 9a: Transport Assignment (Gated on isReadyForTransport)
   const assignTransport = (orderId: string, transport: TransportAssignment) => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     setOrders((prev) =>
       prev.map((o) => {
         if (o.id !== orderId) return o;
+        if (!o.isReadyForTransport && o.status !== 'Packed') {
+          console.warn('[LOGISTICS] Order is not ready for transport:', orderId);
+          return o;
+        }
         const updatedTimeline: OrderTimelineEvent[] = [
           ...o.timeline,
           {
@@ -890,6 +1082,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         return {
           ...o,
           status: 'Transport Assigned',
+          transportStatus: 'Vehicle Assigned',
           transportDetails: transport,
           timeline: updatedTimeline
         };
@@ -912,14 +1105,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           ...o.timeline,
           {
             step: 'IN_TRANSIT',
-            title: 'Dispatched & En Route via Expressway',
-            location: 'National Highway NH-48',
+            title: 'Dispatched & En Route via Cold-Chain Corridor',
+            location: 'Highway Arterial NH-48',
             timestamp,
             operator: o.transportDetails?.driverName || 'Carrier Driver',
             completed: true
           }
         ];
-        return { ...o, status: 'In Transit', timeline: updatedTimeline };
+        return { ...o, status: 'In Transit', transportStatus: 'In Transit', timeline: updatedTimeline };
       })
     );
 
@@ -945,7 +1138,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  // Step 10: Delivered to Buyer
+  // Step 10: Delivered to Buyer Hub (Awaiting Buyer Confirmation)
   const markDelivered = (orderId: string) => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     let targetBatchId = '';
@@ -960,14 +1153,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           ...o.timeline,
           {
             step: 'DELIVERED',
-            title: 'Delivered at Buyer Receiving Facility',
+            title: 'Delivered at Buyer Receiving Facility (Awaiting Buyer Quality Signoff)',
             location: o.deliveryLocation,
             timestamp,
-            operator: 'Carrier & Receiving Team',
+            operator: 'Carrier Delivery Handover',
             completed: true
           }
         ];
-        return { ...o, status: 'Delivered', timeline: updatedTimeline };
+        return { ...o, status: 'Delivered', transportStatus: 'Delivered', timeline: updatedTimeline };
       })
     );
 
@@ -993,22 +1186,26 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  // Step 11: Buyer Confirms Receipt
-  const buyerConfirmReceipt = (orderId: string) => {
+  // Step 11: Buyer Delivery Verification & Receipt Confirmation
+  const buyerConfirmDelivery = (orderId: string, confirmation: BuyerDeliveryConfirmation) => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     const order = orders.find((o) => o.id === orderId);
     if (!order) return;
 
     const createdSettleId = `SETTLE-2026-${order.id.replace('ORD-TN-', '')}`;
+    const acceptedKg = confirmation.acceptedQuantityKg !== undefined ? confirmation.acceptedQuantityKg : (order.packedQuantityKg || order.quantityKg);
+    const finalVal = Math.round(acceptedKg * order.pricePerKg * 100) / 100;
+
     const updatedTimeline: OrderTimelineEvent[] = [
       ...order.timeline,
       {
         step: 'BUYER_CONFIRMED',
-        title: 'Buyer Digitally Acknowledged Receipt & Verified Quality',
+        title: `Buyer Receipt Confirmed (${confirmation.acceptanceStatus})`,
         location: order.deliveryLocation,
         timestamp,
-        operator: `${order.buyerName} Inspection Officer`,
-        completed: true
+        operator: `${confirmation.receiverName || order.buyerName} (${confirmation.receiverRole || 'Receiving Officer'})`,
+        completed: true,
+        notes: `Accepted: ${acceptedKg.toLocaleString()} kg${confirmation.rejectedQuantityKg ? `, Rejected: ${confirmation.rejectedQuantityKg} kg` : ''}${confirmation.issuesReported ? ` [Issue: ${confirmation.issuesReported}]` : ''}`
       },
       {
         step: 'PAYMENT_PENDING',
@@ -1023,15 +1220,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setOrders((prev) =>
       prev.map((o) =>
         o.id === orderId
-          ? { ...o, status: 'Payment Pending', settlementId: createdSettleId, timeline: updatedTimeline }
+          ? {
+              ...o,
+              status: 'Payment Pending',
+              settlementId: createdSettleId,
+              buyerConfirmation: confirmation,
+              timeline: updatedTimeline
+            }
           : o
       )
     );
 
-    const farmerShare = Math.round(order.totalValue * 0.89);
-    const logisticsShare = Math.round(order.totalValue * 0.08);
-    const platformShare = order.totalValue - farmerShare - logisticsShare;
-    const traditionalShare = Math.round(order.totalValue * 0.55);
+    const farmerShare = Math.round(finalVal * 0.89);
+    const logisticsShare = Math.round(finalVal * 0.08);
+    const platformShare = finalVal - farmerShare - logisticsShare;
+    const traditionalShare = Math.round(finalVal * 0.55);
     const gainPct = Number((((farmerShare - traditionalShare) / (traditionalShare || 1)) * 100).toFixed(1));
 
     const newSettlement: SettlementRecord = {
@@ -1039,10 +1242,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       orderId: order.id,
       batchId: order.batchId,
       crop: order.crop,
-      quantityKg: order.quantityKg,
+      quantityKg: acceptedKg,
       buyerName: order.buyerName,
       farmerOrFpoName: order.farmerName,
-      totalOrderValue: order.totalValue,
+      totalOrderValue: finalVal,
       farmerAmount: farmerShare,
       logisticsAmount: logisticsShare,
       platformAmount: platformShare,
@@ -1058,6 +1261,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setDemandRequests((prev) =>
       prev.map((d) => (d.id === order.demandRequestId ? { ...d, status: 'Fulfilled' } : d))
     );
+  };
+
+  const buyerConfirmReceipt = (orderId: string) => {
+    const order = orders.find((o) => o.id === orderId);
+    if (!order) return;
+    const acceptedKg = order.packedQuantityKg || order.acceptedQuantityKg || order.quantityKg;
+    buyerConfirmDelivery(orderId, {
+      orderId,
+      deliveredQuantityKg: acceptedKg,
+      receivedQuantityKg: acceptedKg,
+      acceptedQuantityKg: acceptedKg,
+      rejectedQuantityKg: 0,
+      acceptanceStatus: 'ACCEPTED_FULL',
+      receiverName: `${order.buyerName} Inspection Officer`,
+      receiverRole: 'Receiving In-Charge',
+      confirmedAt: new Date().toISOString().replace('T', ' ').slice(0, 16)
+    });
   };
 
   // Step 12: Payment Settled
@@ -1322,12 +1542,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         producePassports,
         settlements,
         confirmMatchAndCreateOrder,
+        fpoRecordCollection,
         fpoCollectProduce,
+        fpoRecordQualityGrading,
         fpoQualityCheck,
+        fpoRecordPacking,
         fpoPackProduce,
         assignTransport,
         dispatchShipment,
         markDelivered,
+        buyerConfirmDelivery,
         buyerConfirmReceipt,
         settlePayment,
         isOnline,
