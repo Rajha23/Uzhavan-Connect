@@ -77,6 +77,7 @@ export type BuyerDemandStatus =
   | 'Agreement Pending'
   | 'Confirmed'
   | 'Order Created'
+  | 'Partially Fulfilled'
   | 'Fulfilled'
   | 'OPEN'
   | 'POOLED'

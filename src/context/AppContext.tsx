@@ -7,6 +7,7 @@ import {
   MarketPriceItem,
   SystemUserRecord,
   ProduceListing,
+  ProduceStatus,
   DemandRequest,
   NetworkSyncStatus,
   WorkflowOrder,
