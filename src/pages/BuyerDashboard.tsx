@@ -16,34 +16,40 @@ import {
   ShieldCheck,
   Building2,
   Truck,
-  ExternalLink
+  ExternalLink,
+  Trash2,
+  CloudOff
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const BuyerDashboard: React.FC = () => {
-  const { currentUser, setActiveTab, openDemoMode } = useApp();
+  const {
+    currentUser,
+    setActiveTab,
+    openDemoMode,
+    demandRequests: demands,
+    addDemandRequest,
+    deleteDemandRequest
+  } = useApp();
 
-  const [demands, setDemands] = useState<DemandRequest[]>(INITIAL_DEMAND_REQUESTS);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Form state pre-populated with the  primary scenario
+  // Form state pre-populated with the primary scenario
   const [crop, setCrop] = useState('Tomato');
-  const [quantityKg, setQuantityKg] = useState<number>(3000);
+  const [quantityKg, setQuantityKg] = useState<number>(1000);
   const [quality, setQuality] = useState<'Grade A' | 'Grade B' | 'Any'>('Grade A');
   const [location, setLocation] = useState('Chennai Distribution Terminal');
   const [deliveryDate, setDeliveryDate] = useState('2026-09-08');
   const [deliveryWindow, setDeliveryWindow] = useState('05:30 AM - 08:30 AM');
-  const [maxPrice, setMaxPrice] = useState<number>(34.0);
-
-
+  const [maxPrice, setMaxPrice] = useState<number>(30.0);
 
   const handleCreateDemand = (e: React.FormEvent) => {
     e.preventDefault();
 
     const newReq: DemandRequest = {
       id: `DEM-TN-${Date.now().toString().slice(-3)}`,
-      buyerId: currentUser.id,
-      buyerName: currentUser.organization || 'Institutional Procurement',
+      buyerId: currentUser.id || 'BUYER-01',
+      buyerName: currentUser.organization || currentUser.name || 'Institutional Procurement',
       buyerType: 'Supermarket',
       crop,
       quantityKg: Number(quantityKg),
@@ -56,7 +62,7 @@ export const BuyerDashboard: React.FC = () => {
       createdAt: new Date().toISOString().replace('T', ' ').slice(0, 16)
     };
 
-    setDemands([newReq, ...demands]);
+    addDemandRequest(newReq);
     setIsModalOpen(false);
 
     confetti({
@@ -136,6 +142,7 @@ export const BuyerDashboard: React.FC = () => {
                 <th className="p-5">Delivery</th>
                 <th className="p-5">Max Price</th>
                 <th className="p-5">Status</th>
+                <th className="p-5 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-olive/20">
@@ -156,10 +163,27 @@ export const BuyerDashboard: React.FC = () => {
                   </td>
                   <td className="p-5 font-anton text-lg text-forest tracking-wide">₹{dem.maxTargetPricePerKg} <span className="text-sm font-sans tracking-normal">/kg</span></td>
                   <td className="p-5">
-                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-forest bg-sage/30 px-3 py-1.5 rounded-full border border-sage/50 uppercase tracking-widest">
-                      <span className="w-1.5 h-1.5 rounded-full bg-forest animate-pulse" />
-                      <span>{dem.status}</span>
-                    </span>
+                    <div className="flex flex-col gap-1 items-start">
+                      <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-forest bg-sage/30 px-3 py-1.5 rounded-full border border-sage/50 uppercase tracking-widest">
+                        <span className="w-1.5 h-1.5 rounded-full bg-forest animate-pulse" />
+                        <span>{dem.status}</span>
+                      </span>
+                      {dem.syncStatus === 'PENDING_SYNC' && (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full uppercase tracking-wider" title="Saved locally on device. Will sync once connected.">
+                          <CloudOff className="w-2.5 h-2.5 text-amber-700" />
+                          <span>Saved Offline</span>
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-5 text-right">
+                    <button
+                      onClick={() => deleteDemandRequest(dem.id)}
+                      className="p-1.5 text-forest/40 hover:text-red-700 bg-olive/10 hover:bg-olive/20 rounded-lg transition"
+                      title="Remove Demand"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </td>
                 </tr>
               ))}

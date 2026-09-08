@@ -253,22 +253,80 @@ export const BUYER_DEMAND_OPPORTUNITIES: BuyerDemandOpportunity[] = [];
 
 export const FARMER_OFFERS_DATA: FarmerOfferItem[] = [];
 
-export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [];
+export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [
+  {
+    id: 'DEM-TN-001',
+    buyerId: 'BUYER-01',
+    buyerName: 'ABC Retail Stores',
+    buyerType: 'Supermarket',
+    crop: 'Tomato',
+    quantityKg: 3000,
+    qualityRequirement: 'Grade A',
+    location: 'Chennai Distribution Terminal',
+    deliveryDate: '2026-09-08',
+    deliveryTimeWindow: '05:30 AM - 08:30 AM',
+    maxTargetPricePerKg: 32.0,
+    status: 'POOLED',
+    createdAt: '2026-09-06 08:00'
+  },
+  {
+    id: 'DEM-TN-002',
+    buyerId: 'BUYER-02',
+    buyerName: 'FreshBazaar Hypermarket',
+    buyerType: 'Retailer',
+    crop: 'Tomato',
+    quantityKg: 1500,
+    qualityRequirement: 'Grade A',
+    location: 'Chennai Koyambedu Hub',
+    deliveryDate: '2026-09-08',
+    deliveryTimeWindow: '06:00 AM - 09:00 AM',
+    maxTargetPricePerKg: 30.0,
+    status: 'POOLED',
+    createdAt: '2026-09-06 09:15'
+  }
+];
 
 export const INITIAL_DEMAND_POOL: DemandPool = {
-  id: '',
-  crop: '',
-  region: '',
-  totalQuantityKg: 0,
-  demandRequests: [],
-  targetDate: '',
-  forecastQuantityKg: 0,
-  buyersCount: 0,
+  id: 'POOL-CH-3000',
+  crop: 'Tomato',
+  region: 'Chennai Corridor',
+  totalQuantityKg: 4500,
+  demandRequests: INITIAL_DEMAND_REQUESTS,
+  targetDate: '2026-09-08',
+  forecastQuantityKg: 8500,
+  buyersCount: 2,
   status: 'POOLED',
-  priceBenchmarkPerKg: 0
+  priceBenchmarkPerKg: 31.0
 };
 
-export const INITIAL_FARMER_LISTINGS: ProduceListing[] = [];
+export const INITIAL_FARMER_LISTINGS: ProduceListing[] = [
+  {
+    id: 'LST-001',
+    farmerId: 'usr-farmer-01',
+    farmerName: 'Murugan Palanisamy',
+    crop: 'Tomato',
+    quantityKg: 3000,
+    grade: 'Standard',
+    expectedPricePerKg: 26,
+    harvestDate: '2026-09-12',
+    availabilityDate: '2026-09-12',
+    location: 'Sunguvarchatram, Kanchipuram',
+    status: 'AVAILABLE'
+  },
+  {
+    id: 'LST-002',
+    farmerId: 'usr-farmer-02',
+    farmerName: 'GreenHarvest FPO',
+    crop: 'Tomato',
+    quantityKg: 1200,
+    grade: 'Grade A',
+    expectedPricePerKg: 25,
+    harvestDate: '2026-09-10',
+    availabilityDate: '2026-09-10',
+    location: 'Sriperumbudur Hub',
+    status: 'AVAILABLE'
+  }
+];
 
 export const INITIAL_AUCTION_OFFERS: ReverseAuctionOffer[] = [];
 

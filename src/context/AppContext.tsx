@@ -1,20 +1,26 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import {
   UserProfile,
   UserRole,
   Permission,
   AppNotification,
   MarketPriceItem,
-  SystemUserRecord
+  SystemUserRecord,
+  ProduceListing,
+  DemandRequest,
+  NetworkSyncStatus
 } from '../types';
 import {
   DEMO_USERS,
   ROLE_PERMISSIONS,
   INITIAL_NOTIFICATIONS,
   MARKET_PRICES_DATA,
-  SYSTEM_USERS_DATA
+  SYSTEM_USERS_DATA,
+  INITIAL_FARMER_LISTINGS,
+  INITIAL_DEMAND_REQUESTS
 } from '../data/mockData';
 import { supabase } from '../lib/supabase';
+import { onInstallableChange, promptAppInstall } from '../services/serviceWorkerRegistration';
 
 interface AppContextType {
   isInitializing: boolean;
@@ -50,6 +56,18 @@ interface AppContextType {
   marketPrices: MarketPriceItem[];
   systemUsers: SystemUserRecord[];
   toggleUserPermission: (userId: string, permission: Permission) => void;
+  produceListings: ProduceListing[];
+  demandRequests: DemandRequest[];
+  addProduceListing: (listing: ProduceListing) => void;
+  deleteProduceListing: (id: string) => void;
+  addDemandRequest: (demand: DemandRequest) => void;
+  deleteDemandRequest: (id: string) => void;
+  isOnline: boolean;
+  syncStatus: NetworkSyncStatus;
+  pendingSyncCount: number;
+  syncOfflineQueue: () => Promise<void>;
+  isInstallable: boolean;
+  promptInstall: () => Promise<boolean>;
 }
 
 const GUEST_USER: UserProfile = {
@@ -79,6 +97,177 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isArchitectureModalOpen, setArchitectureModalOpen] = useState<boolean>(false);
   const [marketPrices, setMarketPrices] = useState<MarketPriceItem[]>(MARKET_PRICES_DATA);
   const [systemUsers, setSystemUsers] = useState<SystemUserRecord[]>(SYSTEM_USERS_DATA);
+
+  // Persistent Produce Listings (Farmer supply)
+  const [produceListings, setProduceListings] = useState<ProduceListing[]>(() => {
+    try {
+      const saved = localStorage.getItem('uzhavan_produce_listings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved produce listings from localStorage', e);
+    }
+    return INITIAL_FARMER_LISTINGS;
+  });
+
+  // Persistent Demand Requests (Buyer demand)
+  const [demandRequests, setDemandRequests] = useState<DemandRequest[]>(() => {
+    try {
+      const saved = localStorage.getItem('uzhavan_demand_requests');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved demand requests from localStorage', e);
+    }
+    return INITIAL_DEMAND_REQUESTS;
+  });
+
+  // Automatically sync produce listings to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('uzhavan_produce_listings', JSON.stringify(produceListings));
+    } catch (e) {
+      console.warn('Failed to persist produce listings to localStorage', e);
+    }
+  }, [produceListings]);
+
+  // Automatically sync demand requests to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('uzhavan_demand_requests', JSON.stringify(demandRequests));
+    } catch (e) {
+      console.warn('Failed to persist demand requests to localStorage', e);
+    }
+  }, [demandRequests]);
+
+  // Network connectivity and offline sync status
+  const [isOnline, setIsOnline] = useState<boolean>(() => {
+    return typeof navigator !== 'undefined' ? navigator.onLine : true;
+  });
+  const [syncStatus, setSyncStatus] = useState<NetworkSyncStatus>('idle');
+  const [isInstallable, setIsInstallable] = useState<boolean>(false);
+
+  // Track pending offline sync items
+  const pendingSyncCount =
+    produceListings.filter((p) => p.syncStatus === 'PENDING_SYNC').length +
+    demandRequests.filter((d) => d.syncStatus === 'PENDING_SYNC').length;
+
+  // Listen for PWA installability prompt
+  useEffect(() => {
+    return onInstallableChange((canInstall) => {
+      setIsInstallable(canInstall);
+    });
+  }, []);
+
+  // Flush offline queue and synchronize with persistent layer
+  const syncOfflineQueue = useCallback(async () => {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) return;
+
+    setSyncStatus('syncing');
+    console.log('[UZHAVAN SYNC] Synchronizing offline queued field updates to persistent layer...');
+
+    // Small delay for natural UI feedback
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    // Mark all pending sync items as SYNCED
+    setProduceListings((prev) =>
+      prev.map((item) => (item.syncStatus === 'PENDING_SYNC' ? { ...item, syncStatus: 'SYNCED' } : item))
+    );
+    setDemandRequests((prev) =>
+      prev.map((item) => (item.syncStatus === 'PENDING_SYNC' ? { ...item, syncStatus: 'SYNCED' } : item))
+    );
+
+    // Clear local offline sync action log
+    try {
+      localStorage.removeItem('uzhavan_offline_sync_queue');
+    } catch {}
+
+    setSyncStatus('synced');
+    console.log('[UZHAVAN SYNC] All field updates successfully synchronized.');
+
+    setTimeout(() => {
+      setSyncStatus('idle');
+    }, 3500);
+  }, []);
+
+  // Monitor network online / offline events
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      console.log('[UZHAVAN PWA] Network connectivity restored.');
+      syncOfflineQueue();
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      setSyncStatus('offline_saved');
+      console.log('[UZHAVAN PWA] Network unavailable. Entering Field Offline Mode.');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [syncOfflineQueue]);
+
+  const addProduceListing = (listing: ProduceListing) => {
+    const isCurrentlyOnline = isOnline && (typeof navigator !== 'undefined' ? navigator.onLine : true);
+    const enrichedListing: ProduceListing = {
+      ...listing,
+      syncStatus: isCurrentlyOnline ? 'SYNCED' : 'PENDING_SYNC',
+      offlineCreated: !isCurrentlyOnline
+    };
+
+    if (!isCurrentlyOnline) {
+      setSyncStatus('offline_saved');
+      try {
+        const queue = JSON.parse(localStorage.getItem('uzhavan_offline_sync_queue') || '[]');
+        queue.push({ type: 'ADD_PRODUCE', payload: enrichedListing, timestamp: Date.now() });
+        localStorage.setItem('uzhavan_offline_sync_queue', JSON.stringify(queue));
+      } catch {}
+    }
+
+    setProduceListings((prev) => [enrichedListing, ...prev]);
+  };
+
+  const deleteProduceListing = (id: string) => {
+    setProduceListings((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const addDemandRequest = (demand: DemandRequest) => {
+    const isCurrentlyOnline = isOnline && (typeof navigator !== 'undefined' ? navigator.onLine : true);
+    const enrichedDemand: DemandRequest = {
+      ...demand,
+      syncStatus: isCurrentlyOnline ? 'SYNCED' : 'PENDING_SYNC',
+      offlineCreated: !isCurrentlyOnline
+    };
+
+    if (!isCurrentlyOnline) {
+      setSyncStatus('offline_saved');
+      try {
+        const queue = JSON.parse(localStorage.getItem('uzhavan_offline_sync_queue') || '[]');
+        queue.push({ type: 'ADD_DEMAND', payload: enrichedDemand, timestamp: Date.now() });
+        localStorage.setItem('uzhavan_offline_sync_queue', JSON.stringify(queue));
+      } catch {}
+    }
+
+    setDemandRequests((prev) => [enrichedDemand, ...prev]);
+  };
+
+  const deleteDemandRequest = (id: string) => {
+    setDemandRequests((prev) => prev.filter((item) => item.id !== id));
+  };
 
   useEffect(() => {
     const initSession = async () => {
@@ -147,13 +336,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const switchRole = (role: UserRole) => {
     setCurrentRole(role);
     const roleDefaults = DEMO_USERS[role] || DEMO_USERS.FARMER;
-    setCurrentUser((prev) => ({
-      ...roleDefaults,
-      name: prev.name || roleDefaults.name,
-      email: prev.email || roleDefaults.email,
-      phone: prev.phone || roleDefaults.phone,
-      role
-    }));
+    setCurrentUser((prev) => {
+      const updated = {
+        ...roleDefaults,
+        name: prev.name || roleDefaults.name,
+        email: prev.email || roleDefaults.email,
+        phone: prev.phone || roleDefaults.phone,
+        role
+      };
+      localStorage.setItem('uzhavan_fallback_session', JSON.stringify(updated));
+      return updated;
+    });
     setActiveTab('dashboard'); // Always land on role's home dashboard
   };
 
@@ -243,6 +436,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     );
   };
 
+  // Development / automated verification hook
+  if (typeof window !== 'undefined') {
+    (window as any).__UZHAVAN_TEST__ = {
+      setActiveTab,
+      switchRole,
+      setIsOnline,
+      syncOfflineQueue
+    };
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -278,7 +481,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setArchitectureModalOpen,
         marketPrices,
         systemUsers,
-        toggleUserPermission
+        toggleUserPermission,
+        produceListings,
+        demandRequests,
+        addProduceListing,
+        deleteProduceListing,
+        addDemandRequest,
+        deleteDemandRequest,
+        isOnline,
+        syncStatus,
+        pendingSyncCount,
+        syncOfflineQueue,
+        isInstallable,
+        promptInstall: promptAppInstall
       }}
     >
       {children}

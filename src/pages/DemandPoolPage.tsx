@@ -16,8 +16,32 @@ import {
 } from 'lucide-react';
 
 export const DemandPoolPage: React.FC = () => {
-  const { setActiveTab } = useApp();
-  const pool = INITIAL_DEMAND_POOL;
+  const { setActiveTab, demandRequests, produceListings } = useApp();
+
+  // Filter demands for Tomato (active pooled commodity)
+  const tomatoDemands = demandRequests.filter(
+    (d) => d.crop.toLowerCase() === 'tomato'
+  );
+  const activeDemands = tomatoDemands.length > 0 ? tomatoDemands : demandRequests;
+  const totalPooledQty = activeDemands.reduce((sum, d) => sum + d.quantityKg, 0);
+  const buyersCount = new Set(activeDemands.map((d) => d.buyerName)).size;
+  const avgMaxPrice = activeDemands.length > 0
+    ? (activeDemands.reduce((sum, d) => sum + d.maxTargetPricePerKg, 0) / activeDemands.length).toFixed(2)
+    : '32.00';
+
+  // Available nearby supply from actual farmer produce listings
+  const tomatoSupplies = produceListings.filter(
+    (p) => p.crop.toLowerCase() === 'tomato'
+  );
+  const activeSupplies = tomatoSupplies.length > 0 ? tomatoSupplies : produceListings;
+  const totalAvailableSupply = activeSupplies.reduce((sum, s) => sum + s.quantityKg, 0);
+
+  const pool = {
+    ...INITIAL_DEMAND_POOL,
+    totalQuantityKg: totalPooledQty,
+    buyersCount: buyersCount,
+    demandRequests: activeDemands
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -155,15 +179,15 @@ export const DemandPoolPage: React.FC = () => {
 
               <div>
                 <span className="text-[10px] text-cream/70 font-bold uppercase tracking-widest block">Total Combined Procurement</span>
-                <p className="text-5xl font-anton mt-2 tracking-wide text-sage">3,000 kg</p>
+                <p className="text-5xl font-anton mt-2 tracking-wide text-sage">{totalPooledQty.toLocaleString()} kg</p>
                 <p className="text-sm text-cream/80 mt-2 font-medium">
-                  Grade A Vine-Ripened Tomato for Chennai
+                  Grade A Vine-Ripened Tomato for Chennai Corridor
                 </p>
               </div>
 
               <div className="pt-4 border-t border-olive/20 flex items-center justify-between text-sm">
                 <span className="text-cream/70 font-bold uppercase tracking-widest text-[10px]">Benchmarked Landed Price:</span>
-                <span className="font-anton text-2xl text-sage tracking-wide">₹32.00 <span className="text-sm font-sans tracking-normal">/ kg</span></span>
+                <span className="font-anton text-2xl text-sage tracking-wide">₹{avgMaxPrice} <span className="text-sm font-sans tracking-normal">/ kg</span></span>
               </div>
 
               <button
@@ -188,7 +212,7 @@ export const DemandPoolPage: React.FC = () => {
               Available Nearby Supply
             </h3>
             <p className="text-sm text-forest/70 mt-2 font-medium">
-              Active farmer clusters and FPO lots ready within 35 km of delivery hub.
+              Active farmer clusters and produce listings ready within delivery corridor.
             </p>
           </div>
 
@@ -205,42 +229,51 @@ export const DemandPoolPage: React.FC = () => {
           {/* Your Demand Card */}
           <div className="p-8 rounded-[1.5rem] bg-olive/10 border border-olive/30 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-forest/60">Your Demand</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-forest/60">Active Demand</span>
               <span className="text-[10px] bg-sage/30 text-forest font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-sage/50">
-                Chennai Central
+                {activeDemands[0]?.location.split(',')[0] || 'Chennai Central'}
               </span>
             </div>
-            <p className="text-5xl font-anton text-forest tracking-wide">3,000 kg</p>
-            <p className="text-sm text-forest/70 font-medium">Commodity: Tomato (Grade A) • Max Target: ₹28/kg</p>
+            <p className="text-5xl font-anton text-forest tracking-wide">
+              {(activeDemands[0]?.quantityKg || totalPooledQty).toLocaleString()} kg
+            </p>
+            <p className="text-sm text-forest/70 font-medium">
+              Commodity: {activeDemands[0]?.crop || 'Tomato'} ({activeDemands[0]?.qualityRequirement || 'Grade A'}) • Max Target: ₹{activeDemands[0]?.maxTargetPricePerKg || 30}/kg
+            </p>
           </div>
 
           {/* Available Nearby Supply Card */}
           <div className="p-8 rounded-[1.5rem] bg-sage/10 border border-sage/40 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-forest">Available Nearby Supply</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-forest">Available Nearby Farmer Supply</span>
               <span className="text-[10px] bg-forest text-cream font-bold px-3 py-1 rounded-full uppercase tracking-widest">
                 Cluster Ready
               </span>
             </div>
 
             <div className="space-y-3 pt-2">
-              <div className="flex items-center justify-between text-xs bg-cream p-4 rounded-[1rem] border border-olive/30 shadow-sm">
-                <span className="font-bold text-forest uppercase tracking-widest text-[10px]">Farmer A (Kanchipuram)</span>
-                <span className="font-anton text-xl text-forest tracking-wide">+500 kg</span>
-              </div>
-              <div className="flex items-center justify-between text-xs bg-cream p-4 rounded-[1rem] border border-olive/30 shadow-sm">
-                <span className="font-bold text-forest uppercase tracking-widest text-[10px]">FPO B (Sriperumbudur Hub)</span>
-                <span className="font-anton text-xl text-forest tracking-wide">+1,000 kg</span>
-              </div>
-              <div className="flex items-center justify-between text-xs bg-cream p-4 rounded-[1rem] border border-olive/30 shadow-sm">
-                <span className="font-bold text-forest uppercase tracking-widest text-[10px]">Farmer C (Chengalpattu)</span>
-                <span className="font-anton text-xl text-forest tracking-wide">+700 kg</span>
-              </div>
+              {activeSupplies.slice(0, 4).map((item) => (
+                <div key={item.id} className="flex items-center justify-between text-xs bg-cream p-4 rounded-[1rem] border border-olive/30 shadow-sm">
+                  <div>
+                    <span className="font-bold text-forest uppercase tracking-widest text-[10px] block">
+                      {item.farmerName} ({item.location})
+                    </span>
+                    <span className="text-[10px] text-forest/60 font-medium">
+                      {item.grade} • ₹{item.expectedPricePerKg}/kg
+                    </span>
+                  </div>
+                  <span className="font-anton text-xl text-forest tracking-wide">
+                    +{item.quantityKg.toLocaleString()} kg
+                  </span>
+                </div>
+              ))}
             </div>
 
             <div className="pt-4 border-t border-olive/30 flex items-center justify-between mt-2">
               <span className="text-[10px] font-bold uppercase tracking-widest text-forest/70">Total Available:</span>
-              <span className="text-3xl font-anton text-forest tracking-wide">2,200 kg</span>
+              <span className="text-3xl font-anton text-forest tracking-wide">
+                {totalAvailableSupply.toLocaleString()} kg
+              </span>
             </div>
           </div>
         </div>

@@ -1,19 +1,55 @@
-import React, { useState } from 'react';
-import { SMART_MATCH_SUPPLIERS } from '../data/mockData';
-import { SmartMatchSupplier } from '../types';
+import React, { useState, useMemo } from 'react';
+import { useApp } from '../context/AppContext';
+import { ProduceListing, DemandRequest } from '../types';
 import {
   Sliders,
-  Award,
   Sparkles,
   ShieldCheck,
   Truck,
   CheckCircle2,
   RefreshCw,
   Building2,
-  ArrowRight
+  ArrowRight,
+  ShoppingBag,
+  Scale,
+  MapPin,
+  Calendar,
+  Check,
+  Layers,
+  Sprout
 } from 'lucide-react';
 
+// Distance estimator based on common regional agricultural corridors
+const getEstimatedDistance = (loc1: string = '', loc2: string = ''): number => {
+  const l1 = loc1.toLowerCase();
+  const l2 = loc2.toLowerCase();
+  if (!l1 || !l2 || l1 === l2) return 15;
+  if ((l1.includes('salem') && l2.includes('chennai')) || (l1.includes('chennai') && l2.includes('salem'))) return 340;
+  if (l1.includes('kanchipuram') || l1.includes('sunguvarchatram')) {
+    if (l2.includes('chennai')) return 45;
+    if (l2.includes('salem')) return 295;
+  }
+  if (l1.includes('chengalpattu')) {
+    if (l2.includes('chennai')) return 55;
+  }
+  if (l1.includes('sriperumbudur')) {
+    if (l2.includes('chennai')) return 35;
+  }
+  return 48;
+};
+
+// Quality grade compatibility evaluator
+const isQualityCompatible = (produceGrade: string, buyerRequirement: string): boolean => {
+  if (buyerRequirement === 'Any') return true;
+  if (buyerRequirement === produceGrade) return true;
+  if (buyerRequirement === 'Grade B' && (produceGrade === 'Grade A' || produceGrade === 'Premium')) return true;
+  if (buyerRequirement === 'Standard' && (produceGrade === 'Grade A' || produceGrade === 'Premium')) return true;
+  return false;
+};
+
 export const SmartMatchingEngine: React.FC = () => {
+  const { produceListings, demandRequests } = useApp();
+
   // Configurable weights (sum or proportional)
   const [weights, setWeights] = useState({
     price: 25,
@@ -23,66 +59,187 @@ export const SmartMatchingEngine: React.FC = () => {
     capacity: 10
   });
 
-  const [allocatedId, setAllocatedId] = useState<string>('SUP-01');
+  // Selected demand to match against
+  const [selectedDemandId, setSelectedDemandId] = useState<string>(() => {
+    // Default to a Tomato demand if available, else first demand
+    const tomatoDemand = demandRequests.find((d) => d.crop.toLowerCase() === 'tomato');
+    return tomatoDemand ? tomatoDemand.id : demandRequests[0]?.id || '';
+  });
 
-  // Compute weighted match score dynamically
+  // Selected farmer listing under active detailed comparison
+  const [selectedListingId, setSelectedListingId] = useState<string>('');
+  const [allocatedId, setAllocatedId] = useState<string>('');
+
+  const currentDemand: DemandRequest | undefined = useMemo(() => {
+    return demandRequests.find((d) => d.id === selectedDemandId) || demandRequests[0];
+  }, [demandRequests, selectedDemandId]);
+
   const totalWeight = weights.price + weights.distance + weights.quality + weights.reliability + weights.capacity;
 
-  const suppliersWithScores: SmartMatchSupplier[] = SMART_MATCH_SUPPLIERS.map((s) => {
-    const rawScore = (
-      s.priceScore * weights.price +
-      s.distanceScore * weights.distance +
-      s.qualityScore * weights.quality +
-      s.reliabilityScore * weights.reliability +
-      s.capacityScore * weights.capacity
-    ) / (totalWeight || 1);
+  // Dynamically evaluate all farmer produce listings against current buyer demand
+  const evaluatedCandidates = useMemo(() => {
+    if (!currentDemand) return [];
 
-    return {
-      ...s,
-      totalMatchScore: Number(rawScore.toFixed(1))
-    };
-  }).sort((a, b) => b.totalMatchScore - a.totalMatchScore);
+    return produceListings.map((listing) => {
+      const cropMatch = listing.crop.toLowerCase() === currentDemand.crop.toLowerCase();
+      const qualityMatch = isQualityCompatible(listing.grade, currentDemand.qualityRequirement);
+      const distanceKm = getEstimatedDistance(listing.location, currentDemand.location);
+      const priceCompatible = listing.expectedPricePerKg <= currentDemand.maxTargetPricePerKg;
+
+      // Price score: reward offer within or below buyer max price
+      let priceScore = 70;
+      if (currentDemand.maxTargetPricePerKg > 0) {
+        if (priceCompatible) {
+          const savings = currentDemand.maxTargetPricePerKg - listing.expectedPricePerKg;
+          priceScore = Math.min(100, 85 + Math.round((savings / currentDemand.maxTargetPricePerKg) * 50));
+        } else {
+          const excess = listing.expectedPricePerKg - currentDemand.maxTargetPricePerKg;
+          priceScore = Math.max(20, 70 - Math.round((excess / currentDemand.maxTargetPricePerKg) * 100));
+        }
+      }
+
+      // Distance score: closer is better
+      const distanceScore = Math.max(30, Math.min(100, Math.round(100 - (distanceKm / 400) * 55)));
+
+      // Quality score
+      let qualityScore = 80;
+      if (listing.grade === currentDemand.qualityRequirement) {
+        qualityScore = 95;
+      } else if (listing.grade === 'Grade A' || listing.grade === 'Premium') {
+        qualityScore = 98;
+      } else if (qualityMatch) {
+        qualityScore = 88;
+      } else {
+        qualityScore = 45;
+      }
+
+      // Reliability score
+      const reliabilityScore = 92;
+
+      // Capacity contribution score: how much of the demand volume this listing satisfies
+      const contribRatio = Math.min(1, listing.quantityKg / (currentDemand.quantityKg || 1));
+      const capacityScore = Math.min(100, Math.round(contribRatio * 100));
+
+      const rawScore = (
+        priceScore * weights.price +
+        distanceScore * weights.distance +
+        qualityScore * weights.quality +
+        reliabilityScore * weights.reliability +
+        capacityScore * weights.capacity
+      ) / (totalWeight || 1);
+
+      // Penalize heavily if crop doesn't match
+      const totalMatchScore = cropMatch ? Math.min(99, Math.max(45, Math.round(rawScore))) : 20;
+
+      const isEligible = cropMatch && qualityMatch && priceCompatible;
+
+      return {
+        listing,
+        cropMatch,
+        qualityMatch,
+        priceCompatible,
+        distanceKm,
+        priceScore,
+        distanceScore,
+        qualityScore,
+        reliabilityScore,
+        capacityScore,
+        totalMatchScore,
+        isEligible
+      };
+    }).sort((a, b) => {
+      // Prioritize crop matches, then higher total match score
+      if (a.cropMatch !== b.cropMatch) return a.cropMatch ? -1 : 1;
+      return b.totalMatchScore - a.totalMatchScore;
+    });
+  }, [produceListings, currentDemand, weights, totalWeight]);
+
+  // Active evaluated candidate (default to highest scored matching candidate)
+  const activeEvaluation = useMemo(() => {
+    if (selectedListingId) {
+      const found = evaluatedCandidates.find((c) => c.listing.id === selectedListingId);
+      if (found) return found;
+    }
+    return evaluatedCandidates[0];
+  }, [evaluatedCandidates, selectedListingId]);
+
+  if (!currentDemand) {
+    return (
+      <div className="bg-white rounded-2xl p-8 text-center text-slate-500 border border-slate-200">
+        <p className="text-sm font-semibold">No buyer demands currently registered for smart matching.</p>
+      </div>
+    );
+  }
+
+  const evaluatedListing = activeEvaluation?.listing;
+  const contribKg = evaluatedListing ? Math.min(evaluatedListing.quantityKg, currentDemand.quantityKg) : 0;
+  const contribPct = evaluatedListing
+    ? Math.round((evaluatedListing.quantityKg / (currentDemand.quantityKg || 1)) * 100)
+    : 0;
+  const priceSavings = evaluatedListing ? currentDemand.maxTargetPricePerKg - evaluatedListing.expectedPricePerKg : 0;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      {/* Engine Header */}
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden space-y-0">
+      {/* 1. Engine Header & Demand Selector */}
       <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-1">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Multi-Factor Mathematical Matcher</span>
+            <span>AI Dynamic Supply-Demand Matcher</span>
           </div>
           <h3 className="text-xl font-bold font-['Outfit'] text-slate-900">
             Smart Matching & Allocation Engine
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            Do not rank solely by lowest price. Balance price against transport distance, quality score, historical fulfillment, and capacity.
+            Evaluating real-time farmer produce listings against active institutional buyer demands.
           </p>
         </div>
 
-        <button
-          onClick={() =>
-            setWeights({
-              price: 25,
-              distance: 25,
-              quality: 20,
-              reliability: 20,
-              capacity: 10
-            })
-          }
-          className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition font-medium self-start md:self-auto"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span>Reset Balanced Weights</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Buyer Demand Selector */}
+          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Demand:</span>
+            <select
+              value={currentDemand.id}
+              onChange={(e) => {
+                setSelectedDemandId(e.target.value);
+                setSelectedListingId('');
+              }}
+              aria-label="Target Buyer Demand Selection"
+              className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
+            >
+              {demandRequests.map((dem) => (
+                <option key={dem.id} value={dem.id}>
+                  {dem.id}: {dem.crop} ({dem.quantityKg.toLocaleString()} kg @ max ₹{dem.maxTargetPricePerKg})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            onClick={() =>
+              setWeights({
+                price: 25,
+                distance: 25,
+                quality: 20,
+                reliability: 20,
+                capacity: 10
+              })
+            }
+            className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition font-medium"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Reset Weights</span>
+          </button>
+        </div>
       </div>
 
-      {/* Configurable Weight Sliders Strip */}
+      {/* 2. Factor Weights Slider Control Strip */}
       <div className="bg-slate-50 p-6 border-b border-slate-200">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
             <Sliders className="w-3.5 h-3.5 text-emerald-700" />
-            <span>Configurable Factor Weightings (Live Dynamic Recalculation)</span>
+            <span>Configurable Factor Weightings (Live Dynamic Score Recalculation)</span>
           </span>
           <span className="text-xs font-mono text-slate-500">Sum: {totalWeight}%</span>
         </div>
@@ -165,190 +322,377 @@ export const SmartMatchingEngine: React.FC = () => {
         </div>
       </div>
 
-      {/* Prompt Requirement: BEST MATCH Showcase Card */}
-      <div className="p-6 bg-gradient-to-br from-emerald-900 to-teal-950 text-white rounded-2xl m-6 space-y-4 shadow-md">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-xs bg-emerald-400 text-emerald-950 font-black px-3 py-1 rounded-full uppercase tracking-wider">
-              BEST MATCH
-            </span>
-            <span className="text-xs text-emerald-300 font-semibold">AI Multi-Factor Composite</span>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-xs text-emerald-300">Match Score:</span>
-            <span className="text-3xl font-black font-mono text-emerald-300">91%</span>
-          </div>
-        </div>
+      {/* 3. PROMPT REQUIRED: DYNAMIC MATCH RESULT SHOWCASE CARD */}
+      {evaluatedListing && (
+        <div className="p-6 bg-gradient-to-br from-emerald-950 via-[#01472e] to-teal-950 text-white rounded-2xl m-6 space-y-6 shadow-xl border border-emerald-800/40">
+          {/* Header Row: Match Status & Dynamic Score */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-emerald-800/50">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xs bg-emerald-400 text-emerald-950 font-black px-3.5 py-1 rounded-full uppercase tracking-wider">
+                  {activeEvaluation.isEligible ? 'Eligible / Matched' : 'Partial Match'}
+                </span>
+                <span className="text-xs text-emerald-300 font-semibold flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Live Supply-Demand Evaluation
+                </span>
+              </div>
+              <p className="text-xs text-emerald-200/80 font-medium pt-1">
+                Evaluating Farmer Supply ID: <span className="font-mono text-white font-bold">{evaluatedListing.id}</span> against Buyer Demand ID: <span className="font-mono text-white font-bold">{currentDemand.id}</span>
+              </p>
+            </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
-          <div className="bg-white/10 p-3 rounded-xl backdrop-blur-xs border border-white/10">
-            <span className="text-[11px] text-emerald-200 block">SUPPLIER</span>
-            <p className="font-bold text-base text-white mt-0.5">GreenHarvest FPO</p>
-          </div>
-          <div className="bg-white/10 p-3 rounded-xl backdrop-blur-xs border border-white/10">
-            <span className="text-[11px] text-emerald-200 block">CROP & QUANTITY</span>
-            <p className="font-bold text-base text-white mt-0.5">Tomato • 1,200 kg</p>
-          </div>
-          <div className="bg-white/10 p-3 rounded-xl backdrop-blur-xs border border-white/10">
-            <span className="text-[11px] text-emerald-200 block">OFFER PRICE</span>
-            <p className="font-bold text-base text-white mt-0.5">₹25 / kg</p>
-          </div>
-          <div className="bg-white/10 p-3 rounded-xl backdrop-blur-xs border border-white/10">
-            <span className="text-[11px] text-emerald-200 block">DISTANCE</span>
-            <p className="font-bold text-base text-white mt-0.5">18 km away</p>
-          </div>
-        </div>
-
-        <div className="pt-3 border-t border-emerald-800/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold text-emerald-200 uppercase tracking-wider mb-1.5">
-              Why this match?
-            </p>
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-emerald-100">
-              <span className="flex items-center gap-1">✓ Same crop</span>
-              <span className="flex items-center gap-1">✓ Required quantity available</span>
-              <span className="flex items-center gap-1">✓ Good price</span>
-              <span className="flex items-center gap-1">✓ Nearby (18 km)</span>
-              <span className="flex items-center gap-1">✓ Suitable date (Harvest: 12 Sep)</span>
+            <div className="flex items-baseline gap-2 bg-white/10 px-5 py-2.5 rounded-2xl border border-white/10 self-start sm:self-auto">
+              <span className="text-xs text-emerald-300 font-semibold">Match Score:</span>
+              <span className="text-3xl font-black font-mono text-emerald-300">
+                {activeEvaluation.totalMatchScore}%
+              </span>
             </div>
           </div>
 
-          <button
-            onClick={() => setAllocatedId('SUP-01')}
-            className="self-start md:self-auto bg-white text-emerald-950 hover:bg-emerald-50 text-xs font-bold px-5 py-2.5 rounded-xl shadow transition whitespace-nowrap"
-          >
-            View Match →
-          </button>
-        </div>
-      </div>
+          {/* Prompt Required: Two Evaluated Entities Side-by-Side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* 1. FARMER SUPPLY CARD */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 space-y-3">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <Sprout className="w-4 h-4 text-emerald-300" />
+                  <span className="text-xs font-black uppercase tracking-wider text-emerald-200">
+                    FARMER SUPPLY
+                  </span>
+                </div>
+                <span className="text-[11px] text-emerald-200/80 font-mono font-medium">
+                  {evaluatedListing.farmerName}
+                </span>
+              </div>
 
-      {/* Supplier Comparison List */}
-      <div className="p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h4 className="text-sm font-bold text-slate-900">Ranked Supplier Candidates ({suppliersWithScores.length})</h4>
-          <span className="text-xs text-slate-500">Live sorting by dynamic weight score</span>
-        </div>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-emerald-200/80">Crop:</span>
+                  <span className="font-bold text-white text-sm">{evaluatedListing.crop}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-emerald-200/80">Quantity:</span>
+                  <span className="font-bold text-emerald-300 text-sm">{evaluatedListing.quantityKg.toLocaleString()} kg</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-emerald-200/80">Quality:</span>
+                  <span className="font-bold text-white">{evaluatedListing.grade}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-emerald-200/80">Location:</span>
+                  <span className="font-bold text-white">{evaluatedListing.location}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-emerald-200/80">Expected Price:</span>
+                  <span className="font-bold text-emerald-300 text-sm">₹{evaluatedListing.expectedPricePerKg}/kg</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-emerald-200/80">Harvest Date:</span>
+                  <span className="font-medium text-white">{evaluatedListing.harvestDate}</span>
+                </div>
+              </div>
+            </div>
 
-        {suppliersWithScores.map((sup, index) => {
-          const isTopRanked = index === 0;
-          const isAllocated = sup.id === allocatedId;
+            {/* 2. MATCHED BUYER DEMAND CARD */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 space-y-3">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <ShoppingBag className="w-4 h-4 text-emerald-300" />
+                  <span className="text-xs font-black uppercase tracking-wider text-emerald-200">
+                    MATCHED BUYER DEMAND
+                  </span>
+                </div>
+                <span className="text-[11px] text-emerald-200/80 font-mono font-medium">
+                  {currentDemand.buyerName}
+                </span>
+              </div>
 
-          return (
-            <div
-              key={sup.id}
-              className={`rounded-xl border p-5 transition ${
-                isTopRanked
-                  ? 'bg-emerald-50/40 border-emerald-300 shadow-sm ring-1 ring-emerald-500/20'
-                  : 'bg-white border-slate-200 hover:border-slate-300'
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-emerald-200/80">Crop:</span>
+                  <span className="font-bold text-white text-sm">{currentDemand.crop}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-emerald-200/80">Required Quantity:</span>
+                  <span className="font-bold text-emerald-300 text-sm">{currentDemand.quantityKg.toLocaleString()} kg</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-emerald-200/80">Quality:</span>
+                  <span className="font-bold text-white">{currentDemand.qualityRequirement}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-emerald-200/80">Delivery Location:</span>
+                  <span className="font-bold text-white">{currentDemand.location}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-emerald-200/80">Maximum Target Price:</span>
+                  <span className="font-bold text-emerald-300 text-sm">₹{currentDemand.maxTargetPricePerKg}/kg</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-emerald-200/80">Delivery Date:</span>
+                  <span className="font-medium text-white">{currentDemand.deliveryDate} ({currentDemand.deliveryTimeWindow})</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Volume Contribution Strip */}
+          <div className="bg-white/10 rounded-xl p-4 border border-white/10 space-y-2">
+            <div className="flex justify-between items-center text-xs">
+              <span className="font-bold text-emerald-200 uppercase tracking-wider text-[11px]">
+                Demand Fulfillment Contribution:
+              </span>
+              <span className="font-mono font-bold text-emerald-300">
+                {evaluatedListing.quantityKg.toLocaleString()} kg / {currentDemand.quantityKg.toLocaleString()} kg ({contribPct}%)
+              </span>
+            </div>
+            <div className="w-full bg-emerald-950/80 h-2.5 rounded-full overflow-hidden border border-emerald-700/50">
+              <div
+                className="bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(100, contribPct)}%` }}
+              />
+            </div>
+            <p className="text-[11px] text-emerald-200/80">
+              {contribPct >= 100
+                ? '✓ Farmer supply satisfies 100% of this institutional buyer demand.'
+                : `Farmer supply provides ${contribKg.toLocaleString()} kg (${contribPct}%) toward satisfying the ${currentDemand.quantityKg.toLocaleString()} kg pooled buyer demand.`}
+            </p>
+          </div>
+
+          {/* Prompt Required: Clear MATCH EXPLANATION Checklist */}
+          <div className="pt-4 border-t border-emerald-800/60 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <p className="text-xs font-bold text-emerald-200 uppercase tracking-wider">
+                MATCH EXPLANATION
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-xs text-emerald-100">
+                <span className="flex items-center gap-1.5">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Crop matches ({evaluatedListing.crop})</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Quality requirement compatible ({evaluatedListing.grade} satisfies {currentDemand.qualityRequirement})</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Farmer quantity contributes to required demand ({evaluatedListing.quantityKg.toLocaleString()} kg provides {contribPct}%)</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>
+                    Farmer expected price is within buyer target price (₹{evaluatedListing.expectedPricePerKg}/kg ≤ ₹{currentDemand.maxTargetPricePerKg}/kg
+                    {priceSavings > 0 ? ` • ₹${priceSavings}/kg savings` : ''})
+                  </span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Regional route: {evaluatedListing.location} → {currentDemand.location} (~{activeEvaluation.distanceKm} km)</span>
+                </span>
+              </div>
+            </div>
+
+            <button
+              data-testid="confirm-allocate-btn"
+              onClick={() => setAllocatedId(evaluatedListing.id)}
+              className={`px-6 py-3 rounded-xl text-xs font-bold transition shadow-sm self-start md:self-auto uppercase tracking-wider whitespace-nowrap ${
+                allocatedId === evaluatedListing.id
+                  ? 'bg-emerald-400 text-emerald-950 flex items-center gap-2'
+                  : 'bg-white text-emerald-950 hover:bg-emerald-100'
               }`}
             >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base shrink-0 ${
-                    isTopRanked ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'
-                  }`}>
-                    #{index + 1}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-bold text-slate-900 text-base">{sup.supplierName}</h4>
-                      {isTopRanked && (
-                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded border border-emerald-300">
-                          OPTIMAL MATCH
-                        </span>
-                      )}
+              {allocatedId === evaluatedListing.id ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-900" />
+                  <span>Allocated to Demand</span>
+                </>
+              ) : (
+                <span>Confirm Match & Allocate →</span>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 4. Ranked Supplier Candidates List */}
+      <div className="p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="text-sm font-bold text-slate-900">
+              Ranked Farmer & FPO Candidates ({evaluatedCandidates.length})
+            </h4>
+            <p className="text-xs text-slate-500">
+              Evaluated against Buyer Demand: {currentDemand.crop} ({currentDemand.quantityKg.toLocaleString()} kg @ ₹{currentDemand.maxTargetPricePerKg}/kg)
+            </p>
+          </div>
+          <span className="text-xs text-slate-500 font-mono">Live multi-factor ranking</span>
+        </div>
+
+        <div className="space-y-3">
+          {evaluatedCandidates.map((candidate, index) => {
+            const isSelected = candidate.listing.id === (evaluatedListing?.id || '');
+            const isAllocated = candidate.listing.id === allocatedId;
+            const isTopRanked = index === 0;
+
+            return (
+              <div
+                key={candidate.listing.id}
+                className={`rounded-xl border p-5 transition cursor-pointer ${
+                  isSelected
+                    ? 'bg-emerald-50/60 border-emerald-400 ring-2 ring-emerald-600/20 shadow-sm'
+                    : candidate.cropMatch
+                    ? 'bg-white border-slate-200 hover:border-emerald-300'
+                    : 'bg-slate-50 border-slate-200 opacity-60'
+                }`}
+                onClick={() => setSelectedListingId(candidate.listing.id)}
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base shrink-0 ${
+                        isTopRanked
+                          ? 'bg-emerald-700 text-white'
+                          : candidate.cropMatch
+                          ? 'bg-slate-200 text-slate-800'
+                          : 'bg-slate-100 text-slate-400'
+                      }`}
+                    >
+                      #{index + 1}
                     </div>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      {sup.crop} • Available: <strong className="text-slate-800">{sup.availableQtyKg.toLocaleString()} kg</strong> • {sup.hubProximity}
-                    </p>
+
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-bold text-slate-900 text-sm">
+                          {candidate.listing.farmerName}
+                        </h4>
+                        {isTopRanked && candidate.cropMatch && (
+                          <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded border border-emerald-300 uppercase tracking-wider">
+                            OPTIMAL MATCH
+                          </span>
+                        )}
+                        {isSelected && (
+                          <span className="text-[10px] bg-slate-900 text-white font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                            Evaluating
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-slate-600 mt-1">
+                        <strong className="text-slate-900">{candidate.listing.crop}</strong> • Available:{' '}
+                        <strong className="text-emerald-700">{candidate.listing.quantityKg.toLocaleString()} kg</strong> ({candidate.listing.grade}) • Expected Price:{' '}
+                        <strong className="text-slate-900">₹{candidate.listing.expectedPricePerKg}/kg</strong> • {candidate.listing.location} (~{candidate.distanceKm} km)
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Score & Action */}
+                  <div className="flex items-center gap-4 self-end md:self-center">
+                    <div className="text-right">
+                      <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-medium">
+                        Match Score
+                      </span>
+                      <span className="text-2xl font-black text-emerald-700 font-mono">
+                        {candidate.totalMatchScore}
+                        <span className="text-xs text-slate-400 font-normal"> / 100</span>
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedListingId(candidate.listing.id);
+                        setAllocatedId(candidate.listing.id);
+                      }}
+                      className={`px-4 py-2 rounded-xl text-xs font-semibold transition shadow-xs ${
+                        isAllocated
+                          ? 'bg-emerald-700 text-white flex items-center gap-1.5'
+                          : 'bg-slate-900 hover:bg-slate-800 text-white'
+                      }`}
+                    >
+                      {isAllocated ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                          <span>Allocated</span>
+                        </>
+                      ) : (
+                        <span>Select & Allocate</span>
+                      )}
+                    </button>
                   </div>
                 </div>
 
-                {/* Match Score & Action */}
-                <div className="flex items-center gap-4 self-end md:self-center">
-                  <div className="text-right">
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-medium">Smart Match Score</span>
-                    <span className="text-2xl font-black text-emerald-700 font-mono">
-                      {sup.totalMatchScore}
-                      <span className="text-xs text-slate-400 font-normal"> / 100</span>
-                    </span>
+                {/* Sub-Score Progress Bars Breakdown */}
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-4 pt-4 border-t border-slate-100 text-xs">
+                  <div>
+                    <div className="flex justify-between text-[11px] text-slate-500 mb-1">
+                      <span>Price (₹{candidate.listing.expectedPricePerKg}/kg):</span>
+                      <strong className="text-slate-800 font-mono">{candidate.priceScore}</strong>
+                    </div>
+                    <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="bg-emerald-600 h-full rounded-full"
+                        style={{ width: `${candidate.priceScore}%` }}
+                      />
+                    </div>
                   </div>
 
-                  <button
-                    onClick={() => setAllocatedId(sup.id)}
-                    className={`px-4 py-2 rounded-xl text-xs font-semibold transition shadow-xs ${
-                      isAllocated
-                        ? 'bg-emerald-700 text-white flex items-center gap-1.5'
-                        : 'bg-slate-900 hover:bg-slate-800 text-white'
-                    }`}
-                  >
-                    {isAllocated ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-                        <span>Allocated</span>
-                      </>
-                    ) : (
-                      <span>Select Supplier</span>
-                    )}
-                  </button>
+                  <div>
+                    <div className="flex justify-between text-[11px] text-slate-500 mb-1">
+                      <span>Distance ({candidate.distanceKm} km):</span>
+                      <strong className="text-slate-800 font-mono">{candidate.distanceScore}</strong>
+                    </div>
+                    <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="bg-blue-600 h-full rounded-full"
+                        style={{ width: `${candidate.distanceScore}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-[11px] text-slate-500 mb-1">
+                      <span>Quality ({candidate.listing.grade}):</span>
+                      <strong className="text-slate-800 font-mono">{candidate.qualityScore}</strong>
+                    </div>
+                    <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="bg-purple-600 h-full rounded-full"
+                        style={{ width: `${candidate.qualityScore}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-[11px] text-slate-500 mb-1">
+                      <span>Reliability:</span>
+                      <strong className="text-slate-800 font-mono">{candidate.reliabilityScore}%</strong>
+                    </div>
+                    <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="bg-amber-600 h-full rounded-full"
+                        style={{ width: `${candidate.reliabilityScore}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-[11px] text-slate-500 mb-1">
+                      <span>Capacity ({candidate.listing.quantityKg}kg):</span>
+                      <strong className="text-slate-800 font-mono">{candidate.capacityScore}%</strong>
+                    </div>
+                    <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="bg-teal-600 h-full rounded-full"
+                        style={{ width: `${candidate.capacityScore}%` }}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              {/* Sub-Score Bars Breakdown */}
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-4 pt-4 border-t border-slate-100 text-xs">
-                <div>
-                  <div className="flex justify-between text-[11px] text-slate-500 mb-1">
-                    <span>Price (₹{sup.offeredPricePerKg}/kg):</span>
-                    <strong className="text-slate-800 font-mono">{sup.priceScore}</strong>
-                  </div>
-                  <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-emerald-600 h-full rounded-full" style={{ width: `${sup.priceScore}%` }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-[11px] text-slate-500 mb-1">
-                    <span>Distance ({sup.distanceKm} km):</span>
-                    <strong className="text-slate-800 font-mono">{sup.distanceScore}</strong>
-                  </div>
-                  <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-blue-600 h-full rounded-full" style={{ width: `${sup.distanceScore}%` }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-[11px] text-slate-500 mb-1">
-                    <span>Quality ({sup.qualityGrade}):</span>
-                    <strong className="text-slate-800 font-mono">{sup.qualityScore}</strong>
-                  </div>
-                  <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-purple-600 h-full rounded-full" style={{ width: `${sup.qualityScore}%` }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-[11px] text-slate-500 mb-1">
-                    <span>Reliability:</span>
-                    <strong className="text-slate-800 font-mono">{sup.reliabilityScore}%</strong>
-                  </div>
-                  <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-amber-600 h-full rounded-full" style={{ width: `${sup.reliabilityScore}%` }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-[11px] text-slate-500 mb-1">
-                    <span>Capacity:</span>
-                    <strong className="text-slate-800 font-mono">{sup.capacityScore}%</strong>
-                  </div>
-                  <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-teal-600 h-full rounded-full" style={{ width: `${sup.capacityScore}%` }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

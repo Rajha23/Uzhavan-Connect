@@ -16,7 +16,8 @@ import {
   ArrowRight,
   Scale,
   DollarSign,
-  TrendingDown
+  TrendingDown,
+  CloudOff
 } from 'lucide-react';
 import {
   AreaChart,
@@ -30,16 +31,23 @@ import {
 import confetti from 'canvas-confetti';
 
 export const FarmerDashboard: React.FC = () => {
-  const { currentUser, setActiveTab, openPassportModal } = useApp();
+  const {
+    currentUser,
+    setActiveTab,
+    openPassportModal,
+    produceListings: listings,
+    addProduceListing,
+    deleteProduceListing,
+    isOnline
+  } = useApp();
 
-  const [listings, setListings] = useState<ProduceListing[]>(INITIAL_FARMER_LISTINGS);
   const [isAddingListing, setIsAddingListing] = useState(false);
   const [crop, setCrop] = useState('Tomato');
-  const [quantityKg, setQuantityKg] = useState<number>(3000);
-  const [price, setPrice] = useState<number>(26.0);
+  const [quantityKg, setQuantityKg] = useState<number>(500);
+  const [price, setPrice] = useState<number>(25.0);
   const [harvestDate, setHarvestDate] = useState('2026-09-12');
-  const [quality, setQuality] = useState<'Standard' | 'Premium'>('Standard');
-  const [location, setLocation] = useState('Sunguvarchatram, Kanchipuram');
+  const [quality, setQuality] = useState<'Grade A' | 'Grade B' | 'Standard' | 'Premium'>('Grade A');
+  const [location, setLocation] = useState('Salem');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const forecast = CHENNAI_TOMATO_FORECAST;
@@ -59,30 +67,34 @@ export const FarmerDashboard: React.FC = () => {
     e.preventDefault();
     const newCropItem: ProduceListing = {
       id: `LST-${Date.now().toString().slice(-3)}`,
-      farmerId: currentUser.id,
-      farmerName: currentUser.name,
+      farmerId: currentUser.id || 'FARMER-01',
+      farmerName: currentUser.name || 'Farmer',
       crop,
       quantityKg: Number(quantityKg),
       grade: quality,
       expectedPricePerKg: Number(price),
       harvestDate,
       availabilityDate: harvestDate,
-      location,
+      location: location || currentUser.location || 'Salem',
       status: 'AVAILABLE'
     };
 
-    setListings([newCropItem, ...listings]);
+    addProduceListing(newCropItem);
     setIsAddingListing(false);
-    setSuccessMessage(`Listing created: ${newCropItem.quantityKg.toLocaleString()} kg of ${newCropItem.crop} @ ₹${newCropItem.expectedPricePerKg}/kg!`);
+    if (!isOnline) {
+      setSuccessMessage(`Saved locally on device (Offline Field Mode): ${newCropItem.quantityKg.toLocaleString()} kg of ${newCropItem.crop} in ${newCropItem.location}. Changes will synchronize automatically once connection returns!`);
+    } else {
+      setSuccessMessage(`Listing created: ${newCropItem.quantityKg.toLocaleString()} kg of ${newCropItem.crop} (${newCropItem.grade}) in ${newCropItem.location} @ ₹${newCropItem.expectedPricePerKg}/kg!`);
+    }
     confetti({
       particleCount: 50,
       origin: { y: 0.6 }
     });
-    setTimeout(() => setSuccessMessage(null), 4000);
+    setTimeout(() => setSuccessMessage(null), 4500);
   };
 
   const handleRemove = (id: string) => {
-    setListings(listings.filter((l) => l.id !== id));
+    deleteProduceListing(id);
   };
 
   return (
@@ -150,73 +162,89 @@ export const FarmerDashboard: React.FC = () => {
 
         {/* Add Crop Form */}
         {isAddingListing && (
-          <form onSubmit={handleAddCrop} className="p-8 bg-olive/10 border-b border-olive/20 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-xs">
-            <div>
-              <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Crop</label>
-              <select
-                value={crop}
-                onChange={(e) => setCrop(e.target.value)}
-                className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
-              >
-                <option value="Tomato">Tomato</option>
-                <option value="Green Chilli">Green Chilli</option>
-                <option value="Capsicum">Capsicum</option>
-                <option value="Carrot">Carrot</option>
-              </select>
+          <form onSubmit={handleAddCrop} className="p-8 bg-olive/10 border-b border-olive/20 space-y-4 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              <div>
+                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Crop</label>
+                <select
+                  value={crop}
+                  onChange={(e) => setCrop(e.target.value)}
+                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                >
+                  <option value="Tomato">Tomato</option>
+                  <option value="Green Chilli">Green Chilli</option>
+                  <option value="Capsicum">Capsicum</option>
+                  <option value="Carrot">Carrot</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Quantity (kg)</label>
+                <input
+                  type="number"
+                  value={quantityKg}
+                  onChange={(e) => setQuantityKg(Number(e.target.value))}
+                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  min="50"
+                  step="50"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Expected Price (₹/kg)</label>
+                <input
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(Number(e.target.value))}
+                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  step="0.5"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Quality Grade</label>
+                <select
+                  value={quality}
+                  onChange={(e) => setQuality(e.target.value as any)}
+                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                >
+                  <option value="Grade A">Grade A</option>
+                  <option value="Grade B">Grade B</option>
+                  <option value="Standard">Standard</option>
+                  <option value="Premium">Premium</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Location / Mandi Hub</label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g. Salem"
+                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Harvest Date</label>
+                <input
+                  type="date"
+                  value={harvestDate}
+                  onChange={(e) => setHarvestDate(e.target.value)}
+                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  required
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Quantity (kg)</label>
-              <input
-                type="number"
-                value={quantityKg}
-                onChange={(e) => setQuantityKg(Number(e.target.value))}
-                className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
-                min="100"
-                step="100"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Expected Price (₹/kg)</label>
-              <input
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(Number(e.target.value))}
-                className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
-                step="0.5"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Harvest Date</label>
-              <input
-                type="date"
-                value={harvestDate}
-                onChange={(e) => setHarvestDate(e.target.value)}
-                className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Quality</label>
-              <select
-                value={quality}
-                onChange={(e) => setQuality(e.target.value as any)}
-                className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
-              >
-                <option value="Standard">Standard</option>
-                <option value="Premium">Premium</option>
-              </select>
-            </div>
-
-            <div className="flex items-end">
+            <div className="flex justify-end pt-2">
               <button
                 type="submit"
-                className="w-full py-3 bg-sage hover:bg-cream text-forest font-bold rounded-[1rem] transition text-xs uppercase tracking-widest shadow-sm"
+                className="px-8 py-3 bg-sage hover:bg-cream text-forest font-bold rounded-[1rem] transition text-xs uppercase tracking-widest shadow-sm"
               >
                 Publish Listing
               </button>
@@ -232,7 +260,15 @@ export const FarmerDashboard: React.FC = () => {
               className="p-6 rounded-[1.5rem] border border-olive/30 bg-cream hover:shadow-forest transition space-y-4 shadow-sm"
             >
               <div className="flex items-center justify-between border-b border-olive/20 pb-3">
-                <span className="font-anton text-2xl text-forest tracking-wide">{item.crop}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-anton text-2xl text-forest tracking-wide">{item.crop}</span>
+                  {item.syncStatus === 'PENDING_SYNC' && (
+                    <span className="text-[9px] bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded-full border border-amber-300 uppercase tracking-widest flex items-center gap-1" title="Saved locally on device. Will sync once internet returns.">
+                      <CloudOff className="w-2.5 h-2.5 text-amber-700" />
+                      <span>Offline</span>
+                    </span>
+                  )}
+                </div>
                 <span className="text-[9px] bg-sage/30 text-forest font-bold px-2.5 py-1 rounded-full border border-sage/50 uppercase tracking-widest">
                   {item.status}
                 </span>
@@ -254,6 +290,10 @@ export const FarmerDashboard: React.FC = () => {
                 <p className="flex justify-between">
                   <span className="uppercase tracking-widest text-[10px] font-bold">Quality:</span>
                   <span className="text-forest font-bold">{item.grade}</span>
+                </p>
+                <p className="flex justify-between">
+                  <span className="uppercase tracking-widest text-[10px] font-bold">Location:</span>
+                  <span className="text-forest font-bold">{item.location}</span>
                 </p>
               </div>
 

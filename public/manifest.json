@@ -1,0 +1,63 @@
+{
+  "name": "UZHAVAN Connect",
+  "short_name": "UZHAVAN",
+  "description": "Demand-First Agricultural Coordination Platform connecting farmer supply with predicted and pooled buyer demand.",
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8f7f2",
+  "theme_color": "#01472e",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": [
+    "business",
+    "productivity",
+    "agriculture",
+    "food"
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "My Produce",
+      "short_name": "Produce",
+      "description": "View and manage active crop listings",
+      "url": "/?tab=dashboard",
+      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Demand Pools",
+      "short_name": "Demands",
+      "description": "View aggregated institutional buyer demands",
+      "url": "/?tab=demand-pool",
+      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Smart Matching",
+      "short_name": "Matching",
+      "description": "Match farmer harvest with verified buyers",
+      "url": "/?tab=smart-matching",
+      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+    }
+  ]
+}

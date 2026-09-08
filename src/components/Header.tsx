@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Menu, Search, ChevronDown, LogOut, User } from 'lucide-react';
+import { Menu, Search, ChevronDown, LogOut, User, Wifi, WifiOff, RefreshCw, Download, CheckCircle2 } from 'lucide-react';
 
 // Maps tab ids to human-readable page titles
 const PAGE_TITLES: Record<string, string> = {
@@ -57,10 +57,18 @@ export const Header: React.FC = () => {
     currentUser,
     currentRole,
     setActiveTab,
+    switchRole,
     logout,
+    isOnline,
+    syncStatus,
+    pendingSyncCount,
+    syncOfflineQueue,
+    isInstallable,
+    promptInstall,
   } = useApp();
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
 
   const pageTitle = PAGE_TITLES[activeTab] || 'Dashboard';
@@ -95,7 +103,114 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 ml-auto">
+      <div className="flex items-center gap-2 ml-auto">
+        {/* Network Connectivity & Offline Sync Status Pill */}
+        {!isOnline ? (
+          <button
+            onClick={syncOfflineQueue}
+            className="flex items-center gap-1.5 bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-300 px-3 py-1 rounded-full text-[11px] font-bold shadow-xs transition"
+            title="Offline Field Mode: Changes are saved locally on device. Click to retry synchronization."
+          >
+            <WifiOff className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+            <span className="hidden sm:inline">Offline (Field Mode)</span>
+            <span className="sm:hidden">Offline</span>
+            {pendingSyncCount > 0 && (
+              <span className="bg-amber-800 text-white rounded-full text-[9px] px-1.5 py-0.2 font-mono">
+                {pendingSyncCount} saved
+              </span>
+            )}
+          </button>
+        ) : syncStatus === 'syncing' ? (
+          <div className="flex items-center gap-1.5 bg-blue-100 text-blue-900 border border-blue-300 px-3 py-1 rounded-full text-[11px] font-bold animate-pulse">
+            <RefreshCw className="w-3.5 h-3.5 text-blue-700 animate-spin shrink-0" />
+            <span className="hidden sm:inline">Syncing changes...</span>
+            <span className="sm:hidden">Syncing</span>
+          </div>
+        ) : syncStatus === 'synced' ? (
+          <div className="flex items-center gap-1.5 bg-emerald-100 text-emerald-950 border border-emerald-300 px-3 py-1 rounded-full text-[11px] font-bold">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+            <span className="hidden sm:inline">All changes synced</span>
+            <span className="sm:hidden">Synced</span>
+          </div>
+        ) : (
+          <div
+            className="hidden sm:flex items-center gap-1.5 text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+            title="Connected to network. Field data synchronized."
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+            <span>Online</span>
+          </div>
+        )}
+
+        {/* PWA Install Button when installable */}
+        {isInstallable && (
+          <button
+            onClick={promptInstall}
+            className="hidden md:flex items-center gap-1.5 bg-forest hover:bg-[#023120] text-cream px-3 py-1.5 rounded-[1rem] text-xs font-bold transition shadow-xs"
+            title="Install UZHAVAN Connect to your home screen or desktop for fast offline field access"
+          >
+            <Download className="w-3.5 h-3.5 text-sage" />
+            <span>Install App</span>
+          </button>
+        )}
+
+        {/* Quick Role Switcher */}
+        <div className="relative">
+          <button
+            onClick={() => {
+              setIsRoleDropdownOpen(!isRoleDropdownOpen);
+              setIsUserMenuOpen(false);
+            }}
+            className="flex items-center gap-1.5 bg-olive/20 hover:bg-olive/30 border border-olive/30 text-forest px-3 py-1.5 rounded-[1rem] text-xs font-bold transition"
+            aria-label="Role Switcher"
+          >
+            <span className="w-2 h-2 rounded-full bg-forest animate-pulse" />
+            <span>{currentRole.replace('_', ' ')}</span>
+            <ChevronDown className="w-3.5 h-3.5 text-forest/60" />
+          </button>
+
+          {isRoleDropdownOpen && (
+            <div className="absolute right-0 top-full mt-1 w-52 bg-cream rounded-[1.5rem] shadow-forest border border-olive/30 z-50 overflow-hidden py-1">
+              <div className="px-4 py-2 text-[10px] font-bold text-forest/50 uppercase tracking-widest border-b border-olive/20">
+                Switch Portal Role
+              </div>
+              <button
+                onClick={() => {
+                  switchRole('FARMER');
+                  setIsRoleDropdownOpen(false);
+                }}
+                className={`w-full text-left px-4 py-2.5 text-xs font-bold transition ${
+                  currentRole === 'FARMER' ? 'bg-sage/20 text-forest' : 'text-forest/70 hover:bg-olive/20'
+                }`}
+              >
+                🌾 Farmer Portal
+              </button>
+              <button
+                onClick={() => {
+                  switchRole('RETAIL_BUYER');
+                  setIsRoleDropdownOpen(false);
+                }}
+                className={`w-full text-left px-4 py-2.5 text-xs font-bold transition ${
+                  currentRole === 'RETAIL_BUYER' ? 'bg-sage/20 text-forest' : 'text-forest/70 hover:bg-olive/20'
+                }`}
+              >
+                🛒 Buyer Portal
+              </button>
+              <button
+                onClick={() => {
+                  switchRole('ADMIN');
+                  setIsRoleDropdownOpen(false);
+                }}
+                className={`w-full text-left px-4 py-2.5 text-xs font-bold transition ${
+                  currentRole === 'ADMIN' ? 'bg-sage/20 text-forest' : 'text-forest/70 hover:bg-olive/20'
+                }`}
+              >
+                🛡️ Operations / Admin
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* User Profile Pill */}
         <div className="relative">
           <button
@@ -133,6 +248,15 @@ export const Header: React.FC = () => {
                 <User className="w-4 h-4 text-forest/50" />
                 My Profile
               </button>
+              {isInstallable && (
+                <button
+                  onClick={() => { promptInstall(); setIsUserMenuOpen(false); }}
+                  className="w-full flex items-center gap-2.5 px-4 py-3 text-xs text-forest font-bold bg-sage/15 hover:bg-sage/25 transition text-left"
+                >
+                  <Download className="w-4 h-4 text-forest" />
+                  Install App (PWA)
+                </button>
+              )}
               <div className="border-t border-olive/20 mt-1">
                 <button
                   onClick={logout}

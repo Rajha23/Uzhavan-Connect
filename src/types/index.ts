@@ -48,6 +48,8 @@ export interface UserProfile {
   serviceArea?: string;
 }
 
+export type NetworkSyncStatus = 'idle' | 'offline_saved' | 'syncing' | 'synced';
+
 export interface ProduceListing {
   id: string;
   farmerId: string;
@@ -63,6 +65,8 @@ export interface ProduceListing {
   status: 'AVAILABLE' | 'POOLED' | 'MATCHED' | 'DISPATCHED' | 'SETTLED';
   coordinates?: { lat: number; lng: number };
   imageUrl?: string;
+  syncStatus?: 'SYNCED' | 'PENDING_SYNC';
+  offlineCreated?: boolean;
 }
 
 export interface DemandRequest {
@@ -80,6 +84,8 @@ export interface DemandRequest {
   status: 'OPEN' | 'POOLED' | 'MATCHING' | 'AUCTION_ACTIVE' | 'ALLOCATED' | 'FULFILLED';
   createdAt: string;
   coordinates?: { lat: number; lng: number };
+  syncStatus?: 'SYNCED' | 'PENDING_SYNC';
+  offlineCreated?: boolean;
 }
 
 export interface DemandPool {
