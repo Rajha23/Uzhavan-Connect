@@ -309,26 +309,54 @@ export const INITIAL_FARMER_LISTINGS: ProduceListing[] = [
     farmerId: 'usr-farmer-01',
     farmerName: 'Murugan Palanisamy',
     crop: 'Tomato',
-    quantityKg: 3000,
+    variety: 'Pusa Ruby Hybrid',
+    quantityKg: 0,
+    initialQuantityKg: 3000,
+    allocatedQuantityKg: 3000,
+    unit: 'kg',
     grade: 'Standard',
     expectedPricePerKg: 26,
     harvestDate: '2026-09-12',
     availabilityDate: '2026-09-12',
     location: 'Sunguvarchatram, Kanchipuram',
-    status: 'AVAILABLE'
+    fpoName: 'GreenHarvest FPO',
+    status: 'Delivered'
   },
   {
     id: 'LST-002',
     farmerId: 'usr-farmer-02',
     farmerName: 'GreenHarvest FPO',
     crop: 'Tomato',
+    variety: 'Nattu Country Breed',
     quantityKg: 1200,
+    initialQuantityKg: 1200,
+    allocatedQuantityKg: 0,
+    unit: 'kg',
     grade: 'Grade A',
     expectedPricePerKg: 25,
     harvestDate: '2026-09-10',
     availabilityDate: '2026-09-10',
     location: 'Sriperumbudur Hub',
-    status: 'AVAILABLE'
+    fpoName: 'GreenHarvest FPO',
+    status: 'Listed'
+  },
+  {
+    id: 'LST-003',
+    farmerId: 'usr-farmer-01',
+    farmerName: 'Murugan Palanisamy',
+    crop: 'Onion',
+    variety: 'Bellary Medium',
+    quantityKg: 3000,
+    initialQuantityKg: 5000,
+    allocatedQuantityKg: 2000,
+    unit: 'kg',
+    grade: 'Grade A',
+    expectedPricePerKg: 32,
+    harvestDate: '2026-09-15',
+    availabilityDate: '2026-09-15',
+    location: 'Dindigul Cluster Hub',
+    fpoName: 'Kaveri Farmers Collective',
+    status: 'Listed'
   }
 ];
 

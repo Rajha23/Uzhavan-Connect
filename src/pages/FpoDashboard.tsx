@@ -23,6 +23,7 @@ import { QualityInspectionData } from '../types';
 export const FpoDashboard: React.FC = () => {
   const {
     currentUser,
+    produceListings,
     orders,
     fpoCollectProduce,
     fpoQualityCheck,
@@ -31,7 +32,7 @@ export const FpoDashboard: React.FC = () => {
     setActiveTab
   } = useApp();
 
-  const [activeTabSection, setActiveTabSection] = useState<'COLLECTION' | 'GRADING' | 'PACKING' | 'ALL'>('COLLECTION');
+  const [activeTabSection, setActiveTabSection] = useState<'MEMBER_SUPPLY' | 'COLLECTION' | 'GRADING' | 'PACKING' | 'ALL'>('COLLECTION');
   const [selectedOrderForInspection, setSelectedOrderForInspection] = useState<string | null>(null);
 
   // Inspection form state
@@ -128,12 +129,13 @@ export const FpoDashboard: React.FC = () => {
       )}
 
       {/* Operational Stage Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
+          { label: 'Member Crop Listings', count: produceListings.length, desc: 'Active Farm Supply', stage: 'MEMBER_SUPPLY' as const, color: 'text-emerald-700' },
           { label: 'Farm Collection Queue', count: pendingCollectionOrders.length, desc: 'Awaiting Farm Pickup', stage: 'COLLECTION' as const, color: 'text-amber-700' },
           { label: 'Awaiting Quality Check', count: collectedAwaitingGrading.length, desc: 'At Mobile QA Station', stage: 'GRADING' as const, color: 'text-purple-700' },
           { label: 'Awaiting Packing & QR', count: gradedAwaitingPacking.length, desc: 'Ready for Crating', stage: 'PACKING' as const, color: 'text-teal-700' },
-          { label: 'Packed & Ready for Dispatch', count: packedReadyForLogistics.length, desc: 'Handover to Logistics', stage: 'ALL' as const, color: 'text-emerald-700' },
+          { label: 'Dispatch Ready', count: packedReadyForLogistics.length, desc: 'Handover to Logistics', stage: 'ALL' as const, color: 'text-slate-800' },
         ].map((item) => (
           <button
             key={item.label}
@@ -154,6 +156,7 @@ export const FpoDashboard: React.FC = () => {
       {/* Stage Tabs Navigation */}
       <div className="flex gap-2 border-b border-slate-200 pb-3 overflow-x-auto">
         {[
+          { key: 'MEMBER_SUPPLY', label: `Member Farm Supply (${produceListings.length})` },
           { key: 'COLLECTION', label: `1. Farm Gate Collection (${pendingCollectionOrders.length})` },
           { key: 'GRADING', label: `2. Quality Check & Grading (${collectedAwaitingGrading.length})` },
           { key: 'PACKING', label: `3. Packing & Batch QR (${gradedAwaitingPacking.length})` },
@@ -172,6 +175,128 @@ export const FpoDashboard: React.FC = () => {
           </button>
         ))}
       </div>
+
+      {/* ── STAGE 0: MEMBER FARM PRODUCE SUPPLY & AGGREGATION POOL ──────────── */}
+      {activeTabSection === 'MEMBER_SUPPLY' && (
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <Sprout className="w-5 h-5 text-emerald-600" />
+                <h3 className="text-lg font-bold text-slate-900 font-['Outfit']">Member Farm Produce Supply Pool</h3>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Active crop listings submitted by member farmers. Aggregated and ready for Smart Matching with institutional buyer demand.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
+                {produceListings.length} Active Listings
+              </span>
+              <button
+                onClick={() => setActiveTab('matching')}
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Open Smart Matching Engine</span>
+              </button>
+            </div>
+          </div>
+
+          {produceListings.length === 0 ? (
+            <div className="py-12 text-center text-slate-400">
+              <Sprout className="w-10 h-10 mx-auto text-slate-300 mb-2" />
+              <p className="text-sm font-semibold text-slate-700">No member produce currently listed</p>
+              <p className="text-xs text-slate-400 mt-0.5">Listings submitted by member farmers will appear here automatically.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {produceListings.map((listing) => {
+                const totalListed = listing.initialQuantityKg || (listing.quantityKg + (listing.allocatedQuantityKg || 0));
+                const remaining = listing.quantityKg;
+                const allocated = listing.allocatedQuantityKg || 0;
+                const percentAllocated = totalListed > 0 ? Math.round((allocated / totalListed) * 100) : 0;
+
+                return (
+                  <div key={listing.id} className="p-5 border border-slate-200 hover:border-emerald-300 bg-white rounded-2xl space-y-3 transition shadow-xs flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs font-bold text-slate-500">{listing.id}</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                          remaining <= 0
+                            ? 'bg-slate-100 text-slate-600 border border-slate-300'
+                            : listing.status === 'Listed' || listing.status === 'AVAILABLE'
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                            : 'bg-blue-100 text-blue-800 border border-blue-300'
+                        }`}>
+                          {remaining <= 0 ? 'Fully Allocated' : listing.status}
+                        </span>
+                      </div>
+
+                      <div>
+                        <h4 className="font-bold text-slate-900 text-sm">
+                          {listing.crop}
+                          {listing.variety && <span className="text-slate-500 font-normal ml-1">({listing.variety})</span>}
+                        </h4>
+                        <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                          <Users className="w-3 h-3 text-slate-400" />
+                          <span>Farmer: <strong className="text-slate-700">{listing.farmerName}</strong></span>
+                        </p>
+                        <p className="text-xs text-slate-500 flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-slate-400" />
+                          <span>{listing.location}</span>
+                        </p>
+                      </div>
+
+                      {/* Remaining vs Allocated Quantity Progress Bar */}
+                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 space-y-1.5">
+                        <div className="flex justify-between text-xs">
+                          <span className="text-slate-500 font-medium">Available Supply:</span>
+                          <span className="font-bold text-emerald-700 font-mono">
+                            {remaining.toLocaleString()} {listing.unit || 'kg'}
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                          <div
+                            className="bg-emerald-600 h-full rounded-full transition-all duration-300"
+                            style={{ width: `${Math.min(100, 100 - percentAllocated)}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                          <span>Total: {totalListed.toLocaleString()} {listing.unit || 'kg'}</span>
+                          <span>Allocated: {allocated.toLocaleString()} ({percentAllocated}%)</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs pt-1">
+                        <span className="text-slate-500">Grade: <strong className="text-slate-800">{listing.grade}</strong></span>
+                        <span className="text-slate-500">Target: <strong className="text-slate-900 font-mono">₹{listing.expectedPricePerKg}/kg</strong></span>
+                      </div>
+                      <div className="text-[11px] text-slate-400 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-slate-400" />
+                        <span>Harvest: {listing.harvestDate}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[11px] text-slate-400 font-medium truncate max-w-[140px]">
+                        {listing.fpoName || 'GreenHarvest FPO'}
+                      </span>
+                      <button
+                        onClick={() => setActiveTab('matching')}
+                        className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl transition flex items-center gap-1"
+                      >
+                        <Sparkles className="w-3 h-3" />
+                        <span>Match</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── STAGE 1: FARM GATE COLLECTION ─────────────────────────────────── */}
       {activeTabSection === 'COLLECTION' && (

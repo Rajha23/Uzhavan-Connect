@@ -53,13 +53,18 @@ export type NetworkSyncStatus = 'idle' | 'offline_saved' | 'syncing' | 'synced';
 export type ProduceStatus =
   | 'Listed'
   | 'Matched'
-  | 'Reserved'
+  | 'Agreement Pending'
+  | 'Confirmed'
+  | 'Collection'
   | 'Collected'
+  | 'Quality Check'
   | 'Quality Checked'
   | 'Packed'
   | 'In Transit'
   | 'Delivered'
+  | 'Payment Completed'
   | 'Completed'
+  | 'Reserved'
   | 'AVAILABLE'
   | 'POOLED'
   | 'DISPATCHED'
@@ -176,11 +181,16 @@ export interface ProduceListing {
   crop: string;
   variety?: string;
   quantityKg: number;
+  initialQuantityKg?: number;
+  allocatedQuantityKg?: number;
+  unit?: string;
   grade: 'Grade A' | 'Grade B' | 'Grade C' | 'Standard' | 'Premium';
   expectedPricePerKg: number;
   harvestDate: string;
   availabilityDate: string;
   location: string;
+  fpoId?: string;
+  fpoName?: string;
   status: ProduceStatus;
   coordinates?: { lat: number; lng: number };
   imageUrl?: string;
