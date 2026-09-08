@@ -369,15 +369,26 @@ export const SmartMatchingEngine: React.FC = () => {
 
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Crop:</span>
-                  <span className="font-bold text-white text-sm">{evaluatedListing.crop}</span>
+                  <span className="text-emerald-200/80">Crop & Variety:</span>
+                  <span className="font-bold text-white text-sm">
+                    {evaluatedListing.crop} {evaluatedListing.variety ? `(${evaluatedListing.variety})` : ''}
+                  </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Quantity:</span>
-                  <span className="font-bold text-emerald-300 text-sm">{evaluatedListing.quantityKg.toLocaleString()} kg</span>
+                  <span className="text-emerald-200/80">Available Quantity:</span>
+                  <div className="text-right">
+                    <span className={`font-bold text-sm ${evaluatedListing.quantityKg > 0 ? 'text-emerald-300' : 'text-amber-300'}`}>
+                      {evaluatedListing.quantityKg.toLocaleString()} {evaluatedListing.unit || 'kg'}
+                    </span>
+                    {evaluatedListing.allocatedQuantityKg && evaluatedListing.allocatedQuantityKg > 0 ? (
+                      <span className="block text-[10px] text-emerald-200/70">
+                        ({evaluatedListing.allocatedQuantityKg.toLocaleString()} {evaluatedListing.unit || 'kg'} already allocated in orders)
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Quality:</span>
+                  <span className="text-emerald-200/80">Quality Grade:</span>
                   <span className="font-bold text-white">{evaluatedListing.grade}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
@@ -388,10 +399,16 @@ export const SmartMatchingEngine: React.FC = () => {
                   <span className="text-emerald-200/80">Expected Price:</span>
                   <span className="font-bold text-emerald-300 text-sm">₹{evaluatedListing.expectedPricePerKg}/kg</span>
                 </div>
-                <div className="flex justify-between py-1">
+                <div className="flex justify-between py-1 border-b border-white/5">
                   <span className="text-emerald-200/80">Harvest Date:</span>
                   <span className="font-medium text-white">{evaluatedListing.harvestDate}</span>
                 </div>
+                {evaluatedListing.fpoName && (
+                  <div className="flex justify-between py-1">
+                    <span className="text-emerald-200/80">FPO Collective:</span>
+                    <span className="font-medium text-emerald-200">{evaluatedListing.fpoName}</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -496,7 +513,9 @@ export const SmartMatchingEngine: React.FC = () => {
 
             <button
               data-testid="confirm-allocate-btn"
+              disabled={evaluatedListing.quantityKg <= 0 || allocatedId === evaluatedListing.id}
               onClick={() => {
+                if (evaluatedListing.quantityKg <= 0) return;
                 setAllocatedId(evaluatedListing.id);
                 const order = confirmMatchAndCreateOrder(
                   evaluatedListing.id,
@@ -514,12 +533,16 @@ export const SmartMatchingEngine: React.FC = () => {
                 }
               }}
               className={`px-6 py-3 rounded-xl text-xs font-bold transition shadow-sm self-start md:self-auto uppercase tracking-wider whitespace-nowrap ${
-                allocatedId === evaluatedListing.id
+                evaluatedListing.quantityKg <= 0
+                  ? 'bg-slate-700/80 text-slate-300 cursor-not-allowed'
+                  : allocatedId === evaluatedListing.id
                   ? 'bg-emerald-400 text-emerald-950 flex items-center gap-2'
                   : 'bg-white text-emerald-950 hover:bg-emerald-100'
               }`}
             >
-              {allocatedId === evaluatedListing.id ? (
+              {evaluatedListing.quantityKg <= 0 ? (
+                <span>Fully Allocated (0 kg Available)</span>
+              ) : allocatedId === evaluatedListing.id ? (
                 <>
                   <CheckCircle2 className="w-4 h-4 text-emerald-900" />
                   <span>Allocated to Demand</span>
@@ -622,9 +645,27 @@ export const SmartMatchingEngine: React.FC = () => {
                       </div>
 
                       <p className="text-xs text-slate-600 mt-1">
-                        <strong className="text-slate-900">{candidate.listing.crop}</strong> • Available:{' '}
-                        <strong className="text-emerald-700">{candidate.listing.quantityKg.toLocaleString()} kg</strong> ({candidate.listing.grade}) • Expected Price:{' '}
+                        <strong className="text-slate-900">{candidate.listing.crop}</strong>
+                        {candidate.listing.variety && <span className="text-slate-500 font-medium"> ({candidate.listing.variety})</span>} • Available:{' '}
+                        <strong className={candidate.listing.quantityKg > 0 ? "text-emerald-700" : "text-slate-400 font-mono"}>
+                          {candidate.listing.quantityKg.toLocaleString()} {candidate.listing.unit || 'kg'}
+                        </strong>
+                        {candidate.listing.quantityKg <= 0 ? (
+                          <span className="ml-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300">
+                            Fully Allocated
+                          </span>
+                        ) : candidate.listing.allocatedQuantityKg && candidate.listing.allocatedQuantityKg > 0 ? (
+                          <span className="text-[11px] text-slate-500 ml-1">
+                            ({candidate.listing.allocatedQuantityKg.toLocaleString()} {candidate.listing.unit || 'kg'} allocated)
+                          </span>
+                        ) : null}
+                        {' '}• Quality: <strong className="text-slate-900">{candidate.listing.grade}</strong> • Expected Price:{' '}
                         <strong className="text-slate-900">₹{candidate.listing.expectedPricePerKg}/kg</strong> • {candidate.listing.location} (~{candidate.distanceKm} km)
+                        {candidate.listing.fpoName && (
+                          <span className="block text-[11px] text-slate-500 mt-0.5">
+                            Affiliated FPO: <strong>{candidate.listing.fpoName}</strong>
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -642,8 +683,10 @@ export const SmartMatchingEngine: React.FC = () => {
                     </div>
 
                     <button
+                      disabled={candidate.listing.quantityKg <= 0 || isAllocated}
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (candidate.listing.quantityKg <= 0) return;
                         setSelectedListingId(candidate.listing.id);
                         setAllocatedId(candidate.listing.id);
                         const cardContribKg = Math.min(candidate.listing.quantityKg, currentDemand.quantityKg);
@@ -663,12 +706,16 @@ export const SmartMatchingEngine: React.FC = () => {
                         }
                       }}
                       className={`px-4 py-2 rounded-xl text-xs font-semibold transition shadow-xs ${
-                        isAllocated
+                        candidate.listing.quantityKg <= 0
+                          ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                          : isAllocated
                           ? 'bg-emerald-700 text-white flex items-center gap-1.5'
                           : 'bg-slate-900 hover:bg-slate-800 text-white'
                       }`}
                     >
-                      {isAllocated ? (
+                      {candidate.listing.quantityKg <= 0 ? (
+                        <span>Fully Allocated</span>
+                      ) : isAllocated ? (
                         <>
                           <CheckCircle2 className="w-4 h-4 text-emerald-300" />
                           <span>Allocated</span>

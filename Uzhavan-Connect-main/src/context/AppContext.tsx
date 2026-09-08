@@ -344,8 +344,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addProduceListing = (listing: ProduceListing) => {
     const isCurrentlyOnline = isOnline && (typeof navigator !== 'undefined' ? navigator.onLine : true);
+    const initialQty = listing.initialQuantityKg || listing.quantityKg;
     const enrichedListing: ProduceListing = {
       ...listing,
+      initialQuantityKg: initialQty,
+      allocatedQuantityKg: listing.allocatedQuantityKg || 0,
+      unit: listing.unit || 'kg',
+      status: listing.status || 'Listed',
       syncStatus: isCurrentlyOnline ? 'SYNCED' : 'PENDING_SYNC',
       offlineCreated: !isCurrentlyOnline
     };
@@ -406,7 +411,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (!listing || !demand) return null;
 
     const finalPrice = agreedPrice || listing.expectedPricePerKg || demand.maxTargetPricePerKg;
-    const finalQty = agreedQty || Math.min(listing.quantityKg, demand.quantityKg);
+    const finalQty = agreedQty !== undefined ? Math.min(listing.quantityKg, Number(agreedQty)) : Math.min(listing.quantityKg, demand.quantityKg);
     const totalVal = finalPrice * finalQty;
     const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
     const nowTimestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
@@ -545,14 +550,37 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ]
     };
 
-    // Transition produce listing status to Reserved
+    // Update produce listing remaining quantity, allocated quantity, and status
     setProduceListings((prev) =>
-      prev.map((p) => (p.id === listing.id ? { ...p, status: 'Reserved' } : p))
+      prev.map((p) => {
+        if (p.id !== listing.id) return p;
+        const initialQty = p.initialQuantityKg || p.quantityKg;
+        const prevAllocated = p.allocatedQuantityKg || 0;
+        const newAllocated = prevAllocated + finalQty;
+        const remainingQty = Math.max(0, p.quantityKg - finalQty);
+        const newStatus: ProduceStatus = remainingQty <= 0 ? 'Confirmed' : 'Listed';
+
+        return {
+          ...p,
+          initialQuantityKg: initialQty,
+          allocatedQuantityKg: newAllocated,
+          quantityKg: remainingQty,
+          status: newStatus
+        };
+      })
     );
 
-    // Transition demand status to Order Created
+    // Transition demand status to Order Created / update remaining demand quantity
     setDemandRequests((prev) =>
-      prev.map((d) => (d.id === demand.id ? { ...d, status: 'Order Created' } : d))
+      prev.map((d) => {
+        if (d.id !== demand.id) return d;
+        const remainingDemand = Math.max(0, d.quantityKg - finalQty);
+        return {
+          ...d,
+          quantityKg: remainingDemand > 0 ? remainingDemand : d.quantityKg,
+          status: remainingDemand <= 0 ? 'Order Created' : 'Partially Fulfilled'
+        };
+      })
     );
 
     setAgreements((prev) => [newAgreement, ...prev]);
@@ -934,7 +962,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     if (targetListingId) {
       setProduceListings((prev) =>
-        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Completed' } : p))
+        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Payment Completed' } : p))
       );
     }
     setSettlements((prev) =>
