@@ -58,7 +58,7 @@ export const DemandPoolPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-md border border-emerald-900/40">
+      <div className="bg-gradient-to-r from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-600/30">
         <div>
           <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
             <Layers className="w-4 h-4 text-emerald-400" />
@@ -282,7 +282,7 @@ export const DemandPoolPage: React.FC = () => {
           </div>
 
           {/* Stage 3: Consolidated Procurement Box (Col 4) */}
-          <div className="lg:col-span-4 bg-gradient-to-br from-slate-950 via-[#0a2e1f] to-emerald-950 text-white rounded-2xl p-6 shadow-md flex flex-col justify-between space-y-6 border border-emerald-900/40">
+          <div className="lg:col-span-4 bg-gradient-to-br from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl p-6 shadow-forest flex flex-col justify-between space-y-6 border border-emerald-600/30">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-medium uppercase tracking-wider bg-emerald-500/20 px-3 py-1 rounded-full text-emerald-300 border border-emerald-400/30">

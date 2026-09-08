@@ -87,8 +87,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center p-4 sm:p-6 bg-gradient-to-b from-agri-50/50 via-slate-50 to-slate-100">
-      <div className="bg-white max-w-lg w-full rounded-3xl border border-slate-200 shadow-xl overflow-hidden p-6 sm:p-10 space-y-6">
+    <div className="min-h-[85vh] flex items-center justify-center p-4 sm:p-6 relative">
+      <div className="bg-white/95 backdrop-blur-xs max-w-lg w-full rounded-3xl border border-emerald-900/10 shadow-forest-lg overflow-hidden p-6 sm:p-10 space-y-6">
         <div>
           {/* Uzhavan Connect Brand Header */}
           <div className="flex items-center gap-3 mb-5">

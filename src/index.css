@@ -3,8 +3,24 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg-canvas: #f8faf9;
+    --bg-surface: #ffffff;
+    --bg-surface-pale: #f0fdf4;
+    --border-agri-subtle: rgba(16, 185, 129, 0.12);
+    --border-agri-focus: rgba(16, 185, 129, 0.35);
+  }
+
   body {
     @apply bg-[#f8faf9] text-slate-800 font-sans font-normal;
+    background-image: 
+      radial-gradient(ellipse at 8% 0%, rgba(209, 250, 229, 0.42) 0%, transparent 45%),
+      radial-gradient(ellipse at 92% 12%, rgba(204, 251, 241, 0.32) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 45%, rgba(236, 253, 245, 0.45) 0%, transparent 55%),
+      radial-gradient(ellipse at 88% 85%, rgba(209, 250, 229, 0.32) 0%, transparent 45%),
+      radial-gradient(ellipse at 12% 95%, rgba(240, 253, 244, 0.55) 0%, transparent 50%);
+    background-attachment: fixed;
+    background-size: 100% 100%;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -30,6 +46,36 @@
 
 /* Centralized AI Design System Tokens */
 @layer components {
+  /* Reusable Application Background & Surface Tokens */
+  .agri-canvas {
+    @apply min-h-screen text-slate-800 font-sans relative;
+    background-color: #f8faf9;
+    background-image: 
+      radial-gradient(ellipse at 8% 0%, rgba(209, 250, 229, 0.42) 0%, transparent 45%),
+      radial-gradient(ellipse at 92% 12%, rgba(204, 251, 241, 0.32) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 45%, rgba(236, 253, 245, 0.45) 0%, transparent 55%),
+      radial-gradient(ellipse at 88% 85%, rgba(209, 250, 229, 0.32) 0%, transparent 45%),
+      radial-gradient(ellipse at 12% 95%, rgba(240, 253, 244, 0.55) 0%, transparent 50%);
+    background-attachment: fixed;
+    background-size: 100% 100%;
+  }
+
+  .agri-card {
+    @apply bg-white/95 rounded-2xl border border-emerald-900/10 shadow-xs hover:border-emerald-500/30 hover:shadow-ai-hover transition-all duration-200;
+  }
+
+  .agri-card-elevated {
+    @apply bg-white rounded-2xl border border-emerald-900/10 shadow-sm hover:border-emerald-500/30 hover:shadow-md transition-all duration-200;
+  }
+
+  .agri-surface-pale {
+    @apply bg-emerald-50/70 rounded-2xl border border-emerald-200/70;
+  }
+
+  .agri-banner {
+    @apply bg-gradient-to-r from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl border border-emerald-600/30 shadow-forest;
+  }
+
   /* AI Card Standard */
   .ai-card {
     @apply bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-200/80 hover:shadow-md transition-all duration-200;

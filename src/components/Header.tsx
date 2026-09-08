@@ -74,7 +74,7 @@ export const Header: React.FC = () => {
   const pageTitle = PAGE_TITLES[activeTab] || 'Dashboard';
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-white border-b border-slate-200/80 flex items-center px-4 gap-3 shadow-2xs">
+    <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-emerald-900/10 flex items-center px-4 gap-3 shadow-2xs">
       {/* Hamburger — mobile only */}
       <button
         onClick={toggleSidebar}

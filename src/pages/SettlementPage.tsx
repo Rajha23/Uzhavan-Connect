@@ -139,7 +139,7 @@ export const SettlementPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-900/40">
+      <div className="bg-gradient-to-r from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-600/30">
         <div>
           <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
             <CreditCard className="w-4 h-4" />
@@ -601,7 +601,7 @@ export const SettlementPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
               {/* Farmer / FPO Share */}
-              <div className="bg-gradient-to-br from-slate-950 via-[#0a2e1f] to-slate-900 border border-emerald-900/50 rounded-xl p-5 sm:p-6 shadow-sm flex flex-col justify-between text-white">
+              <div className="bg-gradient-to-br from-[#1b4332] via-[#2d6a4f] to-[#1e5238] border border-emerald-600/30 rounded-xl p-5 sm:p-6 shadow-forest flex flex-col justify-between text-white">
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs font-semibold text-emerald-300 uppercase tracking-wider">

@@ -128,7 +128,7 @@ export const DemandIntelligencePage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* 1. Header Banner & Transparent Architecture Disclosure */}
-      <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-md border border-emerald-900/40">
+      <div className="bg-gradient-to-r from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-600/30">
         <div>
           <div className="flex flex-wrap items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
             <Cpu className="w-4 h-4 text-emerald-400" />
@@ -348,7 +348,7 @@ export const DemandIntelligencePage: React.FC = () => {
       </div>
 
       {/* 5. RECOMMENDED ACTION BOX (Step 4 of Pipeline) */}
-      <div className="bg-gradient-to-br from-slate-950 via-[#0a2e1f] to-emerald-950 text-white rounded-2xl p-6 sm:p-8 shadow-md space-y-4 border border-emerald-900/40">
+      <div className="bg-gradient-to-br from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl p-6 sm:p-8 shadow-forest space-y-4 border border-emerald-600/30">
         <div className="flex items-center gap-2 text-emerald-400 text-[10px] font-semibold uppercase tracking-wider">
           <Sparkles className="w-4 h-4 text-emerald-400" />
           <span>4. Recommended Platform Response Action</span>
