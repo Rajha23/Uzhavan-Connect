@@ -13,34 +13,112 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export const TraceabilityPage: React.FC = () => {
-  const { openPassportModal, producePassports } = useApp();
+  const { openPassportModal, producePassports, orders } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Combine producePassports with live orders to ensure complete end-to-end traceability
+  const passportBatchIds = new Set(producePassports.map((p) => p.batchId));
+
+  interface BatchItem {
+    batchId: string;
+    orderId?: string;
+    crop: string;
+    variety: string;
+    farmerOrFpo: string;
+    harvestDate: string;
+    quantityKg: number;
+    status: string;
+    destination: string;
+    qualityGrade: string;
+    inspectionMetrics?: {
+      sugarBrix: number;
+      firmnessKgCm: number;
+      moistureContent: string;
+      pesticideResidueTest: string;
+    };
+    timeline: {
+      status: string;
+      date: string;
+      location: string;
+      note?: string;
+    }[];
+  }
+
+  const liveOrderBatches: BatchItem[] = orders
+    .filter((o) => !passportBatchIds.has(o.batchId))
+    .map((o) => {
+      // Map order status to passport step
+      let currentStatus = 'Harvested';
+      if (o.status === 'Completed' || o.status === 'Delivered') currentStatus = 'Delivered';
+      else if (o.status === 'In Transit') currentStatus = 'In Transit';
+      else if (o.status === 'Packed') currentStatus = 'Packed';
+      else if (o.status === 'Quality Checked' || o.status === 'Collected') currentStatus = 'Quality Checked';
+
+      return {
+        batchId: o.batchId || `BATCH-${o.id}`,
+        orderId: o.id,
+        crop: o.crop,
+        variety: o.variety || 'Standard Hybrid',
+        farmerOrFpo: o.farmerContributions && o.farmerContributions.length > 1
+          ? `Consolidated FPO (${o.farmerContributions.length} Farmers)`
+          : o.farmerName,
+        harvestDate: o.date ? o.date.split('T')[0] : '2026-09-08',
+        quantityKg: o.quantityKg,
+        status: currentStatus,
+        destination: o.deliveryLocation,
+        qualityGrade: o.qualityGrade || 'Grade A',
+        inspectionMetrics: o.inspectionMetrics ? {
+          sugarBrix: o.inspectionMetrics.sugarBrix || 4.8,
+          firmnessKgCm: o.inspectionMetrics.firmnessKgCm || 3.4,
+          moistureContent: o.inspectionMetrics.moistureContent || '86%',
+          pesticideResidueTest: o.inspectionMetrics.pesticideResidueTest || 'ND (NABL Compliant)'
+        } : undefined,
+        timeline: [
+          { status: 'Harvested', date: o.date ? o.date.split('T')[0] : '2026-09-08', location: o.farmerLocation, note: 'Harvest recorded at source farm gate' },
+          ...(o.qualityStatus === 'Passed' ? [{ status: 'Quality Checked', date: o.date ? o.date.split('T')[0] : '2026-09-08', location: 'FPO Quality Hub', note: `Lab verified ${o.qualityGrade}` }] : []),
+          ...(o.packingStatus === 'Packed' ? [{ status: 'Packed', date: o.date ? o.date.split('T')[0] : '2026-09-08', location: 'FPO Packhouse', note: `${o.crateCount || 25} Crates tagged with QR code` }] : []),
+          ...(o.transportDetails ? [{ status: 'In Transit', date: o.transportDetails.assignedAt ? o.transportDetails.assignedAt.split('T')[0] : '2026-09-08', location: 'En Route', note: `Vehicle ${o.transportDetails.vehicleNumber}` }] : []),
+          ...(o.buyerConfirmation ? [{ status: 'Delivered', date: o.buyerConfirmation.confirmedAt ? o.buyerConfirmation.confirmedAt.split('T')[0] : '2026-09-08', location: o.deliveryLocation, note: `Buyer verified by ${o.buyerConfirmation.receiverName}` }] : [])
+        ]
+      };
+    });
+
+  const batches: BatchItem[] = [
+    ...liveOrderBatches,
+    ...producePassports.map((p) => ({
+      batchId: p.batchId,
+      orderId: undefined,
+      crop: p.crop,
+      variety: p.variety,
+      farmerOrFpo: p.farmerOrFpo,
+      harvestDate: p.harvestDate,
+      quantityKg: p.quantityKg,
+      status: p.currentStatus,
+      destination: p.destination,
+      qualityGrade: p.qualityGrade,
+      inspectionMetrics: p.inspectionMetrics,
+      timeline: p.timeline.map(t => ({
+        status: t.title,
+        date: t.timestamp.split(' ')[0],
+        location: t.location,
+        note: t.notes
+      }))
+    }))
+  ];
+
   const [selectedBatchId, setSelectedBatchId] = useState<string | null>(
-    producePassports.length > 0 ? producePassports[0].batchId : 'AGP-TOM-2026-001'
+    batches.length > 0 ? batches[0].batchId : 'AGP-TOM-2026-001'
   );
 
-  const batches = producePassports.map((p) => ({
-    batchId: p.batchId,
-    crop: p.crop,
-    variety: p.variety,
-    farmerOrFpo: p.farmerOrFpo,
-    harvestDate: p.harvestDate,
-    quantityKg: p.quantityKg,
-    status: p.currentStatus,
-    destination: p.destination,
-    qualityGrade: p.qualityGrade,
-    inspectionMetrics: p.inspectionMetrics,
-    timeline: p.timeline
-  }));
-
-  const filtered = batches.filter(
+  const filtered: BatchItem[] = batches.filter(
     (b) =>
       b.batchId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (b.orderId && b.orderId.toLowerCase().includes(searchQuery.toLowerCase())) ||
       b.crop.toLowerCase().includes(searchQuery.toLowerCase()) ||
       b.farmerOrFpo.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const selectedBatch = selectedBatchId ? batches.find((b) => b.batchId === selectedBatchId) || batches[0] : null;
+  const selectedBatch: BatchItem | null = selectedBatchId ? batches.find((b) => b.batchId === selectedBatchId) || batches[0] || null : null;
   const currentStepIdx = selectedBatch ? STATUS_STEPS.indexOf(selectedBatch.status) : -1;
 
   return (
@@ -111,7 +189,7 @@ export const TraceabilityPage: React.FC = () => {
                 <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {b.harvestDate}</span>
                 <span className="flex items-center gap-1.5 truncate"><MapPin className="w-3.5 h-3.5 shrink-0" />{b.destination.split('—')[0].trim()}</span>
               </div>
-              <p className="text-[10px] font-mono font-bold text-forest/50 mt-3">{b.batchId}</p>
+              <p className="text-[10px] font-mono font-bold text-forest/50 mt-3">{b.batchId} {b.orderId ? `• Ref: ${b.orderId}` : ''}</p>
             </button>
           ))}
         </div>
@@ -134,7 +212,9 @@ export const TraceabilityPage: React.FC = () => {
                   <h2 className="text-3xl font-anton text-forest mt-4 tracking-wide">
                     {selectedBatch.crop} Batch
                   </h2>
-                  <p className="text-xs font-mono font-bold text-forest/60 mt-2">{selectedBatch.batchId}</p>
+                  <p className="text-xs font-mono font-bold text-forest/60 mt-2">
+                    {selectedBatch.batchId} {selectedBatch.orderId ? `• Order: ${selectedBatch.orderId}` : ''}
+                  </p>
                 </div>
                 <button
                   onClick={() => openPassportModal(selectedBatch.batchId)}

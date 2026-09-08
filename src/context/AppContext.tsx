@@ -20,6 +20,8 @@ import {
   OrderTimelineEvent,
   AggregatedDemandGroup,
   FarmerContribution,
+  FarmerSettlementItem,
+  SettlementStatus,
   BuyerDeliveryConfirmation
 } from '../types';
 import {
@@ -101,6 +103,10 @@ interface AppContextType {
   markDelivered: (orderId: string) => void;
   buyerConfirmDelivery: (orderId: string, confirmation: BuyerDeliveryConfirmation) => void;
   buyerConfirmReceipt: (orderId: string) => void;
+  recordBuyerPayment: (orderId: string, paymentDetails?: { reference?: string; method?: string }) => void;
+  processFpoSettlement: (orderId: string) => void;
+  settleFarmerPayment: (orderId: string, farmerId?: string) => void;
+  completeTransaction: (orderId: string) => void;
   settlePayment: (orderId: string) => void;
   isOnline: boolean;
   syncStatus: NetworkSyncStatus;
@@ -1237,6 +1243,44 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const traditionalShare = Math.round(finalVal * 0.55);
     const gainPct = Number((((farmerShare - traditionalShare) / (traditionalShare || 1)) * 100).toFixed(1));
 
+    // Build farmer-level contribution breakdown for transparent multi-farmer payout
+    const contributions = order.farmerContributions && order.farmerContributions.length > 0
+      ? order.farmerContributions
+      : [
+          {
+            farmerId: order.farmerId,
+            farmerName: order.farmerName,
+            farmerLocation: order.farmerLocation,
+            produceListingId: order.produceListingId,
+            contributedQuantityKg: order.quantityKg,
+            collectedQuantityKg: acceptedKg,
+            collectionStatus: 'FULLY_COLLECTED' as const
+          }
+        ];
+
+    const totalContributed = contributions.reduce((sum, c) => sum + (c.collectedQuantityKg || c.contributedQuantityKg), 0);
+    const farmerBreakdown: FarmerSettlementItem[] = contributions.map((c, idx) => {
+      const farmerKg = c.collectedQuantityKg || c.contributedQuantityKg;
+      const proportion = totalContributed > 0 ? farmerKg / totalContributed : 1 / contributions.length;
+      const farmerAcceptedKg = Math.round(acceptedKg * proportion);
+      const gross = Math.round(farmerAcceptedKg * order.pricePerKg * 100) / 100;
+      const netPayout = Math.round(gross * 0.89);
+
+      return {
+        farmerId: c.farmerId,
+        farmerName: c.farmerName,
+        farmerLocation: c.farmerLocation,
+        produceListingId: c.produceListingId,
+        contributedQuantityKg: c.contributedQuantityKg,
+        collectedQuantityKg: farmerKg,
+        agreedPricePerKg: order.pricePerKg,
+        grossAmount: gross,
+        netFarmerAmount: netPayout,
+        status: 'PENDING',
+        bankAccountMasked: `${['SBI', 'HDFC', 'Canara', 'ICICI', 'Indian Bank'][idx % 5]} **** **** ${Math.floor(1000 + Math.random() * 9000)}`
+      };
+    });
+
     const newSettlement: SettlementRecord = {
       id: createdSettleId,
       orderId: order.id,
@@ -1244,7 +1288,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       crop: order.crop,
       quantityKg: acceptedKg,
       buyerName: order.buyerName,
-      farmerOrFpoName: order.farmerName,
+      farmerOrFpoName: order.fpoName || order.farmerName,
       totalOrderValue: finalVal,
       farmerAmount: farmerShare,
       logisticsAmount: logisticsShare,
@@ -1252,9 +1296,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       farmerRealizationPercentage: 89.0,
       traditionalFarmerEarnings: traditionalShare,
       earningsGainPercentage: gainPct,
-      status: 'PENDING',
-      settlementDate: 'Scheduled - Awaiting Trigger',
-      utrNumber: 'ESCROW_LOCKED_PENDING'
+      status: 'Payment Pending',
+      settlementDate: 'Awaiting Buyer Payment & Settlement Processing',
+      utrNumber: 'ESCROW_LOCKED_PENDING',
+      paymentMode: 'UPI e-RUPI Programmable Escrow (Prototype Simulator)',
+      farmerBreakdown
     };
 
     setSettlements((prev) => [newSettlement, ...prev.filter((s) => s.orderId !== order.id)]);
@@ -1280,41 +1326,204 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     });
   };
 
-  // Step 12: Payment Settled
-  const settlePayment = (orderId: string) => {
+  // Step 12a: Buyer Payment Confirmed / Recorded into Escrow
+  const recordBuyerPayment = (orderId: string, paymentDetails?: { reference?: string; method?: string }) => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
-    const utr = `AGRITXN${Date.now()}`;
+    const ref = paymentDetails?.reference || `UPI-ERUPI-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    setSettlements((prev) =>
+      prev.map((s) =>
+        s.orderId === orderId
+          ? {
+              ...s,
+              status: 'Buyer Payment Confirmed',
+              buyerPaymentReference: ref,
+              buyerPaymentRecordedAt: timestamp
+            }
+          : s
+      )
+    );
+
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+        return {
+          ...o,
+          timeline: [
+            ...o.timeline,
+            {
+              step: 'BUYER_PAYMENT_CONFIRMED',
+              title: `Buyer Payment Recorded & Escrow Funded (Ref: ${ref})`,
+              location: 'Programmable Escrow Vault',
+              timestamp,
+              operator: 'RBI e-RUPI Smart Contract Ledger',
+              completed: true
+            }
+          ]
+        };
+      })
+    );
+  };
+
+  // Step 12b: FPO Settlement Processing
+  const processFpoSettlement = (orderId: string) => {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+
+    setSettlements((prev) =>
+      prev.map((s) =>
+        s.orderId === orderId
+          ? {
+              ...s,
+              status: 'Farmer Settlement Processing',
+              fpoSettledAt: timestamp
+            }
+          : s
+      )
+    );
+
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+        return {
+          ...o,
+          timeline: [
+            ...o.timeline,
+            {
+              step: 'FPO_SETTLED',
+              title: 'FPO Logistics & Pre-Cooling Allocation Disbursed (8%)',
+              location: 'FPO Commercial Clearing Hub',
+              timestamp,
+              operator: 'FPO Finance Unit',
+              completed: true
+            }
+          ]
+        };
+      })
+    );
+  };
+
+  // Step 12c: Farmer Payment Settled (Single Farmer or Multiple Contributing Farmers)
+  const settleFarmerPayment = (orderId: string, farmerId?: string) => {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+
+    setSettlements((prev) =>
+      prev.map((s) => {
+        if (s.orderId !== orderId) return s;
+
+        const updatedBreakdown = (s.farmerBreakdown || []).map((fb) => {
+          if (!farmerId || fb.farmerId === farmerId) {
+            return {
+              ...fb,
+              status: 'COMPLETED' as const,
+              utrNumber: fb.utrNumber || `UTR-FARM-${Math.floor(10000000 + Math.random() * 90000000)}`,
+              settledAt: timestamp
+            };
+          }
+          return fb;
+        });
+
+        const allFarmersSettled = updatedBreakdown.length === 0 || updatedBreakdown.every((f) => f.status === 'COMPLETED');
+        const generatedUtr = s.utrNumber !== 'ESCROW_LOCKED_PENDING' ? s.utrNumber : `AGRITXN${Date.now()}`;
+
+        return {
+          ...s,
+          farmerBreakdown: updatedBreakdown,
+          status: allFarmersSettled ? 'Farmer Payment Completed' : 'Farmer Settlement Processing',
+          farmerSettledAt: timestamp,
+          utrNumber: generatedUtr
+        };
+      })
+    );
+
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+        const updatedContribs = (o.farmerContributions || []).map((fc) => {
+          if (!farmerId || fc.farmerId === farmerId) {
+            return {
+              ...fc,
+              settlementStatus: 'COMPLETED' as const,
+              farmerUtr: fc.farmerUtr || `UTR-FARM-${Math.floor(10000000 + Math.random() * 90000000)}`,
+              settledAt: timestamp
+            };
+          }
+          return fc;
+        });
+
+        return {
+          ...o,
+          farmerContributions: updatedContribs,
+          timeline: [
+            ...o.timeline,
+            {
+              step: 'FARMER_PAYMENT_SETTLED',
+              title: farmerId
+                ? `Direct Net Payout Credited to Farmer ${farmerId}`
+                : 'All Member Farmer Payouts Credited (89% Net Realization)',
+              location: 'Direct Bank NEFT / e-RUPI Wallet',
+              timestamp,
+              operator: 'National Clearing Gateway',
+              completed: true
+            }
+          ]
+        };
+      })
+    );
+  };
+
+  // Step 12d: Transaction Completed & Escrow Closed
+  const completeTransaction = (orderId: string) => {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     let targetListingId = '';
 
     setOrders((prev) =>
       prev.map((o) => {
         if (o.id !== orderId) return o;
         targetListingId = o.produceListingId;
-        const updatedTimeline: OrderTimelineEvent[] = [
-          ...o.timeline.map((t) => (t.step === 'PAYMENT_PENDING' ? { ...t, completed: true, timestamp } : t)),
-          {
-            step: 'SETTLED',
-            title: `Digital Payout Settled to Farmer Account (UTR: ${utr})`,
-            location: 'National Clearing Gateway',
-            timestamp,
-            operator: 'Escrow Settlement Smart Contract',
-            completed: true
-          }
-        ];
-        return { ...o, status: 'Completed', timeline: updatedTimeline };
+        return {
+          ...o,
+          status: 'Completed',
+          timeline: [
+            ...o.timeline,
+            {
+              step: 'TRANSACTION_COMPLETED',
+              title: 'Order Fulfilled & Escrow Ledger Closed Successfully',
+              location: 'Uzhavan Trust Network',
+              timestamp,
+              operator: 'Smart Escrow Supervisor',
+              completed: true
+            }
+          ]
+        };
       })
     );
 
     if (targetListingId) {
       setProduceListings((prev) =>
-        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Payment Completed' } : p))
+        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Completed' } : p))
       );
     }
+
     setSettlements((prev) =>
       prev.map((s) =>
-        s.orderId === orderId ? { ...s, status: 'COMPLETED', settlementDate: timestamp, utrNumber: utr } : s
+        s.orderId === orderId
+          ? {
+              ...s,
+              status: 'Transaction Completed',
+              settlementDate: timestamp,
+              utrNumber: s.utrNumber !== 'ESCROW_LOCKED_PENDING' ? s.utrNumber : `AGRITXN${Date.now()}`
+            }
+          : s
       )
     );
+  };
+
+  // Step 12e: Full Staged Payout Shortcut
+  const settlePayment = (orderId: string) => {
+    recordBuyerPayment(orderId);
+    processFpoSettlement(orderId);
+    settleFarmerPayment(orderId);
+    completeTransaction(orderId);
   };
 
   useEffect(() => {
@@ -1553,6 +1762,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         markDelivered,
         buyerConfirmDelivery,
         buyerConfirmReceipt,
+        recordBuyerPayment,
+        processFpoSettlement,
+        settleFarmerPayment,
+        completeTransaction,
         settlePayment,
         isOnline,
         syncStatus,

@@ -113,6 +113,27 @@ export interface FarmerContribution {
   collectionStatus: 'PENDING' | 'PARTIALLY_COLLECTED' | 'FULLY_COLLECTED';
   collectedAt?: string;
   notes?: string;
+  agreedPricePerKg?: number;
+  settlementAmount?: number;
+  settlementStatus?: 'PENDING' | 'PROCESSING' | 'COMPLETED';
+  farmerUtr?: string;
+  settledAt?: string;
+}
+
+export interface FarmerSettlementItem {
+  farmerId: string;
+  farmerName: string;
+  farmerLocation: string;
+  produceListingId: string;
+  contributedQuantityKg: number;
+  collectedQuantityKg: number;
+  agreedPricePerKg: number;
+  grossAmount: number;
+  netFarmerAmount: number; // 89% net realization
+  status: 'PENDING' | 'PROCESSING' | 'COMPLETED';
+  utrNumber?: string;
+  settledAt?: string;
+  bankAccountMasked?: string;
 }
 
 export interface QualityInspectionData {
@@ -154,6 +175,7 @@ export interface TransportAssignment {
   departureTime?: string;
   estimatedArrival?: string;
   assignedAt: string;
+  temperatureC?: string | number;
 }
 
 export interface WorkflowAgreement {
@@ -442,8 +464,20 @@ export interface ProducePassport {
     operator: string;
     metrics?: { label: string; value: string }[];
     completed: boolean;
+    notes?: string;
   }[];
 }
+
+export type SettlementStatus =
+  | 'Payment Pending'
+  | 'Buyer Payment Confirmed'
+  | 'FPO Settlement Pending'
+  | 'Farmer Settlement Processing'
+  | 'Farmer Payment Completed'
+  | 'Transaction Completed'
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'COMPLETED';
 
 export interface SettlementRecord {
   id: string;
@@ -460,9 +494,15 @@ export interface SettlementRecord {
   farmerRealizationPercentage: number;
   traditionalFarmerEarnings: number;
   earningsGainPercentage: number;
-  status: 'PENDING' | 'PROCESSING' | 'COMPLETED';
+  status: SettlementStatus;
   settlementDate: string;
   utrNumber: string;
+  paymentMode?: 'UPI e-RUPI Programmable Escrow (Prototype Simulator)' | 'Bank RTGS / Direct NEFT Batch';
+  buyerPaymentReference?: string;
+  buyerPaymentRecordedAt?: string;
+  fpoSettledAt?: string;
+  farmerSettledAt?: string;
+  farmerBreakdown?: FarmerSettlementItem[];
 }
 
 export interface AppNotification {

@@ -15,22 +15,40 @@ import {
   Download,
   AlertCircle,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Users,
+  Wallet,
+  Check,
+  QrCode
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const SettlementPage: React.FC = () => {
-  const { settlements, settlePayment, openPassportModal, setActiveTab } = useApp();
-  const [filterStatus, setFilterStatus] = useState<'ALL' | 'PENDING' | 'COMPLETED'>('ALL');
+  const {
+    settlements,
+    recordBuyerPayment,
+    processFpoSettlement,
+    settleFarmerPayment,
+    completeTransaction,
+    settlePayment,
+    openPassportModal,
+    setActiveTab
+  } = useApp();
+
+  const [filterStatus, setFilterStatus] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED'>('ALL');
   const [selectedSettlementId, setSelectedSettlementId] = useState<string | null>(
     settlements.length > 0 ? settlements[0].id : null
   );
   const [downloading, setDownloading] = useState(false);
-  const [settlingId, setSettlingId] = useState<string | null>(null);
+  const [processingStage, setProcessingStage] = useState<string | null>(null);
+
+  const isCompletedStatus = (status: string) =>
+    status === 'COMPLETED' || status === 'Transaction Completed';
 
   const filteredSettlements = settlements.filter((s) => {
     if (filterStatus === 'ALL') return true;
-    return s.status === filterStatus;
+    if (filterStatus === 'COMPLETED') return isCompletedStatus(s.status);
+    return !isCompletedStatus(s.status);
   });
 
   const activeSettlement =
@@ -39,11 +57,11 @@ export const SettlementPage: React.FC = () => {
     settlements[0];
 
   const totalSettledAmount = settlements
-    .filter((s) => s.status === 'COMPLETED')
+    .filter((s) => isCompletedStatus(s.status))
     .reduce((acc, s) => acc + s.farmerAmount, 0);
 
   const totalPendingAmount = settlements
-    .filter((s) => s.status === 'PENDING')
+    .filter((s) => !isCompletedStatus(s.status))
     .reduce((acc, s) => acc + s.farmerAmount, 0);
 
   const handleDownloadInvoice = () => {
@@ -58,18 +76,65 @@ export const SettlementPage: React.FC = () => {
     }, 600);
   };
 
-  const handleExecutePayout = (orderId: string, id: string) => {
-    setSettlingId(id);
+  const handleRecordPayment = (orderId: string) => {
+    setProcessingStage('buyer-pay');
+    setTimeout(() => {
+      recordBuyerPayment(orderId, {
+        reference: `UPI-ERUPI-${Math.floor(100000 + Math.random() * 900000)}`
+      });
+      setProcessingStage(null);
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+    }, 400);
+  };
+
+  const handleProcessFpo = (orderId: string) => {
+    setProcessingStage('fpo-process');
+    setTimeout(() => {
+      processFpoSettlement(orderId);
+      setProcessingStage(null);
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+    }, 400);
+  };
+
+  const handleSettleFarmer = (orderId: string, farmerId?: string) => {
+    setProcessingStage(farmerId ? `farmer-${farmerId}` : 'farmer-all');
+    setTimeout(() => {
+      settleFarmerPayment(orderId, farmerId);
+      setProcessingStage(null);
+      confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
+    }, 400);
+  };
+
+  const handleCompleteLedger = (orderId: string) => {
+    setProcessingStage('complete');
+    setTimeout(() => {
+      completeTransaction(orderId);
+      setProcessingStage(null);
+      confetti({ particleCount: 90, spread: 90, origin: { y: 0.6 } });
+    }, 400);
+  };
+
+  const handleInstantPayout = (orderId: string) => {
+    setProcessingStage('instant');
     setTimeout(() => {
       settlePayment(orderId);
-      setSettlingId(null);
-      confetti({
-        particleCount: 80,
-        spread: 80,
-        origin: { y: 0.6 }
-      });
+      setProcessingStage(null);
+      confetti({ particleCount: 100, spread: 100, origin: { y: 0.6 } });
     }, 500);
   };
+
+  // Determine stage progression for stepper (1 through 5)
+  const getStageNumber = (status: string) => {
+    if (status === 'Payment Pending' || status === 'PENDING') return 1;
+    if (status === 'Buyer Payment Confirmed') return 2;
+    if (status === 'FPO Settlement Pending') return 3;
+    if (status === 'Farmer Settlement Processing') return 4;
+    if (status === 'Farmer Payment Completed') return 5;
+    if (isCompletedStatus(status)) return 6;
+    return 1;
+  };
+
+  const currentStageNum = activeSettlement ? getStageNumber(activeSettlement.status) : 1;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -84,7 +149,7 @@ export const SettlementPage: React.FC = () => {
             Settlement & Net Realization
           </h1>
           <p className="text-sm text-cream/70 mt-3 max-w-2xl leading-relaxed font-medium">
-            Instant digital payout triggered upon buyer delivery acceptance. Zero hidden commission deductions, zero mandi cess deductions, zero delayed 90-day credit lag.
+            Transparent automated escrow disbursement triggered upon buyer dockside delivery signoff. 89% direct farmer realization, zero middlemen commissions, zero 90-day credit lag.
           </p>
         </div>
 
@@ -99,6 +164,23 @@ export const SettlementPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Prototype Escrow Architecture Safety Notice */}
+      <div className="bg-amber-50 border border-amber-300 rounded-[1.8rem] p-5 flex items-start gap-4 text-xs text-amber-950 shadow-xs">
+        <div className="p-2.5 bg-amber-100 rounded-xl border border-amber-300 shrink-0">
+          <AlertCircle className="w-5 h-5 text-amber-800" />
+        </div>
+        <div className="space-y-1">
+          <strong className="text-sm font-bold text-amber-900 block font-['Outfit']">
+            Prototype Architecture & Honest Operational Scope
+          </strong>
+          <p className="leading-relaxed text-[11px] text-amber-900/90 font-medium">
+            This module provides a connected, prototype-safe simulation of the <strong>RBI UPI e-RUPI programmable escrow ledger</strong>.
+            No live commercial banking gateway is integrated. All simulated UTR numbers, settlement splits (89% farmer / 8% logistics / 3% platform),
+            and multi-farmer contributions reflect actual application orders and verifiable accounting rules.
+          </p>
+        </div>
+      </div>
+
       {/* Aggregate KPI Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="bg-cream rounded-[1.5rem] border border-olive/30 p-6 shadow-sm">
@@ -109,7 +191,7 @@ export const SettlementPage: React.FC = () => {
             ₹{totalSettledAmount.toLocaleString()}
           </p>
           <span className="text-xs text-forest/70 font-semibold mt-1 block">
-            {settlements.filter((s) => s.status === 'COMPLETED').length} Transactions Completed
+            {settlements.filter((s) => isCompletedStatus(s.status)).length} Transactions Completed
           </span>
         </div>
 
@@ -121,7 +203,7 @@ export const SettlementPage: React.FC = () => {
             ₹{totalPendingAmount.toLocaleString()}
           </p>
           <span className="text-xs text-amber-800/80 font-semibold mt-1 block">
-            {settlements.filter((s) => s.status === 'PENDING').length} Orders Pending Release
+            {settlements.filter((s) => !isCompletedStatus(s.status)).length} Orders in Settlement Pipeline
           </span>
         </div>
 
@@ -144,7 +226,7 @@ export const SettlementPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-widest text-forest/70">Filter Settlements:</span>
             <div className="inline-flex bg-olive/10 p-1 rounded-[1rem] border border-olive/20">
-              {(['ALL', 'PENDING', 'COMPLETED'] as const).map((st) => (
+              {(['ALL', 'IN_PROGRESS', 'COMPLETED'] as const).map((st) => (
                 <button
                   key={st}
                   onClick={() => setFilterStatus(st)}
@@ -154,7 +236,7 @@ export const SettlementPage: React.FC = () => {
                       : 'text-forest/70 hover:text-forest'
                   }`}
                 >
-                  {st}
+                  {st === 'IN_PROGRESS' ? 'In Settlement' : st}
                 </button>
               ))}
             </div>
@@ -167,6 +249,9 @@ export const SettlementPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {filteredSettlements.map((s) => {
             const isSelected = activeSettlement?.id === s.id;
+            const isDone = isCompletedStatus(s.status);
+            const farmerCount = s.farmerBreakdown?.length || 1;
+
             return (
               <div
                 key={s.id}
@@ -184,7 +269,7 @@ export const SettlementPage: React.FC = () => {
                     </span>
                     <span
                       className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full border ${
-                        s.status === 'COMPLETED'
+                        isDone
                           ? 'bg-sage text-forest border-sage/60'
                           : 'bg-amber-100 text-amber-900 border-amber-300'
                       }`}
@@ -198,6 +283,9 @@ export const SettlementPage: React.FC = () => {
                   <p className="text-xs text-forest/70 font-medium mt-1">
                     Beneficiary: <strong className="text-forest">{s.farmerOrFpoName}</strong>
                   </p>
+                  <p className="text-[10px] text-forest/50 mt-0.5">
+                    {farmerCount} Participating Member Farmer{farmerCount > 1 ? 's' : ''}
+                  </p>
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-olive/20 flex items-center justify-between">
@@ -206,20 +294,21 @@ export const SettlementPage: React.FC = () => {
                     <span className="text-lg font-anton text-forest">₹{s.farmerAmount.toLocaleString()}</span>
                   </div>
 
-                  {s.status === 'PENDING' ? (
+                  {!isDone ? (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleExecutePayout(s.orderId, s.id);
+                        handleInstantPayout(s.orderId);
                       }}
-                      disabled={settlingId === s.id}
+                      disabled={processingStage === 'instant'}
                       className="px-3 py-1.5 bg-forest hover:bg-[#023120] text-cream text-[10px] font-bold uppercase tracking-widest rounded-[0.8rem] shadow-sm transition"
                     >
-                      {settlingId === s.id ? 'Processing...' : 'Disburse'}
+                      {processingStage === 'instant' ? 'Processing...' : 'Disburse'}
                     </button>
                   ) : (
-                    <span className="text-[10px] font-mono text-forest/60 font-bold">
-                      UTR Verified
+                    <span className="text-[10px] font-mono text-emerald-800 font-bold flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Settled</span>
                     </span>
                   )}
                 </div>
@@ -229,7 +318,7 @@ export const SettlementPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Order Value & 85.9% Realization Banner */}
+      {/* Main Order Value & 5-Step Connected Settlement Hub */}
       {activeSettlement && (
         <div className="bg-cream rounded-[2.5rem] border border-olive/30 p-8 shadow-sm space-y-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-olive/30">
@@ -241,7 +330,7 @@ export const SettlementPage: React.FC = () => {
                 <span className="text-forest/30">•</span>
                 <span
                   className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border ${
-                    activeSettlement.status === 'COMPLETED'
+                    isCompletedStatus(activeSettlement.status)
                       ? 'bg-sage text-forest border-sage/50'
                       : 'bg-amber-100 text-amber-900 border-amber-300 animate-pulse'
                   }`}
@@ -270,22 +359,239 @@ export const SettlementPage: React.FC = () => {
                 </span>
               </div>
 
-              {activeSettlement.status === 'PENDING' && (
+              {!isCompletedStatus(activeSettlement.status) && (
                 <button
-                  onClick={() => handleExecutePayout(activeSettlement.orderId, activeSettlement.id)}
-                  disabled={settlingId === activeSettlement.id}
+                  onClick={() => handleInstantPayout(activeSettlement.orderId)}
+                  disabled={Boolean(processingStage)}
                   className="mt-2 flex items-center gap-2 px-6 py-3 bg-forest hover:bg-[#023120] text-cream text-xs font-bold uppercase tracking-widest rounded-[1rem] shadow-forest transition"
                 >
                   <Sparkles className="w-4 h-4 text-sage" />
                   <span>
-                    {settlingId === activeSettlement.id
+                    {processingStage === 'instant'
                       ? 'Executing Automated Payout...'
-                      : `Trigger Instant Escrow Payout (₹${activeSettlement.farmerAmount.toLocaleString()})`}
+                      : `Instant 1-Click Payout (₹${activeSettlement.farmerAmount.toLocaleString()})`}
                   </span>
                 </button>
               )}
             </div>
           </div>
+
+          {/* 5-Stage Interactive Workflow Stepper */}
+          <div className="bg-white/80 rounded-[2rem] border border-olive/30 p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-forest/60 uppercase tracking-widest">
+                Connected Escrow Execution Pipeline
+              </span>
+              <span className="text-xs font-bold text-forest font-mono">
+                Stage {Math.min(5, currentStageNum)} of 5
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+              {[
+                {
+                  stage: 1,
+                  title: 'Buyer Delivery Verified',
+                  subtitle: 'Dockside inspection signoff',
+                  isDone: true,
+                  isActive: false
+                },
+                {
+                  stage: 2,
+                  title: 'Buyer Payment Recorded',
+                  subtitle: activeSettlement.buyerPaymentReference || 'Escrow deposit funding',
+                  isDone: currentStageNum >= 2,
+                  isActive: currentStageNum === 1
+                },
+                {
+                  stage: 3,
+                  title: 'FPO & Transport Share',
+                  subtitle: '8% Cold-chain allocation',
+                  isDone: currentStageNum >= 3,
+                  isActive: currentStageNum === 2
+                },
+                {
+                  stage: 4,
+                  title: 'Farmer Net Direct Payout',
+                  subtitle: '89% direct NEFT / e-RUPI',
+                  isDone: currentStageNum >= 5,
+                  isActive: currentStageNum === 3 || currentStageNum === 4
+                },
+                {
+                  stage: 5,
+                  title: 'Transaction Completed',
+                  subtitle: 'Escrow closed with audit UTR',
+                  isDone: currentStageNum >= 6,
+                  isActive: currentStageNum === 5
+                }
+              ].map((st) => (
+                <div
+                  key={st.stage}
+                  className={`p-3.5 rounded-2xl border text-xs transition space-y-1 ${
+                    st.isDone
+                      ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
+                      : st.isActive
+                      ? 'bg-amber-50 border-amber-400 text-amber-950 ring-2 ring-amber-300'
+                      : 'bg-slate-50 border-slate-200 text-slate-400'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold font-mono">STEP {st.stage}</span>
+                    {st.isDone && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />}
+                  </div>
+                  <p className="font-bold text-xs leading-tight">{st.title}</p>
+                  <p className="text-[10px] opacity-75 truncate">{st.subtitle}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Stage Action Controls */}
+            <div className="pt-3 border-t border-olive/20 flex flex-wrap items-center justify-between gap-3">
+              <span className="text-xs text-forest/70 font-medium">
+                {currentStageNum === 1 && 'Action required: Record buyer payment / escrow deposit.'}
+                {currentStageNum === 2 && 'Action required: Process 8% FPO and cold-chain logistics allocation.'}
+                {currentStageNum === 3 && 'Action required: Initiate direct NEFT batch payouts to member farmers.'}
+                {currentStageNum === 4 && 'Action required: Finalize remaining farmer payouts.'}
+                {currentStageNum === 5 && 'Action required: Finalize and close the escrow transaction ledger.'}
+                {currentStageNum >= 6 && '✓ All funds disbursed. Transaction completed and verified.'}
+              </span>
+
+              <div className="flex items-center gap-2">
+                {currentStageNum === 1 && (
+                  <button
+                    onClick={() => handleRecordPayment(activeSettlement.orderId)}
+                    disabled={processingStage === 'buyer-pay'}
+                    className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-cream font-bold text-xs rounded-xl transition shadow-sm uppercase tracking-wider"
+                  >
+                    {processingStage === 'buyer-pay' ? 'Recording...' : 'Record Buyer Payment →'}
+                  </button>
+                )}
+
+                {currentStageNum === 2 && (
+                  <button
+                    onClick={() => handleProcessFpo(activeSettlement.orderId)}
+                    disabled={processingStage === 'fpo-process'}
+                    className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-cream font-bold text-xs rounded-xl transition shadow-sm uppercase tracking-wider"
+                  >
+                    {processingStage === 'fpo-process' ? 'Processing...' : 'Process FPO & Logistics (8%) →'}
+                  </button>
+                )}
+
+                {(currentStageNum === 3 || currentStageNum === 4) && (
+                  <button
+                    onClick={() => handleSettleFarmer(activeSettlement.orderId)}
+                    disabled={Boolean(processingStage)}
+                    className="px-4 py-2 bg-forest hover:bg-forest/90 text-cream font-bold text-xs rounded-xl transition shadow-sm uppercase tracking-wider"
+                  >
+                    {processingStage === 'farmer-all' ? 'Disbursing...' : 'Disburse All Farmers (89%) →'}
+                  </button>
+                )}
+
+                {currentStageNum === 5 && (
+                  <button
+                    onClick={() => handleCompleteLedger(activeSettlement.orderId)}
+                    disabled={processingStage === 'complete'}
+                    className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-cream font-bold text-xs rounded-xl transition shadow-sm uppercase tracking-wider"
+                  >
+                    {processingStage === 'complete' ? 'Closing...' : 'Close & Finalize Transaction'}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Multi-Farmer Member Settlement Ledger Table */}
+          {activeSettlement.farmerBreakdown && activeSettlement.farmerBreakdown.length > 0 && (
+            <div className="bg-cream rounded-[2rem] border border-olive/30 p-6 space-y-4 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-olive/20 pb-4">
+                <div>
+                  <div className="flex items-center gap-2 text-forest/60 text-[10px] font-bold uppercase tracking-widest mb-1">
+                    <Users className="w-3.5 h-3.5 text-forest" />
+                    <span>Member Farm Granular Accounting</span>
+                  </div>
+                  <h4 className="text-xl font-anton text-forest tracking-wide">
+                    Multi-Farmer Settlement Ledger
+                  </h4>
+                  <p className="text-xs text-forest/60 font-medium">
+                    Farmer-level contribution accounting with preserved source provenance and direct bank NEFT credits
+                  </p>
+                </div>
+                <span className="text-xs font-bold text-forest/70 bg-olive/15 px-3 py-1 rounded-full font-mono">
+                  {activeSettlement.farmerBreakdown.length} Participating Farmer{activeSettlement.farmerBreakdown.length > 1 ? 's' : ''}
+                </span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-olive/10 border-b border-olive/20 text-forest/70 font-bold uppercase tracking-widest text-[10px]">
+                      <th className="p-3">Farmer & Location</th>
+                      <th className="p-3">Volume Contributed</th>
+                      <th className="p-3">Agreed Rate</th>
+                      <th className="p-3">Gross Value</th>
+                      <th className="p-3">Net Realization (89%)</th>
+                      <th className="p-3">Disbursement Status</th>
+                      <th className="p-3">Bank UTR Reference</th>
+                      <th className="p-3 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-olive/15">
+                    {activeSettlement.farmerBreakdown.map((farmer, idx) => (
+                      <tr key={idx} className="hover:bg-olive/5 transition">
+                        <td className="p-3">
+                          <strong className="text-forest block font-bold">{farmer.farmerName}</strong>
+                          <span className="text-[10px] text-forest/60">{farmer.farmerLocation}</span>
+                        </td>
+                        <td className="p-3 font-mono font-bold text-forest">
+                          {farmer.collectedQuantityKg.toLocaleString()} kg
+                        </td>
+                        <td className="p-3 font-mono text-forest">
+                          ₹{farmer.agreedPricePerKg}/kg
+                        </td>
+                        <td className="p-3 font-mono text-forest/70">
+                          ₹{farmer.grossAmount.toLocaleString()}
+                        </td>
+                        <td className="p-3">
+                          <span className="font-anton text-base text-emerald-900 block">
+                            ₹{farmer.netFarmerAmount.toLocaleString()}
+                          </span>
+                          <span className="text-[10px] text-forest/50 font-mono">{farmer.bankAccountMasked || 'Direct NEFT Account'}</span>
+                        </td>
+                        <td className="p-3">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${
+                            farmer.status === 'COMPLETED'
+                              ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                              : 'bg-amber-100 text-amber-900 border-amber-300'
+                          }`}>
+                            {farmer.status}
+                          </span>
+                        </td>
+                        <td className="p-3 font-mono text-[11px] text-forest/70">
+                          {farmer.utrNumber || 'Awaiting Batch NEFT'}
+                        </td>
+                        <td className="p-3 text-right">
+                          {farmer.status !== 'COMPLETED' ? (
+                            <button
+                              onClick={() => handleSettleFarmer(activeSettlement.orderId, farmer.farmerId)}
+                              disabled={Boolean(processingStage)}
+                              className="px-3 py-1 bg-forest hover:bg-forest/90 text-cream text-[10px] font-bold rounded-lg uppercase tracking-wider transition shadow-xs"
+                            >
+                              Disburse
+                            </button>
+                          ) : (
+                            <span className="text-[11px] font-bold text-emerald-800 flex items-center justify-end gap-1">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>Paid</span>
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* 3-Way Transparent Value Split Breakdown */}
           <div>
@@ -316,9 +622,9 @@ export const SettlementPage: React.FC = () => {
                 <div className="pt-4 mt-6 border-t border-sage/20 text-[10px] font-bold uppercase tracking-widest text-cream/90 flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5 text-sage shrink-0" />
                   <span>
-                    {activeSettlement.status === 'COMPLETED'
+                    {isCompletedStatus(activeSettlement.status)
                       ? 'Disbursed via Instant Bank Escrow'
-                      : 'Locked in Escrow — Ready to Release'}
+                      : 'Locked in Escrow — Disbursing in Pipeline'}
                   </span>
                 </div>
               </div>
@@ -429,18 +735,19 @@ export const SettlementPage: React.FC = () => {
               </strong>
             </div>
             <div>
-              <span>Timestamp: </span>
+              <span>Settlement Status: </span>
               <strong className="text-forest bg-cream px-3 py-1.5 rounded-[1rem] border border-olive/30 font-mono text-xs">
-                {activeSettlement.settlementDate}
+                {activeSettlement.status}
               </strong>
             </div>
             <div>
               <span>Batch ID: </span>
               <button
                 onClick={() => openPassportModal(activeSettlement.batchId)}
-                className="text-forest bg-sage/30 px-3 py-1.5 rounded-[1rem] border border-sage/50 font-mono text-xs hover:bg-sage/50 transition"
+                className="text-forest bg-sage/30 px-3 py-1.5 rounded-[1rem] border border-sage/50 font-mono text-xs hover:bg-sage/50 transition flex items-center gap-1"
               >
-                {activeSettlement.batchId}
+                <QrCode className="w-3 h-3" />
+                <span>{activeSettlement.batchId}</span>
               </button>
             </div>
           </div>
@@ -449,4 +756,3 @@ export const SettlementPage: React.FC = () => {
     </div>
   );
 };
-

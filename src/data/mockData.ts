@@ -582,7 +582,59 @@ export const DEMO_SETTLEMENT: SettlementRecord = {
   earningsGainPercentage: 38.88,
   status: 'COMPLETED',
   settlementDate: '2026-09-06 07:12 AM',
-  utrNumber: 'AGRITXN20260906881920'
+  utrNumber: 'AGRITXN20260906881920',
+  paymentMode: 'UPI e-RUPI Programmable Escrow (Prototype Simulator)',
+  buyerPaymentReference: 'UPI-ERUPI-9082-CONFIRMED',
+  buyerPaymentRecordedAt: '2026-09-06 07:05 AM',
+  fpoSettledAt: '2026-09-06 07:10 AM',
+  farmerSettledAt: '2026-09-06 07:12 AM',
+  farmerBreakdown: [
+    {
+      farmerId: 'usr-farmer-01',
+      farmerName: 'Rajesh Kumar',
+      farmerLocation: 'Sunguvarchatram, Kanchipuram',
+      produceListingId: 'LST-001',
+      contributedQuantityKg: 1000,
+      collectedQuantityKg: 1000,
+      agreedPricePerKg: 28.0,
+      grossAmount: 28000,
+      netFarmerAmount: 25000,
+      status: 'COMPLETED',
+      utrNumber: 'UTR-FARM-908201',
+      settledAt: '2026-09-06 07:12 AM',
+      bankAccountMasked: 'HDFC **** **** 4819'
+    },
+    {
+      farmerId: 'usr-farmer-02',
+      farmerName: 'K. Selvam',
+      farmerLocation: 'Kanchipuram North',
+      produceListingId: 'LST-001-B',
+      contributedQuantityKg: 1000,
+      collectedQuantityKg: 1000,
+      agreedPricePerKg: 28.0,
+      grossAmount: 28000,
+      netFarmerAmount: 25000,
+      status: 'COMPLETED',
+      utrNumber: 'UTR-FARM-908202',
+      settledAt: '2026-09-06 07:12 AM',
+      bankAccountMasked: 'SBI **** **** 9031'
+    },
+    {
+      farmerId: 'usr-farmer-03',
+      farmerName: 'Murugesan P.',
+      farmerLocation: 'Sriperumbudur Rural',
+      produceListingId: 'LST-001-C',
+      contributedQuantityKg: 1000,
+      collectedQuantityKg: 1000,
+      agreedPricePerKg: 28.0,
+      grossAmount: 28000,
+      netFarmerAmount: 25000,
+      status: 'COMPLETED',
+      utrNumber: 'UTR-FARM-908203',
+      settledAt: '2026-09-06 07:12 AM',
+      bankAccountMasked: 'ICICI **** **** 2291'
+    }
+  ]
 };
 
 export const INITIAL_ORDERS: WorkflowOrder[] = [
@@ -1018,9 +1070,25 @@ export const INITIAL_SETTLEMENTS: SettlementRecord[] = [
     farmerRealizationPercentage: 88.88,
     traditionalFarmerEarnings: 27000,
     earningsGainPercentage: 33.33,
-    status: 'PENDING',
+    status: 'Payment Pending',
     settlementDate: 'Scheduled Upon Delivery Acceptance',
-    utrNumber: 'ESCROW_LOCKED_TXN9083'
+    utrNumber: 'ESCROW_LOCKED_TXN9083',
+    paymentMode: 'UPI e-RUPI Programmable Escrow (Prototype Simulator)',
+    farmerBreakdown: [
+      {
+        farmerId: 'usr-farmer-01',
+        farmerName: 'Rajesh Kumar',
+        farmerLocation: 'Salem Agro Cluster',
+        produceListingId: 'LST-002',
+        contributedQuantityKg: 1500,
+        collectedQuantityKg: 1500,
+        agreedPricePerKg: 27.0,
+        grossAmount: 40500,
+        netFarmerAmount: 36000,
+        status: 'PENDING',
+        bankAccountMasked: 'Canara **** **** 7712'
+      }
+    ]
   }
 ];
 
