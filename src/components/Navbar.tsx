@@ -29,19 +29,19 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-cream/95 backdrop-blur-md border-b border-olive/30 shadow-forest">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
       {/* Top Ministry & Announcement Banner */}
-      <div className="bg-gradient-to-r from-forest to-[#023120] text-cream text-xs py-1.5 px-4">
+      <div className="bg-slate-950 text-slate-300 text-xs py-1.5 px-4 border-b border-slate-800">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="bg-sage/20 text-sage font-semibold px-2 py-0.5 rounded text-[11px] border border-sage/30">
+            <span className="bg-emerald-500/20 text-emerald-400 font-semibold px-2 py-0.5 rounded text-[11px] border border-emerald-500/30">
               • SIH26033
             </span>
-            <span className="text-sage/70 hidden sm:inline">
+            <span className="text-slate-400 hidden sm:inline text-[11px]">
               Ministry of Consumer Affairs, Food & Public Distribution
             </span>
-            <span className="text-sage/40 hidden md:inline">|</span>
-            <span className="text-olive font-medium italic hidden md:inline">
+            <span className="text-slate-700 hidden md:inline">|</span>
+            <span className="text-emerald-400/90 font-medium italic hidden md:inline text-[11px]">
               "Don't wait for the market. Let the market tell the farmer what to grow."
             </span>
           </div>
@@ -55,36 +55,36 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center gap-2 sm:gap-3 shrink min-w-0">
             <button
               onClick={() => setActiveTab('home')}
-              className="flex items-center gap-2 sm:gap-2.5 group text-left"
+              className="flex items-center gap-2.5 group text-left cursor-pointer"
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-[1rem] sm:rounded-[1.2rem] bg-forest flex items-center justify-center text-cream shadow-forest group-hover:scale-105 transition shrink-0">
-                <Sprout className="w-5 h-5 sm:w-6 sm:h-6 text-cream" />
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-700 flex items-center justify-center text-white shadow-xs group-hover:bg-emerald-800 transition-colors shrink-0">
+                <Sprout className="w-5 h-5 text-white" />
               </div>
               <div>
-                <div className="flex items-center gap-1 sm:gap-1.5">
-                  <span className="text-base sm:text-xl lg:text-2xl font-anton tracking-wide text-forest group-hover:text-forest/80 transition whitespace-nowrap">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-base sm:text-lg font-bold tracking-tight text-slate-900 group-hover:text-emerald-800 transition-colors whitespace-nowrap">
                     Uzhavan Connect
                   </span>
-                  <span className="text-[9px] sm:text-[10px] bg-sage/20 text-forest font-bold px-1.5 py-0.5 rounded border border-sage/40">
+                  <span className="text-[10px] bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded-full border border-emerald-200">
                     AI
                   </span>
                 </div>
-                <p className="text-[11px] text-forest/60 -mt-1 font-medium tracking-wide hidden sm:block">
-                  Demand-First Agricultural Marketplace
+                <p className="text-[11px] text-slate-500 -mt-0.5 font-medium tracking-normal hidden sm:block">
+                  Demand-First Agricultural Intelligence
                 </p>
               </div>
             </button>
           </div>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Quick Digital Passport QR Viewer */}
             <button
               onClick={() => openPassportModal()}
-              className="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-semibold text-forest hover:text-forest bg-olive/30 hover:bg-sage/40 border border-olive px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-[0.8rem] sm:rounded-[1rem] transition shadow-xs whitespace-nowrap"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-emerald-800 bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl transition shadow-2xs whitespace-nowrap cursor-pointer"
               title="View Live QR Produce Passport"
             >
-              <QrCode className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-forest" />
+              <QrCode className="w-4 h-4 text-emerald-700" />
               <span>Batch QR</span>
             </button>
 
@@ -93,19 +93,19 @@ export const Navbar: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-                  className="flex items-center gap-1.5 sm:gap-2 bg-olive/20 hover:bg-olive/40 border border-olive/50 text-forest px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-[0.8rem] sm:rounded-[1rem] text-[11px] sm:text-xs font-medium transition whitespace-nowrap"
+                  className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 px-3 py-1.5 rounded-xl text-xs font-medium transition whitespace-nowrap cursor-pointer"
                 >
-                  <div className="w-2 h-2 rounded-full bg-forest animate-pulse" />
-                  <span className="font-semibold text-forest">
-                    {currentRole}
+                  <div className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+                  <span className="font-semibold text-slate-900">
+                    {currentRole.replace('_', ' ')}
                   </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-forest/60" />
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
                 </button>
 
                 {/* Role Dropdown Menu */}
                 {isRoleDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-cream rounded-[1.5rem] shadow-forest border border-olive/30 py-2 z-50 overflow-hidden">
-                    <div className="px-4 py-2 text-[10px] font-bold text-forest/50 uppercase tracking-widest border-b border-olive/20">
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-lg border border-slate-200/90 py-2 z-50 overflow-hidden">
+                    <div className="px-4 py-2 text-[10px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-100">
                       Switch Active Role
                     </div>
                     <div className="p-1 space-y-0.5">
@@ -119,24 +119,24 @@ export const Navbar: React.FC = () => {
                               switchRole(r.role);
                               setIsRoleDropdownOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-[1rem] text-xs transition ${
-                              isSelected ? 'bg-sage/20 text-forest font-bold' : 'text-forest/80 hover:bg-olive/30'
+                            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition cursor-pointer ${
+                              isSelected ? 'bg-emerald-50 text-emerald-900 font-semibold' : 'text-slate-700 hover:bg-slate-50'
                             }`}
                           >
-                            <div className="flex items-center gap-2">
-                              <span className={`p-1.5 rounded-[0.8rem] ${isSelected ? 'bg-sage text-forest' : 'bg-olive/50 text-forest/70'}`}>
+                            <div className="flex items-center gap-2.5">
+                              <span className={`p-1.5 rounded-lg ${isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
                                 <Icon className="w-3.5 h-3.5" />
                               </span>
                               <span>{r.label}</span>
                             </div>
-                            {isSelected && <CheckCircle2 className="w-4 h-4 text-forest" />}
+                            {isSelected && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
                           </button>
                         );
                       })}
                     </div>
 
-                    <div className="p-3 border-t border-olive/20 bg-olive/10 text-[11px] text-forest/60">
-                      Logged in as: <span className="font-medium text-forest">{currentUser.name || 'User'}</span>
+                    <div className="p-3 border-t border-slate-100 bg-slate-50/70 text-[11px] text-slate-500">
+                      Logged in as: <span className="font-semibold text-slate-800">{currentUser.name || 'User'}</span>
                     </div>
                   </div>
                 )}
@@ -144,7 +144,7 @@ export const Navbar: React.FC = () => {
             ) : (
               <button
                 onClick={() => setActiveTab('login')}
-                className="btn-organic flex items-center gap-1 sm:gap-1.5 bg-forest text-cream text-[11px] sm:text-xs px-3 py-1.5 sm:px-5 sm:py-2 hover:bg-[#023120] whitespace-nowrap"
+                className="btn-primary text-xs"
               >
                 Sign In
               </button>

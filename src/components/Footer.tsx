@@ -43,7 +43,7 @@ export const Footer: React.FC = () => {
               <div className="w-8 h-8 rounded-[1rem] bg-sage flex items-center justify-center text-forest font-bold shadow-md">
                 <Sprout className="w-5 h-5" />
               </div>
-              <span className="text-2xl font-anton tracking-wide text-cream">Uzhavan Connect</span>
+              <span className="text-xl font-extrabold tracking-tight text-white">Uzhavan Connect</span>
             </div>
             <p className="text-xs text-cream/70 leading-relaxed">
                prototype addressing Problem Statement <strong className="text-sage"></strong>: 

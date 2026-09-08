@@ -88,23 +88,23 @@ export const FindBuyersPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       {/* Header */}
-      <div className="bg-forest text-cream rounded-[2.5rem] p-8 sm:p-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-forest">
+      <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-md border border-emerald-900/40">
         <div>
-          <div className="flex items-center gap-2 text-sage text-xs font-bold uppercase tracking-widest mb-2">
-            <Search className="w-4 h-4" />
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+            <Search className="w-4 h-4 text-emerald-400" />
             <span>Direct Buyer Requirements & Contracts</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
             Find Buyers & Direct Demands
           </h1>
-          <p className="text-sm text-cream/70 mt-2 font-medium">
+          <p className="text-sm text-slate-300 mt-2 font-normal">
             Connect directly with verified institutional retailers, wholesale buyers, and food processors.
           </p>
         </div>
 
         <button
           onClick={() => setActiveTab('demand-forecast')}
-          className="self-start sm:self-auto bg-olive/20 hover:bg-olive/30 text-cream text-xs font-bold px-5 py-3 rounded-[1rem] border border-olive/30 transition uppercase tracking-widest"
+          className="self-start sm:self-auto bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/20 transition uppercase tracking-wider"
         >
           Check Today's Demand Forecast →
         </button>
@@ -143,53 +143,59 @@ export const FindBuyersPage: React.FC = () => {
           {offers.map((off) => (
             <div
               key={off.id}
-              className={`p-6 rounded-[1.5rem] border transition space-y-4 ${
+              className={`p-6 rounded-2xl border transition space-y-4 ${
                 off.status === 'ACCEPTED'
-                  ? 'bg-sage/20 border-sage shadow-sm'
+                  ? 'bg-emerald-50/50 border-emerald-200 shadow-sm'
                   : off.status === 'REJECTED'
-                  ? 'bg-cream border-olive/20 opacity-60'
-                  : 'bg-olive/10 border-olive/30 hover:shadow-forest'
+                  ? 'bg-white/60 border-slate-200 opacity-60'
+                  : 'bg-white border-slate-200/80 hover:shadow-sm hover:border-emerald-300'
               }`}
             >
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h4 className="font-anton text-2xl text-forest tracking-wide">{off.buyerName}</h4>
-                    <span className="text-[9px] bg-forest text-cream font-bold px-2 py-0.5 rounded-full uppercase tracking-widest">
+                    <h4 className="font-extrabold text-lg text-slate-900 tracking-tight">{off.buyerName}</h4>
+                    <span className="text-[9px] bg-slate-900 text-emerald-400 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                       VERIFIED BUYER
                     </span>
                   </div>
-                  <p className="text-xs text-forest/70 mt-1 font-medium">{off.crop} • {off.distanceKm} km away</p>
+                  <p className="text-xs text-slate-600 mt-1 font-normal">{off.crop} • {off.distanceKm} km away</p>
                 </div>
 
                 <div className="text-right">
-                  <span className="text-2xl font-anton text-forest">₹{off.offeredPricePerKg}<span className="text-sm">/kg</span></span>
-                  <span className="text-[11px] text-forest/50 font-bold uppercase tracking-widest block">{off.quantityKg.toLocaleString()} kg</span>
+                  <span className="text-xl font-extrabold text-slate-900 tracking-tight">₹{off.offeredPricePerKg}<span className="text-xs font-normal text-slate-500">/kg</span></span>
+                  <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider block">{off.quantityKg.toLocaleString()} kg</span>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-olive/20 flex items-center justify-between text-xs">
-                <span className="text-forest/70 font-bold uppercase tracking-widest text-[10px]">
-                  Total Value: <strong className="text-forest text-sm tracking-normal">₹{(off.quantityKg * off.offeredPricePerKg).toLocaleString()}</strong>
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="text-slate-600 font-medium uppercase tracking-wider text-[11px]">
+                  Total Value: <strong className="text-slate-900 text-sm font-bold">₹{(off.quantityKg * off.offeredPricePerKg).toLocaleString()}</strong>
                 </span>
 
                 {off.status === 'PENDING' ? (
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleAcceptOffer(off)}
-                      className="px-5 py-2.5 bg-sage hover:bg-cream text-forest font-bold rounded-[1rem] shadow-sm transition uppercase tracking-widest"
+                      className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl shadow-xs transition uppercase tracking-wider text-xs"
                     >
                       Accept & Contract
                     </button>
                     <button
                       onClick={() => handleRejectOffer(off.id)}
-                      className="px-4 py-2.5 bg-olive/10 hover:bg-olive/20 text-forest/70 hover:text-red-700 font-bold rounded-[1rem] transition uppercase tracking-widest"
+                      className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition uppercase tracking-wider text-xs"
                     >
-                      Reject
+                      Decline
                     </button>
                   </div>
                 ) : (
-                  <span className={`font-bold uppercase tracking-widest text-xs ${off.status === 'ACCEPTED' ? 'text-forest' : 'text-forest/50'}`}>
+                  <span
+                    className={`font-bold px-3 py-1 rounded-full text-[10px] uppercase tracking-wider ${
+                      off.status === 'ACCEPTED'
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : 'bg-rose-100 text-rose-800'
+                    }`}
+                  >
                     {off.status}
                   </span>
                 )}
@@ -200,68 +206,55 @@ export const FindBuyersPage: React.FC = () => {
       </div>
 
       {/* 2. Active Buyer Demands */}
-      <div className="bg-cream rounded-[2.5rem] border border-olive/30 shadow-forest overflow-hidden">
-        <div className="p-8 border-b border-olive/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h3 className="text-2xl font-bold text-forest">
-              Open Buyer Requirements Near You
-            </h3>
-            <p className="text-xs text-forest/60 mt-1 font-bold uppercase tracking-widest">
-              Live demands from institutional buyers & food processors ({combinedDemands.length})
-            </p>
-          </div>
-          <button
-            onClick={() => setActiveTab('buyer-demand')}
-            className="text-[10px] font-bold uppercase tracking-widest text-forest bg-sage/30 px-4 py-2 rounded-[0.8rem] border border-sage/50 hover:bg-sage/50 transition self-start sm:self-auto"
-          >
-            Post New Demand →
-          </button>
-        </div>
+      <div className="space-y-4">
+        <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">
+          Active Forward Procurement Demands
+        </h3>
 
-        <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {combinedDemands.map((opp) => (
             <div
               key={opp.id}
-              className="p-6 rounded-[1.5rem] border border-olive/30 bg-olive/10 hover:shadow-forest transition space-y-4 flex flex-col justify-between"
+              className="p-6 rounded-2xl border border-slate-200/80 bg-white hover:shadow-sm hover:border-emerald-300 transition space-y-4 flex flex-col justify-between"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-bold text-forest bg-sage/30 px-3 py-1 rounded-full border border-sage/50 uppercase tracking-widest">
+                  <span className="text-[9px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 uppercase tracking-wider">
                     BUYER DEMAND
                   </span>
-                  <span className="text-[10px] font-bold text-forest/70 uppercase tracking-widest">
+                  <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
                     {opp.quality}
                   </span>
                 </div>
 
                 <div>
-                  <h4 className="text-3xl font-anton text-forest tracking-wide">{opp.crop}</h4>
-                  <p className="text-xs text-forest/70 font-medium mt-1">Buyer: <strong>{opp.buyerName}</strong></p>
+                  <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{opp.crop}</h4>
+                  <p className="text-xs text-slate-600 font-normal mt-1">Buyer: <strong className="text-slate-800">{opp.buyerName}</strong></p>
                 </div>
 
-                <div className="space-y-2 text-xs text-forest/80 bg-cream p-4 rounded-[1rem] border border-olive/30 font-medium">
-                  <div className="flex justify-between items-center border-b border-olive/20 pb-2">
-                    <span className="uppercase tracking-widest text-[10px] font-bold">Required:</span>
-                    <strong className="text-forest text-sm font-bold">{opp.requiredQuantityKg.toLocaleString()} kg</strong>
+                <div className="space-y-2 text-xs text-slate-700 bg-slate-50/80 p-4 rounded-xl border border-slate-200/80 font-medium">
+                  <div className="flex justify-between items-center border-b border-slate-200/60 pb-2">
+                    <span className="uppercase tracking-wider text-[10px] font-semibold text-slate-500">Required:</span>
+                    <strong className="text-slate-900 text-sm font-bold">{opp.requiredQuantityKg.toLocaleString()} kg</strong>
                   </div>
-                  <div className="flex justify-between items-center border-b border-olive/20 py-2">
-                    <span className="uppercase tracking-widest text-[10px] font-bold">Max Price:</span>
-                    <strong className="text-forest text-sm font-bold">₹{opp.maxPricePerKg} / kg</strong>
+                  <div className="flex justify-between items-center border-b border-slate-200/60 py-2">
+                    <span className="uppercase tracking-wider text-[10px] font-semibold text-slate-500">Max Price:</span>
+                    <strong className="text-slate-900 text-sm font-bold">₹{opp.maxPricePerKg} / kg</strong>
                   </div>
-                  <div className="flex justify-between items-center border-b border-olive/20 py-2">
-                    <span className="uppercase tracking-widest text-[10px] font-bold">Location:</span>
+                  <div className="flex justify-between items-center border-b border-slate-200/60 py-2">
+                    <span className="uppercase tracking-wider text-[10px] font-semibold text-slate-500">Location:</span>
                     <span>{opp.location}</span>
                   </div>
                   <div className="flex justify-between items-center pt-2">
-                    <span className="uppercase tracking-widest text-[10px] font-bold">Req Date:</span>
-                    <strong className="text-forest font-bold">{opp.requiredDate}</strong>
+                    <span className="uppercase tracking-wider text-[10px] font-semibold text-slate-500">Req Date:</span>
+                    <strong className="text-slate-900 font-bold">{opp.requiredDate}</strong>
                   </div>
                 </div>
               </div>
 
               <button
                 onClick={() => handleMakeOffer(opp)}
-                className="w-full py-3 bg-forest hover:bg-[#023120] text-cream font-bold rounded-[1rem] text-xs transition shadow-sm uppercase tracking-widest mt-2"
+                className="w-full py-2.5 bg-slate-900 hover:bg-emerald-950 text-white font-bold rounded-xl text-xs transition shadow-2xs uppercase tracking-wider mt-2"
               >
                 Make Offer
               </button>

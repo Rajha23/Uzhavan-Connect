@@ -102,7 +102,7 @@ export const ProducePassportModal: React.FC = () => {
                 </span>
                 <span className="text-xs text-slate-300">• Live Custody Traceability</span>
               </div>
-              <h3 className="text-xl font-bold font-['Outfit'] text-white mt-0.5">
+              <h3 className="text-xl font-bold tracking-tight text-white mt-0.5">
                 Batch: <span className="font-mono text-emerald-300">{batchId}</span>
                 {orderId && <span className="text-xs text-slate-300 font-sans ml-2 font-normal">(Order: {orderId})</span>}
               </h3>
@@ -207,7 +207,7 @@ export const ProducePassportModal: React.FC = () => {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Verified Agricultural Produce</span>
-                  <h4 className="text-2xl font-bold font-['Outfit'] text-slate-900">{crop}</h4>
+                  <h4 className="text-2xl font-bold tracking-tight text-slate-900">{crop}</h4>
                   <p className="text-xs text-slate-500 font-medium">{variety}</p>
                 </div>
 

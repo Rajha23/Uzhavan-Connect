@@ -155,7 +155,7 @@ const PageContent: React.FC = () => {
 // ─── Public Shell (Landing + Login — no sidebar) ────────────────────────────
 
 const PublicShell: React.FC = () => (
-  <div className="min-h-screen flex flex-col bg-cream text-forest font-sans relative">
+  <div className="min-h-screen flex flex-col bg-[#f8faf9] text-slate-800 font-sans relative">
     <div className="noise-overlay" />
     <Navbar />
     <main className="flex-1">
@@ -171,9 +171,8 @@ const PublicShell: React.FC = () => (
 // ─── Authenticated Shell (Sidebar + Header) ──────────────────────────────────
 
 const AuthenticatedShell: React.FC = () => {
-  const { sidebarOpen } = useApp();
   return (
-    <div className="min-h-screen bg-cream font-sans relative text-forest">
+    <div className="min-h-screen bg-[#f8faf9] font-sans relative text-slate-800">
       <div className="noise-overlay" />
       {/* Left sidebar — fixed */}
       <Sidebar />
@@ -201,8 +200,8 @@ export default function App() {
 
   if (isInitializing) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-cream">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-forest border-t-transparent"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[#f8faf9]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-700 border-t-transparent"></div>
       </div>
     );
   }

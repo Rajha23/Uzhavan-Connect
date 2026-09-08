@@ -134,56 +134,59 @@ export const Sidebar: React.FC = () => {
 
       {/* Main Left Sidebar */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-forest text-cream/90 border-r border-[#023120] flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-slate-950 text-slate-200 border-r border-slate-800/80 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Sidebar Brand Header */}
         <div>
-          <div className="p-4 border-b border-[#023120] flex items-center justify-between">
+          <div className="p-4 border-b border-slate-800/80 flex items-center justify-between">
             <button
               onClick={() => setActiveTab('landing')}
-              className="flex items-center gap-2.5 group text-left"
+              className="flex items-center gap-2.5 group text-left cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-[1rem] bg-sage flex items-center justify-center text-forest shadow-md shadow-black/20 group-hover:bg-cream transition">
-                <Sprout className="w-5 h-5 text-forest" />
+              <div className="w-8 h-8 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-xs group-hover:bg-emerald-500 transition-colors">
+                <Sprout className="w-4 h-4 text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xl font-anton tracking-wide text-cream">
+                  <span className="text-base font-bold tracking-tight text-white">
                     Uzhavan Connect
                   </span>
+                  <span className="text-[9px] bg-emerald-500/20 text-emerald-300 font-semibold px-1.5 py-0.5 rounded border border-emerald-500/30">
+                    AI
+                  </span>
                 </div>
-                <p className="text-[10px] text-sage/70 font-medium tracking-wide -mt-0.5">
-                  Demand-First Marketplace
+                <p className="text-[10px] text-emerald-400/80 font-medium tracking-normal -mt-0.5">
+                  Agricultural Intelligence
                 </p>
               </div>
             </button>
 
             <button
               onClick={() => setSidebarOpen(false)}
-              className="p-1.5 text-sage/60 hover:text-sage rounded-lg lg:hidden"
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg lg:hidden cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Active Role Indicator Pill */}
-          <div className="px-4 py-2.5 bg-[#023120] border-b border-[#012518] flex items-center justify-between">
+          <div className="px-4 py-2 bg-slate-900/90 border-b border-slate-800/80 flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs">
-              <span className="w-2 h-2 rounded-full bg-sage animate-pulse" />
-              <span className="font-bold text-cream uppercase tracking-widest text-[10px]">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-semibold text-slate-200 uppercase tracking-wider text-[10px]">
                 {currentRole.replace('_', ' ')}
               </span>
             </div>
-            <span className="text-[10px] text-sage/80 font-mono">Verified</span>
+            <span className="text-[10px] text-emerald-400 font-mono">Live</span>
           </div>
 
           {/* Sidebar Menu Groups */}
           <nav className="p-3 space-y-4 max-h-[calc(100vh-210px)] overflow-y-auto">
             {sections.map((secName) => (
               <div key={secName} className="space-y-1">
-                <div className="px-3 text-[10px] font-bold uppercase tracking-widest text-sage/50 mb-1 mt-2">
+                <div className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1 mt-2">
                   {secName}
                 </div>
                 {menuItems
@@ -195,17 +198,16 @@ export const Sidebar: React.FC = () => {
                       <button
                         key={item.id}
                         onClick={() => handleSelect(item.id)}
-                        className={`w-full flex items-center justify-between px-4 py-2.5 rounded-[1rem] text-xs font-medium transition ${
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
                           isActive
-                            ? 'bg-sage text-forest font-bold shadow-sm'
-                            : 'text-cream/70 hover:bg-[#023120] hover:text-cream'
+                            ? 'bg-emerald-600 text-white font-semibold shadow-xs'
+                            : 'text-slate-400 hover:bg-slate-900 hover:text-slate-100'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <Icon className={`w-4 h-4 ${isActive ? 'text-forest' : 'text-sage/70'}`} />
+                          <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                           <span>{item.label}</span>
                         </div>
-
                       </button>
                     );
                   })}
@@ -215,23 +217,23 @@ export const Sidebar: React.FC = () => {
         </div>
 
         {/* Sidebar Footer: User & Quick Switch */}
-        <div className="p-3 border-t border-[#023120] bg-[#023120] space-y-2">
+        <div className="p-3 border-t border-slate-800 bg-slate-900/60 space-y-2">
           <div
             onClick={() => handleSelect('profile')}
-            className="flex items-center gap-2.5 p-2 rounded-[1rem] hover:bg-forest cursor-pointer transition"
+            className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-800/70 cursor-pointer transition"
           >
-            <div className="w-8 h-8 rounded-full bg-sage flex items-center justify-center text-sm font-bold text-forest shadow-xs">
+            <div className="w-8 h-8 rounded-full bg-emerald-900/60 border border-emerald-600/40 flex items-center justify-center text-sm font-bold text-emerald-300 shadow-xs">
               {currentUser.avatar || '👨‍🌾'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-cream truncate">{currentUser.name}</p>
-              <p className="text-[10px] text-sage/80 truncate uppercase tracking-widest">{currentUser.role.replace('_', ' ')}</p>
+              <p className="text-xs font-semibold text-slate-100 truncate">{currentUser.name}</p>
+              <p className="text-[10px] text-slate-400 truncate uppercase tracking-wider font-medium">{currentUser.role.replace('_', ' ')}</p>
             </div>
           </div>
 
           <button
             onClick={logout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs text-rose-300 hover:text-rose-100 hover:bg-rose-950/40 rounded-lg transition"
+            className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs text-rose-400 hover:text-rose-200 hover:bg-rose-950/30 rounded-xl transition cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>

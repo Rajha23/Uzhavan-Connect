@@ -26,7 +26,7 @@ export const DynamicMicroHubMap: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5" />
             <span>AI Dynamic Centroid Optimization</span>
           </div>
-          <h3 className="text-xl font-bold font-['Outfit'] text-slate-900">
+          <h3 className="text-xl font-bold tracking-tight text-slate-900">
             Dynamic Micro-Hub Selection Engine
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">

@@ -214,16 +214,19 @@ export const FpoDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header Banner */}
-      <div className="bg-forest text-cream rounded-[2.5rem] p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest">
+      <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-900/40">
         <div>
-          <div className="flex items-center gap-2 text-sage text-xs font-bold uppercase tracking-widest mb-2">
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
             <Users className="w-4 h-4" />
             <span>FPO Aggregator & Micro-Hub Facility</span>
+            <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
+              Live Hub Node
+            </span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
             {currentUser.organization || 'GreenHarvest FPO Hub'}
           </h1>
-          <p className="text-sm text-cream/70 mt-2 font-medium">
+          <p className="text-sm text-slate-300 mt-2 font-normal">
             Aggregator Operations: Farm Gate Collection, Multi-Farmer Traceability, Quality Grading, Crating & Transport Readiness.
           </p>
         </div>
@@ -231,7 +234,7 @@ export const FpoDashboard: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setActiveTab('orders')}
-            className="flex items-center gap-2 bg-sage hover:bg-cream text-forest text-xs font-bold px-5 py-3 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
+            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition tracking-wide"
           >
             <span>All Orders ({orders.length})</span>
             <ArrowRight className="w-4 h-4" />
@@ -306,7 +309,7 @@ export const FpoDashboard: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <Sprout className="w-5 h-5 text-emerald-600" />
-                <h3 className="text-lg font-bold text-slate-900 font-['Outfit']">Member Farm Produce Supply Pool</h3>
+                <h3 className="text-lg font-bold text-slate-900 tracking-tight">Member Farm Produce Supply Pool</h3>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
                 Active crop listings submitted by member farmers. Aggregated and available for Smart Matching with institutional buyers.
@@ -406,7 +409,7 @@ export const FpoDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 font-['Outfit']">Farm Gate Produce Collection Queue</h3>
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Farm Gate Produce Collection Queue</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Collect harvested produce from member farms. Multi-farmer contributions and partial pickups are tracked without losing source provenance.
               </p>
@@ -550,7 +553,7 @@ export const FpoDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 font-['Outfit']">Hub Quality Inspection & Grading Station</h3>
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Hub Quality Inspection & Grading Station</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Perform laboratory checks (Sugar Brix, firmness, moisture, pesticide assay) and record accepted vs rejected volumes.
               </p>
@@ -761,7 +764,7 @@ export const FpoDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 font-['Outfit']">Packaging, Crating & QR Sealing</h3>
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Packaging, Crating & QR Sealing</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Pack quality-accepted produce into standardized agro-crates, assign batch tamper seal, and unlock Transport Readiness.
               </p>
@@ -832,7 +835,7 @@ export const FpoDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 font-['Outfit']">Bulk Order Consolidation & Provenance Hub</h3>
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Bulk Order Consolidation & Provenance Hub</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Consolidated institutional volume orders maintaining 100% individual farmer source and buyer demand links.
               </p>
@@ -947,7 +950,7 @@ export const FpoDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 font-['Outfit']">All Collective FPO Batches</h3>
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight">All Collective FPO Batches</h3>
               <p className="text-xs text-slate-500 mt-0.5">Comprehensive lifecycle status across collection, quality, crating and transport</p>
             </div>
             <span className="text-xs font-bold text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
@@ -1013,7 +1016,7 @@ export const FpoDashboard: React.FC = () => {
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
                 <Check className="w-5 h-5 text-emerald-700" />
-                <h4 className="font-bold text-slate-900 text-base font-['Outfit']">
+                <h4 className="font-bold text-slate-900 text-base tracking-tight">
                   Record Farm Gate Collection
                 </h4>
               </div>
@@ -1124,7 +1127,7 @@ export const FpoDashboard: React.FC = () => {
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
                 <Package className="w-5 h-5 text-teal-700" />
-                <h4 className="font-bold text-slate-900 text-base font-['Outfit']">
+                <h4 className="font-bold text-slate-900 text-base tracking-tight">
                   Crating, Batch QR & Transport Readiness
                 </h4>
               </div>

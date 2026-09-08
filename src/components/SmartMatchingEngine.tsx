@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { ProduceListing, DemandRequest, AggregatedDemandGroup, WorkflowOrder } from '../types';
 import confetti from 'canvas-confetti';
+import { AiInsightCard } from './AiInsightCard';
 import {
   Sliders,
   Sparkles,
@@ -308,15 +309,15 @@ export const SmartMatchingEngine: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden space-y-0">
+    <div className="bg-white rounded-2xl shadow-xs border border-slate-200/80 overflow-hidden space-y-0">
       {/* 1. Engine Header & Demand Target Selector */}
       <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-1">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-1 border border-emerald-200/80">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
             <span>AI Dynamic Supply-Demand Matcher</span>
           </div>
-          <h3 className="text-xl font-bold font-['Outfit'] text-slate-900">
+          <h3 className="text-xl font-bold tracking-tight text-slate-900">
             Smart Matching & Allocation Engine
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -327,7 +328,7 @@ export const SmartMatchingEngine: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           {/* Target Selector: Supports both Aggregated Groups and Individual Demands */}
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Target:</span>
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Target:</span>
             <select
               value={selectedTargetKey}
               onChange={(e) => {
@@ -368,7 +369,7 @@ export const SmartMatchingEngine: React.FC = () => {
                 capacity: 10
               })
             }
-            className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition font-medium"
+            className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl transition font-medium cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>Reset Weights</span>
@@ -376,12 +377,27 @@ export const SmartMatchingEngine: React.FC = () => {
         </div>
       </div>
 
+      {/* Contextual AI Recommendation Banner */}
+      <div className="px-6 pt-5">
+        <AiInsightCard
+          badgeText="✦ AI Allocation Intelligence"
+          title={`Multidimensional Compatibility Evaluation: ${currentTarget.crop} (${currentTarget.isGroup ? 'Aggregated Pool' : 'Buyer Demand'})`}
+          description={`Analyzing active farmer supply listings against ${currentTarget.quantityKg.toLocaleString()} kg target demand in ${currentTarget.location}. Evaluated ${evaluatedCandidates.length} eligible candidates across price equilibrium, distance corridors, quality grade conformance, and fulfillment capacity.`}
+          metrics={[
+            { label: 'Target Requirement', value: `${currentTarget.quantityKg.toLocaleString()} kg` },
+            { label: 'Max Target Price', value: `₹${currentTarget.maxTargetPricePerKg}/kg` },
+            { label: 'Top Candidate Score', value: `${evaluatedCandidates[0]?.totalMatchScore || 0}%` },
+            { label: 'Eligible Suppliers', value: `${evaluatedCandidates.length}` }
+          ]}
+        />
+      </div>
+
       {/* 2. Factor Weights Slider Control Strip */}
-      <div className="bg-slate-50 p-6 border-b border-slate-200">
+      <div className="bg-slate-50/70 p-6 border-b border-slate-200 mt-5">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
             <Sliders className="w-3.5 h-3.5 text-emerald-700" />
-            <span>Configurable Factor Weightings (Live Dynamic Score Recalculation)</span>
+            <span>Configurable Factor Weightings (Live Dynamic Recalculation)</span>
           </span>
           <span className="text-xs font-mono text-slate-500">Sum: {totalWeight}%</span>
         </div>
@@ -936,17 +952,17 @@ export const SmartMatchingEngine: React.FC = () => {
 
       {/* 5. INTERACTIVE MATCH AGREEMENT & ORDER CONFIRMATION MODAL */}
       {agreementModal.isOpen && agreementModal.listing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#01472e]/60 backdrop-blur-md p-4 animate-in fade-in">
-          <div className="bg-cream rounded-[2.5rem] shadow-forest border border-olive/30 p-8 max-w-2xl w-full space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 sm:p-8 max-w-2xl w-full space-y-6 max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-olive/20">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <FileText className="w-6 h-6 text-forest" />
+                <FileText className="w-6 h-6 text-emerald-700" />
                 <div>
-                  <h3 className="text-2xl font-anton text-forest tracking-wide">
+                  <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
                     {agreementModal.step === 'TERMS' ? 'Digital Match Agreement & Order Initiation' : 'Match Confirmed & Order Created'}
                   </h3>
-                  <p className="text-xs text-forest/60 font-medium">
+                  <p className="text-xs text-slate-500 font-normal mt-0.5">
                     {agreementModal.step === 'TERMS'
                       ? 'Connected Transaction Lifecycle (Step 3: Matching → Step 4: Agreement → Step 5: Order)'
                       : 'Produce allocated and scheduled for FPO collection.'}
@@ -955,7 +971,7 @@ export const SmartMatchingEngine: React.FC = () => {
               </div>
               <button
                 onClick={() => setAgreementModal((prev) => ({ ...prev, isOpen: false }))}
-                className="text-forest/50 hover:text-forest transition font-bold text-lg"
+                className="text-slate-400 hover:text-slate-700 transition font-bold text-lg"
               >
                 ✕
               </button>
@@ -1072,33 +1088,33 @@ export const SmartMatchingEngine: React.FC = () => {
                   </div>
 
                   {/* Total Value Banner */}
-                  <div className="p-4 bg-forest text-cream rounded-xl flex items-center justify-between">
+                  <div className="p-4 bg-slate-900 text-white rounded-xl flex items-center justify-between shadow-xs">
                     <div>
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-sage block">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400 block">
                         Total Agreed Transaction Value
                       </span>
-                      <span className="text-2xl font-anton text-cream tracking-wide">
+                      <span className="text-2xl font-extrabold text-white tracking-tight">
                         ₹{(agreementModal.agreedQty * agreementModal.agreedPrice).toLocaleString()}
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="text-[10px] text-sage font-bold uppercase tracking-wider block">Realization</span>
-                      <span className="text-xs font-bold text-cream">100% Direct to Farmer</span>
+                      <span className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider block">Realization</span>
+                      <span className="text-xs font-bold text-emerald-300">100% Direct to Farmer</span>
                     </div>
                   </div>
 
                   {/* Double Allocation & Arithmetic Note */}
-                  <div className="p-3 bg-olive/10 rounded-xl border border-olive/30 text-[11px] text-forest/80 font-medium">
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-700 font-medium">
                     ⚡ <strong>Atomic Inventory Invariant:</strong> Confirming this agreement immediately reserves {agreementModal.agreedQty.toLocaleString()} kg of produce, decrements available farmer inventory, and transitions demand status without double-allocation risk.
                   </div>
                 </div>
 
                 {/* Modal Footer Actions */}
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-olive/20">
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => setAgreementModal((prev) => ({ ...prev, isOpen: false }))}
-                    className="px-5 py-3 text-forest/70 hover:bg-olive/10 rounded-[1rem] font-bold uppercase tracking-widest text-xs transition"
+                    className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl font-semibold uppercase tracking-wider text-xs transition"
                   >
                     Cancel
                   </button>
@@ -1106,9 +1122,9 @@ export const SmartMatchingEngine: React.FC = () => {
                     type="button"
                     data-testid="finalize-order-btn"
                     onClick={handleConfirmAndIssueOrder}
-                    className="px-6 py-3.5 bg-forest hover:bg-[#023120] text-cream font-bold rounded-[1rem] shadow-sm transition uppercase tracking-widest text-xs flex items-center gap-2"
+                    className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl shadow-xs transition uppercase tracking-wider text-xs flex items-center gap-2"
                   >
-                    <CheckCircle2 className="w-4 h-4 text-sage" />
+                    <CheckCircle2 className="w-4 h-4" />
                     <span>Confirm Agreement & Issue Order →</span>
                   </button>
                 </div>
@@ -1116,40 +1132,40 @@ export const SmartMatchingEngine: React.FC = () => {
             ) : (
               /* Success View */
               <div className="space-y-6 text-center py-4">
-                <div className="w-16 h-16 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-300">
+                <div className="w-14 h-14 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center mx-auto text-xl font-bold border border-emerald-300">
                   ✓
                 </div>
 
                 <div>
-                  <h4 className="text-2xl font-anton text-forest tracking-wide">
+                  <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">
                     Order Successfully Initialized!
                   </h4>
-                  <p className="text-xs text-forest/70 mt-1 font-medium">
+                  <p className="text-xs text-slate-500 mt-1 font-normal">
                     Agreement confirmed. Produce inventory has been atomically reserved and queued for FPO collection.
                   </p>
                 </div>
 
                 {agreementModal.createdOrder && (
-                  <div className="bg-olive/10 rounded-2xl p-6 border border-olive/30 text-left text-xs space-y-3">
-                    <div className="flex justify-between border-b border-olive/20 pb-2">
-                      <span className="text-forest/60 font-bold uppercase text-[10px]">Official Order ID:</span>
-                      <span className="font-mono font-bold text-forest">{agreementModal.createdOrder.id}</span>
+                  <div className="bg-slate-50 rounded-xl p-5 border border-slate-200 text-left text-xs space-y-2.5">
+                    <div className="flex justify-between border-b border-slate-200/60 pb-2">
+                      <span className="text-slate-500 font-semibold uppercase text-[10px]">Official Order ID:</span>
+                      <span className="font-mono font-bold text-slate-900">{agreementModal.createdOrder.id}</span>
                     </div>
-                    <div className="flex justify-between border-b border-olive/20 pb-2">
-                      <span className="text-forest/60 font-bold uppercase text-[10px]">Contract Agreement ID:</span>
-                      <span className="font-mono font-bold text-forest">{agreementModal.createdOrder.agreementId}</span>
+                    <div className="flex justify-between border-b border-slate-200/60 pb-2">
+                      <span className="text-slate-500 font-semibold uppercase text-[10px]">Contract Agreement ID:</span>
+                      <span className="font-mono font-bold text-slate-900">{agreementModal.createdOrder.agreementId}</span>
                     </div>
-                    <div className="flex justify-between border-b border-olive/20 pb-2">
-                      <span className="text-forest/60 font-bold uppercase text-[10px]">QR Traceability Batch ID:</span>
-                      <span className="font-mono font-bold text-emerald-800">{agreementModal.createdOrder.batchId}</span>
+                    <div className="flex justify-between border-b border-slate-200/60 pb-2">
+                      <span className="text-slate-500 font-semibold uppercase text-[10px]">QR Traceability Batch ID:</span>
+                      <span className="font-mono font-bold text-emerald-700">{agreementModal.createdOrder.batchId}</span>
                     </div>
-                    <div className="flex justify-between border-b border-olive/20 pb-2">
-                      <span className="text-forest/60 font-bold uppercase text-[10px]">Allocated Volume:</span>
-                      <span className="font-bold text-forest">{agreementModal.createdOrder.quantityKg.toLocaleString()} kg @ ₹{agreementModal.createdOrder.pricePerKg}/kg</span>
+                    <div className="flex justify-between border-b border-slate-200/60 pb-2">
+                      <span className="text-slate-500 font-semibold uppercase text-[10px]">Allocated Volume:</span>
+                      <span className="font-bold text-slate-900">{agreementModal.createdOrder.quantityKg.toLocaleString()} kg @ ₹{agreementModal.createdOrder.pricePerKg}/kg</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-forest/60 font-bold uppercase text-[10px]">Total Contract Value:</span>
-                      <span className="font-anton text-base text-forest">₹{agreementModal.createdOrder.totalValue.toLocaleString()}</span>
+                      <span className="text-slate-500 font-semibold uppercase text-[10px]">Total Contract Value:</span>
+                      <span className="font-extrabold text-base text-slate-900 tracking-tight">₹{agreementModal.createdOrder.totalValue.toLocaleString()}</span>
                     </div>
                   </div>
                 )}

@@ -14,35 +14,32 @@ import {
 } from 'lucide-react';
 
 export const ImpactKPIPage: React.FC = () => {
-
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-forest text-cream rounded-[2.5rem] p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest">
+      <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-md border border-emerald-900/40">
         <div>
-          <div className="flex items-center gap-2 text-sage text-[10px] font-bold uppercase tracking-widest mb-2">
-            <Award className="w-4 h-4" />
-            <span> Evaluation Benchmark Matrix</span>
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+            <Award className="w-4 h-4 text-emerald-400" />
+            <span>Evaluation Benchmark Matrix</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
-            Impact & Measured Outcomes ()
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            Impact & Measured Outcomes
           </h1>
-          <p className="text-sm text-cream/70 mt-3 max-w-2xl leading-relaxed font-medium">
-            "The platform should be judged by measurable outcomes: higher farmer net realization, competitive landed prices, lower unnecessary transport distance, better fulfillment, and lower wastage."
+          <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed font-normal">
+            "The platform is judged by measurable outcomes: higher farmer net realization, competitive landed prices, lower unnecessary transport distance, better fulfillment, and reduced post-harvest wastage."
           </p>
         </div>
-
       </div>
 
-      {/* 10  Evaluation KPIs Table */}
-      <div className="bg-cream rounded-[2.5rem] border border-olive/30 shadow-forest overflow-hidden">
-        <div className="p-8 border-b border-olive/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      {/* 10 Evaluation KPIs Table */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <div className="p-6 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h3 className="text-3xl font-anton text-forest tracking-wide">
+            <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">
               10 Core Quantitative Performance Indicators
             </h3>
-            <p className="text-sm font-medium text-forest/70 mt-1">
+            <p className="text-sm font-normal text-slate-600 mt-1">
               Empirical comparison: Traditional Multi-Tier Mandi Flow vs. Uzhavan Connect Digitally Coordinated Network
             </p>
           </div>
@@ -51,29 +48,29 @@ export const ImpactKPIPage: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-olive/10 border-b border-olive/30 text-forest font-bold uppercase tracking-widest text-[10px]">
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
                 <th className="p-5 w-1/3">Evaluation KPI Metric</th>
-                <th className="p-5 w-1/5 text-forest/60">Traditional Supply Chain</th>
-                <th className="p-5 w-1/5 text-forest">Uzhavan Connect Coordinated Flow</th>
+                <th className="p-5 w-1/5 text-slate-500">Traditional Supply Chain</th>
+                <th className="p-5 w-1/5 text-slate-900">Uzhavan Connect Coordinated Flow</th>
                 <th className="p-5 text-right">Measured Impact Delta</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-olive/20">
+            <tbody className="divide-y divide-slate-100">
               {SIH_EVALUATION_KPIS.map((kpi, idx) => (
-                <tr key={idx} className="hover:bg-olive/10 transition">
+                <tr key={idx} className="hover:bg-slate-50/70 transition">
                   <td className="p-5">
-                    <span className="font-bold text-forest block text-sm">{kpi.label}</span>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-forest/50 mt-1 block"> Benchmark Dimension #{idx + 1}</span>
+                    <span className="font-bold text-slate-900 block text-sm">{kpi.label}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mt-0.5 block">Benchmark Dimension #{idx + 1}</span>
                   </td>
-                  <td className="p-5 font-mono font-bold text-forest/60 bg-cream/50">
+                  <td className="p-5 font-mono text-slate-500">
                     {kpi.traditional}
                   </td>
-                  <td className="p-5 font-mono font-black text-forest bg-sage/20 border-l border-r border-sage/30">
+                  <td className="p-5 font-mono font-bold text-emerald-950 bg-emerald-50/50 border-l border-r border-emerald-100">
                     {kpi.uzhavanconnect}
                   </td>
                   <td className="p-5 text-right">
-                    <span className="inline-flex items-center gap-1.5 font-mono font-bold text-xs bg-forest text-cream px-4 py-1.5 rounded-[1rem] shadow-sm">
-                      <CheckCircle2 className="w-4 h-4 text-sage" />
+                    <span className="inline-flex items-center gap-1.5 font-mono font-bold text-xs bg-slate-900 text-emerald-300 px-3 py-1.5 rounded-lg shadow-2xs">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                       <span>{kpi.change}</span>
                     </span>
                   </td>
@@ -85,36 +82,36 @@ export const ImpactKPIPage: React.FC = () => {
       </div>
 
       {/* Summary Impact Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-cream p-6 rounded-[1.5rem] border border-olive/30 shadow-sm hover:shadow-forest transition space-y-4 flex flex-col">
-          <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-forest/70">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-sm transition space-y-3 flex flex-col">
+          <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-500">
             <span>Primary Farmer Impact</span>
-            <span className="text-forest bg-sage px-3 py-1 rounded-[1rem]">+152% Gain</span>
+            <span className="text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-full font-bold">+152% Gain</span>
           </div>
-          <h4 className="text-2xl font-anton text-forest tracking-wide">Farmer Net Realization</h4>
-          <p className="text-sm text-forest/70 font-medium leading-relaxed">
+          <h4 className="text-lg font-extrabold text-slate-900 tracking-tight">Farmer Net Realization</h4>
+          <p className="text-sm text-slate-600 font-normal leading-relaxed">
             By eliminating speculative trader margins and commission agent cuts, farmers receive ₹27.50/kg vs ₹16.00/kg under traditional mandis, with zero payment delays.
           </p>
         </div>
 
-        <div className="bg-cream p-6 rounded-[1.5rem] border border-olive/30 shadow-sm hover:shadow-forest transition space-y-4 flex flex-col">
-          <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-forest/70">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-sm transition space-y-3 flex flex-col">
+          <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-500">
             <span>Consumer & Buyer Benefit</span>
-            <span className="text-forest bg-sage px-3 py-1 rounded-[1rem]">-15.8% Landed</span>
+            <span className="text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-full font-bold">-15.8% Landed</span>
           </div>
-          <h4 className="text-2xl font-anton text-forest tracking-wide">Downstream Affordability</h4>
-          <p className="text-sm text-forest/70 font-medium leading-relaxed">
+          <h4 className="text-lg font-extrabold text-slate-900 tracking-tight">Downstream Affordability</h4>
+          <p className="text-sm text-slate-600 font-normal leading-relaxed">
             Bulk institutional buyers and consumers pay ₹32.00/kg landed instead of ₹38.00/kg retail mandi prices, lowering food inflation while securing verified Grade A quality.
           </p>
         </div>
 
-        <div className="bg-cream p-6 rounded-[1.5rem] border border-olive/30 shadow-sm hover:shadow-forest transition space-y-4 flex flex-col">
-          <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-forest/70">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-sm transition space-y-3 flex flex-col">
+          <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-500">
             <span>Logistics & Perishability</span>
-            <span className="text-forest bg-sage px-3 py-1 rounded-[1rem]">-83% Wastage</span>
+            <span className="text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-full font-bold">-83% Wastage</span>
           </div>
-          <h4 className="text-2xl font-anton text-forest tracking-wide">Cold-Chain Food Security</h4>
-          <p className="text-sm text-forest/70 font-medium leading-relaxed">
+          <h4 className="text-lg font-extrabold text-slate-900 tracking-tight">Cold-Chain Food Security</h4>
+          <p className="text-sm text-slate-600 font-normal leading-relaxed">
             Dynamic micro-hub pre-cooling and Google OR-Tools route optimization reduce post-harvest horticultural wastage from 22.4% down to just 3.8%.
           </p>
         </div>

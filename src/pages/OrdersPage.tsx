@@ -121,7 +121,7 @@ export const OrdersPage: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 font-['Outfit']">Order Fulfillment & Tracking</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Order Fulfillment & Tracking</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             End-to-end transaction lifecycle from crop reservation to delivery and settlement
           </p>
@@ -412,7 +412,7 @@ export const OrdersPage: React.FC = () => {
                   <FileCheck2 className="w-6 h-6 text-emerald-700" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 font-['Outfit']">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
                     Dockside Produce Inspection & Receiving Handover
                   </h3>
                   <p className="text-xs text-slate-500">

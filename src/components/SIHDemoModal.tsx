@@ -306,7 +306,7 @@ export const SIHDemoModal: React.FC = () => {
                 </span>
                 <span className="text-xs text-slate-300 hidden sm:inline">Scenario: Tomato 3,000 kg (Chennai)</span>
               </div>
-              <h2 className="text-lg sm:text-xl font-bold font-['Outfit'] text-white">
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white">
                 Step {demoStep} of 13: {currentStepData.title}
               </h2>
             </div>

@@ -34,24 +34,24 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header Banner */}
-      <div className="bg-forest text-cream rounded-[2.5rem] p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest">
+      <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-md border border-emerald-900/40">
         <div>
-          <div className="flex items-center gap-2 text-sage text-[10px] font-bold uppercase tracking-widest mb-2">
-            <ShieldCheck className="w-4 h-4" />
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span>Ministry of Consumer Affairs, Food & Public Distribution</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
             Platform Command & Administration
           </h1>
-          <p className="text-sm text-cream/70 mt-3 max-w-2xl leading-relaxed font-medium">
-            National monitoring console for . Real-time telemetry across farmer realization, cold storage utilization, and ML forecast convergence.
+          <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed font-normal">
+            National monitoring console for Uzhavan Connect. Real-time telemetry across farmer realization, cold storage utilization, and ML forecast convergence.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => setArchitectureModalOpen(true)}
-            className="flex items-center gap-2 bg-sage hover:bg-cream text-forest text-xs font-bold px-6 py-3.5 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
+            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition uppercase tracking-wider"
           >
             <Cpu className="w-4 h-4" />
             <span>Architecture & Microservices</span>

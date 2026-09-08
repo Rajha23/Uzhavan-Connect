@@ -69,24 +69,24 @@ export const ReverseAuctionPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header Banner */}
-      <div className="bg-forest text-cream rounded-[2.5rem] p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest">
+      <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-md border border-emerald-900/40">
         <div>
-          <div className="flex items-center gap-2 text-sage text-xs font-bold uppercase tracking-widest mb-2">
-            <Gavel className="w-4 h-4" />
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+            <Gavel className="w-4 h-4 text-emerald-400" />
             <span>Demand-Backed Procurement Auction • Live Bidding</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
             Reverse Auction & Smart Allocation
           </h1>
-          <p className="text-sm text-cream/70 mt-3 max-w-2xl leading-relaxed font-medium">
-            Lot: <strong>3,000 kg Tomato (Grade A)</strong> • Chennai Corridor. FPOs submit competitive transparent bids. Ranks by multi-factor Smart Match Score rather than crude lowest price.
+          <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed font-normal">
+            Lot: <strong className="text-white">3,000 kg Tomato (Grade A)</strong> • Chennai Corridor. FPOs submit competitive transparent bids. Ranks by multi-factor Smart Match Score rather than crude lowest price.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setIsSubmitModalOpen(true)}
-            className="flex items-center gap-2 bg-sage hover:bg-cream text-forest text-xs font-bold px-6 py-3.5 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
+            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition uppercase tracking-wider"
           >
             <Plus className="w-4 h-4" />
             <span>Submit FPO Bid</span>
@@ -94,9 +94,9 @@ export const ReverseAuctionPage: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('middleman-sim')}
-            className="flex items-center gap-2 bg-olive/20 hover:bg-olive/30 text-cream text-xs font-bold px-5 py-3.5 rounded-[1rem] border border-olive/30 transition uppercase tracking-widest"
+            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/20 transition uppercase tracking-wider"
           >
-            <Scale className="w-4 h-4 text-sage" />
+            <Scale className="w-4 h-4 text-emerald-400" />
             <span>Inspect Net Realization</span>
           </button>
         </div>
@@ -158,25 +158,25 @@ export const ReverseAuctionPage: React.FC = () => {
       </div>
 
       {/* Featured Example Card: OPEN AUCTION Tomato 3,000 kg */}
-      <div className="bg-cream rounded-[2.5rem] border-2 border-sage p-8 shadow-forest space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-olive/20">
+      <div className="bg-white rounded-2xl border border-emerald-300 p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
           <div>
             <div className="flex items-center gap-3">
-              <span className="text-[10px] bg-forest text-cream font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-sm">
+              <span className="text-[10px] bg-slate-900 text-emerald-400 font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-2xs">
                 OPEN AUCTION
               </span>
-              <span className="text-[10px] text-forest/50 font-bold uppercase tracking-widest">ID: AUC-CH-TOM-3000</span>
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">ID: AUC-CH-TOM-3000</span>
             </div>
-            <h3 className="text-3xl font-anton text-forest mt-4 tracking-wide">
+            <h3 className="text-2xl font-extrabold text-slate-900 mt-3 tracking-tight">
               Tomato • Required: 3,000 kg
             </h3>
-            <p className="text-sm text-forest/70 font-medium mt-1">Destination: Chennai Distribution Terminal • Max Price: ₹28.00/kg</p>
+            <p className="text-sm text-slate-600 font-normal mt-1">Destination: Chennai Distribution Terminal • Max Price: ₹28.00/kg</p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleAcceptOffer('OFF-001')}
-              className="px-6 py-3.5 bg-forest hover:bg-[#023120] text-cream font-bold text-xs rounded-[1rem] shadow-sm transition uppercase tracking-widest"
+              className="px-5 py-2.5 bg-slate-900 hover:bg-emerald-950 text-white font-bold text-xs rounded-xl shadow-xs transition uppercase tracking-wider"
             >
               Accept Offer
             </button>
@@ -184,52 +184,52 @@ export const ReverseAuctionPage: React.FC = () => {
         </div>
 
         {/* 3 Prompt Offers Breakdown */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-          <div className="p-6 rounded-[1.5rem] bg-olive/10 border border-olive/30 shadow-sm flex items-center justify-between">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+          <div className="p-5 rounded-xl bg-slate-50/80 border border-slate-200/80 shadow-2xs flex items-center justify-between">
             <div>
-              <p className="font-bold text-forest text-sm uppercase tracking-widest">Farmer A (Kanchipuram)</p>
-              <span className="text-[10px] text-forest/70 font-bold uppercase tracking-widest block mt-1">Standard Grade</span>
+              <p className="font-bold text-slate-900 text-xs uppercase tracking-wider">Farmer A (Kanchipuram)</p>
+              <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider block mt-1">Standard Grade</span>
             </div>
             <div className="text-right">
-              <span className="text-2xl font-anton text-forest tracking-wide">₹27 <span className="text-sm font-sans tracking-normal">/ kg</span></span>
+              <span className="text-xl font-extrabold text-slate-900 tracking-tight">₹27 <span className="text-xs font-normal text-slate-500">/ kg</span></span>
               <button
                 onClick={() => handleAcceptOffer('OFF-003')}
-                className="text-[10px] text-forest/60 font-bold uppercase tracking-widest block mt-1 hover:text-forest transition"
+                className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mt-1 hover:text-slate-900 transition"
               >
                 Select Offer
               </button>
             </div>
           </div>
 
-          <div className="p-6 rounded-[1.5rem] bg-olive/10 border border-olive/30 shadow-sm flex items-center justify-between">
+          <div className="p-5 rounded-xl bg-slate-50/80 border border-slate-200/80 shadow-2xs flex items-center justify-between">
             <div>
-              <p className="font-bold text-forest text-sm uppercase tracking-widest">Farmer B (Tiruvallur)</p>
-              <span className="text-[10px] text-forest/70 font-bold uppercase tracking-widest block mt-1">Standard Grade</span>
+              <p className="font-bold text-slate-900 text-xs uppercase tracking-wider">Farmer B (Tiruvallur)</p>
+              <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider block mt-1">Standard Grade</span>
             </div>
             <div className="text-right">
-              <span className="text-2xl font-anton text-forest tracking-wide">₹26 <span className="text-sm font-sans tracking-normal">/ kg</span></span>
+              <span className="text-xl font-extrabold text-slate-900 tracking-tight">₹26 <span className="text-xs font-normal text-slate-500">/ kg</span></span>
               <button
                 onClick={() => handleAcceptOffer('OFF-002')}
-                className="text-[10px] text-forest/60 font-bold uppercase tracking-widest block mt-1 hover:text-forest transition"
+                className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mt-1 hover:text-slate-900 transition"
               >
                 Select Offer
               </button>
             </div>
           </div>
 
-          <div className="p-6 rounded-[1.5rem] bg-sage/20 border border-sage shadow-sm transform hover:-translate-y-1 transition flex items-center justify-between">
+          <div className="p-5 rounded-xl bg-emerald-50/60 border border-emerald-300 shadow-2xs hover:shadow-xs transition flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <p className="font-bold text-forest text-sm uppercase tracking-widest">GreenHarvest FPO</p>
-                <span className="text-[9px] bg-forest text-cream font-bold px-2 py-0.5 rounded-full">BEST</span>
+                <p className="font-bold text-emerald-950 text-xs uppercase tracking-wider">GreenHarvest FPO</p>
+                <span className="text-[9px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full">BEST</span>
               </div>
-              <span className="text-[10px] text-forest/70 font-bold uppercase tracking-widest block mt-1">Grade A Certified</span>
+              <span className="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider block mt-1">Grade A Certified</span>
             </div>
             <div className="text-right">
-              <span className="text-2xl font-anton text-forest tracking-wide">₹25 <span className="text-sm font-sans tracking-normal">/ kg</span></span>
+              <span className="text-xl font-extrabold text-emerald-900 tracking-tight">₹25 <span className="text-xs font-normal text-emerald-700">/ kg</span></span>
               <button
                 onClick={() => handleAcceptOffer('OFF-001')}
-                className="text-[10px] text-forest font-bold uppercase tracking-widest block mt-1 hover:opacity-80 transition"
+                className="text-[10px] text-emerald-800 font-bold uppercase tracking-wider block mt-1 hover:opacity-80 transition"
               >
                 View Offers →
               </button>
@@ -279,38 +279,38 @@ export const ReverseAuctionPage: React.FC = () => {
                     <td className="p-5 font-bold text-forest">
                       {offer.quantityKg.toLocaleString()} kg
                     </td>
-                    <td className="p-5 font-anton text-forest text-lg tracking-wide">
+                    <td className="p-5 font-extrabold text-slate-900 text-base tracking-tight">
                       ₹{offer.pricePerKg.toFixed(2)}
                     </td>
                     <td className="p-5">
-                      <span className="bg-sage/20 text-forest font-bold px-3 py-1.5 rounded-full text-[10px] border border-sage/40 uppercase tracking-widest">
+                      <span className="bg-emerald-50 text-emerald-800 font-bold px-3 py-1 rounded-full text-[10px] border border-emerald-200 uppercase tracking-wider">
                         {offer.grade}
                       </span>
                     </td>
-                    <td className="p-5 text-forest/70 font-bold">
+                    <td className="p-5 text-slate-600 font-semibold text-xs">
                       {offer.estimatedTransportKm} km
                     </td>
-                    <td className="p-5 font-bold text-forest/80">
+                    <td className="p-5 font-bold text-slate-700 text-xs">
                       {offer.reliabilityScore}%
                     </td>
                     <td className="p-5">
-                      <span className="text-2xl font-anton text-forest tracking-wide">
+                      <span className="text-xl font-extrabold text-slate-900 tracking-tight">
                         {offer.matchScore}
                       </span>
-                      <span className="text-[10px] text-forest/50 font-bold uppercase tracking-widest ml-1"> / 100</span>
+                      <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider ml-1"> / 100</span>
                     </td>
                     <td className="p-5 text-right">
                       <button
                         onClick={() => handleAcceptOffer(offer.id)}
-                        className={`px-5 py-2.5 rounded-[1rem] text-[10px] font-bold uppercase tracking-widest transition ${
+                        className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition ${
                           isAccepted
-                            ? 'bg-sage text-forest flex items-center gap-2 ml-auto shadow-sm'
-                            : 'bg-forest hover:bg-[#023120] text-cream'
+                            ? 'bg-emerald-500 text-slate-950 flex items-center gap-1.5 ml-auto shadow-xs'
+                            : 'bg-slate-900 hover:bg-emerald-950 text-white shadow-2xs'
                         }`}
                       >
                         {isAccepted ? (
                           <>
-                            <CheckCircle2 className="w-4 h-4" />
+                            <CheckCircle2 className="w-3.5 h-3.5" />
                             <span>Accepted</span>
                           </>
                         ) : (
@@ -328,12 +328,12 @@ export const ReverseAuctionPage: React.FC = () => {
 
       {/* Submit Bid Modal */}
       {isSubmitModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#01472e]/60 backdrop-blur-md p-4 animate-in fade-in">
-          <div className="bg-cream rounded-[2.5rem] shadow-forest border border-olive/30 p-8 max-w-lg w-full space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-olive/20">
-              <div className="flex items-center gap-3">
-                <Gavel className="w-6 h-6 text-forest" />
-                <h3 className="text-2xl font-anton text-forest tracking-wide">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 max-w-lg w-full space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <Gavel className="w-5 h-5 text-emerald-700" />
+                <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">
                   Submit FPO Reverse Auction Bid
                 </h3>
               </div>

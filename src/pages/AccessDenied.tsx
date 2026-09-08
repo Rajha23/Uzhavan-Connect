@@ -16,7 +16,7 @@ export const AccessDenied: React.FC<{ attemptedFeature?: string }> = ({ attempte
           <span className="text-xs font-mono font-bold uppercase tracking-wider text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded border border-rose-200">
             HTTP 403 • FORBIDDEN
           </span>
-          <h2 className="text-2xl font-bold font-['Outfit'] text-slate-900 mt-2">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 mt-2">
             Access Denied
           </h2>
           <p className="text-xs text-slate-500 leading-relaxed">

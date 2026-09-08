@@ -102,20 +102,20 @@ export const LogisticsDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header Banner */}
-      <div className="bg-forest text-cream rounded-[2.5rem] p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest">
+      <div className="bg-gradient-to-r from-slate-950 via-[#0a2e1f] to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-md border border-emerald-900/40">
         <div>
-          <div className="flex items-center gap-2 text-sage text-xs font-bold uppercase tracking-widest mb-2">
-            <Truck className="w-4 h-4" />
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+            <Truck className="w-4 h-4 text-emerald-400" />
             <span>Multi-Hub Cold-Chain Logistics Control Tower</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
             {currentUser.organization || 'Sundar Logistics Control Tower'}
           </h1>
-          <p className="text-sm text-cream/70 mt-2 font-medium">
+          <p className="text-sm text-slate-300 mt-2 font-normal">
             Vehicle fleet assignment, cold-chain corridor tracking, and destination buyer delivery handover.
           </p>
-          <div className="mt-3 inline-flex items-center gap-2 bg-cream/10 border border-cream/20 px-3 py-1 rounded-full text-[11px] text-cream/80">
-            <Info className="w-3.5 h-3.5 text-sage" />
+          <div className="mt-3 inline-flex items-center gap-2 bg-white/10 border border-white/15 px-3 py-1 rounded-full text-[11px] text-slate-200">
+            <Info className="w-3.5 h-3.5 text-emerald-400" />
             <span>Route Solver: <strong>Topological Route Heuristic (Google OR-Tools Architecture Blueprint)</strong></span>
           </div>
         </div>
@@ -123,7 +123,7 @@ export const LogisticsDashboard: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setActiveTab('route-optimization')}
-            className="flex items-center gap-2 bg-sage hover:bg-cream text-forest text-xs font-bold px-5 py-3 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
+            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition uppercase tracking-wider"
           >
             <Navigation className="w-4 h-4" />
             <span>Route Optimizer Map</span>
@@ -191,7 +191,7 @@ export const LogisticsDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 font-['Outfit']">Packed Batches Ready for Carrier Assignment</h3>
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Packed Batches Ready for Carrier Assignment</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Assign temperature-controlled EV trucks, drivers, and delivery slots. Only orders passing Collection, Quality & Crating appear here.
               </p>
@@ -479,7 +479,7 @@ export const LogisticsDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 font-['Outfit']">Destination Deliveries & Receiving Handover</h3>
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Destination Deliveries & Receiving Handover</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Shipments delivered at buyer receiving facilities. Buyer verifies physical produce condition and completes digital confirmation.
               </p>

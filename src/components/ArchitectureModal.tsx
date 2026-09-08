@@ -77,7 +77,7 @@ export const ArchitectureModal: React.FC = () => {
                 </span>
                 <span className="text-xs text-slate-300">Production-Ready Enterprise Blueprint</span>
               </div>
-              <h3 className="text-xl font-bold font-['Outfit'] text-white mt-0.5">
+              <h3 className="text-xl font-bold tracking-tight text-white mt-0.5">
                 Microservices, Kafka Events & REST API Contracts
               </h3>
             </div>

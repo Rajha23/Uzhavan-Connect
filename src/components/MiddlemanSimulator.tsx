@@ -31,7 +31,7 @@ export const MiddlemanSimulator: React.FC = () => {
             <Scale className="w-3.5 h-3.5" />
             <span>Economic Impact Model • </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold font-['Outfit'] tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
             Where Does Your ₹100 Go?
           </h2>
           <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
