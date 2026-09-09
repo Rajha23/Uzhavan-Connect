@@ -52,12 +52,12 @@ const PUBLIC_TABS = ['home', 'landing', 'login', 'register', 'traceability', 'tr
 const FARMER_ALLOWED_ROLES: UserRole[] = ['FARMER', 'FPO_AGGREGATOR', 'ADMIN'];
 const BUYER_ALLOWED_ROLES: UserRole[] = ['RETAIL_BUYER', 'ADMIN'];
 const LOGISTICS_ALLOWED_ROLES: UserRole[] = ['LOGISTICS', 'ADMIN'];
-const REPORTS_ALLOWED_ROLES: UserRole[] = ['ADMIN', 'RETAIL_BUYER', 'FPO_AGGREGATOR'];
+const REPORTS_ALLOWED_ROLES: UserRole[] = ['ADMIN', 'FPO_AGGREGATOR'];
 
 // ─── Page Renderer ──────────────────────────────────────────────────────────
 
 const PageContent: React.FC = () => {
-  const { activeTab, currentRole, isAuthenticated } = useApp();
+  const { activeTab, currentRole, isAuthenticated, attemptedFeature } = useApp();
 
   // Guard: Unauthenticated users are strictly blocked from protected routes
   if (!isAuthenticated && !PUBLIC_TABS.includes(activeTab)) {
@@ -74,6 +74,10 @@ const PageContent: React.FC = () => {
     case 'register':
       return <LoginPage initialMode="REGISTER" />;
 
+    // ── Access Denied Screen ─────────────────────────
+    case 'access-denied':
+      return <AccessDenied attemptedFeature={attemptedFeature || 'Requested Module'} />;
+
     // ── Dashboard based on Authorized Role ────────────
     case 'dashboard':
       if (currentRole === 'RETAIL_BUYER') return <BuyerDashboard />;
@@ -82,6 +86,46 @@ const PageContent: React.FC = () => {
       if (currentRole === 'ADMIN') return <AdminDashboard />;
       if (currentRole === 'FARMER') return <FarmerDashboard />;
       return <AccessDenied attemptedFeature="Unrecognized User Role Dashboard" />;
+
+    // ── Direct Portal Routes ─────────────────────────
+    case 'farmer':
+    case 'farmer-dashboard':
+      if (currentRole !== 'FARMER' && currentRole !== 'ADMIN') {
+        return <AccessDenied attemptedFeature="Farmer Operations Portal" />;
+      }
+      return <FarmerDashboard />;
+
+    case 'buyer':
+    case 'buyer-dashboard':
+      if (currentRole !== 'RETAIL_BUYER' && currentRole !== 'ADMIN') {
+        return <AccessDenied attemptedFeature="Institutional Buyer Portal" />;
+      }
+      return <BuyerDashboard />;
+
+    case 'fpo':
+    case 'fpo-dashboard':
+      if (currentRole !== 'FPO_AGGREGATOR' && currentRole !== 'ADMIN') {
+        return <AccessDenied attemptedFeature="FPO Aggregator Operations Portal" />;
+      }
+      return <FpoDashboard />;
+
+    case 'operations':
+    case 'logistics':
+    case 'logistics-dashboard':
+      if (currentRole !== 'LOGISTICS' && currentRole !== 'ADMIN') {
+        return <AccessDenied attemptedFeature="Logistics Operations Portal" />;
+      }
+      return <LogisticsDashboard />;
+
+    case 'admin':
+    case 'admin-dashboard':
+    case 'sys-users':
+    case 'roles-permissions':
+    case 'system-monitoring':
+      if (currentRole !== 'ADMIN') {
+        return <AccessDenied attemptedFeature="Platform Administrator Console" />;
+      }
+      return <AdminDashboard />;
 
     // ── Farmer Operations (RBAC: FARMER, FPO, ADMIN) ──
     case 'my-crops':
@@ -154,6 +198,9 @@ const PageContent: React.FC = () => {
     // ── Market / Analysis ────────────────────────────
     case 'demand-intel':
     case 'demand-forecast':
+      if (currentRole === 'RETAIL_BUYER' || currentRole === 'LOGISTICS') {
+        return <AccessDenied attemptedFeature="Agricultural Supply & Demand Forecasting" />;
+      }
       return <DemandIntelligencePage />;
 
     // ── Traceability & Public Audit ──────────────────
@@ -163,9 +210,12 @@ const PageContent: React.FC = () => {
 
     // ── Settlement ───────────────────────────────────
     case 'settlement':
+      if (currentRole === 'RETAIL_BUYER' || currentRole === 'LOGISTICS') {
+        return <AccessDenied attemptedFeature="Farmer Payment & Settlement Ledger" />;
+      }
       return <SettlementPage />;
 
-    // ── Reports / KPIs (RBAC: ADMIN, BUYER, FPO) ──────
+    // ── Reports / KPIs (RBAC: ADMIN, FPO) ────────────
     case 'reports':
     case 'impact-kpis':
     case 'analytics':

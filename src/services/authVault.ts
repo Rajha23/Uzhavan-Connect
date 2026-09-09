@@ -377,7 +377,19 @@ export const authVault = {
     if (!profile) return null;
     return { profile };
   },
-  createAccountRecord,
-  authenticateCredentials
+  createAccountRecord: registerUserAccount,
+  registerUserAccount,
+  authenticateCredentials,
+  verifyUserSession: (userId: string, claimedRole?: string): UserProfile | null => {
+    const profiles = getStoredProfiles();
+    const profile = profiles[userId];
+    if (!profile) return null;
+    const verifiedRole = normalizeRole(profile.role);
+    if (claimedRole && normalizeRole(claimedRole) !== verifiedRole) {
+      console.warn(`[Security Alert] Role mismatch detected for user ${userId}. Claimed: ${claimedRole}, Authentic: ${verifiedRole}`);
+      return null;
+    }
+    return { ...profile, role: verifiedRole };
+  }
 };
 

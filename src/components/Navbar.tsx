@@ -1,30 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useApp } from '../context/AppContext';
-import { UserRole } from '../types';
-import {
-  Sprout,
-  ChevronDown,
-  ShoppingBag,
-  ShieldCheck,
-  CheckCircle2
-} from 'lucide-react';
+import { Sprout } from 'lucide-react';
+import { ROLE_DISPLAY_LABELS, ROLE_BADGE_STYLES } from '../services/routeGuard';
 
 export const Navbar: React.FC = () => {
   const {
     isAuthenticated,
     currentRole,
     currentUser,
-    switchRole,
     setActiveTab
   } = useApp();
 
-  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
-
-  const roles: { role: UserRole; label: string; icon: any; color: string }[] = [
-    { role: 'FARMER', label: 'Farmer Portal', icon: Sprout, color: 'text-emerald-700 bg-emerald-50' },
-    { role: 'RETAIL_BUYER', label: 'Buyer', icon: ShoppingBag, color: 'text-blue-700 bg-blue-50' },
-    { role: 'ADMIN', label: 'Operations & Admin', icon: ShieldCheck, color: 'text-slate-800 bg-slate-100' }
-  ];
+  const displayRole = ROLE_DISPLAY_LABELS[currentRole] || currentRole;
+  const badgeStyle = ROLE_BADGE_STYLES[currentRole] || ROLE_BADGE_STYLES.FARMER;
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-emerald-900/10 shadow-xs">
@@ -67,63 +55,15 @@ export const Navbar: React.FC = () => {
                 >
                   <span>Go to Dashboard</span>
                 </button>
-                {currentUser.role === 'ADMIN' ? (
-                  <div className="relative">
-                    <button
-                      onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-                      className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 px-3 py-1.5 rounded-xl text-xs font-medium transition whitespace-nowrap cursor-pointer"
-                    >
-                      <div className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-                      <span className="font-medium text-slate-900">
-                        {currentRole.replace('_', ' ')}
-                      </span>
-                      <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                    </button>
-
-                    {isRoleDropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-lg border border-slate-200/90 py-2 z-50 overflow-hidden">
-                        <div className="px-4 py-2 text-[10px] font-medium text-slate-400 uppercase tracking-wider border-b border-slate-100">
-                          Switch Active Role (Admin)
-                        </div>
-                        <div className="p-1 space-y-0.5">
-                          {roles.map((r) => {
-                            const Icon = r.icon;
-                            const isSelected = currentRole === r.role;
-                            return (
-                              <button
-                                key={r.role}
-                                onClick={() => {
-                                  switchRole(r.role);
-                                  setIsRoleDropdownOpen(false);
-                                }}
-                                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition cursor-pointer ${
-                                  isSelected ? 'bg-emerald-50 text-emerald-900 font-medium' : 'text-slate-700 hover:bg-slate-50'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2.5">
-                                  <span className={`p-1.5 rounded-lg ${isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
-                                    <Icon className="w-3.5 h-3.5" />
-                                  </span>
-                                  <span>{r.label}</span>
-                                </div>
-                                {isSelected && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
-                              </button>
-                            );
-                          })}
-                        </div>
-
-                        <div className="p-3 border-t border-slate-100 bg-slate-50/70 text-[11px] text-slate-500 font-normal">
-                          Logged in as: <span className="font-medium text-slate-800">{currentUser.name || 'User'}</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-800 px-3 py-1.5 rounded-xl text-xs font-medium">
-                    <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-                    <span>{currentRole.replace('_', ' ')}</span>
-                  </div>
-                )}
+                {/* Authenticated Role Indicator Badge (Informational, Non-Clickable) */}
+                <div
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold tracking-wider select-none shadow-2xs border ${badgeStyle.bg} ${badgeStyle.border} ${badgeStyle.text}`}
+                  title={`Authenticated Role: ${displayRole} (Enforced by backend session)`}
+                  aria-label={`Current Role: ${displayRole}`}
+                >
+                  <span className={`w-2 h-2 rounded-full ${badgeStyle.dot} animate-pulse shrink-0`} />
+                  <span>{displayRole}</span>
+                </div>
               </div>
             ) : (
               <div className="flex items-center gap-2">

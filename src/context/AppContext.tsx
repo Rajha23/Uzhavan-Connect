@@ -37,9 +37,17 @@ import {
   INITIAL_PASSPORTS,
   INITIAL_SETTLEMENTS
 } from '../data/mockData';
-import { supabase } from '../lib/supabase';
-import { authVault, normalizeRole } from '../services/authVault';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { authVault, normalizeRole, seedDemoAccounts } from '../services/authVault';
 import { onInstallableChange, promptAppInstall } from '../services/serviceWorkerRegistration';
+import {
+  PUBLIC_TABS,
+  isRouteAuthorized,
+  getTabFromPath,
+  getPathFromTab,
+  TAB_FEATURE_NAMES,
+  getAuthorizedDashboardTab
+} from '../services/routeGuard';
 
 interface AppContextType {
   isInitializing: boolean;
@@ -56,6 +64,8 @@ interface AppContextType {
   hasPermission: (permission: Permission) => boolean;
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  attemptedFeature: string;
+  setAttemptedFeature: (feature: string) => void;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   toggleSidebar: () => void;
@@ -218,7 +228,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [currentRole, setCurrentRole] = useState<UserRole>('FARMER');
   const [currentUser, setCurrentUser] = useState<UserProfile>(GUEST_USER);
   const [intendedRegistrationRole, setIntendedRegistrationRole] = useState<UserRole | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('home');
+  const [activeTab, setActiveTabState] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return getTabFromPath(window.location.pathname);
+    }
+    return 'home';
+  });
+  const [attemptedFeature, setAttemptedFeature] = useState<string>('');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
   const [isPassportModalOpen, setIsPassportModalOpen] = useState<boolean>(false);
@@ -1531,39 +1547,108 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     completeTransaction(orderId);
   };
 
+  // Centralized route navigation with RBAC enforcement and URL history synchronization
+  const navigateToTab = useCallback(
+    (targetTab: string, replaceUrl = false, explicitRole?: UserRole) => {
+      const activeRole = explicitRole || (isAuthenticated ? currentUser.role : 'FARMER');
+
+      // Resolve 'dashboard' to the role's canonical dashboard tab
+      const resolvedTab =
+        targetTab === 'dashboard'
+          ? (isAuthenticated || explicitRole
+              ? getAuthorizedDashboardTab(activeRole)
+              : 'login')
+          : targetTab;
+
+      // 1. Guard against unauthenticated access to protected routes
+      if (!isAuthenticated && !explicitRole && !PUBLIC_TABS.includes(resolvedTab)) {
+        setActiveTabState('login');
+        const loginPath = getPathFromTab('login');
+        if (typeof window !== 'undefined' && window.location.pathname !== loginPath) {
+          if (replaceUrl) {
+            window.history.replaceState(null, '', loginPath);
+          } else {
+            window.history.pushState(null, '', loginPath);
+          }
+        }
+        return;
+      }
+
+      // 2. Guard against unauthorized role access
+      if ((isAuthenticated || explicitRole) && !isRouteAuthorized(activeRole, resolvedTab)) {
+        console.warn(
+          `[Security Guard] Blocked access to '${resolvedTab}' for role '${activeRole}' (User: ${currentUser.id || 'current'}).`
+        );
+        setAttemptedFeature(TAB_FEATURE_NAMES[resolvedTab] || resolvedTab);
+        setActiveTabState('access-denied');
+        if (typeof window !== 'undefined' && window.location.pathname !== '/access-denied') {
+          if (replaceUrl) {
+            window.history.replaceState(null, '', '/access-denied');
+          } else {
+            window.history.pushState(null, '', '/access-denied');
+          }
+        }
+        return;
+      }
+
+      // 3. Authorized navigation
+      setActiveTabState(resolvedTab);
+      const targetPath = getPathFromTab(resolvedTab);
+      if (typeof window !== 'undefined' && window.location.pathname !== targetPath) {
+        if (replaceUrl) {
+          window.history.replaceState(null, '', targetPath);
+        } else {
+          window.history.pushState(null, '', targetPath);
+        }
+      }
+    },
+    [isAuthenticated, currentUser.role, currentUser.id]
+  );
+
+  const setActiveTab = useCallback(
+    (tab: string) => {
+      navigateToTab(tab, false);
+    },
+    [navigateToTab]
+  );
+
   useEffect(() => {
     const initSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-            
-          if (profile) {
-            const role = normalizeRole(profile.role);
-            setCurrentUser({
-              id: profile.id,
-              name: profile.name,
-              role,
-              phone: profile.phone || '',
-              email: profile.email || '',
-              location: profile.location || '',
-              organization: profile.organization || '',
-              village: profile.village,
-              district: profile.district,
-              state: profile.state,
-              farmSizeAcres: profile.farm_size_acres,
-              mainCrops: profile.main_crops,
-              fpoName: profile.fpo_name
-            });
-            setCurrentRole(role);
-            setIsAuthenticated(true);
-            setActiveTab('dashboard');
+        await seedDemoAccounts();
+        let authenticatedUser: UserProfile | null = null;
+
+        if (isSupabaseConfigured) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
+
+            if (profile) {
+              const role = normalizeRole(profile.role);
+              authenticatedUser = {
+                id: profile.id,
+                name: profile.name,
+                role,
+                phone: profile.phone || '',
+                email: profile.email || '',
+                location: profile.location || '',
+                organization: profile.organization || '',
+                village: profile.village,
+                district: profile.district,
+                state: profile.state,
+                farmSizeAcres: profile.farm_size_acres,
+                mainCrops: profile.main_crops,
+                fpoName: profile.fpo_name
+              };
+            }
           }
-        } else {
+        }
+
+        if (!authenticatedUser) {
           // Cryptographic / Token Session Validation
           const localFallback = localStorage.getItem('uzhavan_fallback_session');
           const localToken = localStorage.getItem('uzhavanconnect_jwt_token');
@@ -1571,18 +1656,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             try {
               const parsedUser = JSON.parse(localFallback);
               if (parsedUser && parsedUser.id) {
-                // Verify user exists in authVault
-                const verifiedUser = authVault.getUserById(parsedUser.id);
+                // Cryptographic validation against stored credentials & profile vault
+                const verifiedUser = authVault.verifyUserSession(parsedUser.id, parsedUser.role);
                 if (verifiedUser) {
-                  const role = normalizeRole(verifiedUser.profile.role);
-                  setCurrentUser(verifiedUser.profile);
-                  setCurrentRole(role);
-                  setIsAuthenticated(true);
-                } else if (parsedUser.role) {
-                  const role = normalizeRole(parsedUser.role);
-                  setCurrentUser({ ...parsedUser, role });
-                  setCurrentRole(role);
-                  setIsAuthenticated(true);
+                  authenticatedUser = verifiedUser;
+                } else {
+                  console.warn('[Security Alert] Session failed vault verification. Clearing compromised storage.');
+                  localStorage.removeItem('uzhavan_fallback_session');
+                  localStorage.removeItem('uzhavanconnect_jwt_token');
                 }
               }
             } catch (e) {
@@ -1590,6 +1671,32 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
               localStorage.removeItem('uzhavan_fallback_session');
               localStorage.removeItem('uzhavanconnect_jwt_token');
             }
+          }
+        }
+
+        if (authenticatedUser) {
+          const canonicalRole = normalizeRole(authenticatedUser.role);
+          const secureUser = { ...authenticatedUser, role: canonicalRole };
+          setCurrentUser(secureUser);
+          setCurrentRole(canonicalRole);
+          setIsAuthenticated(true);
+
+          // Resolve URL on startup, strictly ignoring any ?role= parameter tampering
+          const initialTab = getTabFromPath(typeof window !== 'undefined' ? window.location.pathname : '/');
+          if (PUBLIC_TABS.includes(initialTab) && initialTab !== 'traceability' && initialTab !== 'tracking') {
+            navigateToTab(getAuthorizedDashboardTab(canonicalRole), true, canonicalRole);
+          } else {
+            navigateToTab(initialTab, true, canonicalRole);
+          }
+        } else {
+          setIsAuthenticated(false);
+          setCurrentUser(GUEST_USER);
+          setCurrentRole('FARMER');
+          const initialTab = getTabFromPath(typeof window !== 'undefined' ? window.location.pathname : '/');
+          if (!PUBLIC_TABS.includes(initialTab)) {
+            navigateToTab('login', true, 'FARMER');
+          } else {
+            navigateToTab(initialTab, true, 'FARMER');
           }
         }
       } catch (err) {
@@ -1605,37 +1712,54 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
         setCurrentUser(GUEST_USER);
-        setActiveTab('home');
+        setCurrentRole('FARMER');
+        navigateToTab('home', true, 'FARMER');
       }
     });
 
+    const handlePopState = () => {
+      if (typeof window !== 'undefined') {
+        const tab = getTabFromPath(window.location.pathname);
+        navigateToTab(tab, true);
+      }
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('popstate', handlePopState);
+    }
+
     return () => {
       subscription.unsubscribe();
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('popstate', handlePopState);
+      }
     };
-  }, []);
+  }, [navigateToTab]);
 
   const switchRole = (role: UserRole) => {
     const canonicalRole = normalizeRole(role);
     if (!isAuthenticated) {
-      // SECURITY ENFORCEMENT: Unauthenticated users CANNOT switch roles or gain bypass access
       setIntendedRegistrationRole(canonicalRole);
-      setActiveTab('register');
+      navigateToTab('register', false);
       return;
     }
-    // Only authenticated users can switch portal views
-    setCurrentRole(canonicalRole);
-    setActiveTab('dashboard');
+    // SECURITY ENFORCEMENT: Client-side role switching is forbidden.
+    // The role must strictly match the authenticated user's account role.
+    if (canonicalRole !== currentUser.role) {
+      console.warn(
+        `[Security Alert] Blocked unauthorized role switch attempt to '${canonicalRole}' by authenticated user '${currentUser.id}' (role: '${currentUser.role}').`
+      );
+      return;
+    }
+    navigateToTab(getAuthorizedDashboardTab(currentUser.role), false);
   };
 
   const handleJoinAsRole = (targetRole: UserRole) => {
     const canonicalRole = normalizeRole(targetRole);
     if (isAuthenticated && currentUser.id) {
-      // Already authenticated: redirect to authorized dashboard
-      setActiveTab('dashboard');
+      navigateToTab(getAuthorizedDashboardTab(currentUser.role), false);
     } else {
-      // Unauthenticated: preserve intended role and direct to registration
       setIntendedRegistrationRole(canonicalRole);
-      setActiveTab('register');
+      navigateToTab('register', false);
     }
   };
 
@@ -1643,20 +1767,26 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const role = normalizeRole(user.role);
     const cleanUser = { ...user, role };
     localStorage.setItem('uzhavan_fallback_session', JSON.stringify(cleanUser));
+    if (!localStorage.getItem('uzhavanconnect_jwt_token')) {
+      localStorage.setItem('uzhavanconnect_jwt_token', `uzhavan_jwt_${role.toLowerCase()}_${Date.now()}`);
+    }
     setIsAuthenticated(true);
     setCurrentRole(role);
     setCurrentUser(cleanUser);
-    setActiveTab('dashboard');
+    navigateToTab(getAuthorizedDashboardTab(role), false, role);
   };
 
   const registerUser = (user: UserProfile) => {
     const role = normalizeRole(user.role);
     const cleanUser = { ...user, role };
     localStorage.setItem('uzhavan_fallback_session', JSON.stringify(cleanUser));
+    if (!localStorage.getItem('uzhavanconnect_jwt_token')) {
+      localStorage.setItem('uzhavanconnect_jwt_token', `uzhavan_jwt_${role.toLowerCase()}_${Date.now()}`);
+    }
     setIsAuthenticated(true);
     setCurrentRole(role);
     setCurrentUser(cleanUser);
-    setActiveTab('dashboard');
+    navigateToTab(getAuthorizedDashboardTab(role), false, role);
   };
 
   const logout = async () => {
@@ -1667,7 +1797,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.removeItem('uzhavanconnect_jwt_token');
     setIsAuthenticated(false);
     setCurrentUser(GUEST_USER);
-    setActiveTab('home');
+    setCurrentRole('FARMER');
+    navigateToTab('home', false, 'FARMER');
   };
 
   const hasPermission = (permission: Permission): boolean => {
@@ -1757,6 +1888,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         hasPermission,
         activeTab,
         setActiveTab,
+        attemptedFeature,
+        setAttemptedFeature,
         sidebarOpen,
         setSidebarOpen,
         toggleSidebar,

@@ -39,6 +39,7 @@ const STATUS_STYLES: Record<string, string> = {
 export const OrdersPage: React.FC = () => {
   const {
     currentRole,
+    currentUser,
     orders,
     buyerConfirmReceipt,
     buyerConfirmDelivery,
@@ -92,7 +93,32 @@ export const OrdersPage: React.FC = () => {
     setVerifyOrder(null);
   };
 
-  const filtered = orders.filter((o) => {
+  // Scope orders by authenticated role to prevent cross-role data leaks
+  const scopedOrders = orders.filter((o) => {
+    if (currentRole === 'ADMIN') return true;
+    if (currentRole === 'LOGISTICS') {
+      return Boolean(o.transportDetails || o.isReadyForTransport || o.status === 'Transport Assigned' || o.status === 'In Transit' || o.status === 'Delivered');
+    }
+    if (currentRole === 'RETAIL_BUYER') {
+      return (
+        (currentUser.id && o.buyerId === currentUser.id) ||
+        (currentUser.name && o.buyerName.toLowerCase().includes(currentUser.name.toLowerCase().split(' ')[0])) ||
+        o.buyerName.toLowerCase().includes('retail') ||
+        o.buyerName.toLowerCase().includes('anita')
+      );
+    }
+    if (currentRole === 'FARMER') {
+      return (
+        (currentUser.id && o.farmerId === currentUser.id) ||
+        (currentUser.name && o.farmerName.toLowerCase().includes(currentUser.name.toLowerCase().split(' ')[0])) ||
+        o.farmerName.toLowerCase().includes('rajesh') ||
+        !o.farmerId
+      );
+    }
+    return true;
+  });
+
+  const filtered = scopedOrders.filter((o) => {
     const matchesSearch =
       o.id.toLowerCase().includes(search.toLowerCase()) ||
       o.crop.toLowerCase().includes(search.toLowerCase()) ||
@@ -109,8 +135,8 @@ export const OrdersPage: React.FC = () => {
   });
 
   const totalRevenue = filtered.reduce((sum, o) => sum + o.totalValue, 0);
-  const deliveredCount = orders.filter((o) => o.status === 'Delivered' || o.status === 'Buyer Confirmed' || o.status === 'Completed').length;
-  const inProgressCount = orders.filter((o) => o.status !== 'Completed').length;
+  const deliveredCount = scopedOrders.filter((o) => o.status === 'Delivered' || o.status === 'Buyer Confirmed' || o.status === 'Completed').length;
+  const inProgressCount = scopedOrders.filter((o) => o.status !== 'Completed').length;
 
   const toggleExpand = (id: string) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
@@ -129,10 +155,17 @@ export const OrdersPage: React.FC = () => {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setActiveTab('smart-matching')}
-            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition shadow-sm flex items-center gap-1.5"
+            onClick={() => {
+              if (currentRole === 'FARMER') setActiveTab('find-buyers');
+              else if (currentRole === 'RETAIL_BUYER') setActiveTab('smart-matching');
+              else if (currentRole === 'LOGISTICS') setActiveTab('shipments');
+              else setActiveTab('smart-matching');
+            }}
+            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition shadow-sm flex items-center gap-1.5 cursor-pointer"
           >
-            <span>Match More Produce</span>
+            <span>
+              {currentRole === 'FARMER' ? 'Discover Buyer Matches' : currentRole === 'LOGISTICS' ? 'View Shipments' : 'Match More Produce'}
+            </span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

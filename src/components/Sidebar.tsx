@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { UserRole } from '../types';
+import { ROLE_DISPLAY_LABELS } from '../services/routeGuard';
 import {
   Sprout,
   LayoutDashboard,
@@ -175,7 +176,7 @@ export const Sidebar: React.FC = () => {
             <div className="flex items-center gap-2 text-xs">
               <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
               <span className="font-medium text-emerald-900 uppercase tracking-wider text-[10px]">
-                {currentRole.replace('_', ' ')}
+                {ROLE_DISPLAY_LABELS[currentRole] || currentRole.replace('_', ' ')}
               </span>
             </div>
             <span className="text-[10px] text-emerald-700 font-mono font-medium">Live</span>
