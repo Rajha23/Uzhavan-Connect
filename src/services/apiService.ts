@@ -4,6 +4,13 @@
  */
 
 import {
+  registerUserAccount,
+  authenticateCredentials,
+  normalizeEmail,
+  normalizeRole
+} from './authVault';
+
+import {
   DemandRequest,
   DemandPool,
   ForecastSignal,
@@ -38,59 +45,47 @@ let poolsStore: DemandPool[] = [];
 
 export const apiService = {
   // Authentication & User Service
-  login: async (role: UserRole, email?: string, password?: string): Promise<{ token: string; user: UserProfile }> => {
-    try {
-      // 1. Attempt Supabase Login
-      if (email && password && password !== 'SecurePass@2026') {
-        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-        
-        if (authError) throw authError;
-        
-        if (authData.user) {
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', authData.user.id)
-            .single();
-            
-          if (profile && !profileError) {
-            return {
-              token: authData.session.access_token,
-              user: {
-                id: profile.id,
-                name: profile.name,
-                role: profile.role,
-                phone: profile.phone || '',
-                email: profile.email || '',
-                location: profile.location || '',
-                organization: profile.organization || '',
-                village: profile.village,
-                district: profile.district,
-                state: profile.state,
-                farmSizeAcres: profile.farm_size_acres,
-                mainCrops: profile.main_crops,
-                fpoName: profile.fpo_name
-              }
-            };
-          }
-        }
+  login: async (
+    arg1: UserRole | string,
+    arg2?: string,
+    arg3?: string
+  ): Promise<{ token: string; user: UserProfile }> => {
+    let identifier = '';
+    let password = '';
+    let roleHint: UserRole | undefined;
+
+    const validRoles: UserRole[] = ['FARMER', 'RETAIL_BUYER', 'BULK_BUYER', 'FPO_AGGREGATOR', 'LOGISTICS', 'ADMIN'];
+    if (validRoles.includes(arg1 as UserRole) && arg2 && arg3) {
+      roleHint = arg1 as UserRole;
+      identifier = arg2;
+      password = arg3;
+    } else if (typeof arg1 === 'string' && arg2) {
+      identifier = arg1;
+      password = arg2;
+      if (arg3 && validRoles.includes(arg3 as UserRole)) {
+        roleHint = arg3 as UserRole;
       }
-    } catch (err: any) {
-      console.warn("Supabase login failed, falling back to mock...", err.message);
+    } else {
+      identifier = String(arg1 || '');
+      password = String(arg2 || '');
     }
 
-    // 2. Fallback Mock Login Logic
-    await new Promise((res) => setTimeout(res, 200));
+    const rawId = identifier.trim();
+    const rawPass = password.trim();
 
-    const mockUsers = JSON.parse(localStorage.getItem('mockUsers') || '[]');
-    
+    if (!rawId || !rawPass) {
+      throw new Error('Please enter both email/mobile and password.');
+    }
+
+    const normEmail = normalizeEmail(rawId);
+    const isEmail = rawId.includes('@');
+
     // Custom Admin Bypass
-    if (email === 'admin@gmail.com' && password === 'admin123') {
+    if (rawId === 'admin@gmail.com' && rawPass === 'admin123') {
+      const mockToken = `uzhavanconnect_jwt_admin_${Date.now()}`;
+      ApiClient.setToken(mockToken);
       return {
-        token: `uzhavanconnect_jwt_admin_${Date.now()}`,
+        token: mockToken,
         user: {
           ...DEMO_USERS.ADMIN,
           email: 'admin@gmail.com'
@@ -98,41 +93,82 @@ export const apiService = {
       };
     }
 
-    const matchedUser = mockUsers.find((u: any) => (u.email === email || u.mobile === email) && u.password === password);
+    // 1. Attempt Supabase Login if configured and identifier is email
+    if (supabase && isEmail) {
+      try {
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+          email: normEmail,
+          password: rawPass
+        });
 
-    if (matchedUser) {
-      const mockToken = `uzhavanconnect_jwt_${matchedUser.profile.role.toLowerCase()}_${Date.now()}`;
-      return {
-        token: mockToken,
-        user: matchedUser.profile
-      };
+        if (!authError && authData?.user) {
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', authData.user.id)
+            .single();
+
+          if (profile && !profileError) {
+            const role = normalizeRole(profile.role || roleHint);
+            const userProfile: UserProfile = {
+              id: profile.id,
+              name: profile.name || 'Member',
+              role,
+              phone: profile.phone || '',
+              email: profile.email || normEmail,
+              location: profile.location || '',
+              organization: profile.organization || '',
+              village: profile.village,
+              district: profile.district,
+              state: profile.state,
+              farmSizeAcres: profile.farm_size_acres,
+              mainCrops: profile.main_crops,
+              fpoName: profile.fpo_name
+            };
+
+            const token = authData.session?.access_token || `uzhavan_jwt_${role.toLowerCase()}_${Date.now()}`;
+            ApiClient.setToken(token);
+            return { token, user: userProfile };
+          }
+        }
+      } catch (err: any) {
+        console.warn('Supabase auth notice:', err?.message);
+      }
     }
 
-    // Allow demo users with SecurePass@2026
-    if (password === 'SecurePass@2026') {
-      const roleFallback = DEMO_USERS[role] || DEMO_USERS.FARMER;
-      const mockToken = `uzhavanconnect_jwt_${role.toLowerCase()}_${Date.now()}`;
+    // 2. Fallback to authVault (local storage crypto vault)
+    try {
+      const { user, token } = await authenticateCredentials(rawId, rawPass);
+      ApiClient.setToken(token);
+      return { token, user };
+    } catch (vaultErr: any) {
+      // 3. Fallback to DEMO_USERS using SecurePass@2026
+      if (rawPass === 'SecurePass@2026') {
+        const fallbackRole = roleHint || 'FARMER';
+        const roleFallback = DEMO_USERS[fallbackRole] || DEMO_USERS.FARMER;
+        const mockToken = `uzhavanconnect_jwt_${fallbackRole.toLowerCase()}_${Date.now()}`;
 
-      let displayName = roleFallback.name;
-      if (email && email.includes('@')) {
-        const raw = email.split('@')[0].split('.')[0].replace(/[0-9_-]/g, ' ').trim();
-        displayName = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : email.split('@')[0];
-      } else if (email && !/^\+?[0-9\s-]+$/.test(email.trim())) {
-        displayName = email.trim().charAt(0).toUpperCase() + email.trim().slice(1);
-      }
+        let displayName = roleFallback.name;
+        if (isEmail) {
+          const raw = rawId.split('@')[0].replace(/[0-9_-]/g, ' ').trim();
+          displayName = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : rawId.split('@')[0];
+        } else if (!/^\+?[0-9\s-]+$/.test(rawId)) {
+          displayName = rawId.charAt(0).toUpperCase() + rawId.slice(1);
+        }
 
-      return {
-        token: mockToken,
-        user: {
+        const userProfile: UserProfile = {
           ...roleFallback,
           name: displayName,
-          email: email?.includes('@') ? email : roleFallback.email,
-          phone: email && !email.includes('@') ? email : roleFallback.phone
-        }
-      };
-    }
+          email: isEmail ? rawId : roleFallback.email,
+          phone: !isEmail ? rawId : roleFallback.phone
+        };
 
-    throw new Error('Invalid credentials. Please enter the correct email/mobile and password.');
+        ApiClient.setToken(mockToken);
+        return { token: mockToken, user: userProfile };
+      }
+      
+      throw new Error(vaultErr.message || 'Invalid email or password. Please check your credentials and try again.');
+    }
   },
 
   register: async (userData: {
@@ -148,76 +184,66 @@ export const apiService = {
     mainCrop?: string;
     farmSize?: number;
   }): Promise<UserProfile> => {
-    try {
-      // 1. Attempt Supabase Registration
-      const { data, error } = await supabase.auth.signUp({
-        email: userData.email,
-        password: userData.password || 'Farmer@2026',
-        options: {
-          data: {
-            name: userData.name,
-            role: userData.role
+    // 1. Attempt Supabase Registration if configured
+    if (supabase && userData.email) {
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email: userData.email,
+          password: userData.password || 'Farmer@2026',
+          options: {
+            data: {
+              name: userData.name,
+              role: userData.role
+            }
+          }
+        });
+        
+        if (!error && data.user) {
+          // Attempt profile update
+          const { data: updatedProfile, error: profileError } = await supabase
+            .from('profiles')
+            .update({
+              phone: userData.mobile,
+              location: `${userData.district || ''}, ${userData.state || ''}`,
+              village: userData.village,
+              district: userData.district,
+              state: userData.state,
+              farm_size_acres: userData.farmSize,
+              main_crops: userData.mainCrop ? [userData.mainCrop] : []
+            })
+            .eq('id', data.user.id)
+            .select()
+            .single();
+            
+          if (updatedProfile && !profileError) {
+            return {
+              id: updatedProfile.id,
+              name: updatedProfile.name,
+              role: updatedProfile.role,
+              phone: updatedProfile.phone || '',
+              email: updatedProfile.email || '',
+              location: updatedProfile.location || '',
+              organization: updatedProfile.organization || ''
+            };
           }
         }
-      });
-      
-      if (error) throw error;
-      
-      if (data.user) {
-        // Update the profile record created by the trigger
-        const { data: updatedProfile, error: profileError } = await supabase
-          .from('profiles')
-          .update({
-            phone: userData.mobile,
-            location: `${userData.district || ''}, ${userData.state || ''}`,
-            village: userData.village,
-            district: userData.district,
-            state: userData.state,
-            farm_size_acres: userData.farmSize,
-            main_crops: userData.mainCrop ? [userData.mainCrop] : []
-          })
-          .eq('id', data.user.id)
-          .select()
-          .single();
-          
-        if (updatedProfile && !profileError) {
-          return {
-            id: updatedProfile.id,
-            name: updatedProfile.name,
-            role: updatedProfile.role,
-            phone: updatedProfile.phone || '',
-            email: updatedProfile.email || '',
-            location: updatedProfile.location || '',
-            organization: updatedProfile.organization || ''
-          };
-        }
+      } catch (err: any) {
+        console.warn("Supabase registration failed, falling back to mock...", err.message);
       }
-    } catch (err: any) {
-      console.warn("Supabase registration failed, falling back to mock...", err.message);
     }
 
-    // 2. Fallback Mock Registration Logic
-    await new Promise((res) => setTimeout(res, 300));
-    const newProfile: UserProfile = {
-      id: `usr_${Date.now()}`,
-      name: userData.name || 'New Registered Member',
-      role: userData.role || 'FARMER',
-      phone: userData.mobile || '+91 90000 00000',
-      email: userData.email || 'user@uzhavanconnect.gov.in',
-      location: `${userData.district || 'Chengalpattu'}, ${userData.state || 'Tamil Nadu'}`,
-      organization: 'Uzhavan Connect Network'
-    };
-
-    const mockUsers = JSON.parse(localStorage.getItem('mockUsers') || '[]');
-    mockUsers.push({
+    // 2. Fallback to authVault secure registration
+    const user = await registerUserAccount({
       email: userData.email,
       mobile: userData.mobile,
-      password: userData.password,
-      profile: newProfile
+      password: userData.password || 'Farmer@2026',
+      name: userData.name,
+      role: userData.role,
+      district: userData.district,
+      state: userData.state
     });
-    localStorage.setItem('mockUsers', JSON.stringify(mockUsers));
-
-    return newProfile;
+    
+    return user;
   },
 
   // Marketplace Service - Farmer Produce
