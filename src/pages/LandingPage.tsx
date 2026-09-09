@@ -44,7 +44,7 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="space-y-24 pb-16">
       {/* 1. Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 bg-surface-light border-b border-slate-200">
+      <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 bg-surface-light border-b border-emerald-100/50">
         {/* Subtle decorative background circles */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full overflow-hidden pointer-events-none -z-10">
           <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-emerald-100/30 blur-3xl" />
@@ -55,7 +55,7 @@ export const LandingPage: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto space-y-6">
 
             {/* Main Headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 tracking-wide leading-[1.1]">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 leading-[1.1]">
               Sell Directly.<br />
               <span className="text-emerald-600">
                 Earn Better.
@@ -71,17 +71,17 @@ export const LandingPage: React.FC = () => {
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
               <button
                 onClick={() => setActiveTab('login')}
-                className="rounded-2xl flex items-center gap-2.5 bg-emerald-800 text-cream font-bold px-8 py-4 shadow-soft hover:shadow-lg text-sm"
+                className="rounded-2xl flex items-center gap-2.5 bg-emerald-700 text-white font-bold px-8 py-4 shadow-soft hover:shadow-hover hover:-translate-y-1 transition-all text-sm"
               >
-                <Lock className="w-5 h-5 text-emerald-600" />
+                <Lock className="w-5 h-5 text-emerald-100" />
                 <span>Login</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('register')}
-                className="rounded-2xl flex items-center gap-2.5 bg-emerald-100 text-slate-900 font-bold px-8 py-4 border border-sage/50 hover:bg-surface-light shadow-sm text-sm"
+                className="rounded-2xl flex items-center gap-2.5 bg-white text-emerald-900 font-bold px-8 py-4 border border-emerald-200 hover:bg-emerald-50 hover:-translate-y-1 transition-all shadow-sm text-sm"
               >
-                <UserPlus className="w-5 h-5 text-slate-900" />
+                <UserPlus className="w-5 h-5 text-emerald-700" />
                 <span>Register</span>
               </button>
 
@@ -90,13 +90,13 @@ export const LandingPage: React.FC = () => {
             {/* 4-Benefit Card Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-8 max-w-4xl mx-auto">
               {[
-                { icon: Sprout, title: 'Direct Market', desc: 'Sell directly to verified buyers', color: 'text-slate-900 bg-emerald-100/20 border-sage/40' },
-                { icon: TrendingUp, title: 'Demand Forecast', desc: 'Know what buyers need first', color: 'text-slate-900 bg-olive/20 border-olive/40' },
-                { icon: Sparkles, title: 'Smart Matching', desc: 'Best matches by price & distance', color: 'text-slate-900 bg-moss/20 border-moss/40' },
-                { icon: Truck, title: 'Easy Logistics', desc: 'Route-optimised direct delivery', color: 'text-slate-900 bg-emerald-100/20 border-sage/40' },
+                { icon: Sprout, title: 'Direct Market', desc: 'Sell directly to verified buyers', color: 'text-emerald-900 bg-emerald-50 border-emerald-200' },
+                { icon: TrendingUp, title: 'Demand Forecast', desc: 'Know what buyers need first', color: 'text-indigo-900 bg-indigo-50 border-indigo-200' },
+                { icon: Sparkles, title: 'Smart Matching', desc: 'Best matches by price & distance', color: 'text-blue-900 bg-blue-50 border-blue-200' },
+                { icon: Truck, title: 'Easy Logistics', desc: 'Route-optimised direct delivery', color: 'text-amber-900 bg-amber-50 border-amber-200' },
               ].map((b) => (
-                <div key={b.title} className={`p-4 rounded-[1.5rem] border text-left ${b.color} transition hover:-translate-y-1`}>
-                  <b.icon className="w-6 h-6 mb-2 opacity-80" />
+                <div key={b.title} className={`p-4 rounded-2xl border text-left ${b.color} transition-all duration-300 hover:-translate-y-1 hover:shadow-soft`}>
+                  <b.icon className="w-6 h-6 mb-2 text-emerald-600" />
                   <p className="text-sm font-bold leading-tight">{b.title}</p>
                   <p className="text-[11px] opacity-70 mt-1 leading-snug">{b.desc}</p>
                 </div>
@@ -119,7 +119,7 @@ export const LandingPage: React.FC = () => {
               {/* Node 1: Farmer */}
               <div
                 onClick={() => switchRole('FARMER')}
-                className="p-5 rounded-[1.5rem] border border-slate-200 bg-olive/10 hover:bg-emerald-50 cursor-pointer transition text-center group"
+                className="p-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer transition text-center group"
               >
                 <div className="w-12 h-12 mx-auto rounded-[1rem] bg-emerald-100 text-slate-900 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
                   <Sprout className="w-6 h-6" />
@@ -132,9 +132,9 @@ export const LandingPage: React.FC = () => {
               {/* Node 2: Uzhavan Connect */}
               <div
                 onClick={() => setActiveTab('demand-intel')}
-                className="p-5 rounded-[1.5rem] border border-slate-200 bg-olive/10 hover:bg-emerald-50 cursor-pointer transition text-center group"
+                className="p-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer transition text-center group"
               >
-                <div className="w-12 h-12 mx-auto rounded-[1rem] bg-emerald-800 text-cream flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
+                <div className="w-12 h-12 mx-auto rounded-[1rem] bg-emerald-800 text-white flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
                   <TrendingUp className="w-6 h-6" />
                 </div>
                 <h4 className="text-sm font-bold text-slate-900">2. Uzhavan Connect</h4>
@@ -145,7 +145,7 @@ export const LandingPage: React.FC = () => {
               {/* Node 3: Buyers */}
               <div
                 onClick={() => switchRole('RETAIL_BUYER')}
-                className="p-5 rounded-[1.5rem] border border-slate-200 bg-olive/10 hover:bg-emerald-50 cursor-pointer transition text-center group"
+                className="p-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer transition text-center group"
               >
                 <div className="w-12 h-12 mx-auto rounded-[1rem] bg-emerald-100 text-slate-900 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
                   <ShoppingBag className="w-6 h-6" />
@@ -158,9 +158,9 @@ export const LandingPage: React.FC = () => {
               {/* Node 4: Logistics */}
               <div
                 onClick={() => switchRole('ADMIN')}
-                className="p-5 rounded-[1.5rem] border border-slate-200 bg-olive/10 hover:bg-emerald-50 cursor-pointer transition text-center group"
+                className="p-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer transition text-center group"
               >
-                <div className="w-12 h-12 mx-auto rounded-[1rem] bg-emerald-800 text-cream flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
+                <div className="w-12 h-12 mx-auto rounded-[1rem] bg-emerald-800 text-white flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
                   <Truck className="w-6 h-6" />
                 </div>
                 <h4 className="text-sm font-bold text-slate-900">4. Logistics</h4>
@@ -171,7 +171,7 @@ export const LandingPage: React.FC = () => {
               {/* Node 5: Consumer & Trace */}
               <div
                 onClick={() => setActiveTab('traceability')}
-                className="p-5 rounded-[1.5rem] border border-slate-200 bg-olive/10 hover:bg-emerald-50 cursor-pointer transition text-center group"
+                className="p-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer transition text-center group"
               >
                 <div className="w-12 h-12 mx-auto rounded-[1rem] bg-emerald-100 text-slate-900 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
                   <User className="w-6 h-6" />
@@ -183,8 +183,8 @@ export const LandingPage: React.FC = () => {
             </div>
 
             {/* 4 Floating Live Statistics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-olive/20">
-              <div className="text-center p-4 bg-olive/10 rounded-[1.5rem] border border-olive/20">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-slate-200">
+              <div className="text-center p-4 bg-slate-50 rounded-[1.5rem] border border-slate-200">
                 <p className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 tracking-wide">
                   85.9%
                 </p>
@@ -192,7 +192,7 @@ export const LandingPage: React.FC = () => {
                 <span className="text-[11px] text-slate-900/60 font-medium">vs 34% in mandi</span>
               </div>
 
-              <div className="text-center p-4 bg-olive/10 rounded-[1.5rem] border border-olive/20">
+              <div className="text-center p-4 bg-slate-50 rounded-[1.5rem] border border-slate-200">
                 <p className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 tracking-wide">
                   94.6%
                 </p>
@@ -200,7 +200,7 @@ export const LandingPage: React.FC = () => {
                 <span className="text-[11px] text-slate-900/60 font-medium">MAPE 5.34%</span>
               </div>
 
-              <div className="text-center p-4 bg-olive/10 rounded-[1.5rem] border border-olive/20">
+              <div className="text-center p-4 bg-slate-50 rounded-[1.5rem] border border-slate-200">
                 <p className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 tracking-wide">
                   12k+
                 </p>
@@ -208,7 +208,7 @@ export const LandingPage: React.FC = () => {
                 <span className="text-[11px] text-slate-900/60 font-medium">100% on-time</span>
               </div>
 
-              <div className="text-center p-4 bg-olive/10 rounded-[1.5rem] border border-olive/20">
+              <div className="text-center p-4 bg-slate-50 rounded-[1.5rem] border border-slate-200">
                 <p className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 tracking-wide">
                   38.4%
                 </p>
@@ -250,7 +250,7 @@ export const LandingPage: React.FC = () => {
 
       {/* 6. Final Call to Action Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
-        <div className="bg-emerald-800 text-cream rounded-[3rem] p-10 sm:p-16 text-center space-y-8 shadow-2xl relative overflow-hidden border border-[#023120]">
+        <div className="bg-emerald-800 text-white rounded-[3rem] p-10 sm:p-16 text-center space-y-8 shadow-2xl relative overflow-hidden border border-emerald-800">
           <div className="inline-flex items-center gap-2 bg-emerald-100/20 text-emerald-600 px-4 py-2 rounded-[1rem] text-xs font-bold border border-sage/40 uppercase tracking-widest">
             <HeartHandshake className="w-4 h-4 text-emerald-600" />
             <span>From Fragmented Supply to Coordinated Demand</span>
@@ -260,7 +260,7 @@ export const LandingPage: React.FC = () => {
             Start Building a Smarter Agricultural Supply Chain
           </h2>
 
-          <p className="text-sm sm:text-base text-cream/70 max-w-2xl mx-auto leading-relaxed font-medium">
+          <p className="text-sm sm:text-base text-white/70 max-w-2xl mx-auto leading-relaxed font-medium">
             Empower smallholders with forward demand visibility, eliminate speculative middlemen, and deliver fresh produce with guaranteed quality.
           </p>
 
@@ -268,7 +268,7 @@ export const LandingPage: React.FC = () => {
 
             <button
               onClick={() => switchRole('FARMER')}
-              className="px-8 py-4 bg-olive/10 hover:bg-olive/20 text-cream font-bold rounded-[1.5rem] border border-slate-200 transition text-sm uppercase tracking-widest"
+              className="px-8 py-4 bg-slate-50 hover:bg-slate-50 text-white font-bold rounded-[1.5rem] border border-slate-200 transition text-sm uppercase tracking-widest"
             >
               Join as Farmer / FPO
             </button>
