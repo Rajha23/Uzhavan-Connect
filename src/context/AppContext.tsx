@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import {
   UserProfile,
   UserRole,
@@ -11,18 +11,12 @@ import {
   DemandRequest,
   NetworkSyncStatus,
   WorkflowOrder,
-  OrderStatus,
   WorkflowAgreement,
   QualityInspectionData,
   TransportAssignment,
   ProducePassport,
   SettlementRecord,
-  OrderTimelineEvent,
-  AggregatedDemandGroup,
-  FarmerContribution,
-  FarmerSettlementItem,
-  SettlementStatus,
-  BuyerDeliveryConfirmation
+  OrderTimelineEvent
 } from '../types';
 import {
   DEMO_USERS,
@@ -37,17 +31,8 @@ import {
   INITIAL_PASSPORTS,
   INITIAL_SETTLEMENTS
 } from '../data/mockData';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { authVault, normalizeRole, seedDemoAccounts } from '../services/authVault';
+import { supabase } from '../lib/supabase';
 import { onInstallableChange, promptAppInstall } from '../services/serviceWorkerRegistration';
-import {
-  PUBLIC_TABS,
-  isRouteAuthorized,
-  getTabFromPath,
-  getPathFromTab,
-  TAB_FEATURE_NAMES,
-  getAuthorizedDashboardTab
-} from '../services/routeGuard';
 
 interface AppContextType {
   isInitializing: boolean;
@@ -58,14 +43,9 @@ interface AppContextType {
   currentUser: UserProfile;
   currentRole: UserRole;
   switchRole: (role: UserRole) => void;
-  intendedRegistrationRole: UserRole | null;
-  setIntendedRegistrationRole: (role: UserRole | null) => void;
-  handleJoinAsRole: (targetRole: UserRole) => void;
   hasPermission: (permission: Permission) => boolean;
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  attemptedFeature: string;
-  setAttemptedFeature: (feature: string) => void;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   toggleSidebar: () => void;
@@ -88,7 +68,6 @@ interface AppContextType {
   toggleUserPermission: (userId: string, permission: Permission) => void;
   produceListings: ProduceListing[];
   demandRequests: DemandRequest[];
-  aggregatedDemandGroups: AggregatedDemandGroup[];
   addProduceListing: (listing: ProduceListing) => void;
   deleteProduceListing: (id: string) => void;
   addDemandRequest: (demand: DemandRequest) => void;
@@ -101,24 +80,15 @@ interface AppContextType {
     listingId: string,
     demandId: string,
     agreedPrice?: number,
-    agreedQty?: number,
-    aggregatedGroupId?: string
+    agreedQty?: number
   ) => WorkflowOrder | null;
-  fpoRecordCollection: (orderId: string, farmerId: string, quantityToCollect: number, notes?: string) => boolean;
   fpoCollectProduce: (orderId: string, hubLocation?: string) => void;
-  fpoRecordQualityGrading: (orderId: string, metrics: QualityInspectionData) => boolean;
   fpoQualityCheck: (orderId: string, metrics: QualityInspectionData) => void;
-  fpoRecordPacking: (orderId: string, packDetails?: { packedQuantityKg?: number; packageType?: string; crateCount?: number; notes?: string }) => boolean;
   fpoPackProduce: (orderId: string, notes?: string) => void;
   assignTransport: (orderId: string, transport: TransportAssignment) => void;
   dispatchShipment: (orderId: string) => void;
   markDelivered: (orderId: string) => void;
-  buyerConfirmDelivery: (orderId: string, confirmation: BuyerDeliveryConfirmation) => void;
   buyerConfirmReceipt: (orderId: string) => void;
-  recordBuyerPayment: (orderId: string, paymentDetails?: { reference?: string; method?: string }) => void;
-  processFpoSettlement: (orderId: string) => void;
-  settleFarmerPayment: (orderId: string, farmerId?: string) => void;
-  completeTransaction: (orderId: string) => void;
   settlePayment: (orderId: string) => void;
   isOnline: boolean;
   syncStatus: NetworkSyncStatus;
@@ -127,86 +97,6 @@ interface AppContextType {
   isInstallable: boolean;
   promptInstall: () => Promise<boolean>;
 }
-
-export const identifyCompatibleDemandGroups = (demands: DemandRequest[]): AggregatedDemandGroup[] => {
-  // Only consider active demands with remaining quantity or in aggregatable state
-  const activeDemands = demands.filter(
-    (d) => d.quantityKg > 0 && d.status !== 'Order Created' && d.status !== 'Fulfilled'
-  );
-  if (activeDemands.length === 0) return [];
-
-  const getCorridor = (location: string): string => {
-    const loc = (location || '').toLowerCase();
-    if (loc.includes('chennai') || loc.includes('koyambedu') || loc.includes('guindy')) return 'Chennai Corridor';
-    if (loc.includes('salem') || loc.includes('attur')) return 'Salem Corridor';
-    if (loc.includes('kanchipuram') || loc.includes('sunguvarchatram') || loc.includes('sriperumbudur')) return 'Kanchipuram Corridor';
-    if (loc.includes('coimbatore') || loc.includes('pollachi')) return 'Coimbatore Corridor';
-    if (loc.includes('dharmapuri')) return 'Dharmapuri Corridor';
-    const firstWord = (location || 'Regional').split(',')[0].split(' ')[0].trim();
-    return `${firstWord || 'Regional'} Corridor`;
-  };
-
-  const groupsMap = new Map<string, DemandRequest[]>();
-
-  activeDemands.forEach((demand) => {
-    const cropKey = demand.crop.trim().toLowerCase();
-    const corridor = getCorridor(demand.location);
-    const gradeKey = demand.qualityRequirement === 'Any' || !demand.qualityRequirement ? 'Grade A' : demand.qualityRequirement;
-    const dateKey = demand.deliveryDate ? demand.deliveryDate.slice(0, 7) : '2026-09';
-
-    const groupKey = `${cropKey}__${corridor}__${gradeKey}__${dateKey}`;
-    if (!groupsMap.has(groupKey)) {
-      groupsMap.set(groupKey, []);
-    }
-    groupsMap.get(groupKey)!.push(demand);
-  });
-
-  const aggregatedGroups: AggregatedDemandGroup[] = [];
-
-  groupsMap.forEach((groupedDemands) => {
-    const first = groupedDemands[0];
-    const cropName = first.crop;
-    const corridor = getCorridor(first.location);
-    const qualityReq = first.qualityRequirement || 'Grade A';
-    const totalQty = groupedDemands.reduce((sum, d) => sum + d.quantityKg, 0);
-    const initialQty = groupedDemands.reduce((sum, d) => sum + (d.initialQuantityKg || d.quantityKg), 0);
-    const buyersSet = new Set(groupedDemands.map((d) => d.buyerName));
-    const avgPrice = groupedDemands.reduce((sum, d) => sum + (d.maxTargetPricePerKg || 0), 0) / (groupedDemands.length || 1);
-    const primaryDate = first.deliveryDate || '2026-09-08';
-
-    const cropShort = cropName.slice(0, 3).toUpperCase();
-    const corridorShort = corridor.split(' ')[0].slice(0, 3).toUpperCase();
-    const groupId = `POOL-${cropShort}-${corridorShort}-${Math.round(totalQty)}`;
-
-    const hubCities = Array.from(new Set(groupedDemands.map((d) => d.location.split(' ')[0]))).join(', ');
-    const reasons: string[] = [
-      `Identical Commodity: ${cropName} (${first.variety || 'Commercial Grade Standard'})`,
-      `Quality Standard Alignment: ${qualityReq} (Institutional Specifications)`,
-      `Logistics Corridor Consolidation: ${corridor} (${hubCities})`,
-      `Synchronized Delivery Window: ${primaryDate} (${groupedDemands.length} buyers consolidated)`
-    ];
-
-    aggregatedGroups.push({
-      id: groupId,
-      crop: cropName,
-      variety: first.variety || 'Certified Hybrid',
-      qualityRequirement: qualityReq,
-      region: corridor,
-      targetDate: primaryDate,
-      deliveryTimeWindow: first.deliveryTimeWindow || '05:30 AM - 08:30 AM',
-      totalQuantityKg: totalQty,
-      initialQuantityKg: initialQty,
-      contributingDemands: groupedDemands,
-      contributingDemandIds: groupedDemands.map((d) => d.id),
-      buyersCount: buyersSet.size,
-      avgMaxPricePerKg: Math.round(avgPrice * 100) / 100,
-      status: totalQty <= 0 ? 'ALLOCATED' : (totalQty < initialQty ? 'PARTIALLY_MATCHED' : 'FORMED'),
-      compatibilityReasons: reasons
-    });
-  });
-
-  return aggregatedGroups;
-};
 
 const GUEST_USER: UserProfile = {
   id: '',
@@ -225,14 +115,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [currentRole, setCurrentRole] = useState<UserRole>('FARMER');
   const [currentUser, setCurrentUser] = useState<UserProfile>(GUEST_USER);
-  const [intendedRegistrationRole, setIntendedRegistrationRole] = useState<UserRole | null>(null);
-  const [activeTab, setActiveTabState] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      return getTabFromPath(window.location.pathname);
-    }
-    return 'home';
-  });
-  const [attemptedFeature, setAttemptedFeature] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<string>('home');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
   const [isPassportModalOpen, setIsPassportModalOpen] = useState<boolean>(false);
@@ -290,11 +173,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     } catch (e) {
       console.warn('Failed to persist demand requests to localStorage', e);
     }
-  }, [demandRequests]);
-
-  // Dynamically group compatible regional buyer demands without mutating individual demands
-  const aggregatedDemandGroups = useMemo(() => {
-    return identifyCompatibleDemandGroups(demandRequests);
   }, [demandRequests]);
 
   // Persistent Orders
@@ -493,13 +371,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addDemandRequest = (demand: DemandRequest) => {
     const isCurrentlyOnline = isOnline && (typeof navigator !== 'undefined' ? navigator.onLine : true);
-    const initialQty = demand.initialQuantityKg || demand.quantityKg;
     const enrichedDemand: DemandRequest = {
       ...demand,
-      initialQuantityKg: initialQty,
-      allocatedQuantityKg: demand.allocatedQuantityKg || 0,
-      unit: demand.unit || 'kg',
-      variety: demand.variety || 'Certified Hybrid',
       syncStatus: isCurrentlyOnline ? 'SYNCED' : 'PENDING_SYNC',
       offlineCreated: !isCurrentlyOnline
     };
@@ -529,39 +402,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     listingId: string,
     demandId: string,
     agreedPrice?: number,
-    agreedQty?: number,
-    aggregatedGroupId?: string
+    agreedQty?: number
   ): WorkflowOrder | null => {
     const listing = produceListings.find((l) => l.id === listingId);
     const demand = demandRequests.find((d) => d.id === demandId);
-    if (!listing || !demand) {
-      console.warn('[UZHAVAN MATCH] Matching failed: Listing or Demand not found', { listingId, demandId });
-      return null;
-    }
+    if (!listing || !demand) return null;
 
-    // Double-allocation prevention: if listing has already been fully allocated, abort
-    if (listing.quantityKg <= 0) {
-      console.warn('[UZHAVAN MATCH] Double-allocation rejected: Listing has 0 kg available', listingId);
-      return null;
-    }
-
-    // Demand already fully satisfied
-    if (demand.quantityKg <= 0) {
-      console.warn('[UZHAVAN MATCH] Demand already completely fulfilled: 0 kg remaining', demandId);
-      return null;
-    }
-
-    const finalPrice = agreedPrice !== undefined ? Number(agreedPrice) : (listing.expectedPricePerKg || demand.maxTargetPricePerKg);
-    const maxPossibleQty = Math.min(listing.quantityKg, demand.quantityKg);
-    const requestedAgreedQty = agreedQty !== undefined ? Number(agreedQty) : maxPossibleQty;
-    const finalQty = Math.min(maxPossibleQty, requestedAgreedQty);
-
-    if (finalQty <= 0) {
-      console.warn('[UZHAVAN MATCH] Cannot create order with non-positive quantity:', finalQty);
-      return null;
-    }
-
-    const totalVal = Math.round(finalPrice * finalQty * 100) / 100;
+    const finalPrice = agreedPrice || listing.expectedPricePerKg || demand.maxTargetPricePerKg;
+    const finalQty = agreedQty !== undefined ? Math.min(listing.quantityKg, Number(agreedQty)) : Math.min(listing.quantityKg, demand.quantityKg);
+    const totalVal = finalPrice * finalQty;
     const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
     const nowTimestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     const randomSeq = Math.floor(100 + Math.random() * 900);
@@ -590,14 +439,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       agreementId,
       produceListingId: listing.id,
       demandRequestId: demand.id,
-      aggregatedGroupId: aggregatedGroupId || demand.aggregatedGroupId,
       batchId,
       farmerId: listing.farmerId,
       farmerName: listing.farmerName,
       buyerId: demand.buyerId,
       buyerName: demand.buyerName,
       crop: listing.crop,
-      variety: listing.variety || demand.variety || 'Certified Hybrid',
+      variety: listing.variety || 'Certified Hybrid',
       quantityKg: finalQty,
       pricePerKg: finalPrice,
       totalValue: totalVal,
@@ -605,29 +453,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       date: dateStr,
       deliveryLocation: demand.location,
       farmerLocation: listing.location,
-      fpoName: currentUser.fpoName || listing.fpoName || 'GreenHarvest FPO',
+      fpoName: currentUser.fpoName || 'GreenHarvest FPO',
       qualityGrade: listing.grade,
-      farmerContributions: [
-        {
-          farmerId: listing.farmerId,
-          farmerName: listing.farmerName,
-          farmerLocation: listing.location,
-          produceListingId: listing.id,
-          contributedQuantityKg: finalQty,
-          collectedQuantityKg: 0,
-          collectionStatus: 'PENDING'
-        }
-      ],
-      collectionStatus: 'Collection Pending',
-      collectedQuantityKg: 0,
-      remainingCollectionKg: finalQty,
-      qualityStatus: 'Pending',
-      acceptedQuantityKg: 0,
-      rejectedQuantityKg: 0,
-      packingStatus: 'Packing Pending',
-      packedQuantityKg: 0,
-      isReadyForTransport: false,
-      transportStatus: 'Transport Pending',
       timeline: [
         {
           step: 'LISTED',
@@ -659,7 +486,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const newPassport: ProducePassport = {
       batchId,
       crop: listing.crop,
-      variety: listing.variety || demand.variety || 'Certified Hybrid',
+      variety: listing.variety || 'Certified Hybrid',
       farmerOrFpo: listing.farmerName,
       farmLocation: listing.location,
       harvestDate: listing.harvestDate || dateStr,
@@ -745,16 +572,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setDemandRequests((prev) =>
       prev.map((d) => {
         if (d.id !== demand.id) return d;
-        const initialQty = d.initialQuantityKg || d.quantityKg;
-        const prevAllocated = d.allocatedQuantityKg || 0;
-        const newAllocated = prevAllocated + finalQty;
         const remainingDemand = Math.max(0, d.quantityKg - finalQty);
-
         return {
           ...d,
-          initialQuantityKg: initialQty,
-          allocatedQuantityKg: newAllocated,
-          quantityKg: remainingDemand,
+          quantityKg: remainingDemand > 0 ? remainingDemand : d.quantityKg,
           status: remainingDemand <= 0 ? 'Order Created' : 'Partially Fulfilled'
         };
       })
@@ -780,192 +601,76 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return newOrder;
   };
 
-  // Step 6: FPO Collects Produce with Multi-Farmer Traceability & Partial Collection
-  const fpoRecordCollection = (orderId: string, farmerId: string, quantityToCollect: number, notes?: string): boolean => {
+  // Step 6: FPO Collects Produce
+  const fpoCollectProduce = (orderId: string, hubLocation = 'Sriperumbudur Rural Hub') => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
-    let success = false;
     let targetBatchId = '';
     let targetListingId = '';
 
     setOrders((prev) =>
       prev.map((o) => {
         if (o.id !== orderId) return o;
-
-        // Existing or initialized contributions
-        const contributions: FarmerContribution[] = o.farmerContributions && o.farmerContributions.length > 0
-          ? o.farmerContributions
-          : [
-              {
-                farmerId: o.farmerId,
-                farmerName: o.farmerName,
-                farmerLocation: o.farmerLocation,
-                produceListingId: o.produceListingId,
-                contributedQuantityKg: o.quantityKg,
-                collectedQuantityKg: o.collectedQuantityKg || 0,
-                collectionStatus: (o.collectionStatus === 'Fully Collected' ? 'FULLY_COLLECTED' : (o.collectionStatus === 'Partially Collected' ? 'PARTIALLY_COLLECTED' : 'PENDING')) as any
-              }
-            ];
-
-        // Find contribution for farmerId (or first if farmerId matches or only 1)
-        const targetContribIdx = contributions.findIndex(
-          (c) => c.farmerId === farmerId || c.produceListingId === farmerId || contributions.length === 1
-        );
-
-        if (targetContribIdx === -1) {
-          console.warn('[FPO COLLECTION] Farmer contribution not found for order', { orderId, farmerId });
-          return o;
-        }
-
-        const contrib = contributions[targetContribIdx];
-        const remainingForFarmer = Math.max(0, contrib.contributedQuantityKg - (contrib.collectedQuantityKg || 0));
-
-        if (quantityToCollect <= 0 || remainingForFarmer <= 0) {
-          console.warn('[FPO COLLECTION] Invalid quantity to collect or already fully collected', {
-            quantityToCollect,
-            remainingForFarmer
-          });
-          return o;
-        }
-
-        // Prevent collected quantity from exceeding confirmed quantity
-        const finalCollectKg = Math.min(quantityToCollect, remainingForFarmer);
-        const newFarmerCollected = (contrib.collectedQuantityKg || 0) + finalCollectKg;
-        const newContribStatus = newFarmerCollected >= contrib.contributedQuantityKg ? 'FULLY_COLLECTED' : 'PARTIALLY_COLLECTED';
-
-        const updatedContributions: FarmerContribution[] = contributions.map((c, idx) => {
-          if (idx !== targetContribIdx) return c;
-          return {
-            ...c,
-            collectedQuantityKg: newFarmerCollected,
-            collectionStatus: newContribStatus,
-            collectedAt: timestamp,
-            notes: notes || c.notes
-          };
-        });
-
-        const totalCollectedKg = updatedContributions.reduce((sum, c) => sum + (c.collectedQuantityKg || 0), 0);
-        const totalRequiredKg = o.quantityKg;
-        const remainingKg = Math.max(0, totalRequiredKg - totalCollectedKg);
-        const isFullyCollected = remainingKg <= 0 && updatedContributions.every((c) => c.collectionStatus === 'FULLY_COLLECTED');
-
-        const newOrderStatus: OrderStatus = isFullyCollected ? 'Collected' : 'Partially Collected';
-        const newCollectionStatus = isFullyCollected ? 'Fully Collected' : 'Partially Collected';
-
         targetBatchId = o.batchId;
-        targetListingId = contrib.produceListingId || o.produceListingId;
-        success = true;
-
+        targetListingId = o.produceListingId;
         const updatedTimeline: OrderTimelineEvent[] = [
-          ...o.timeline,
-          {
-            step: isFullyCollected ? 'COLLECTED' : 'PARTIAL_COLLECTION',
-            title: isFullyCollected
-              ? `Produce Fully Collected (${totalCollectedKg.toLocaleString()} kg)`
-              : `Partial Farm Pickup: ${finalCollectKg.toLocaleString()} kg collected (${remainingKg.toLocaleString()} kg remaining)`,
-            location: `${contrib.farmerLocation || o.farmerLocation} -> FPO Hub`,
-            timestamp,
-            operator: `FPO Logistics Agent (${contrib.farmerName})`,
-            completed: true,
-            notes: notes || `Farmer: ${contrib.farmerName}, Collected: ${finalCollectKg} kg`
-          }
+          ...o.timeline.map((t) => (t.step === 'COLLECTED' ? { ...t, completed: true, timestamp, location: `${o.farmerLocation} -> ${hubLocation}` } : t)),
+          { step: 'QUALITY_PENDING', title: 'Awaiting Hub Quality Inspection', location: hubLocation, timestamp, operator: 'FPO Quality Lab', completed: false }
         ];
-
-        return {
-          ...o,
-          status: newOrderStatus,
-          collectionStatus: newCollectionStatus,
-          collectedQuantityKg: totalCollectedKg,
-          remainingCollectionKg: remainingKg,
-          farmerContributions: updatedContributions,
-          timeline: updatedTimeline
-        };
+        return { ...o, status: 'Collected', timeline: updatedTimeline };
       })
     );
 
-    if (success && targetListingId) {
+    if (targetListingId) {
       setProduceListings((prev) =>
         prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Collected' } : p))
       );
     }
-    if (success && targetBatchId) {
+    if (targetBatchId) {
       setProducePassports((prev) =>
         prev.map((pass) => (pass.batchId === targetBatchId ? { ...pass, currentStatus: 'Harvested' } : pass))
       );
     }
-
-    return success;
   };
 
-  const fpoCollectProduce = (orderId: string, hubLocation = 'Sriperumbudur Rural Hub') => {
-    const order = orders.find((o) => o.id === orderId);
-    if (!order) return;
-    const remainingToCollect = order.remainingCollectionKg !== undefined ? order.remainingCollectionKg : order.quantityKg;
-    fpoRecordCollection(orderId, order.farmerId, remainingToCollect, `Collected at farm gate for ${hubLocation}`);
-  };
-
-  // Step 7: Quality Check & Grading with Accepted/Rejected Tracking
-  const fpoRecordQualityGrading = (orderId: string, metrics: QualityInspectionData): boolean => {
+  // Step 7: Quality Check & Grading
+  const fpoQualityCheck = (orderId: string, metrics: QualityInspectionData) => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
-    let success = false;
     let targetBatchId = '';
     let targetListingId = '';
 
     setOrders((prev) =>
       prev.map((o) => {
         if (o.id !== orderId) return o;
-
-        const collectedKg = o.collectedQuantityKg || o.quantityKg;
-        const acceptedKg = metrics.acceptedQuantityKg !== undefined ? Number(metrics.acceptedQuantityKg) : collectedKg;
-        const rejectedKg = metrics.rejectedQuantityKg !== undefined ? Number(metrics.rejectedQuantityKg) : Math.max(0, collectedKg - acceptedKg);
-
-        const qualityStatus = acceptedKg <= 0
-          ? 'Rejected'
-          : (rejectedKg > 0 ? 'Conditionally Passed' : 'Passed');
-
-        const newOrderStatus: OrderStatus = qualityStatus === 'Rejected' ? 'Quality Rejected' : 'Quality Checked';
-
         targetBatchId = o.batchId;
         targetListingId = o.produceListingId;
-        success = true;
-
         const updatedTimeline: OrderTimelineEvent[] = [
           ...o.timeline,
           {
             step: 'QUALITY_CHECKED',
-            title: `Quality Assessed: ${qualityStatus.toUpperCase()} (${metrics.verifiedGrade})`,
-            location: metrics.hubLocation || 'FPO Quality Station',
+            title: `Quality Tested & Certified (${metrics.verifiedGrade})`,
+            location: metrics.hubLocation,
             timestamp,
-            operator: metrics.inspectorName || 'QA Assessor',
+            operator: metrics.inspectorName,
             completed: true,
-            notes: `Accepted: ${acceptedKg.toLocaleString()} kg, Rejected: ${rejectedKg.toLocaleString()} kg. Brix: ${metrics.sugarBrix}°, Firmness: ${metrics.firmnessKgCm} kg/cm²${metrics.rejectionReason ? ` [Reason: ${metrics.rejectionReason}]` : ''}`
+            notes: `Brix: ${metrics.sugarBrix}, Firmness: ${metrics.firmnessKgCm} kg/cm², Pesticide: ${metrics.pesticideResidueTest}`
           }
         ];
-
         return {
           ...o,
-          status: newOrderStatus,
+          status: 'Quality Checked',
           qualityGrade: metrics.verifiedGrade,
-          qualityStatus,
-          acceptedQuantityKg: acceptedKg,
-          rejectedQuantityKg: rejectedKg,
-          inspectionMetrics: {
-            ...metrics,
-            status: qualityStatus === 'Rejected' ? 'REJECTED' : (qualityStatus === 'Conditionally Passed' ? 'CONDITIONALLY_PASSED' : 'PASSED'),
-            acceptedQuantityKg: acceptedKg,
-            rejectedQuantityKg: rejectedKg
-          },
-          packingStatus: qualityStatus === 'Rejected' ? 'Packing Pending' : (o.packingStatus || 'Packing Pending'),
+          inspectionMetrics: metrics,
           timeline: updatedTimeline
         };
       })
     );
 
-    if (success && targetListingId) {
+    if (targetListingId) {
       setProduceListings((prev) =>
         prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Quality Checked', grade: metrics.verifiedGrade } : p))
       );
     }
-    if (success && targetBatchId) {
+    if (targetBatchId) {
       setProducePassports((prev) =>
         prev.map((pass) =>
           pass.batchId === targetBatchId
@@ -987,79 +692,41 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         )
       );
     }
-
-    return success;
   };
 
-  const fpoQualityCheck = (orderId: string, metrics: QualityInspectionData) => {
-    fpoRecordQualityGrading(orderId, metrics);
-  };
-
-  // Step 8: Packing & Crating Station with Transport Readiness Gate
-  const fpoRecordPacking = (
-    orderId: string,
-    packDetails?: { packedQuantityKg?: number; packageType?: string; crateCount?: number; notes?: string }
-  ): boolean => {
+  // Step 8: Packing & Crating
+  const fpoPackProduce = (orderId: string, notes?: string) => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
-    let success = false;
     let targetBatchId = '';
     let targetListingId = '';
 
     setOrders((prev) =>
       prev.map((o) => {
         if (o.id !== orderId) return o;
-
-        // Gate: Order must have passed quality inspection with accepted quantity > 0
-        if (o.qualityStatus === 'Rejected' || (o.acceptedQuantityKg !== undefined && o.acceptedQuantityKg <= 0)) {
-          console.warn('[FPO PACKING] Cannot pack quality rejected order:', orderId);
-          return o;
-        }
-
-        const maxPackable = o.acceptedQuantityKg !== undefined ? o.acceptedQuantityKg : (o.collectedQuantityKg || o.quantityKg);
-        const requestedPacked = packDetails?.packedQuantityKg !== undefined ? Number(packDetails.packedQuantityKg) : maxPackable;
-        const finalPackedKg = Math.min(maxPackable, requestedPacked);
-
-        const packageType = packDetails?.packageType || 'Ventilated 25kg Agro-Crates with tamper-evident QR seal';
-        const defaultCrates = Math.ceil(finalPackedKg / 25);
-        const crateCount = packDetails?.crateCount !== undefined ? Number(packDetails.crateCount) : defaultCrates;
-
         targetBatchId = o.batchId;
         targetListingId = o.produceListingId;
-        success = true;
-
         const updatedTimeline: OrderTimelineEvent[] = [
           ...o.timeline,
           {
             step: 'PACKED',
-            title: `Packed & QR Sealed (${finalPackedKg.toLocaleString()} kg in ${crateCount} crates)`,
+            title: 'Packed in Ventilated Crates & QR Assigned',
             location: 'FPO Packing Bay',
             timestamp,
             operator: 'FPO Packing Unit',
             completed: true,
-            notes: packDetails?.notes || `Type: ${packageType}. Batch Seal: ${o.batchId}`
+            notes: notes || `Batch ID: ${o.batchId}`
           }
         ];
-
-        return {
-          ...o,
-          status: 'Packed',
-          packingStatus: 'Packed',
-          packedQuantityKg: finalPackedKg,
-          packageType,
-          crateCount,
-          isReadyForTransport: true,
-          transportStatus: 'Transport Pending',
-          timeline: updatedTimeline
-        };
+        return { ...o, status: 'Packed', timeline: updatedTimeline };
       })
     );
 
-    if (success && targetListingId) {
+    if (targetListingId) {
       setProduceListings((prev) =>
         prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Packed' } : p))
       );
     }
-    if (success && targetBatchId) {
+    if (targetBatchId) {
       setProducePassports((prev) =>
         prev.map((pass) =>
           pass.batchId === targetBatchId
@@ -1074,24 +741,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         )
       );
     }
-
-    return success;
   };
 
-  const fpoPackProduce = (orderId: string, notes?: string) => {
-    fpoRecordPacking(orderId, { notes });
-  };
-
-  // Step 9a: Transport Assignment (Gated on isReadyForTransport)
+  // Step 9a: Transport Assignment
   const assignTransport = (orderId: string, transport: TransportAssignment) => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     setOrders((prev) =>
       prev.map((o) => {
         if (o.id !== orderId) return o;
-        if (!o.isReadyForTransport && o.status !== 'Packed') {
-          console.warn('[LOGISTICS] Order is not ready for transport:', orderId);
-          return o;
-        }
         const updatedTimeline: OrderTimelineEvent[] = [
           ...o.timeline,
           {
@@ -1106,7 +763,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         return {
           ...o,
           status: 'Transport Assigned',
-          transportStatus: 'Vehicle Assigned',
           transportDetails: transport,
           timeline: updatedTimeline
         };
@@ -1129,14 +785,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           ...o.timeline,
           {
             step: 'IN_TRANSIT',
-            title: 'Dispatched & En Route via Cold-Chain Corridor',
-            location: 'Highway Arterial NH-48',
+            title: 'Dispatched & En Route via Expressway',
+            location: 'National Highway NH-48',
             timestamp,
             operator: o.transportDetails?.driverName || 'Carrier Driver',
             completed: true
           }
         ];
-        return { ...o, status: 'In Transit', transportStatus: 'In Transit', timeline: updatedTimeline };
+        return { ...o, status: 'In Transit', timeline: updatedTimeline };
       })
     );
 
@@ -1162,7 +818,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  // Step 10: Delivered to Buyer Hub (Awaiting Buyer Confirmation)
+  // Step 10: Delivered to Buyer
   const markDelivered = (orderId: string) => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     let targetBatchId = '';
@@ -1177,14 +833,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           ...o.timeline,
           {
             step: 'DELIVERED',
-            title: 'Delivered at Buyer Receiving Facility (Awaiting Buyer Quality Signoff)',
+            title: 'Delivered at Buyer Receiving Facility',
             location: o.deliveryLocation,
             timestamp,
-            operator: 'Carrier Delivery Handover',
+            operator: 'Carrier & Receiving Team',
             completed: true
           }
         ];
-        return { ...o, status: 'Delivered', transportStatus: 'Delivered', timeline: updatedTimeline };
+        return { ...o, status: 'Delivered', timeline: updatedTimeline };
       })
     );
 
@@ -1210,26 +866,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  // Step 11: Buyer Delivery Verification & Receipt Confirmation
-  const buyerConfirmDelivery = (orderId: string, confirmation: BuyerDeliveryConfirmation) => {
+  // Step 11: Buyer Confirms Receipt
+  const buyerConfirmReceipt = (orderId: string) => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     const order = orders.find((o) => o.id === orderId);
     if (!order) return;
 
     const createdSettleId = `SETTLE-2026-${order.id.replace('ORD-TN-', '')}`;
-    const acceptedKg = confirmation.acceptedQuantityKg !== undefined ? confirmation.acceptedQuantityKg : (order.packedQuantityKg || order.quantityKg);
-    const finalVal = Math.round(acceptedKg * order.pricePerKg * 100) / 100;
-
     const updatedTimeline: OrderTimelineEvent[] = [
       ...order.timeline,
       {
         step: 'BUYER_CONFIRMED',
-        title: `Buyer Receipt Confirmed (${confirmation.acceptanceStatus})`,
+        title: 'Buyer Digitally Acknowledged Receipt & Verified Quality',
         location: order.deliveryLocation,
         timestamp,
-        operator: `${confirmation.receiverName || order.buyerName} (${confirmation.receiverRole || 'Receiving Officer'})`,
-        completed: true,
-        notes: `Accepted: ${acceptedKg.toLocaleString()} kg${confirmation.rejectedQuantityKg ? `, Rejected: ${confirmation.rejectedQuantityKg} kg` : ''}${confirmation.issuesReported ? ` [Issue: ${confirmation.issuesReported}]` : ''}`
+        operator: `${order.buyerName} Inspection Officer`,
+        completed: true
       },
       {
         step: 'PAYMENT_PENDING',
@@ -1244,81 +896,35 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setOrders((prev) =>
       prev.map((o) =>
         o.id === orderId
-          ? {
-              ...o,
-              status: 'Payment Pending',
-              settlementId: createdSettleId,
-              buyerConfirmation: confirmation,
-              timeline: updatedTimeline
-            }
+          ? { ...o, status: 'Payment Pending', settlementId: createdSettleId, timeline: updatedTimeline }
           : o
       )
     );
 
-    const farmerShare = Math.round(finalVal * 0.89);
-    const logisticsShare = Math.round(finalVal * 0.08);
-    const platformShare = finalVal - farmerShare - logisticsShare;
-    const traditionalShare = Math.round(finalVal * 0.55);
+    const farmerShare = Math.round(order.totalValue * 0.89);
+    const logisticsShare = Math.round(order.totalValue * 0.08);
+    const platformShare = order.totalValue - farmerShare - logisticsShare;
+    const traditionalShare = Math.round(order.totalValue * 0.55);
     const gainPct = Number((((farmerShare - traditionalShare) / (traditionalShare || 1)) * 100).toFixed(1));
-
-    // Build farmer-level contribution breakdown for transparent multi-farmer payout
-    const contributions = order.farmerContributions && order.farmerContributions.length > 0
-      ? order.farmerContributions
-      : [
-          {
-            farmerId: order.farmerId,
-            farmerName: order.farmerName,
-            farmerLocation: order.farmerLocation,
-            produceListingId: order.produceListingId,
-            contributedQuantityKg: order.quantityKg,
-            collectedQuantityKg: acceptedKg,
-            collectionStatus: 'FULLY_COLLECTED' as const
-          }
-        ];
-
-    const totalContributed = contributions.reduce((sum, c) => sum + (c.collectedQuantityKg || c.contributedQuantityKg), 0);
-    const farmerBreakdown: FarmerSettlementItem[] = contributions.map((c, idx) => {
-      const farmerKg = c.collectedQuantityKg || c.contributedQuantityKg;
-      const proportion = totalContributed > 0 ? farmerKg / totalContributed : 1 / contributions.length;
-      const farmerAcceptedKg = Math.round(acceptedKg * proportion);
-      const gross = Math.round(farmerAcceptedKg * order.pricePerKg * 100) / 100;
-      const netPayout = Math.round(gross * 0.89);
-
-      return {
-        farmerId: c.farmerId,
-        farmerName: c.farmerName,
-        farmerLocation: c.farmerLocation,
-        produceListingId: c.produceListingId,
-        contributedQuantityKg: c.contributedQuantityKg,
-        collectedQuantityKg: farmerKg,
-        agreedPricePerKg: order.pricePerKg,
-        grossAmount: gross,
-        netFarmerAmount: netPayout,
-        status: 'PENDING',
-        bankAccountMasked: `${['SBI', 'HDFC', 'Canara', 'ICICI', 'Indian Bank'][idx % 5]} **** **** ${Math.floor(1000 + Math.random() * 9000)}`
-      };
-    });
 
     const newSettlement: SettlementRecord = {
       id: createdSettleId,
       orderId: order.id,
       batchId: order.batchId,
       crop: order.crop,
-      quantityKg: acceptedKg,
+      quantityKg: order.quantityKg,
       buyerName: order.buyerName,
-      farmerOrFpoName: order.fpoName || order.farmerName,
-      totalOrderValue: finalVal,
+      farmerOrFpoName: order.farmerName,
+      totalOrderValue: order.totalValue,
       farmerAmount: farmerShare,
       logisticsAmount: logisticsShare,
       platformAmount: platformShare,
       farmerRealizationPercentage: 89.0,
       traditionalFarmerEarnings: traditionalShare,
       earningsGainPercentage: gainPct,
-      status: 'Payment Pending',
-      settlementDate: 'Awaiting Buyer Payment & Settlement Processing',
-      utrNumber: 'ESCROW_LOCKED_PENDING',
-      paymentMode: 'UPI e-RUPI Programmable Escrow (Prototype Simulator)',
-      farmerBreakdown
+      status: 'PENDING',
+      settlementDate: 'Scheduled - Awaiting Trigger',
+      utrNumber: 'ESCROW_LOCKED_PENDING'
     };
 
     setSettlements((prev) => [newSettlement, ...prev.filter((s) => s.orderId !== order.id)]);
@@ -1327,377 +933,87 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     );
   };
 
-  const buyerConfirmReceipt = (orderId: string) => {
-    const order = orders.find((o) => o.id === orderId);
-    if (!order) return;
-    const acceptedKg = order.packedQuantityKg || order.acceptedQuantityKg || order.quantityKg;
-    buyerConfirmDelivery(orderId, {
-      orderId,
-      deliveredQuantityKg: acceptedKg,
-      receivedQuantityKg: acceptedKg,
-      acceptedQuantityKg: acceptedKg,
-      rejectedQuantityKg: 0,
-      acceptanceStatus: 'ACCEPTED_FULL',
-      receiverName: `${order.buyerName} Inspection Officer`,
-      receiverRole: 'Receiving In-Charge',
-      confirmedAt: new Date().toISOString().replace('T', ' ').slice(0, 16)
-    });
-  };
-
-  // Step 12a: Buyer Payment Confirmed / Recorded into Escrow
-  const recordBuyerPayment = (orderId: string, paymentDetails?: { reference?: string; method?: string }) => {
+  // Step 12: Payment Settled
+  const settlePayment = (orderId: string) => {
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
-    const ref = paymentDetails?.reference || `UPI-ERUPI-${Math.floor(100000 + Math.random() * 900000)}`;
-
-    setSettlements((prev) =>
-      prev.map((s) =>
-        s.orderId === orderId
-          ? {
-              ...s,
-              status: 'Buyer Payment Confirmed',
-              buyerPaymentReference: ref,
-              buyerPaymentRecordedAt: timestamp
-            }
-          : s
-      )
-    );
-
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id !== orderId) return o;
-        return {
-          ...o,
-          timeline: [
-            ...o.timeline,
-            {
-              step: 'BUYER_PAYMENT_CONFIRMED',
-              title: `Buyer Payment Recorded & Escrow Funded (Ref: ${ref})`,
-              location: 'Programmable Escrow Vault',
-              timestamp,
-              operator: 'RBI e-RUPI Smart Contract Ledger',
-              completed: true
-            }
-          ]
-        };
-      })
-    );
-  };
-
-  // Step 12b: FPO Settlement Processing
-  const processFpoSettlement = (orderId: string) => {
-    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
-
-    setSettlements((prev) =>
-      prev.map((s) =>
-        s.orderId === orderId
-          ? {
-              ...s,
-              status: 'Farmer Settlement Processing',
-              fpoSettledAt: timestamp
-            }
-          : s
-      )
-    );
-
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id !== orderId) return o;
-        return {
-          ...o,
-          timeline: [
-            ...o.timeline,
-            {
-              step: 'FPO_SETTLED',
-              title: 'FPO Logistics & Pre-Cooling Allocation Disbursed (8%)',
-              location: 'FPO Commercial Clearing Hub',
-              timestamp,
-              operator: 'FPO Finance Unit',
-              completed: true
-            }
-          ]
-        };
-      })
-    );
-  };
-
-  // Step 12c: Farmer Payment Settled (Single Farmer or Multiple Contributing Farmers)
-  const settleFarmerPayment = (orderId: string, farmerId?: string) => {
-    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
-
-    setSettlements((prev) =>
-      prev.map((s) => {
-        if (s.orderId !== orderId) return s;
-
-        const updatedBreakdown = (s.farmerBreakdown || []).map((fb) => {
-          if (!farmerId || fb.farmerId === farmerId) {
-            return {
-              ...fb,
-              status: 'COMPLETED' as const,
-              utrNumber: fb.utrNumber || `UTR-FARM-${Math.floor(10000000 + Math.random() * 90000000)}`,
-              settledAt: timestamp
-            };
-          }
-          return fb;
-        });
-
-        const allFarmersSettled = updatedBreakdown.length === 0 || updatedBreakdown.every((f) => f.status === 'COMPLETED');
-        const generatedUtr = s.utrNumber !== 'ESCROW_LOCKED_PENDING' ? s.utrNumber : `AGRITXN${Date.now()}`;
-
-        return {
-          ...s,
-          farmerBreakdown: updatedBreakdown,
-          status: allFarmersSettled ? 'Farmer Payment Completed' : 'Farmer Settlement Processing',
-          farmerSettledAt: timestamp,
-          utrNumber: generatedUtr
-        };
-      })
-    );
-
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id !== orderId) return o;
-        const updatedContribs = (o.farmerContributions || []).map((fc) => {
-          if (!farmerId || fc.farmerId === farmerId) {
-            return {
-              ...fc,
-              settlementStatus: 'COMPLETED' as const,
-              farmerUtr: fc.farmerUtr || `UTR-FARM-${Math.floor(10000000 + Math.random() * 90000000)}`,
-              settledAt: timestamp
-            };
-          }
-          return fc;
-        });
-
-        return {
-          ...o,
-          farmerContributions: updatedContribs,
-          timeline: [
-            ...o.timeline,
-            {
-              step: 'FARMER_PAYMENT_SETTLED',
-              title: farmerId
-                ? `Direct Net Payout Credited to Farmer ${farmerId}`
-                : 'All Member Farmer Payouts Credited (89% Net Realization)',
-              location: 'Direct Bank NEFT / e-RUPI Wallet',
-              timestamp,
-              operator: 'National Clearing Gateway',
-              completed: true
-            }
-          ]
-        };
-      })
-    );
-  };
-
-  // Step 12d: Transaction Completed & Escrow Closed
-  const completeTransaction = (orderId: string) => {
-    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    const utr = `AGRITXN${Date.now()}`;
     let targetListingId = '';
 
     setOrders((prev) =>
       prev.map((o) => {
         if (o.id !== orderId) return o;
         targetListingId = o.produceListingId;
-        return {
-          ...o,
-          status: 'Completed',
-          timeline: [
-            ...o.timeline,
-            {
-              step: 'TRANSACTION_COMPLETED',
-              title: 'Order Fulfilled & Escrow Ledger Closed Successfully',
-              location: 'Uzhavan Trust Network',
-              timestamp,
-              operator: 'Smart Escrow Supervisor',
-              completed: true
-            }
-          ]
-        };
+        const updatedTimeline: OrderTimelineEvent[] = [
+          ...o.timeline.map((t) => (t.step === 'PAYMENT_PENDING' ? { ...t, completed: true, timestamp } : t)),
+          {
+            step: 'SETTLED',
+            title: `Digital Payout Settled to Farmer Account (UTR: ${utr})`,
+            location: 'National Clearing Gateway',
+            timestamp,
+            operator: 'Escrow Settlement Smart Contract',
+            completed: true
+          }
+        ];
+        return { ...o, status: 'Completed', timeline: updatedTimeline };
       })
     );
 
     if (targetListingId) {
       setProduceListings((prev) =>
-        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Completed' } : p))
+        prev.map((p) => (p.id === targetListingId ? { ...p, status: 'Payment Completed' } : p))
       );
     }
-
     setSettlements((prev) =>
       prev.map((s) =>
-        s.orderId === orderId
-          ? {
-              ...s,
-              status: 'Transaction Completed',
-              settlementDate: timestamp,
-              utrNumber: s.utrNumber !== 'ESCROW_LOCKED_PENDING' ? s.utrNumber : `AGRITXN${Date.now()}`
-            }
-          : s
+        s.orderId === orderId ? { ...s, status: 'COMPLETED', settlementDate: timestamp, utrNumber: utr } : s
       )
     );
   };
 
-  // Step 12e: Full Staged Payout Shortcut
-  const settlePayment = (orderId: string) => {
-    recordBuyerPayment(orderId);
-    processFpoSettlement(orderId);
-    settleFarmerPayment(orderId);
-    completeTransaction(orderId);
-  };
-
-  // Centralized route navigation with RBAC enforcement and URL history synchronization
-  const navigateToTab = useCallback(
-    (targetTab: string, replaceUrl = false, explicitRole?: UserRole) => {
-      const activeRole = explicitRole || (isAuthenticated ? currentUser.role : 'FARMER');
-
-      // Resolve 'dashboard' to the role's canonical dashboard tab
-      const resolvedTab =
-        targetTab === 'dashboard'
-          ? (isAuthenticated || explicitRole
-              ? getAuthorizedDashboardTab(activeRole)
-              : 'login')
-          : targetTab;
-
-      // 1. Guard against unauthenticated access to protected routes
-      if (!isAuthenticated && !explicitRole && !PUBLIC_TABS.includes(resolvedTab)) {
-        setActiveTabState('login');
-        const loginPath = getPathFromTab('login');
-        if (typeof window !== 'undefined' && window.location.pathname !== loginPath) {
-          if (replaceUrl) {
-            window.history.replaceState(null, '', loginPath);
-          } else {
-            window.history.pushState(null, '', loginPath);
-          }
-        }
-        return;
-      }
-
-      // 2. Guard against unauthorized role access
-      if ((isAuthenticated || explicitRole) && !isRouteAuthorized(activeRole, resolvedTab)) {
-        console.warn(
-          `[Security Guard] Blocked access to '${resolvedTab}' for role '${activeRole}' (User: ${currentUser.id || 'current'}).`
-        );
-        setAttemptedFeature(TAB_FEATURE_NAMES[resolvedTab] || resolvedTab);
-        setActiveTabState('access-denied');
-        if (typeof window !== 'undefined' && window.location.pathname !== '/access-denied') {
-          if (replaceUrl) {
-            window.history.replaceState(null, '', '/access-denied');
-          } else {
-            window.history.pushState(null, '', '/access-denied');
-          }
-        }
-        return;
-      }
-
-      // 3. Authorized navigation
-      setActiveTabState(resolvedTab);
-      const targetPath = getPathFromTab(resolvedTab);
-      if (typeof window !== 'undefined' && window.location.pathname !== targetPath) {
-        if (replaceUrl) {
-          window.history.replaceState(null, '', targetPath);
-        } else {
-          window.history.pushState(null, '', targetPath);
-        }
-      }
-    },
-    [isAuthenticated, currentUser.role, currentUser.id]
-  );
-
-  const setActiveTab = useCallback(
-    (tab: string) => {
-      navigateToTab(tab, false);
-    },
-    [navigateToTab]
-  );
-
   useEffect(() => {
     const initSession = async () => {
       try {
-        await seedDemoAccounts();
-        let authenticatedUser: UserProfile | null = null;
-
-        if (isSupabaseConfigured) {
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session?.user) {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-
-            if (profile) {
-              const role = normalizeRole(profile.role);
-              authenticatedUser = {
-                id: profile.id,
-                name: profile.name,
-                role,
-                phone: profile.phone || '',
-                email: profile.email || '',
-                location: profile.location || '',
-                organization: profile.organization || '',
-                village: profile.village,
-                district: profile.district,
-                state: profile.state,
-                farmSizeAcres: profile.farm_size_acres,
-                mainCrops: profile.main_crops,
-                fpoName: profile.fpo_name
-              };
-            }
-          }
-        }
-
-        if (!authenticatedUser) {
-          // Cryptographic / Token Session Validation
-          const localFallback = localStorage.getItem('uzhavan_fallback_session');
-          const localToken = localStorage.getItem('uzhavanconnect_jwt_token');
-          if (localFallback && localToken) {
-            try {
-              const parsedUser = JSON.parse(localFallback);
-              if (parsedUser && parsedUser.id) {
-                // Cryptographic validation against stored credentials & profile vault
-                const verifiedUser = authVault.verifyUserSession(parsedUser.id, parsedUser.role);
-                if (verifiedUser) {
-                  authenticatedUser = verifiedUser;
-                } else {
-                  console.warn('[Security Alert] Session failed vault verification. Clearing compromised storage.');
-                  localStorage.removeItem('uzhavan_fallback_session');
-                  localStorage.removeItem('uzhavanconnect_jwt_token');
-                }
-              }
-            } catch (e) {
-              console.warn('Invalid local session data, clearing...', e);
-              localStorage.removeItem('uzhavan_fallback_session');
-              localStorage.removeItem('uzhavanconnect_jwt_token');
-            }
-          }
-        }
-
-        if (authenticatedUser) {
-          const canonicalRole = normalizeRole(authenticatedUser.role);
-          const secureUser = { ...authenticatedUser, role: canonicalRole };
-          setCurrentUser(secureUser);
-          setCurrentRole(canonicalRole);
-          setIsAuthenticated(true);
-
-          // Resolve URL on startup, strictly ignoring any ?role= parameter tampering
-          const initialTab = getTabFromPath(typeof window !== 'undefined' ? window.location.pathname : '/');
-          if (PUBLIC_TABS.includes(initialTab) && initialTab !== 'traceability' && initialTab !== 'tracking') {
-            navigateToTab(getAuthorizedDashboardTab(canonicalRole), true, canonicalRole);
-          } else {
-            navigateToTab(initialTab, true, canonicalRole);
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+            
+          if (profile) {
+            setCurrentUser({
+              id: profile.id,
+              name: profile.name,
+              role: profile.role as UserRole,
+              phone: profile.phone || '',
+              email: profile.email || '',
+              location: profile.location || '',
+              organization: profile.organization || '',
+              village: profile.village,
+              district: profile.district,
+              state: profile.state,
+              farmSizeAcres: profile.farm_size_acres,
+              mainCrops: profile.main_crops,
+              fpoName: profile.fpo_name
+            });
+            setCurrentRole(profile.role as UserRole);
+            setIsAuthenticated(true);
+            setActiveTab('dashboard');
           }
         } else {
-          setIsAuthenticated(false);
-          setCurrentUser(GUEST_USER);
-          setCurrentRole('FARMER');
-          const initialTab = getTabFromPath(typeof window !== 'undefined' ? window.location.pathname : '/');
-          if (!PUBLIC_TABS.includes(initialTab)) {
-            navigateToTab('login', true, 'FARMER');
-          } else {
-            navigateToTab(initialTab, true, 'FARMER');
+          // Fallback: Check if there's a local mock session
+          const localFallback = localStorage.getItem('uzhavan_fallback_session');
+          if (localFallback) {
+            const parsedUser = JSON.parse(localFallback);
+            setCurrentUser(parsedUser);
+            setCurrentRole(parsedUser.role as UserRole);
+            setIsAuthenticated(true);
+            setActiveTab('dashboard');
           }
         }
       } catch (err) {
-        console.warn('Could not restore session', err);
+        console.warn('Could not restore Supabase session', err);
       } finally {
         setIsInitializing(false);
       }
@@ -1709,81 +1025,46 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
         setCurrentUser(GUEST_USER);
-        setCurrentRole('FARMER');
-        navigateToTab('home', true, 'FARMER');
+        setActiveTab('home');
       }
     });
 
-    const handlePopState = () => {
-      if (typeof window !== 'undefined') {
-        const tab = getTabFromPath(window.location.pathname);
-        navigateToTab(tab, true);
-      }
-    };
-    if (typeof window !== 'undefined') {
-      window.addEventListener('popstate', handlePopState);
-    }
-
     return () => {
       subscription.unsubscribe();
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('popstate', handlePopState);
-      }
     };
-  }, [navigateToTab]);
+  }, []);
 
   const switchRole = (role: UserRole) => {
-    const canonicalRole = normalizeRole(role);
-    if (!isAuthenticated) {
-      setIntendedRegistrationRole(canonicalRole);
-      navigateToTab('register', false);
-      return;
-    }
-    // SECURITY ENFORCEMENT: Client-side role switching is forbidden.
-    // The role must strictly match the authenticated user's account role.
-    if (canonicalRole !== currentUser.role) {
-      console.warn(
-        `[Security Alert] Blocked unauthorized role switch attempt to '${canonicalRole}' by authenticated user '${currentUser.id}' (role: '${currentUser.role}').`
-      );
-      return;
-    }
-    navigateToTab(getAuthorizedDashboardTab(currentUser.role), false);
-  };
-
-  const handleJoinAsRole = (targetRole: UserRole) => {
-    const canonicalRole = normalizeRole(targetRole);
-    if (isAuthenticated && currentUser.id) {
-      navigateToTab(getAuthorizedDashboardTab(currentUser.role), false);
-    } else {
-      setIntendedRegistrationRole(canonicalRole);
-      navigateToTab('register', false);
-    }
+    setCurrentRole(role);
+    const roleDefaults = DEMO_USERS[role] || DEMO_USERS.FARMER;
+    setCurrentUser((prev) => {
+      const updated = {
+        ...roleDefaults,
+        name: prev.name || roleDefaults.name,
+        email: prev.email || roleDefaults.email,
+        phone: prev.phone || roleDefaults.phone,
+        role
+      };
+      localStorage.setItem('uzhavan_fallback_session', JSON.stringify(updated));
+      return updated;
+    });
+    setActiveTab('dashboard'); // Always land on role's home dashboard
   };
 
   const login = (user: UserProfile) => {
-    const role = normalizeRole(user.role);
-    const cleanUser = { ...user, role };
-    localStorage.setItem('uzhavan_fallback_session', JSON.stringify(cleanUser));
-    if (!localStorage.getItem('uzhavanconnect_jwt_token')) {
-      localStorage.setItem('uzhavanconnect_jwt_token', `uzhavan_jwt_${role.toLowerCase()}_${Date.now()}`);
-    }
+    localStorage.setItem('uzhavan_fallback_session', JSON.stringify(user));
     setIsAuthenticated(true);
-    setCurrentRole(role);
-    setCurrentUser(cleanUser);
-    navigateToTab(getAuthorizedDashboardTab(role), false, role);
+    setCurrentRole(user.role);
+    setCurrentUser(user);
+    setActiveTab('dashboard');
   };
 
   const registerUser = (user: UserProfile) => {
-    const role = normalizeRole(user.role);
-    const cleanUser = { ...user, role };
-    localStorage.setItem('uzhavan_fallback_session', JSON.stringify(cleanUser));
-    if (!localStorage.getItem('uzhavanconnect_jwt_token')) {
-      localStorage.setItem('uzhavanconnect_jwt_token', `uzhavan_jwt_${role.toLowerCase()}_${Date.now()}`);
-    }
+    localStorage.setItem('uzhavan_fallback_session', JSON.stringify(user));
     setIsAuthenticated(true);
-    setCurrentRole(role);
-    setCurrentUser(cleanUser);
-    navigateToTab(getAuthorizedDashboardTab(role), false, role);
+    setCurrentRole(user.role);
+    setCurrentUser(user);
+    setActiveTab('profile');
   };
 
   const logout = async () => {
@@ -1791,11 +1072,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       await supabase.auth.signOut();
     } catch {}
     localStorage.removeItem('uzhavan_fallback_session');
-    localStorage.removeItem('uzhavanconnect_jwt_token');
     setIsAuthenticated(false);
     setCurrentUser(GUEST_USER);
-    setCurrentRole('FARMER');
-    navigateToTab('home', false, 'FARMER');
+    setActiveTab('home');
   };
 
   const hasPermission = (permission: Permission): boolean => {
@@ -1879,14 +1158,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         currentUser,
         currentRole,
         switchRole,
-        intendedRegistrationRole,
-        setIntendedRegistrationRole,
-        handleJoinAsRole,
         hasPermission,
         activeTab,
         setActiveTab,
-        attemptedFeature,
-        setAttemptedFeature,
         sidebarOpen,
         setSidebarOpen,
         toggleSidebar,
@@ -1909,7 +1183,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         toggleUserPermission,
         produceListings,
         demandRequests,
-        aggregatedDemandGroups,
         addProduceListing,
         deleteProduceListing,
         addDemandRequest,
@@ -1919,21 +1192,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         producePassports,
         settlements,
         confirmMatchAndCreateOrder,
-        fpoRecordCollection,
         fpoCollectProduce,
-        fpoRecordQualityGrading,
         fpoQualityCheck,
-        fpoRecordPacking,
         fpoPackProduce,
         assignTransport,
         dispatchShipment,
         markDelivered,
-        buyerConfirmDelivery,
         buyerConfirmReceipt,
-        recordBuyerPayment,
-        processFpoSettlement,
-        settleFarmerPayment,
-        completeTransaction,
         settlePayment,
         isOnline,
         syncStatus,

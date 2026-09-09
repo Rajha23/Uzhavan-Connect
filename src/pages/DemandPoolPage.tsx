@@ -1,7 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { INITIAL_DEMAND_POOL } from '../data/mockData';
-import { DemandRequest, ProduceListing } from '../types';
 import {
   Layers,
   ShoppingBag,
@@ -17,400 +16,262 @@ import {
 } from 'lucide-react';
 
 export const DemandPoolPage: React.FC = () => {
-  const { setActiveTab, demandRequests, produceListings, aggregatedDemandGroups } = useApp();
+  const { setActiveTab, demandRequests, produceListings } = useApp();
 
-  // Selected aggregated group ID (defaults to first group or fallback)
-  const [selectedGroupId, setSelectedGroupId] = useState<string>(() => {
-    return aggregatedDemandGroups[0]?.id || '';
-  });
+  // Filter demands for Tomato (active pooled commodity)
+  const tomatoDemands = demandRequests.filter(
+    (d) => d.crop.toLowerCase() === 'tomato'
+  );
+  const activeDemands = tomatoDemands.length > 0 ? tomatoDemands : demandRequests;
+  const totalPooledQty = activeDemands.reduce((sum, d) => sum + d.quantityKg, 0);
+  const buyersCount = new Set(activeDemands.map((d) => d.buyerName)).size;
+  const avgMaxPrice = activeDemands.length > 0
+    ? (activeDemands.reduce((sum, d) => sum + d.maxTargetPricePerKg, 0) / activeDemands.length).toFixed(2)
+    : '32.00';
 
-  // Active pool group
-  const activeGroup = useMemo(() => {
-    if (selectedGroupId) {
-      const found = aggregatedDemandGroups.find((g) => g.id === selectedGroupId);
-      if (found) return found;
-    }
-    return aggregatedDemandGroups[0];
-  }, [aggregatedDemandGroups, selectedGroupId]);
+  // Available nearby supply from actual farmer produce listings
+  const tomatoSupplies = produceListings.filter(
+    (p) => p.crop.toLowerCase() === 'tomato'
+  );
+  const activeSupplies = tomatoSupplies.length > 0 ? tomatoSupplies : produceListings;
+  const totalAvailableSupply = activeSupplies.reduce((sum, s) => sum + s.quantityKg, 0);
 
-  // Contributing demands for the active group
-  const activeDemands: DemandRequest[] = activeGroup ? activeGroup.contributingDemands : demandRequests;
-  const totalPooledQty = activeGroup
-    ? activeGroup.totalQuantityKg
-    : activeDemands.reduce((sum: number, d: DemandRequest) => sum + d.quantityKg, 0);
-  const buyersCount = activeGroup
-    ? activeGroup.buyersCount
-    : new Set(activeDemands.map((d: DemandRequest) => d.buyerName)).size;
-  const avgMaxPrice = activeGroup ? activeGroup.avgMaxPricePerKg.toFixed(2) : '32.00';
-  const activeCrop = activeGroup ? activeGroup.crop : (activeDemands[0]?.crop || 'Tomato');
-  const activeCorridor = activeGroup ? activeGroup.region : 'Chennai Corridor';
-  const activeTargetDate = activeGroup ? activeGroup.targetDate : '2026-09-08';
-
-  // Available nearby supply for the active crop
-  const matchingSupplies: ProduceListing[] = useMemo(() => {
-    return produceListings.filter(
-      (p) => p.crop.toLowerCase() === activeCrop.toLowerCase() && p.quantityKg > 0
-    );
-  }, [produceListings, activeCrop]);
-
-  const totalAvailableSupply = matchingSupplies.reduce((sum: number, s: ProduceListing) => sum + s.quantityKg, 0);
+  const pool = {
+    ...INITIAL_DEMAND_POOL,
+    totalQuantityKg: totalPooledQty,
+    buyersCount: buyersCount,
+    demandRequests: activeDemands
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-600/30">
+      <div className="bg-forest text-cream rounded-[2.5rem] p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest">
         <div>
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
-            <Layers className="w-4 h-4 text-emerald-400" />
+          <div className="flex items-center gap-2 text-sage text-xs font-bold uppercase tracking-widest mb-2">
+            <Layers className="w-4 h-4" />
             <span>Demand Aggregation Engine</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+          <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
             Consolidated Demand Pool
           </h1>
-          <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed font-normal">
-            Multi-buyer demand pooling without altering individual procurement records. Small buyer commitments group into institutional-scale volume opportunities, unlocking bulk transport rates and fair farmer realization.
+          <p className="text-sm text-cream/70 mt-3 max-w-2xl leading-relaxed font-medium">
+            Eliminating fragmented buyer competition. Small individual orders pool into institutional-scale volume opportunities, unlocking bulk transport rates and fair farmer realization.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={() => setActiveTab('smart-matching')}
-            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-medium px-5 py-2.5 rounded-xl shadow-xs transition uppercase tracking-wider cursor-pointer"
-          >
-            <Sparkles className="w-4 h-4 text-slate-950" />
-            <span>Smart Match This Pool</span>
-          </button>
+        <div className="flex items-center gap-3 mt-4 md:mt-0">
           <button
             onClick={() => setActiveTab('reverse-auction')}
-            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-medium px-4 py-2.5 rounded-xl border border-white/20 transition uppercase tracking-wider cursor-pointer"
+            className="flex items-center gap-2 bg-sage hover:bg-cream text-forest text-xs font-bold px-6 py-3.5 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
           >
-            <span>Reverse Auction</span>
+            <span>Proceed to Reverse Auction</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Aggregated Pools Selector Strip */}
-      {aggregatedDemandGroups.length > 0 && (
-        <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium uppercase tracking-wider text-slate-600 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-emerald-600" />
-              <span>Active Multi-Commodity Aggregated Pools ({aggregatedDemandGroups.length})</span>
-            </span>
-            <span className="text-[11px] text-slate-500 font-normal">Click a pool to inspect aggregation mechanics</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {aggregatedDemandGroups.map((grp) => {
-              const isSelected = activeGroup?.id === grp.id;
-              return (
-                <div
-                  key={grp.id}
-                  onClick={() => setSelectedGroupId(grp.id)}
-                  className={`p-4 rounded-xl border transition cursor-pointer flex items-center justify-between ${
-                    isSelected
-                      ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                      : 'bg-slate-50/70 hover:bg-emerald-50/40 border-slate-200/80 text-slate-900'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-base tracking-tight">{grp.crop}</span>
-                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                        isSelected ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-800'
-                      }`}>
-                        {grp.buyersCount} {grp.buyersCount === 1 ? 'Buyer' : 'Buyers'}
-                      </span>
-                    </div>
-                    <p className={`text-xs mt-0.5 ${isSelected ? 'text-slate-300' : 'text-slate-500'}`}>
-                      {grp.region} • {grp.qualityRequirement}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span className={`text-xl font-semibold tracking-tight ${isSelected ? 'text-emerald-400' : 'text-slate-900'}`}>
-                      {grp.totalQuantityKg.toLocaleString()} kg
-                    </span>
-                    <span className={`text-[10px] block font-mono ${isSelected ? 'text-slate-400' : 'text-slate-500'}`}>
-                      max ₹{grp.avgMaxPricePerKg}/kg
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
       {/* Pool Identity Summary Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 transition">
-          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">COMMODITY</span>
-          <p className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">{activeCrop}</p>
-          <span className="text-[11px] text-slate-500 font-normal">{activeGroup?.variety || 'Commercial Grade'}</span>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="bg-cream p-5 rounded-[1.5rem] border border-olive/30 shadow-sm hover:shadow-forest transition">
+          <span className="text-[9px] text-forest/50 font-bold uppercase tracking-widest block mb-1">COMMODITY</span>
+          <p className="text-2xl font-anton text-forest">{pool.crop}</p>
+          <span className="text-[10px] text-forest/70 font-medium">Grade A Hybrid</span>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 transition">
-          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">REGIONAL CORRIDOR</span>
-          <p className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">{activeCorridor.split(' ')[0]}</p>
-          <span className="text-[11px] text-slate-500 font-normal">Logistics Corridor</span>
+        <div className="bg-cream p-5 rounded-[1.5rem] border border-olive/30 shadow-sm hover:shadow-forest transition">
+          <span className="text-[9px] text-forest/50 font-bold uppercase tracking-widest block mb-1">REGIONAL CORRIDOR</span>
+          <p className="text-2xl font-anton text-forest">{pool.region.split(' ')[0]}</p>
+          <span className="text-[10px] text-forest/70 font-medium">Chennai Metropolitan</span>
         </div>
 
-        <div className="bg-emerald-50/70 p-4 sm:p-5 rounded-2xl border border-emerald-200 shadow-xs">
-          <span className="text-[10px] text-emerald-800 font-medium uppercase tracking-wider block mb-1">POOLED QUANTITY</span>
-          <p className="text-2xl sm:text-3xl font-semibold text-emerald-900 tracking-tight">
-            {totalPooledQty.toLocaleString()} kg
+        <div className="bg-olive/20 p-5 rounded-[1.5rem] border border-olive/40 shadow-sm hover:shadow-forest transition">
+          <span className="text-[9px] text-forest font-bold uppercase tracking-widest block mb-1">POOLED QUANTITY</span>
+          <p className="text-3xl font-anton text-forest">
+            {pool.totalQuantityKg.toLocaleString()} kg
           </p>
-          <span className="text-[10px] text-emerald-700 font-medium uppercase tracking-wider">Ready for Matching</span>
+          <span className="text-[10px] text-forest/70 font-bold uppercase tracking-widest">Ready for Auction</span>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 transition">
-          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">TARGET DELIVERY</span>
-          <p className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">{activeTargetDate}</p>
-          <span className="text-[11px] text-slate-500 font-normal">Morning Window</span>
+        <div className="bg-cream p-5 rounded-[1.5rem] border border-olive/30 shadow-sm hover:shadow-forest transition">
+          <span className="text-[9px] text-forest/50 font-bold uppercase tracking-widest block mb-1">TARGET DELIVERY</span>
+          <p className="text-2xl font-anton text-forest">{pool.targetDate}</p>
+          <span className="text-[10px] text-forest/70 font-medium">Morning 05:30 window</span>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 transition">
-          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">BENCHMARK PRICE</span>
-          <p className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
-            ₹{avgMaxPrice}
+        <div className="bg-cream p-5 rounded-[1.5rem] border border-olive/30 shadow-sm hover:shadow-forest transition">
+          <span className="text-[9px] text-forest/50 font-bold uppercase tracking-widest block mb-1">FORECAST BASELINE</span>
+          <p className="text-2xl font-anton text-forest">
+            {pool.forecastQuantityKg.toLocaleString()} kg
           </p>
-          <span className="text-[11px] text-slate-500 font-normal">Max Ceiling / kg</span>
+          <span className="text-[10px] text-forest/70 font-medium">7-Day Corridor Need</span>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 transition">
-          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">CONSOLIDATED BUYERS</span>
-          <p className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
-            {buyersCount} <span className="text-sm font-medium">{buyersCount === 1 ? 'Entity' : 'Entities'}</span>
+        <div className="bg-cream p-5 rounded-[1.5rem] border border-olive/30 shadow-sm hover:shadow-forest transition">
+          <span className="text-[9px] text-forest/50 font-bold uppercase tracking-widest block mb-1">CONSOLIDATED BUYERS</span>
+          <p className="text-2xl font-anton text-forest">
+            {pool.buyersCount} <span className="text-lg">Entities</span>
           </p>
-          <span className="text-[11px] text-slate-500 font-normal">Single Dispatch Run</span>
+          <span className="text-[10px] text-forest/70 font-medium">Single Dispatch Run</span>
         </div>
       </div>
 
-      {/* 3-Stage Visual Aggregation: Fragmented Demands -> Compatibility Check -> Consolidated Opportunity */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-8">
-        <div className="text-center max-w-2xl mx-auto">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-            3-Stage Aggregation Pipeline
+      {/* Visual Aggregation: Fragmented Demand to One Procurement Pool */}
+      <div className="bg-cream rounded-[2.5rem] border border-olive/30 p-8 shadow-forest">
+        <div className="text-center max-w-xl mx-auto mb-10">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-forest bg-sage/30 px-4 py-1.5 rounded-full border border-sage/50">
+            Aggregation Mechanism
           </span>
-          <h3 className="text-2xl sm:text-3xl font-semibold text-slate-900 mt-3 tracking-tight">
-            Individual Demands → Multi-Factor Compatibility → Institutional Pool
+          <h3 className="text-3xl font-anton text-forest mt-4 tracking-wide">
+            Fragmented Demand → One Large Institutional Opportunity
           </h3>
-          <p className="text-sm text-slate-600 mt-1.5 font-normal">
-            Preserving full traceability of each contributing buyer demand while delivering bulk freight efficiency and volume pricing power to farmers.
+          <p className="text-sm text-forest/70 mt-3 font-medium">
+            Instead of 3 small trucks making 3 separate uncoordinated trips, Uzhavan Connect aggregates them into a single 3.0T Reefer run.
           </p>
         </div>
 
-        {/* 3-Stage Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-          {/* Stage 1: Individual Contributing Demands (Col 4) */}
-          <div className="lg:col-span-4 bg-slate-50/70 rounded-2xl p-5 border border-slate-200/80 flex flex-col justify-between space-y-4">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Stage 1</span>
-                <span className="text-[10px] bg-emerald-100 text-emerald-800 font-medium px-2 py-0.5 rounded-full uppercase tracking-wider">
-                  {activeDemands.length} Individual Demands
-                </span>
-              </div>
-              <h4 className="font-medium text-slate-900 text-sm mb-1">Contributing Buyer Demands</h4>
-              <p className="text-[11px] text-slate-500 mb-3 font-normal">
-                Each buyer's specific contract requirements are preserved intact.
-              </p>
-
-              <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
-                {activeDemands.map((dem: DemandRequest) => (
-                  <div
-                    key={dem.id}
-                    className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs space-y-1.5"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-slate-900 text-xs">{dem.buyerName}</span>
-                      <span className="font-medium text-xs text-slate-900">{dem.quantityKg.toLocaleString()} kg</span>
-                    </div>
-                    <div className="text-[11px] text-slate-600 space-y-0.5">
-                      <p><strong className="text-slate-800 font-medium">Variety:</strong> {dem.variety || 'Hybrid'}</p>
-                      <p><strong className="text-slate-800 font-medium">Grade:</strong> {dem.qualityRequirement} • Max ₹{dem.maxTargetPricePerKg}/kg</p>
-                      <p className="text-[10px] text-slate-400 truncate"><MapPin className="w-3 h-3 inline mr-1 text-slate-400" />{dem.location}</p>
-                    </div>
+        {/* Visual Diagram */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          {/* Left: 3 Fragmented Buyers */}
+          <div className="md:col-span-5 space-y-4">
+            {pool.demandRequests.map((b, idx) => (
+              <div
+                key={b.id}
+                className="bg-olive/10 border border-olive/30 rounded-[1.5rem] p-5 hover:shadow-sm transition flex items-center justify-between"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-sage/40 text-forest flex items-center justify-center font-anton text-xl">
+                    B{idx + 1}
                   </div>
-                ))}
+                  <div>
+                    <h5 className="font-bold text-forest text-sm uppercase tracking-widest">{b.buyerName}</h5>
+                    <p className="text-xs text-forest/70 font-medium">{b.buyerType} • Max ₹{b.maxTargetPricePerKg}/kg</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xl font-anton text-forest tracking-wide">{b.quantityKg.toLocaleString()} kg</span>
+                  <span className="text-[9px] text-forest/60 font-bold uppercase tracking-widest block">{b.qualityRequirement}</span>
+                </div>
               </div>
-            </div>
-
-            <div className="pt-3 border-t border-slate-200/60 text-[11px] text-slate-600 font-normal">
-              Total Sum: <span className="font-medium text-slate-900 text-xs">{totalPooledQty.toLocaleString()} kg</span> across {buyersCount} buyers
-            </div>
+            ))}
           </div>
 
-          {/* Stage 2: Multi-Factor Compatibility Rules Check (Col 4) */}
-          <div className="lg:col-span-4 bg-emerald-50/50 rounded-2xl p-6 border border-emerald-200/70 flex flex-col justify-between space-y-4">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-800">Stage 2</span>
-                <span className="text-[10px] bg-emerald-100 text-emerald-900 font-medium px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                  Compatibility Verified
-                </span>
-              </div>
-              <h4 className="font-medium text-slate-900 text-base mb-1">Aggregation Rule Engine</h4>
-              <p className="text-[11px] text-slate-500 mb-4 font-normal">
-                Demands are grouped only when 4 core agricultural compatibility invariants hold:
-              </p>
-
-              <div className="space-y-3">
-                {(activeGroup?.compatibilityReasons || [
-                  `Identical Commodity: ${activeCrop} (Compatible Variety Standard)`,
-                  `Quality Standard Alignment: Grade A (Institutional Specifications)`,
-                  `Logistics Corridor Consolidation: ${activeCorridor}`,
-                  `Synchronized Delivery Window: ${activeTargetDate} Morning Run`
-                ]).map((reason: string, idx: number) => (
-                  <div key={idx} className="flex items-start gap-2.5 text-xs bg-white/95 p-3 rounded-xl border border-emerald-900/10 shadow-2xs">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                    <span className="text-slate-800 font-normal">{reason}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-4 p-3 bg-emerald-50/70 rounded-xl border border-emerald-200/70 text-[11px] text-emerald-950 leading-relaxed font-normal">
-                🛡️ <strong className="text-emerald-950 font-medium">Integrity Invariant:</strong> Individual buyer demands are never modified, merged, or lost. Aggregation acts as a coordinated procurement umbrella.
-              </div>
+          {/* Center: Pooling Transformation Funnel */}
+          <div className="md:col-span-2 text-center py-6 flex flex-col items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-sage/20 border border-sage flex items-center justify-center text-forest animate-pulse shadow-sm">
+              <Layers className="w-8 h-8 text-forest" />
             </div>
-
-            <div className="pt-3 border-t border-emerald-200/60 text-[11px] text-emerald-900 font-medium flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>4 / 4 Compatibility Invariants Passed</span>
-            </div>
+            <span className="text-[10px] font-bold text-forest uppercase tracking-widest mt-4">
+              AUTOMATIC POOL
+            </span>
+            <span className="text-[9px] text-forest/60 font-bold uppercase tracking-widest mt-1">Zero Arbitrage Layer</span>
           </div>
 
-          {/* Stage 3: Consolidated Procurement Box (Col 4) */}
-          <div className="lg:col-span-4 bg-gradient-to-br from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl p-6 shadow-forest flex flex-col justify-between space-y-6 border border-emerald-600/30">
-            <div className="space-y-4">
+          {/* Right: Consolidated Pool Box */}
+          <div className="md:col-span-5">
+            <div className="bg-forest text-cream rounded-[2.5rem] p-8 shadow-forest space-y-6">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-medium uppercase tracking-wider bg-emerald-500/20 px-3 py-1 rounded-full text-emerald-300 border border-emerald-400/30">
-                  {activeGroup?.id || `POOL-${activeCrop.slice(0,3).toUpperCase()}-2026`}
+                <span className="text-[10px] font-bold uppercase tracking-widest bg-sage/20 px-3 py-1 rounded-full text-sage border border-sage/40">
+                  Pooled Lot: POOL-CH-3000
                 </span>
-                <span className="text-[10px] text-emerald-400 font-medium uppercase tracking-wider">Single Dispatch</span>
+                <span className="text-[10px] text-sage font-bold uppercase tracking-widest">100% Guaranteed</span>
               </div>
 
               <div>
-                <span className="text-[10px] text-slate-300 font-medium uppercase tracking-wider block">Combined Procurement Volume</span>
-                <p className="text-4xl sm:text-5xl font-semibold mt-2 tracking-tight text-emerald-400">{totalPooledQty.toLocaleString()} kg</p>
-                <p className="text-xs text-slate-300 mt-1 font-normal">
-                  {activeCrop} ({activeGroup?.qualityRequirement || 'Grade A'}) for {activeCorridor}
+                <span className="text-[10px] text-cream/70 font-bold uppercase tracking-widest block">Total Combined Procurement</span>
+                <p className="text-5xl font-anton mt-2 tracking-wide text-sage">{totalPooledQty.toLocaleString()} kg</p>
+                <p className="text-sm text-cream/80 mt-2 font-medium">
+                  Grade A Vine-Ripened Tomato for Chennai Corridor
                 </p>
               </div>
 
-              <div className="space-y-2 pt-3 border-t border-white/10 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-300 font-normal text-[11px] uppercase tracking-wider">Benchmarked Target:</span>
-                  <span className="font-semibold text-lg text-emerald-300">₹{avgMaxPrice} / kg</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-300 font-normal text-[11px] uppercase tracking-wider">Logistics Run:</span>
-                  <span className="text-white font-medium">1 x 3.0T Reefer</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-300 font-normal text-[11px] uppercase tracking-wider">Transport Emissions:</span>
-                  <span className="text-emerald-400 font-medium">-34% Consolidated</span>
-                </div>
+              <div className="pt-4 border-t border-olive/20 flex items-center justify-between text-sm">
+                <span className="text-cream/70 font-bold uppercase tracking-widest text-[10px]">Benchmarked Landed Price:</span>
+                <span className="font-anton text-2xl text-sage tracking-wide">₹{avgMaxPrice} <span className="text-sm font-sans tracking-normal">/ kg</span></span>
               </div>
-            </div>
 
-            <div className="space-y-2 pt-2">
-              <button
-                onClick={() => setActiveTab('smart-matching')}
-                className="w-full py-3 bg-emerald-500 text-slate-950 font-medium rounded-xl text-xs hover:bg-emerald-400 transition shadow-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4 text-slate-950" />
-                <span>Smart Match This Group →</span>
-              </button>
               <button
                 onClick={() => setActiveTab('reverse-auction')}
-                className="w-full py-2.5 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl text-xs transition border border-white/15 uppercase tracking-wider cursor-pointer"
+                className="w-full py-4 bg-sage text-forest font-bold rounded-[1rem] text-xs hover:bg-cream transition shadow-sm uppercase tracking-widest"
               >
-                Open FPO Reverse Auction
+                Submit FPO Bids in Reverse Auction →
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Available Nearby Farmer Supply Section */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6">
+      {/* Available Nearby Supply Section */}
+      <div className="bg-cream rounded-[2.5rem] border border-olive/30 p-8 shadow-forest space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div>
-            <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-              Corridor Supply Availability
+            <span className="text-[10px] font-bold uppercase tracking-widest text-forest bg-sage/20 px-4 py-1.5 rounded-full border border-sage/40">
+              Demand vs Supply Matching
             </span>
-            <h3 className="text-2xl sm:text-3xl font-semibold text-slate-900 mt-3 tracking-tight">
-              Matching Farmer Supply in Corridor
+            <h3 className="text-3xl font-anton text-forest mt-4 tracking-wide">
+              Available Nearby Supply
             </h3>
-            <p className="text-sm text-slate-600 mt-1.5 font-normal">
-              Verified farmer listings ready for allocation to this aggregated pool.
+            <p className="text-sm text-forest/70 mt-2 font-medium">
+              Active farmer clusters and produce listings ready within delivery corridor.
             </p>
           </div>
 
           <button
             onClick={() => setActiveTab('smart-matching')}
-            className="flex items-center gap-2 bg-slate-900 hover:bg-emerald-950 text-white text-xs font-medium px-5 py-2.5 rounded-xl shadow-xs transition uppercase tracking-wider cursor-pointer"
+            className="flex items-center gap-2 bg-forest hover:bg-[#023120] text-cream text-xs font-bold px-6 py-3.5 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
           >
-            <span>Proceed to Smart Matching</span>
+            <span>Find Matches</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Active Aggregated Demand Card */}
-          <div className="p-6 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Your Demand Card */}
+          <div className="p-8 rounded-[1.5rem] bg-olive/10 border border-olive/30 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Aggregated Demand</span>
-              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-medium px-3 py-1 rounded-full uppercase tracking-wider">
-                {activeCorridor}
+              <span className="text-[10px] font-bold uppercase tracking-widest text-forest/60">Active Demand</span>
+              <span className="text-[10px] bg-sage/30 text-forest font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-sage/50">
+                {activeDemands[0]?.location.split(',')[0] || 'Chennai Central'}
               </span>
             </div>
-            <p className="text-4xl font-semibold text-slate-900 tracking-tight">
-              {totalPooledQty.toLocaleString()} kg
+            <p className="text-5xl font-anton text-forest tracking-wide">
+              {(activeDemands[0]?.quantityKg || totalPooledQty).toLocaleString()} kg
             </p>
-            <p className="text-xs text-slate-600 font-normal">
-              Commodity: <strong className="text-slate-800 font-medium">{activeCrop}</strong> ({activeGroup?.qualityRequirement || 'Grade A'}) • Max Target: <strong className="text-slate-800 font-medium">₹{avgMaxPrice}/kg</strong> • {buyersCount} buyers consolidated
+            <p className="text-sm text-forest/70 font-medium">
+              Commodity: {activeDemands[0]?.crop || 'Tomato'} ({activeDemands[0]?.qualityRequirement || 'Grade A'}) • Max Target: ₹{activeDemands[0]?.maxTargetPricePerKg || 30}/kg
             </p>
           </div>
 
-          {/* Available Nearby Farmer Supply Card */}
-          <div className="p-6 rounded-2xl bg-emerald-50/50 border border-emerald-200/80 space-y-4">
+          {/* Available Nearby Supply Card */}
+          <div className="p-8 rounded-[1.5rem] bg-sage/10 border border-sage/40 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-900">Available Nearby Farmer Supply</span>
-              <span className="text-[10px] bg-slate-900 text-emerald-400 font-medium px-3 py-1 rounded-full uppercase tracking-wider">
-                {matchingSupplies.length} Suppliers Active
+              <span className="text-[10px] font-bold uppercase tracking-widest text-forest">Available Nearby Farmer Supply</span>
+              <span className="text-[10px] bg-forest text-cream font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+                Cluster Ready
               </span>
             </div>
 
-            <div className="space-y-2.5 pt-1">
-              {matchingSupplies.length === 0 ? (
-                <div className="p-4 bg-white rounded-xl text-center text-xs text-slate-500 font-normal">
-                  No direct farmer listings currently available for {activeCrop}. Reverse auction can solicit regional bids.
-                </div>
-              ) : (
-                matchingSupplies.slice(0, 4).map((item: ProduceListing) => (
-                  <div key={item.id} className="flex items-center justify-between text-xs bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-2xs">
-                    <div>
-                      <span className="font-medium text-slate-900 uppercase tracking-wider text-[10px] block">
-                        {item.farmerName} ({item.location})
-                      </span>
-                      <span className="text-[10px] text-slate-500 font-normal">
-                        {item.grade} • ₹{item.expectedPricePerKg}/kg • {item.variety || 'Certified'}
-                      </span>
-                    </div>
-                    <span className="font-semibold text-base text-emerald-700 tracking-tight">
-                      +{item.quantityKg.toLocaleString()} kg
+            <div className="space-y-3 pt-2">
+              {activeSupplies.slice(0, 4).map((item) => (
+                <div key={item.id} className="flex items-center justify-between text-xs bg-cream p-4 rounded-[1rem] border border-olive/30 shadow-sm">
+                  <div>
+                    <span className="font-bold text-forest uppercase tracking-widest text-[10px] block">
+                      {item.farmerName} ({item.location})
+                    </span>
+                    <span className="text-[10px] text-forest/60 font-medium">
+                      {item.grade} • ₹{item.expectedPricePerKg}/kg
                     </span>
                   </div>
-                ))
-              )}
+                  <span className="font-anton text-xl text-forest tracking-wide">
+                    +{item.quantityKg.toLocaleString()} kg
+                  </span>
+                </div>
+              ))}
             </div>
 
-            <div className="pt-3 border-t border-emerald-200/60 flex items-center justify-between mt-2">
-              <span className="text-[11px] font-medium uppercase tracking-wider text-emerald-900">Total Matching Supply:</span>
-              <span className="text-2xl font-semibold text-emerald-900 tracking-tight">
+            <div className="pt-4 border-t border-olive/30 flex items-center justify-between mt-2">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-forest/70">Total Available:</span>
+              <span className="text-3xl font-anton text-forest tracking-wide">
                 {totalAvailableSupply.toLocaleString()} kg
               </span>
             </div>

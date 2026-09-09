@@ -306,7 +306,7 @@ export const SIHDemoModal: React.FC = () => {
                 </span>
                 <span className="text-xs text-slate-300 hidden sm:inline">Scenario: Tomato 3,000 kg (Chennai)</span>
               </div>
-              <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-white">
+              <h2 className="text-lg sm:text-xl font-bold font-['Outfit'] text-white">
                 Step {demoStep} of 13: {currentStepData.title}
               </h2>
             </div>
@@ -397,14 +397,14 @@ export const SIHDemoModal: React.FC = () => {
 
           {/* Key Data Grid */}
           <div>
-            <h4 className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2.5">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">
               Live System State & Parameters
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {currentStepData.keyData.map((d, idx) => (
                 <div key={idx} className="bg-white border border-slate-200 rounded-xl p-3 shadow-xs">
                   <p className="text-[11px] text-slate-500 font-medium">{d.label}</p>
-                  <p className="text-sm font-semibold text-slate-900 mt-0.5 font-mono">{d.val}</p>
+                  <p className="text-sm font-bold text-slate-900 mt-0.5 font-mono">{d.val}</p>
                 </div>
               ))}
             </div>
@@ -415,7 +415,7 @@ export const SIHDemoModal: React.FC = () => {
             <div className="flex items-start gap-2.5">
               <Sparkles className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
               <div>
-                <h5 className="text-xs font-medium text-emerald-950 uppercase tracking-wider">
+                <h5 className="text-xs font-bold text-emerald-950 uppercase tracking-wider">
                   Why This Solves  (Multiple Intermediaries)
                 </h5>
                 <p className="text-xs text-emerald-900 mt-1 leading-relaxed">
@@ -442,7 +442,7 @@ export const SIHDemoModal: React.FC = () => {
           </button>
 
           <div className="text-xs text-slate-500 font-medium">
-            Step <span className="font-semibold text-slate-800">{demoStep}</span> of 13
+            Step <span className="font-bold text-slate-800">{demoStep}</span> of 13
           </div>
 
           {demoStep < 13 ? (

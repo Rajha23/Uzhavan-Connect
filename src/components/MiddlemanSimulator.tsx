@@ -27,11 +27,11 @@ export const MiddlemanSimulator: React.FC = () => {
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-agri-950 via-agri-900 to-agri-800 text-white p-6 sm:p-8">
         <div className="max-w-4xl">
-          <div className="inline-flex items-center gap-2 bg-amber-400/20 text-amber-300 px-3 py-1 rounded-full text-xs font-medium border border-amber-400/30 mb-3">
+          <div className="inline-flex items-center gap-2 bg-amber-400/20 text-amber-300 px-3 py-1 rounded-full text-xs font-semibold border border-amber-400/30 mb-3">
             <Scale className="w-3.5 h-3.5" />
             <span>Economic Impact Model • </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-bold font-['Outfit'] tracking-tight">
             Where Does Your ₹100 Go?
           </h2>
           <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
@@ -42,10 +42,10 @@ export const MiddlemanSimulator: React.FC = () => {
         {/* Interactive Spend Input Controller */}
         <div className="mt-6 p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/15 max-w-lg">
           <div className="flex items-center justify-between gap-4 mb-2">
-            <label htmlFor="spend-input" className="text-xs font-medium text-emerald-300 uppercase tracking-wider">
+            <label htmlFor="spend-input" className="text-xs font-semibold text-emerald-300 uppercase tracking-wider">
               Consumer / Buyer Expenditure
             </label>
-            <span className="text-lg font-semibold font-mono text-white">
+            <span className="text-lg font-bold font-mono text-white">
               ₹{consumerSpend}
             </span>
           </div>
@@ -73,10 +73,10 @@ export const MiddlemanSimulator: React.FC = () => {
       <div className="bg-emerald-50 border-b border-emerald-100 p-4 sm:p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center sm:text-left">
           <div className="bg-white p-4 rounded-xl border border-rose-200 shadow-2xs">
-            <p className="text-xs text-rose-700 font-medium uppercase tracking-wider">
+            <p className="text-xs text-rose-700 font-semibold uppercase tracking-wider">
               Traditional Mandi Flow
             </p>
-            <p className="text-2xl font-semibold text-slate-900 mt-1 font-mono">
+            <p className="text-2xl font-bold text-slate-900 mt-1 font-mono">
               ₹{traditionalFarmerGets}
             </p>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -85,10 +85,10 @@ export const MiddlemanSimulator: React.FC = () => {
           </div>
 
           <div className="bg-white p-4 rounded-xl border border-emerald-300 shadow-2xs">
-            <p className="text-xs text-emerald-800 font-medium uppercase tracking-wider">
+            <p className="text-xs text-emerald-800 font-semibold uppercase tracking-wider">
               Uzhavan Connect Coordinated Flow
             </p>
-            <p className="text-2xl font-semibold text-emerald-700 mt-1 font-mono">
+            <p className="text-2xl font-bold text-emerald-700 mt-1 font-mono">
               ₹{uzhavanconnectFarmerGets}
             </p>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -99,11 +99,11 @@ export const MiddlemanSimulator: React.FC = () => {
           <div className="bg-gradient-to-br from-emerald-600 to-agri-800 p-4 rounded-xl text-white shadow-sm flex flex-col justify-center">
             <div className="flex items-center justify-between">
               <span className="text-xs text-emerald-200 font-medium">Farmer Net Benefit</span>
-              <span className="bg-emerald-500/40 text-[11px] font-medium px-2 py-0.5 rounded text-emerald-100">
+              <span className="bg-emerald-500/40 text-[11px] font-bold px-2 py-0.5 rounded text-emerald-100">
                 +{percentageGain}% Realization
               </span>
             </div>
-            <p className="text-2xl font-semibold font-mono mt-1">
+            <p className="text-2xl font-bold font-mono mt-1">
               +₹{difference} Extra Cash
             </p>
             <p className="text-[11px] text-emerald-100 mt-0.5">
@@ -121,7 +121,7 @@ export const MiddlemanSimulator: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AlertOctagon className="w-5 h-5 text-rose-600" />
-                <h3 className="font-medium text-slate-900 text-base">
+                <h3 className="font-bold text-slate-900 text-base">
                   Traditional Intermediary Flow
                 </h3>
               </div>
@@ -148,7 +148,7 @@ export const MiddlemanSimulator: React.FC = () => {
                     }`}
                   >
                     <div className="flex items-center justify-between text-xs font-semibold">
-                      <span className={isFarmer ? 'text-rose-900 font-medium' : 'text-slate-800'}>
+                      <span className={isFarmer ? 'text-rose-900 font-bold' : 'text-slate-800'}>
                         {idx + 1}. {item.role}
                       </span>
                       <span className="font-mono text-slate-900">
@@ -177,7 +177,7 @@ export const MiddlemanSimulator: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                <h3 className="font-medium text-slate-900 text-base">
+                <h3 className="font-bold text-slate-900 text-base">
                   Uzhavan Connect Digitally Coordinated Flow
                 </h3>
               </div>
@@ -204,10 +204,10 @@ export const MiddlemanSimulator: React.FC = () => {
                     }`}
                   >
                     <div className="flex items-center justify-between text-xs font-semibold">
-                      <span className={isFarmer ? 'text-emerald-950 font-medium' : 'text-slate-800'}>
+                      <span className={isFarmer ? 'text-emerald-950 font-bold' : 'text-slate-800'}>
                         {idx + 1}. {item.role}
                       </span>
-                      <span className="font-mono font-semibold text-emerald-800">
+                      <span className="font-mono font-bold text-emerald-800">
                         ₹{calculated} ({item.percentage}%)
                       </span>
                     </div>
@@ -233,7 +233,7 @@ export const MiddlemanSimulator: React.FC = () => {
         <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
           <Info className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
           <div className="text-xs text-amber-900 leading-relaxed">
-            <strong className="font-semibold text-amber-950">Crucial Agricultural Architecture Principle:</strong>{' '}
+            <strong className="font-bold text-amber-950">Crucial Agricultural Architecture Principle:</strong>{' '}
             We do <em>not</em> naively claim that every intermediary function disappears. Aggregation, grading, cold pre-cooling, and transportation are essential physical services. Uzhavan Connect digitally targets and replaces <strong>unnecessary coordination and speculative information layers</strong>, ensuring farmers retain genuine net realization while logistics and aggregation remain efficient and transparent.
           </div>
         </div>

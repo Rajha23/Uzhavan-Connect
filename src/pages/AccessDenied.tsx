@@ -13,10 +13,10 @@ export const AccessDenied: React.FC<{ attemptedFeature?: string }> = ({ attempte
         </div>
 
         <div className="space-y-1">
-          <span className="text-xs font-mono font-medium uppercase tracking-wider text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded border border-rose-200">
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded border border-rose-200">
             HTTP 403 • FORBIDDEN
           </span>
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 mt-2">
+          <h2 className="text-2xl font-bold font-['Outfit'] text-slate-900 mt-2">
             Access Denied
           </h2>
           <p className="text-xs text-slate-500 leading-relaxed">
@@ -25,7 +25,7 @@ export const AccessDenied: React.FC<{ attemptedFeature?: string }> = ({ attempte
         </div>
 
         <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 text-left">
-          <div className="flex items-center gap-1.5 font-medium text-slate-800 mb-1">
+          <div className="flex items-center gap-1.5 font-bold text-slate-800 mb-1">
             <Lock className="w-3.5 h-3.5 text-slate-500" />
             <span>RBAC Security Policy</span>
           </div>
@@ -36,7 +36,7 @@ export const AccessDenied: React.FC<{ attemptedFeature?: string }> = ({ attempte
 
         <button
           onClick={() => setActiveTab('dashboard')}
-          className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-xl text-xs transition flex items-center justify-center gap-2"
+          className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-2"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Return to {currentRole} Dashboard</span>

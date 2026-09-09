@@ -264,11 +264,7 @@ export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [
     buyerName: 'ABC Retail Stores',
     buyerType: 'Supermarket',
     crop: 'Tomato',
-    variety: 'Sivam Hybrid',
     quantityKg: 3000,
-    initialQuantityKg: 3000,
-    allocatedQuantityKg: 0,
-    unit: 'kg',
     qualityRequirement: 'Grade A',
     location: 'Chennai Distribution Terminal',
     deliveryDate: '2026-09-08',
@@ -283,11 +279,7 @@ export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [
     buyerName: 'FreshBazaar Hypermarket',
     buyerType: 'Retailer',
     crop: 'Tomato',
-    variety: 'Sivam Hybrid',
     quantityKg: 1500,
-    initialQuantityKg: 1500,
-    allocatedQuantityKg: 0,
-    unit: 'kg',
     qualityRequirement: 'Grade A',
     location: 'Chennai Koyambedu Hub',
     deliveryDate: '2026-09-08',
@@ -295,25 +287,6 @@ export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [
     maxTargetPricePerKg: 30.0,
     status: 'POOLED',
     createdAt: '2026-09-06 09:15'
-  },
-  {
-    id: 'DEM-TN-003',
-    buyerId: 'BUYER-03',
-    buyerName: 'Southern Spice Hotels & Resorts',
-    buyerType: 'Hospitality',
-    crop: 'Green Chilli',
-    variety: 'G4 Hot',
-    quantityKg: 800,
-    initialQuantityKg: 800,
-    allocatedQuantityKg: 0,
-    unit: 'kg',
-    qualityRequirement: 'Grade A',
-    location: 'Chennai Guindy Central Stores',
-    deliveryDate: '2026-09-09',
-    deliveryTimeWindow: '06:00 AM - 08:00 AM',
-    maxTargetPricePerKg: 46.0,
-    status: 'POOLED',
-    createdAt: '2026-09-07 11:30'
   }
 ];
 
@@ -582,59 +555,7 @@ export const DEMO_SETTLEMENT: SettlementRecord = {
   earningsGainPercentage: 38.88,
   status: 'COMPLETED',
   settlementDate: '2026-09-06 07:12 AM',
-  utrNumber: 'AGRITXN20260906881920',
-  paymentMode: 'UPI e-RUPI Programmable Escrow (Prototype Simulator)',
-  buyerPaymentReference: 'UPI-ERUPI-9082-CONFIRMED',
-  buyerPaymentRecordedAt: '2026-09-06 07:05 AM',
-  fpoSettledAt: '2026-09-06 07:10 AM',
-  farmerSettledAt: '2026-09-06 07:12 AM',
-  farmerBreakdown: [
-    {
-      farmerId: 'usr-farmer-01',
-      farmerName: 'Rajesh Kumar',
-      farmerLocation: 'Sunguvarchatram, Kanchipuram',
-      produceListingId: 'LST-001',
-      contributedQuantityKg: 1000,
-      collectedQuantityKg: 1000,
-      agreedPricePerKg: 28.0,
-      grossAmount: 28000,
-      netFarmerAmount: 25000,
-      status: 'COMPLETED',
-      utrNumber: 'UTR-FARM-908201',
-      settledAt: '2026-09-06 07:12 AM',
-      bankAccountMasked: 'HDFC **** **** 4819'
-    },
-    {
-      farmerId: 'usr-farmer-02',
-      farmerName: 'K. Selvam',
-      farmerLocation: 'Kanchipuram North',
-      produceListingId: 'LST-001-B',
-      contributedQuantityKg: 1000,
-      collectedQuantityKg: 1000,
-      agreedPricePerKg: 28.0,
-      grossAmount: 28000,
-      netFarmerAmount: 25000,
-      status: 'COMPLETED',
-      utrNumber: 'UTR-FARM-908202',
-      settledAt: '2026-09-06 07:12 AM',
-      bankAccountMasked: 'SBI **** **** 9031'
-    },
-    {
-      farmerId: 'usr-farmer-03',
-      farmerName: 'Murugesan P.',
-      farmerLocation: 'Sriperumbudur Rural',
-      produceListingId: 'LST-001-C',
-      contributedQuantityKg: 1000,
-      collectedQuantityKg: 1000,
-      agreedPricePerKg: 28.0,
-      grossAmount: 28000,
-      netFarmerAmount: 25000,
-      status: 'COMPLETED',
-      utrNumber: 'UTR-FARM-908203',
-      settledAt: '2026-09-06 07:12 AM',
-      bankAccountMasked: 'ICICI **** **** 2291'
-    }
-  ]
+  utrNumber: 'AGRITXN20260906881920'
 };
 
 export const INITIAL_ORDERS: WorkflowOrder[] = [
@@ -659,42 +580,6 @@ export const INITIAL_ORDERS: WorkflowOrder[] = [
     farmerLocation: 'Sunguvarchatram, Kanchipuram',
     fpoName: 'GreenHarvest FPO',
     qualityGrade: 'Standard',
-    farmerContributions: [
-      {
-        farmerId: 'usr-farmer-01',
-        farmerName: 'GreenHarvest FPO (Cluster A)',
-        farmerLocation: 'Sunguvarchatram, Kanchipuram',
-        produceListingId: 'LST-001',
-        contributedQuantityKg: 2000,
-        collectedQuantityKg: 2000,
-        collectionStatus: 'FULLY_COLLECTED',
-        collectedAt: '06 Sep 2026, 07:00 AM',
-        notes: 'Premium harvest from Block 1'
-      },
-      {
-        farmerId: 'usr-farmer-01-b',
-        farmerName: 'Kandasamy V. (GreenHarvest Member)',
-        farmerLocation: 'Sriperumbudur Rural North',
-        produceListingId: 'LST-001-B',
-        contributedQuantityKg: 1000,
-        collectedQuantityKg: 1000,
-        collectionStatus: 'FULLY_COLLECTED',
-        collectedAt: '06 Sep 2026, 07:30 AM',
-        notes: 'Grade standard red ripe tomatoes'
-      }
-    ],
-    collectionStatus: 'Fully Collected',
-    collectedQuantityKg: 3000,
-    remainingCollectionKg: 0,
-    qualityStatus: 'Passed',
-    acceptedQuantityKg: 3000,
-    rejectedQuantityKg: 0,
-    packingStatus: 'Packed',
-    packedQuantityKg: 3000,
-    crateCount: 120,
-    packageType: 'Ventilated 25kg Agro-Crates with tamper-evident QR seal',
-    isReadyForTransport: true,
-    transportStatus: 'Delivered',
     inspectionMetrics: {
       sugarBrix: 4.85,
       firmnessKgCm: 3.42,
@@ -703,10 +588,7 @@ export const INITIAL_ORDERS: WorkflowOrder[] = [
       verifiedGrade: 'Standard',
       inspectorName: 'Dr. R. Malathi',
       inspectionDate: '06 Sep 2026',
-      hubLocation: 'Sriperumbudur Rural Hub',
-      status: 'PASSED',
-      acceptedQuantityKg: 3000,
-      rejectedQuantityKg: 0
+      hubLocation: 'Sriperumbudur Rural Hub'
     },
     transportDetails: {
       carrierName: 'Sundar Logistics',
@@ -749,30 +631,6 @@ export const INITIAL_ORDERS: WorkflowOrder[] = [
     farmerLocation: 'Salem Agricultural Belt',
     fpoName: 'Salem Agro Producers Co.',
     qualityGrade: 'Grade A',
-    farmerContributions: [
-      {
-        farmerId: 'usr-farmer-02',
-        farmerName: 'Rajesh Kumar',
-        farmerLocation: 'Salem Agricultural Belt',
-        produceListingId: 'LST-002',
-        contributedQuantityKg: 1500,
-        collectedQuantityKg: 1500,
-        collectionStatus: 'FULLY_COLLECTED',
-        collectedAt: '07 Sep 2026, 08:00 AM'
-      }
-    ],
-    collectionStatus: 'Fully Collected',
-    collectedQuantityKg: 1500,
-    remainingCollectionKg: 0,
-    qualityStatus: 'Passed',
-    acceptedQuantityKg: 1500,
-    rejectedQuantityKg: 0,
-    packingStatus: 'Packed',
-    packedQuantityKg: 1500,
-    crateCount: 60,
-    packageType: 'Ventilated 25kg Agro-Crates with tamper-evident QR seal',
-    isReadyForTransport: true,
-    transportStatus: 'In Transit',
     inspectionMetrics: {
       sugarBrix: 5.1,
       firmnessKgCm: 3.8,
@@ -781,10 +639,7 @@ export const INITIAL_ORDERS: WorkflowOrder[] = [
       verifiedGrade: 'Grade A',
       inspectorName: 'S. Shanmugam',
       inspectionDate: '07 Sep 2026',
-      hubLocation: 'Salem West Hub',
-      status: 'PASSED',
-      acceptedQuantityKg: 1500,
-      rejectedQuantityKg: 0
+      hubLocation: 'Salem West Hub'
     },
     transportDetails: {
       carrierName: 'Sundar Logistics',
@@ -824,30 +679,6 @@ export const INITIAL_ORDERS: WorkflowOrder[] = [
     farmerLocation: 'Ooty / Nilgiris Foothills',
     fpoName: 'Nilgiri Horticulture FPO',
     qualityGrade: 'Grade A',
-    farmerContributions: [
-      {
-        farmerId: 'usr-farmer-03',
-        farmerName: 'Murugan FPO',
-        farmerLocation: 'Ooty / Nilgiris Foothills',
-        produceListingId: 'LST-003',
-        contributedQuantityKg: 1200,
-        collectedQuantityKg: 1200,
-        collectionStatus: 'FULLY_COLLECTED',
-        collectedAt: '08 Sep 2026, 06:00 AM'
-      }
-    ],
-    collectionStatus: 'Fully Collected',
-    collectedQuantityKg: 1200,
-    remainingCollectionKg: 0,
-    qualityStatus: 'Passed',
-    acceptedQuantityKg: 1200,
-    rejectedQuantityKg: 0,
-    packingStatus: 'Packed',
-    packedQuantityKg: 1200,
-    crateCount: 48,
-    packageType: 'Ventilated 25kg Agro-Crates with tamper-evident QR seal',
-    isReadyForTransport: true,
-    transportStatus: 'Ready for Pickup',
     inspectionMetrics: {
       sugarBrix: 8.4,
       firmnessKgCm: 4.6,
@@ -856,10 +687,7 @@ export const INITIAL_ORDERS: WorkflowOrder[] = [
       verifiedGrade: 'Grade A',
       inspectorName: 'V. Ramanathan',
       inspectionDate: '08 Sep 2026',
-      hubLocation: 'Coimbatore Agro Junction',
-      status: 'PASSED',
-      acceptedQuantityKg: 1200,
-      rejectedQuantityKg: 0
+      hubLocation: 'Coimbatore Agro Junction'
     },
     timeline: [
       { step: 'LISTED', title: 'Crop Listed', location: 'Nilgiri Terrace Farm', timestamp: '07 Sep 2026', operator: 'Murugan FPO', completed: true },
@@ -889,38 +717,6 @@ export const INITIAL_ORDERS: WorkflowOrder[] = [
     farmerLocation: 'Dindigul Farmer Collective',
     fpoName: 'Kaveri Valley FPO',
     qualityGrade: 'Standard',
-    farmerContributions: [
-      {
-        farmerId: 'usr-farmer-04-a',
-        farmerName: 'Kaveri Cluster - Block 1',
-        farmerLocation: 'Dindigul Farmer Collective, South Farm',
-        produceListingId: 'LST-004',
-        contributedQuantityKg: 1200,
-        collectedQuantityKg: 0,
-        collectionStatus: 'PENDING',
-        notes: 'Cured red onions, dry skin'
-      },
-      {
-        farmerId: 'usr-farmer-04-b',
-        farmerName: 'M. Selvam (Kaveri Member)',
-        farmerLocation: 'Dindigul Rural Belt, North Farm',
-        produceListingId: 'LST-004-B',
-        contributedQuantityKg: 800,
-        collectedQuantityKg: 0,
-        collectionStatus: 'PENDING',
-        notes: 'Medium bulb size compliant with Spencer specs'
-      }
-    ],
-    collectionStatus: 'Collection Pending',
-    collectedQuantityKg: 0,
-    remainingCollectionKg: 2000,
-    qualityStatus: 'Pending',
-    acceptedQuantityKg: 0,
-    rejectedQuantityKg: 0,
-    packingStatus: 'Packing Pending',
-    packedQuantityKg: 0,
-    isReadyForTransport: false,
-    transportStatus: 'Transport Pending',
     timeline: [
       { step: 'LISTED', title: 'Crop Listed', location: 'Dindigul Farm Fields', timestamp: '08 Sep 2026, 07:00 AM', operator: 'Kaveri Cluster', completed: true },
       { step: 'MATCHED', title: 'Matched & Order Created', location: 'Uzhavan AI Engine', timestamp: '08 Sep 2026, 09:30 AM', operator: 'System', completed: true },
@@ -1070,25 +866,9 @@ export const INITIAL_SETTLEMENTS: SettlementRecord[] = [
     farmerRealizationPercentage: 88.88,
     traditionalFarmerEarnings: 27000,
     earningsGainPercentage: 33.33,
-    status: 'Payment Pending',
+    status: 'PENDING',
     settlementDate: 'Scheduled Upon Delivery Acceptance',
-    utrNumber: 'ESCROW_LOCKED_TXN9083',
-    paymentMode: 'UPI e-RUPI Programmable Escrow (Prototype Simulator)',
-    farmerBreakdown: [
-      {
-        farmerId: 'usr-farmer-01',
-        farmerName: 'Rajesh Kumar',
-        farmerLocation: 'Salem Agro Cluster',
-        produceListingId: 'LST-002',
-        contributedQuantityKg: 1500,
-        collectedQuantityKg: 1500,
-        agreedPricePerKg: 27.0,
-        grossAmount: 40500,
-        netFarmerAmount: 36000,
-        status: 'PENDING',
-        bankAccountMasked: 'Canara **** **** 7712'
-      }
-    ]
+    utrNumber: 'ESCROW_LOCKED_TXN9083'
   }
 ];
 
