@@ -83,8 +83,6 @@ interface AppContextType {
   nextDemoStep: () => void;
   prevDemoStep: () => void;
   setDemoStep: (step: number) => void;
-  isArchitectureModalOpen: boolean;
-  setArchitectureModalOpen: (open: boolean) => void;
   marketPrices: MarketPriceItem[];
   systemUsers: SystemUserRecord[];
   toggleUserPermission: (userId: string, permission: Permission) => void;
@@ -241,7 +239,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [selectedPassportBatchId, setSelectedPassportBatchId] = useState<string>('AGP-TOM-2026-001');
   const [isDemoModeOpen, setIsDemoModeOpen] = useState<boolean>(false);
   const [demoStep, setDemoStepState] = useState<number>(1);
-  const [isArchitectureModalOpen, setArchitectureModalOpen] = useState<boolean>(false);
   const [marketPrices, setMarketPrices] = useState<MarketPriceItem[]>(MARKET_PRICES_DATA);
   const [systemUsers, setSystemUsers] = useState<SystemUserRecord[]>(SYSTEM_USERS_DATA);
 
@@ -1907,8 +1904,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         nextDemoStep,
         prevDemoStep,
         setDemoStep,
-        isArchitectureModalOpen,
-        setArchitectureModalOpen,
         marketPrices,
         systemUsers,
         toggleUserPermission,

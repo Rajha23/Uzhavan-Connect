@@ -1,9 +1,9 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Sprout, ShieldCheck, Cpu, ArrowUpRight, HeartHandshake } from 'lucide-react';
+import { Sprout, ShieldCheck } from 'lucide-react';
 
 export const Footer: React.FC = () => {
-  const { setActiveTab, setArchitectureModalOpen } = useApp();
+  const { setActiveTab } = useApp();
 
   return (
     <footer className="bg-forest text-cream/80 border-t border-[#023120] mt-20">
@@ -121,18 +121,17 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Col 4:  Evaluator Quick Access */}
+          {/* Col 4: Platform Standards */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-sage uppercase tracking-widest mb-2">Evaluator Tools</h4>
-            <button
-              onClick={() => setArchitectureModalOpen(true)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-[1rem] bg-[#023120] hover:bg-forest text-cream text-xs font-medium border border-[#023120] transition"
-            >
-              <span>Inspect Architecture & APIs</span>
-              <Cpu className="w-4 h-4 text-sage" />
-            </button>
-            <div className="p-3 rounded-[1rem] bg-[#023120] border border-olive/10 text-[11px] text-cream/70 leading-relaxed">
-              <span className="text-sage font-bold">Real Working Prototype:</span> Fully functional mock APIs, interactive VRP routes, Recharts analytics, scannable QR passports, and configurable smart matching algorithms.
+            <h4 className="text-xs font-bold text-sage uppercase tracking-widest mb-2">Platform Standards</h4>
+            <div className="p-3 rounded-[1rem] bg-[#023120] border border-olive/10 text-[11px] text-cream/70 leading-relaxed space-y-2">
+              <div className="flex items-center gap-2 text-sage font-bold">
+                <ShieldCheck className="w-4 h-4 text-sage" />
+                <span>Operating Cycle Integrity</span>
+              </div>
+              <p>
+                Integrated VRP route optimization, live telemetry, scannable QR produce passports, and multi-factor algorithmic matchmaking.
+              </p>
             </div>
           </div>
         </div>

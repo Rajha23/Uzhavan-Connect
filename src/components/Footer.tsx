@@ -1,9 +1,9 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Sprout, ShieldCheck, Cpu, ArrowUpRight, HeartHandshake } from 'lucide-react';
+import { Sprout, ShieldCheck } from 'lucide-react';
 
 export const Footer: React.FC = () => {
-  const { setActiveTab, setArchitectureModalOpen } = useApp();
+  const { setActiveTab } = useApp();
 
   return (
     <footer className="bg-gradient-to-b from-[#1b4332] via-[#16382b] to-[#10291f] text-emerald-100/90 border-t border-emerald-700/30 mt-20">
@@ -119,18 +119,17 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Col 4: Evaluator Quick Access */}
+          {/* Col 4: Platform Standards */}
           <div className="space-y-3">
-            <h4 className="text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-2">Platform Architecture</h4>
-            <button
-              onClick={() => setArchitectureModalOpen(true)}
-              className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-medium border border-white/20 transition cursor-pointer shadow-xs"
-            >
-              <span>Inspect Architecture & APIs</span>
-              <Cpu className="w-4 h-4 text-emerald-300" />
-            </button>
-            <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/20 text-[11px] text-emerald-100/80 leading-relaxed font-normal">
-              <span className="text-emerald-300 font-medium">End-to-End Operating Cycle:</span> Live APIs, VRP route optimizer, Recharts telemetry, scannable QR produce passports, and multi-factor smart matching.
+            <h4 className="text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-2">Platform Standards</h4>
+            <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/20 text-[11px] text-emerald-100/80 leading-relaxed font-normal space-y-2">
+              <div className="flex items-center gap-2 text-emerald-300 font-medium">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Operating Cycle Integrity</span>
+              </div>
+              <p>
+                Integrated VRP route optimization, live telemetry, scannable QR produce passports, and multi-factor algorithmic matchmaking.
+              </p>
             </div>
           </div>
         </div>

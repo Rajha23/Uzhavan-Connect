@@ -10,7 +10,6 @@ import { Footer } from './components/Footer';
 // Global modals (always mounted regardless of shell)
 
 import { ProducePassportModal } from './components/ProducePassportModal';
-import { ArchitectureModal } from './components/ArchitectureModal';
 
 // Public pages (no sidebar)
 import { LandingPage } from './pages/LandingPage';
@@ -164,7 +163,6 @@ const PublicShell: React.FC = () => (
     <Footer />
 
     <ProducePassportModal />
-    <ArchitectureModal />
   </div>
 );
 
@@ -189,7 +187,6 @@ const AuthenticatedShell: React.FC = () => {
       {/* Global modals */}
 
       <ProducePassportModal />
-      <ArchitectureModal />
     </div>
   );
 };

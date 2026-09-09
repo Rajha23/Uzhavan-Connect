@@ -1,35 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useApp } from '../context/AppContext';
 import {
   ShieldCheck,
-  Users,
-  Building2,
-  ShoppingBag,
-  Truck,
-  CreditCard,
-  AlertTriangle,
-  BarChart3,
-  Cpu,
-  Layers,
-  ArrowUpRight,
-  TrendingUp
+  BarChart3
 } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line
-} from 'recharts';
 
 export const AdminDashboard: React.FC = () => {
-  const { setArchitectureModalOpen, setActiveTab } = useApp();
-
-
+  const { setActiveTab } = useApp();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -44,17 +21,17 @@ export const AdminDashboard: React.FC = () => {
             Platform Command & Administration
           </h1>
           <p className="text-sm text-cream/70 mt-3 max-w-2xl leading-relaxed font-medium">
-            National monitoring console for . Real-time telemetry across farmer realization, cold storage utilization, and ML forecast convergence.
+            National monitoring console for Uzhavan Connect. Real-time telemetry across farmer realization, cold storage utilization, and ML forecast convergence.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setArchitectureModalOpen(true)}
-            className="flex items-center gap-2 bg-sage hover:bg-cream text-forest text-xs font-bold px-6 py-3.5 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
+            onClick={() => setActiveTab('impact-kpis')}
+            className="flex items-center gap-2 bg-sage hover:bg-cream text-forest text-xs font-bold px-6 py-3.5 rounded-[1rem] shadow-sm transition uppercase tracking-widest cursor-pointer"
           >
-            <Cpu className="w-4 h-4" />
-            <span>Architecture & Microservices</span>
+            <BarChart3 className="w-4 h-4" />
+            <span>Platform Analytics & KPIs</span>
           </button>
         </div>
       </div>
