@@ -2,6 +2,9 @@ package com.agripulse.entity;
 
 public enum Role {
     FARMER,
-    BUYER,
-    OPERATIONS_ADMIN
+    RETAIL_BUYER,
+    BULK_BUYER,
+    FPO_AGGREGATOR,
+    LOGISTICS,
+    ADMIN
 }

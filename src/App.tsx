@@ -21,6 +21,7 @@ import { FarmerDashboard } from './pages/FarmerDashboard';
 import { FindBuyersPage } from './pages/FindBuyersPage';
 
 import { BuyerDashboard } from './pages/BuyerDashboard';
+import { BulkBuyerDashboard } from './pages/BulkBuyerDashboard';
 import { DemandPoolPage } from './pages/DemandPoolPage';
 import { ReverseAuctionPage } from './pages/ReverseAuctionPage';
 import { DemandIntelligencePage } from './pages/DemandIntelligencePage';
@@ -35,6 +36,7 @@ import { ProfilePage } from './pages/ProfilePage';
 
 // New pages
 import { TraceabilityPage } from './pages/TraceabilityPage';
+import { QualityAssessmentPage } from './pages/QualityAssessmentPage';
 import { OrdersPage } from './pages/OrdersPage';
 
 // Inline components for simple stubs
@@ -65,6 +67,7 @@ const PageContent: React.FC = () => {
     // ── Dashboard based on Role ───────────────
     case 'dashboard':
       if (currentRole === 'RETAIL_BUYER') return <BuyerDashboard />;
+      if (currentRole === 'BULK_BUYER') return <BulkBuyerDashboard />;
       if (currentRole === 'FPO_AGGREGATOR') return <FpoDashboard />;
       if (currentRole === 'LOGISTICS') return <LogisticsDashboard />;
       if (currentRole === 'ADMIN') return <AdminDashboard />;
@@ -115,10 +118,12 @@ const PageContent: React.FC = () => {
     case 'demand-forecast':
       return <DemandIntelligencePage />;
 
-    // ── Traceability ─────────────────────────────────
+    // ── Traceability & Quality ─────────────────────────────────
     case 'traceability':
     case 'tracking':
       return <TraceabilityPage />;
+    case 'quality-assessment':
+      return <QualityAssessmentPage />;
 
     // ── Settlement ───────────────────────────────────
     case 'settlement':

@@ -1,6 +1,7 @@
 export type UserRole =
   | 'FARMER'
   | 'RETAIL_BUYER'
+  | 'BULK_BUYER'
   | 'FPO_AGGREGATOR'
   | 'LOGISTICS'
   | 'ADMIN';

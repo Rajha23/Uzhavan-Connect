@@ -208,6 +208,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                   >
                     <option value="FARMER">Farmer</option>
                     <option value="RETAIL_BUYER">Retail Buyer</option>
+                    <option value="BULK_BUYER">Bulk Buyer</option>
                     <option value="FPO_AGGREGATOR">FPO Aggregator</option>
                     <option value="LOGISTICS">Logistics Carrier Transport</option>
                     <option value="ADMIN">Admin</option>
@@ -250,6 +251,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                   >
                     <option value="FARMER">Farmer (Producer)</option>
                     <option value="RETAIL_BUYER">Retail Buyer</option>
+                    <option value="BULK_BUYER">Bulk Buyer</option>
                     <option value="FPO_AGGREGATOR">FPO Aggregator</option>
                     <option value="LOGISTICS">Logistics Carrier Transport</option>
                   </select>

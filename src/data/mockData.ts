@@ -37,6 +37,16 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'LOGISTICS',
     'TRACEABILITY'
   ],
+  BULK_BUYER: [
+    'VIEW_DASHBOARD',
+    'MARKET_PRICES',
+    'CREATE_DEMAND',
+    'SMART_MATCHING',
+    'REVERSE_AUCTION',
+    'ORDERS',
+    'LOGISTICS',
+    'TRACEABILITY'
+  ],
   RETAIL_BUYER: [
     'VIEW_DASHBOARD',
     'MARKET_PRICES',
@@ -106,12 +116,27 @@ export const DEMO_USERS: Record<UserRole, UserProfile> = {
     email: 'anita.procurement@abcretail.in',
     location: 'Koyambedu, Chennai',
     businessName: 'ABC Retail Stores',
-    buyerType: 'Retail/Bulk',
+    buyerType: 'Retail',
     totalListings: 0,
     completedOrders: 42,
     organization: 'ABC Retail',
     rating: 4.95,
     avatar: '🏬'
+  },
+  BULK_BUYER: {
+    id: 'usr-bulk-01',
+    name: 'Vikram Wholesale',
+    role: 'BULK_BUYER',
+    phone: '+91 91234 56789',
+    email: 'vikram.wholesale@uzhavanconnect.gov.in',
+    location: 'Madurai, Tamil Nadu',
+    businessName: 'Vikram Bulk Traders',
+    buyerType: 'Bulk',
+    totalListings: 0,
+    completedOrders: 150,
+    organization: 'Vikram Traders',
+    rating: 4.8,
+    avatar: '🏭'
   },
   FPO_AGGREGATOR: {
     id: 'usr-fpo-01',

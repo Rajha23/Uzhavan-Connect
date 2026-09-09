@@ -75,6 +75,18 @@ export const Sidebar: React.FC = () => {
           { id: 'profile', label: 'Profile', icon: User, section: 'SETTINGS' }
         ];
 
+      case 'BULK_BUYER':
+        return [
+          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'MAIN' },
+          { id: 'demand-pool', label: 'Demand Pools', icon: Layers, section: 'MARKET' },
+          { id: 'reverse-auction', label: 'Reverse Auction', icon: Gavel, section: 'MARKET' },
+          { id: 'smart-matching', label: 'Marketplace', icon: Search, section: 'MARKET' },
+          { id: 'orders', label: 'Orders', icon: Package, section: 'OPERATIONS' },
+          { id: 'traceability', label: 'Traceability (QR)', icon: QrCode, section: 'OPERATIONS' },
+          { id: 'quality-assessment', label: 'Quality Assessment', icon: Sparkles, section: 'OPERATIONS' },
+          { id: 'profile', label: 'Profile', icon: User, section: 'SETTINGS' }
+        ];
+
       case 'FPO_AGGREGATOR':
         return [
           { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'MAIN' },
