@@ -96,7 +96,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
               <Sprout className="w-6 h-6" />
             </div>
             <div>
-              <span className="text-xl font-bold text-slate-900 tracking-tight block">
+              <span className="text-xl font-bold font-['Outfit'] text-slate-900 tracking-tight block">
                 Uzhavan Connect
               </span>
               <span className="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider block">
@@ -150,7 +150,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
           {mode === 'LOGIN' ? (
             <div>
               <div className="space-y-1 mb-5">
-                <h2 className="text-2xl font-bold text-slate-900">
+                <h2 className="text-2xl font-bold font-['Outfit'] text-slate-900">
                   Welcome to Uzhavan Connect
                 </h2>
                 <p className="text-xs text-slate-500">
@@ -231,7 +231,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
             /* Create Account Form */
             <div>
               <div className="space-y-1 mb-4">
-                <h2 className="text-xl font-bold text-slate-900">
+                <h2 className="text-xl font-bold font-['Outfit'] text-slate-900">
                   Create Your Account
                 </h2>
                 <p className="text-xs text-slate-500">
