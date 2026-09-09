@@ -18,7 +18,7 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) => {
-  const { login, registerUser, setActiveTab } = useApp();
+  const { login, registerUser, setActiveTab, intendedRegistrationRole } = useApp();
 
   const [mode, setMode] = useState<'LOGIN' | 'REGISTER'>(initialMode);
 
@@ -27,17 +27,23 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
     setMode(initialMode);
   }, [initialMode]);
 
+  // Sync intended role from Home Join buttons if set
+  React.useEffect(() => {
+    if (intendedRegistrationRole) {
+      setRegRole(intendedRegistrationRole);
+    }
+  }, [intendedRegistrationRole]);
+
   // Login form state
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [selectedRole, setSelectedRole] = useState<UserRole>('FARMER');
 
   // Register form state
   const [regName, setRegName] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regMobile, setRegMobile] = useState('');
   const [regPassword, setRegPassword] = useState('');
-  const [regRole, setRegRole] = useState<UserRole>('FARMER');
+  const [regRole, setRegRole] = useState<UserRole>(intendedRegistrationRole || 'FARMER');
   const [regDistrict, setRegDistrict] = useState('');
   const [regState, setRegState] = useState('');
   const [regSuccess, setRegSuccess] = useState(false);
@@ -46,41 +52,71 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
 
   const handleManualLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg('');
+
+    const cleanId = identifier.trim();
+    const cleanPass = password.trim();
+
+    if (!cleanId || !cleanPass) {
+      setErrorMsg('Please enter both email and password.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const res = await apiService.login(selectedRole, identifier, password);
+      const res = await apiService.login(cleanId, cleanPass);
       setIsSubmitting(false);
       login(res.user);
       setActiveTab('dashboard');
     } catch (err: any) {
       setIsSubmitting(false);
-      setErrorMsg(err.message || 'Login failed. Please check your credentials.');
+      setErrorMsg(err.message || 'Invalid email or password. Please check your credentials and try again.');
     }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (regMobile.length !== 10) {
+    setErrorMsg('');
+
+    const cleanName = regName.trim();
+    const cleanEmail = regEmail.trim();
+    const cleanMobile = regMobile.replace(/\D/g, '').trim();
+    const cleanPassword = regPassword.trim();
+
+    if (!cleanName) {
+      setErrorMsg('Please enter your full name.');
+      return;
+    }
+    if (!cleanMobile || cleanMobile.length !== 10) {
       setErrorMsg('Mobile number must be exactly 10 digits.');
       return;
     }
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      setErrorMsg('Please enter a valid email address.');
+      return;
+    }
+    if (!cleanPassword || cleanPassword.length < 6) {
+      setErrorMsg('Password must be at least 6 characters long.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const registered = await apiService.register({
-        name: regName,
-        email: regEmail,
-        mobile: regMobile,
-        password: regPassword,
+        name: cleanName,
+        email: cleanEmail,
+        mobile: cleanMobile,
+        password: cleanPassword,
         role: regRole,
-        district: regDistrict,
-        state: regState
+        district: regDistrict.trim(),
+        state: regState.trim()
       });
       setRegSuccess(true);
       setTimeout(() => {
         registerUser(registered);
-      }, 1000);
+      }, 800);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Registration failed. Please try again.');
+      setErrorMsg(err.message || 'Registration failed. Please check your information and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -195,23 +231,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                       required
                     />
                   </div>
-                </div>
-
-                <div>
-                  <label className="font-semibold text-slate-700 block mb-1">
-                    Role Authentication
-                  </label>
-                  <select
-                    value={selectedRole}
-                    onChange={(e) => setSelectedRole(e.target.value as UserRole)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:border-emerald-500"
-                  >
-                    <option value="FARMER">Farmer</option>
-                    <option value="RETAIL_BUYER">Retail Buyer</option>
-                    <option value="FPO_AGGREGATOR">FPO Aggregator</option>
-                    <option value="LOGISTICS">Logistics Carrier Transport</option>
-                    <option value="ADMIN">Admin</option>
-                  </select>
                 </div>
 
                 <div className="pt-2">

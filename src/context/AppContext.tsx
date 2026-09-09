@@ -38,6 +38,7 @@ import {
   INITIAL_SETTLEMENTS
 } from '../data/mockData';
 import { supabase } from '../lib/supabase';
+import { authVault, normalizeRole } from '../services/authVault';
 import { onInstallableChange, promptAppInstall } from '../services/serviceWorkerRegistration';
 
 interface AppContextType {
@@ -49,6 +50,9 @@ interface AppContextType {
   currentUser: UserProfile;
   currentRole: UserRole;
   switchRole: (role: UserRole) => void;
+  intendedRegistrationRole: UserRole | null;
+  setIntendedRegistrationRole: (role: UserRole | null) => void;
+  handleJoinAsRole: (targetRole: UserRole) => void;
   hasPermission: (permission: Permission) => boolean;
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -213,6 +217,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [currentRole, setCurrentRole] = useState<UserRole>('FARMER');
   const [currentUser, setCurrentUser] = useState<UserProfile>(GUEST_USER);
+  const [intendedRegistrationRole, setIntendedRegistrationRole] = useState<UserRole | null>(null);
   const [activeTab, setActiveTab] = useState<string>('home');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
@@ -1538,10 +1543,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             .single();
             
           if (profile) {
+            const role = normalizeRole(profile.role);
             setCurrentUser({
               id: profile.id,
               name: profile.name,
-              role: profile.role as UserRole,
+              role,
               phone: profile.phone || '',
               email: profile.email || '',
               location: profile.location || '',
@@ -1553,23 +1559,41 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
               mainCrops: profile.main_crops,
               fpoName: profile.fpo_name
             });
-            setCurrentRole(profile.role as UserRole);
+            setCurrentRole(role);
             setIsAuthenticated(true);
             setActiveTab('dashboard');
           }
         } else {
-          // Fallback: Check if there's a local mock session
+          // Cryptographic / Token Session Validation
           const localFallback = localStorage.getItem('uzhavan_fallback_session');
-          if (localFallback) {
-            const parsedUser = JSON.parse(localFallback);
-            setCurrentUser(parsedUser);
-            setCurrentRole(parsedUser.role as UserRole);
-            setIsAuthenticated(true);
-            setActiveTab('dashboard');
+          const localToken = localStorage.getItem('uzhavanconnect_jwt_token');
+          if (localFallback && localToken) {
+            try {
+              const parsedUser = JSON.parse(localFallback);
+              if (parsedUser && parsedUser.id) {
+                // Verify user exists in authVault
+                const verifiedUser = authVault.getUserById(parsedUser.id);
+                if (verifiedUser) {
+                  const role = normalizeRole(verifiedUser.profile.role);
+                  setCurrentUser(verifiedUser.profile);
+                  setCurrentRole(role);
+                  setIsAuthenticated(true);
+                } else if (parsedUser.role) {
+                  const role = normalizeRole(parsedUser.role);
+                  setCurrentUser({ ...parsedUser, role });
+                  setCurrentRole(role);
+                  setIsAuthenticated(true);
+                }
+              }
+            } catch (e) {
+              console.warn('Invalid local session data, clearing...', e);
+              localStorage.removeItem('uzhavan_fallback_session');
+              localStorage.removeItem('uzhavanconnect_jwt_token');
+            }
           }
         }
       } catch (err) {
-        console.warn('Could not restore Supabase session', err);
+        console.warn('Could not restore session', err);
       } finally {
         setIsInitializing(false);
       }
@@ -1591,37 +1615,48 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   const switchRole = (role: UserRole) => {
-    setCurrentRole(role);
-    const roleDefaults = DEMO_USERS[role] || DEMO_USERS.FARMER;
-    setCurrentUser((prev) => {
-      const updated = {
-        ...roleDefaults,
-        name: prev.name || roleDefaults.name,
-        email: prev.email || roleDefaults.email,
-        phone: prev.phone || roleDefaults.phone,
-        role
-      };
-      localStorage.setItem('uzhavan_fallback_session', JSON.stringify(updated));
-      return updated;
-    });
-    setIsAuthenticated(true);
-    setActiveTab('dashboard'); // Always land on role's home dashboard
+    const canonicalRole = normalizeRole(role);
+    if (!isAuthenticated) {
+      // SECURITY ENFORCEMENT: Unauthenticated users CANNOT switch roles or gain bypass access
+      setIntendedRegistrationRole(canonicalRole);
+      setActiveTab('register');
+      return;
+    }
+    // Only authenticated users can switch portal views
+    setCurrentRole(canonicalRole);
+    setActiveTab('dashboard');
+  };
+
+  const handleJoinAsRole = (targetRole: UserRole) => {
+    const canonicalRole = normalizeRole(targetRole);
+    if (isAuthenticated && currentUser.id) {
+      // Already authenticated: redirect to authorized dashboard
+      setActiveTab('dashboard');
+    } else {
+      // Unauthenticated: preserve intended role and direct to registration
+      setIntendedRegistrationRole(canonicalRole);
+      setActiveTab('register');
+    }
   };
 
   const login = (user: UserProfile) => {
-    localStorage.setItem('uzhavan_fallback_session', JSON.stringify(user));
+    const role = normalizeRole(user.role);
+    const cleanUser = { ...user, role };
+    localStorage.setItem('uzhavan_fallback_session', JSON.stringify(cleanUser));
     setIsAuthenticated(true);
-    setCurrentRole(user.role);
-    setCurrentUser(user);
+    setCurrentRole(role);
+    setCurrentUser(cleanUser);
     setActiveTab('dashboard');
   };
 
   const registerUser = (user: UserProfile) => {
-    localStorage.setItem('uzhavan_fallback_session', JSON.stringify(user));
+    const role = normalizeRole(user.role);
+    const cleanUser = { ...user, role };
+    localStorage.setItem('uzhavan_fallback_session', JSON.stringify(cleanUser));
     setIsAuthenticated(true);
-    setCurrentRole(user.role);
-    setCurrentUser(user);
-    setActiveTab('profile');
+    setCurrentRole(role);
+    setCurrentUser(cleanUser);
+    setActiveTab('dashboard');
   };
 
   const logout = async () => {
@@ -1629,6 +1664,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       await supabase.auth.signOut();
     } catch {}
     localStorage.removeItem('uzhavan_fallback_session');
+    localStorage.removeItem('uzhavanconnect_jwt_token');
     setIsAuthenticated(false);
     setCurrentUser(GUEST_USER);
     setActiveTab('home');
@@ -1715,6 +1751,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         currentUser,
         currentRole,
         switchRole,
+        intendedRegistrationRole,
+        setIntendedRegistrationRole,
+        handleJoinAsRole,
         hasPermission,
         activeTab,
         setActiveTab,

@@ -58,66 +58,88 @@ export const Navbar: React.FC = () => {
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Role Switcher Dropdown (Authenticated) or Sign In Button */}
+            {/* Authenticated session or Sign In / Register Buttons */}
             {isAuthenticated ? (
-              <div className="relative">
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-                  className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 px-3 py-1.5 rounded-xl text-xs font-medium transition whitespace-nowrap cursor-pointer"
+                  onClick={() => setActiveTab('dashboard')}
+                  className="btn-primary text-xs flex items-center gap-1.5"
                 >
-                  <div className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-                  <span className="font-medium text-slate-900">
-                    {currentRole.replace('_', ' ')}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Go to Dashboard</span>
                 </button>
+                {currentUser.role === 'ADMIN' ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
+                      className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 px-3 py-1.5 rounded-xl text-xs font-medium transition whitespace-nowrap cursor-pointer"
+                    >
+                      <div className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+                      <span className="font-medium text-slate-900">
+                        {currentRole.replace('_', ' ')}
+                      </span>
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                    </button>
 
-                {/* Role Dropdown Menu */}
-                {isRoleDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-lg border border-slate-200/90 py-2 z-50 overflow-hidden">
-                    <div className="px-4 py-2 text-[10px] font-medium text-slate-400 uppercase tracking-wider border-b border-slate-100">
-                      Switch Active Role
-                    </div>
-                    <div className="p-1 space-y-0.5">
-                      {roles.map((r) => {
-                        const Icon = r.icon;
-                        const isSelected = currentRole === r.role;
-                        return (
-                          <button
-                            key={r.role}
-                            onClick={() => {
-                              switchRole(r.role);
-                              setIsRoleDropdownOpen(false);
-                            }}
-                            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition cursor-pointer ${
-                              isSelected ? 'bg-emerald-50 text-emerald-900 font-medium' : 'text-slate-700 hover:bg-slate-50'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <span className={`p-1.5 rounded-lg ${isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
-                                <Icon className="w-3.5 h-3.5" />
-                              </span>
-                              <span>{r.label}</span>
-                            </div>
-                            {isSelected && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
-                          </button>
-                        );
-                      })}
-                    </div>
+                    {isRoleDropdownOpen && (
+                      <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-lg border border-slate-200/90 py-2 z-50 overflow-hidden">
+                        <div className="px-4 py-2 text-[10px] font-medium text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                          Switch Active Role (Admin)
+                        </div>
+                        <div className="p-1 space-y-0.5">
+                          {roles.map((r) => {
+                            const Icon = r.icon;
+                            const isSelected = currentRole === r.role;
+                            return (
+                              <button
+                                key={r.role}
+                                onClick={() => {
+                                  switchRole(r.role);
+                                  setIsRoleDropdownOpen(false);
+                                }}
+                                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition cursor-pointer ${
+                                  isSelected ? 'bg-emerald-50 text-emerald-900 font-medium' : 'text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  <span className={`p-1.5 rounded-lg ${isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                                    <Icon className="w-3.5 h-3.5" />
+                                  </span>
+                                  <span>{r.label}</span>
+                                </div>
+                                {isSelected && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
+                              </button>
+                            );
+                          })}
+                        </div>
 
-                    <div className="p-3 border-t border-slate-100 bg-slate-50/70 text-[11px] text-slate-500 font-normal">
-                      Logged in as: <span className="font-medium text-slate-800">{currentUser.name || 'User'}</span>
-                    </div>
+                        <div className="p-3 border-t border-slate-100 bg-slate-50/70 text-[11px] text-slate-500 font-normal">
+                          Logged in as: <span className="font-medium text-slate-800">{currentUser.name || 'User'}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-800 px-3 py-1.5 rounded-xl text-xs font-medium">
+                    <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+                    <span>{currentRole.replace('_', ' ')}</span>
                   </div>
                 )}
               </div>
             ) : (
-              <button
-                onClick={() => setActiveTab('login')}
-                className="btn-primary text-xs"
-              >
-                Sign In
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveTab('login')}
+                  className="btn-primary text-xs"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => setActiveTab('register')}
+                  className="btn-secondary text-xs hidden sm:block"
+                >
+                  Register
+                </button>
+              </div>
             )}
           </div>
         </div>

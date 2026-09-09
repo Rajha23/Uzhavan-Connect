@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from './context/AppContext';
+import { UserRole } from './types';
 
 // Layout components
 import { Navbar } from './components/Navbar';
@@ -43,18 +44,28 @@ import { MiddlemanSimulator } from './components/MiddlemanSimulator';
 import { RouteOptimizationMap } from './components/RouteOptimizationMap';
 import { SmartMatchingEngine } from './components/SmartMatchingEngine';
 
+// ─── Public and Role-Guarded Route Definitions ──────────────────────────────
+
+const PUBLIC_TABS = ['home', 'landing', 'login', 'register', 'traceability', 'tracking'];
+
+// Role definitions for protected features
+const FARMER_ALLOWED_ROLES: UserRole[] = ['FARMER', 'FPO_AGGREGATOR', 'ADMIN'];
+const BUYER_ALLOWED_ROLES: UserRole[] = ['RETAIL_BUYER', 'ADMIN'];
+const LOGISTICS_ALLOWED_ROLES: UserRole[] = ['LOGISTICS', 'ADMIN'];
+const REPORTS_ALLOWED_ROLES: UserRole[] = ['ADMIN', 'RETAIL_BUYER', 'FPO_AGGREGATOR'];
+
 // ─── Page Renderer ──────────────────────────────────────────────────────────
 
 const PageContent: React.FC = () => {
-  const { activeTab, currentRole, hasPermission, isAuthenticated } = useApp();
+  const { activeTab, currentRole, isAuthenticated } = useApp();
 
-  // Unauthenticated users can only view landing or the login/register page
-  if (!isAuthenticated && activeTab !== 'home' && activeTab !== 'landing' && activeTab !== 'register') {
-    return <LoginPage />;
+  // Guard: Unauthenticated users are strictly blocked from protected routes
+  if (!isAuthenticated && !PUBLIC_TABS.includes(activeTab)) {
+    return <LoginPage initialMode="LOGIN" />;
   }
 
   switch (activeTab) {
-    // ── Home / Auth ──────────────────────────────────
+    // ── Public / Auth ────────────────────────────────
     case 'home':
     case 'landing':
       return <LandingPage />;
@@ -63,48 +74,77 @@ const PageContent: React.FC = () => {
     case 'register':
       return <LoginPage initialMode="REGISTER" />;
 
-    // ── Dashboard based on Role ───────────────
+    // ── Dashboard based on Authorized Role ────────────
     case 'dashboard':
       if (currentRole === 'RETAIL_BUYER') return <BuyerDashboard />;
       if (currentRole === 'FPO_AGGREGATOR') return <FpoDashboard />;
       if (currentRole === 'LOGISTICS') return <LogisticsDashboard />;
       if (currentRole === 'ADMIN') return <AdminDashboard />;
-      return <FarmerDashboard />;
+      if (currentRole === 'FARMER') return <FarmerDashboard />;
+      return <AccessDenied attemptedFeature="Unrecognized User Role Dashboard" />;
 
-    // ── Farmer ──────────────────────────────────────
+    // ── Farmer Operations (RBAC: FARMER, FPO, ADMIN) ──
     case 'my-crops':
-      return <FarmerDashboard />;
+      if (!FARMER_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="Farmer Crop Listings" />;
+      }
+      return currentRole === 'FPO_AGGREGATOR' ? <FpoDashboard /> : <FarmerDashboard />;
     case 'find-buyers':
     case 'farmer-offers':
+      if (!FARMER_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="Farmer Buyer Discovery & Match Offers" />;
+      }
       return <FindBuyersPage />;
     case 'cost-simulator':
+    case 'middleman-sim':
+      if (!FARMER_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="Middleman Net Realization Simulator" />;
+      }
       return (
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
           <MiddlemanSimulator />
         </div>
       );
 
-    // ── Buyer ─────────────────────────────
+    // ── Buyer Operations (RBAC: RETAIL_BUYER, ADMIN) ─
     case 'create-demand':
+      if (!BUYER_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="Institutional Buyer Demand Portal" />;
+      }
       return <BuyerDashboard />;
     case 'demand-pool':
+      if (!BUYER_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="Demand Aggregation Pools" />;
+      }
       return <DemandPoolPage />;
     case 'reverse-auction':
+      if (!BUYER_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="Institutional Reverse Auction" />;
+      }
       return <ReverseAuctionPage />;
     case 'smart-matching':
+      if (!BUYER_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="Algorithmic Smart Matching" />;
+      }
       return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
           <SmartMatchingEngine />
         </div>
       );
 
-    // ── Operations / Logistics ────────────────────────────────────
+    // ── Operations / Logistics (RBAC: LOGISTICS, ADMIN) ─
     case 'shipments':
     case 'hubs':
     case 'delivery':
-      return <AdminDashboard />;
+      if (!LOGISTICS_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="Logistics Dispatch & Hub Management" />;
+      }
+      return currentRole === 'LOGISTICS' ? <LogisticsDashboard /> : <AdminDashboard />;
     case 'routes':
     case 'route-optimization':
+      if (!LOGISTICS_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="VRP Vehicle Route Optimization" />;
+      }
       return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
           <RouteOptimizationMap />
@@ -116,7 +156,7 @@ const PageContent: React.FC = () => {
     case 'demand-forecast':
       return <DemandIntelligencePage />;
 
-    // ── Traceability ─────────────────────────────────
+    // ── Traceability & Public Audit ──────────────────
     case 'traceability':
     case 'tracking':
       return <TraceabilityPage />;
@@ -125,29 +165,28 @@ const PageContent: React.FC = () => {
     case 'settlement':
       return <SettlementPage />;
 
-    // ── Reports / KPIs ───────────────────────────────
+    // ── Reports / KPIs (RBAC: ADMIN, BUYER, FPO) ──────
     case 'reports':
     case 'impact-kpis':
     case 'analytics':
+      if (!REPORTS_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="Executive Analytics & Impact Reports" />;
+      }
       return <ImpactKPIPage />;
 
-    // ── Orders ───────────────────────────────────────
+    // ── Orders (Role-filtered internally) ─────────────
     case 'orders':
       return <OrdersPage />;
 
-    // ── Profile ───────────────────────────
+    // ── Profile ──────────────────────────────────────
     case 'profile':
       return <ProfilePage />;
 
-    // ── Middleman Simulator ──────────────────────────
-    case 'middleman-sim':
-      return (
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-          <MiddlemanSimulator />
-        </div>
-      );
-
     default:
+      if (currentRole === 'RETAIL_BUYER') return <BuyerDashboard />;
+      if (currentRole === 'FPO_AGGREGATOR') return <FpoDashboard />;
+      if (currentRole === 'LOGISTICS') return <LogisticsDashboard />;
+      if (currentRole === 'ADMIN') return <AdminDashboard />;
       return <FarmerDashboard />;
   }
 };
@@ -224,8 +263,7 @@ export default function App() {
   }
 
   // Public pages that always show the navbar shell
-  const publicTabs = ['home', 'landing', 'login'];
-  const isPublicPage = !isAuthenticated || publicTabs.includes(activeTab);
+  const isPublicPage = !isAuthenticated || PUBLIC_TABS.includes(activeTab);
 
   return isPublicPage ? <PublicShell /> : <AuthenticatedShell />;
 }

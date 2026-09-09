@@ -44,7 +44,6 @@ export const Sidebar: React.FC = () => {
     setActiveTab,
     sidebarOpen,
     setSidebarOpen,
-    switchRole,
     logout
   } = useApp();
 

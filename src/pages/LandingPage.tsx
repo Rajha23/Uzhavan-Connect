@@ -3,30 +3,17 @@ import { useApp } from '../context/AppContext';
 import {
   Sprout,
   TrendingUp,
-  Layers,
   Sparkles,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  AlertTriangle,
-  PlayCircle,
   Truck,
-  QrCode,
-  Building2,
   ShoppingBag,
   User,
-  ExternalLink,
-  ChevronDown,
-  Info,
-  Scale,
-  DollarSign,
   HeartHandshake,
   Lock,
   UserPlus
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
-  const { setActiveTab, switchRole } = useApp();
+  const { setActiveTab, handleJoinAsRole } = useApp();
 
   const problemCards = [
     { title: 'Fragmented Demand', desc: 'Small retailers & restaurants purchase independently, inflating ordering costs and driving speculative local arbitrage.' },
@@ -40,9 +27,9 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-20 pb-16">
+    <div className="space-y-14 sm:space-y-16 pb-16">
       {/* 1. Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-16 lg:pt-16 lg:pb-24 border-b border-emerald-900/10 bg-gradient-to-b from-white/90 via-emerald-50/25 to-[#f8faf9]/90">
+      <section className="relative overflow-hidden pt-12 pb-12 sm:pb-14 lg:pt-16 lg:pb-16 border-b border-emerald-900/10 bg-gradient-to-b from-white/90 via-emerald-50/25 to-[#f8faf9]/90">
         {/* Decorative backdrop gradients */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full overflow-hidden pointer-events-none -z-10">
           <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-emerald-100/40 blur-3xl" />
@@ -123,7 +110,7 @@ export const LandingPage: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-3.5 relative">
               {/* Node 1: Farmer */}
               <div
-                onClick={() => switchRole('FARMER')}
+                onClick={() => handleJoinAsRole('FARMER')}
                 className="p-4 rounded-xl border border-slate-200 hover:border-emerald-300 bg-slate-50/60 hover:bg-emerald-50/30 cursor-pointer transition text-center group"
               >
                 <div className="w-10 h-10 mx-auto rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-medium mb-2.5 group-hover:scale-105 transition shadow-2xs">
@@ -131,7 +118,7 @@ export const LandingPage: React.FC = () => {
                 </div>
                 <h4 className="text-xs font-medium text-slate-900">1. Farmer</h4>
                 <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Direct crop listing & harvest forecast</p>
-                <span className="text-[10px] text-emerald-700 font-medium mt-2.5 inline-block uppercase tracking-wider">Switch →</span>
+                <span className="text-[10px] text-emerald-700 font-medium mt-2.5 inline-block uppercase tracking-wider">Farmer Portal →</span>
               </div>
 
               {/* Node 2: Uzhavan Connect Engine */}
@@ -149,7 +136,7 @@ export const LandingPage: React.FC = () => {
 
               {/* Node 3: Buyers */}
               <div
-                onClick={() => switchRole('RETAIL_BUYER')}
+                onClick={() => handleJoinAsRole('RETAIL_BUYER')}
                 className="p-4 rounded-xl border border-slate-200 hover:border-emerald-300 bg-slate-50/60 hover:bg-emerald-50/30 cursor-pointer transition text-center group"
               >
                 <div className="w-10 h-10 mx-auto rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-medium mb-2.5 group-hover:scale-105 transition shadow-2xs">
@@ -157,12 +144,12 @@ export const LandingPage: React.FC = () => {
                 </div>
                 <h4 className="text-xs font-medium text-slate-900">3. Pooled Buyers</h4>
                 <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Bulk demand pooling & reverse auctions</p>
-                <span className="text-[10px] text-emerald-700 font-medium mt-2.5 inline-block uppercase tracking-wider">Switch →</span>
+                <span className="text-[10px] text-emerald-700 font-medium mt-2.5 inline-block uppercase tracking-wider">Buyer Portal →</span>
               </div>
 
               {/* Node 4: Logistics */}
               <div
-                onClick={() => switchRole('ADMIN')}
+                onClick={() => handleJoinAsRole('LOGISTICS')}
                 className="p-4 rounded-xl border border-slate-200 hover:border-emerald-300 bg-slate-50/60 hover:bg-emerald-50/30 cursor-pointer transition text-center group"
               >
                 <div className="w-10 h-10 mx-auto rounded-lg bg-slate-900 text-emerald-400 flex items-center justify-center font-medium mb-2.5 group-hover:scale-105 transition shadow-2xs">
@@ -170,7 +157,7 @@ export const LandingPage: React.FC = () => {
                 </div>
                 <h4 className="text-xs font-medium text-slate-900">4. Logistics Hub</h4>
                 <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Micro-hubs & VRP route dispatch</p>
-                <span className="text-[10px] text-emerald-700 font-medium mt-2.5 inline-block uppercase tracking-wider">View VRP →</span>
+                <span className="text-[10px] text-emerald-700 font-medium mt-2.5 inline-block uppercase tracking-wider">Hub Operations →</span>
               </div>
 
               {/* Node 5: Consumer & Trace */}
@@ -184,41 +171,6 @@ export const LandingPage: React.FC = () => {
                 <h4 className="text-xs font-medium text-slate-900">5. Consumer</h4>
                 <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Digital QR produce passport audit</p>
                 <span className="text-[10px] text-emerald-700 font-medium mt-2.5 inline-block uppercase tracking-wider">Explore →</span>
-              </div>
-            </div>
-
-            {/* 4 Floating Live Statistics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 mt-8 pt-6 border-t border-slate-100">
-              <div className="text-center p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70">
-                <p className="text-2xl sm:text-3xl font-semibold text-emerald-700 tracking-tight">
-                  85.9%
-                </p>
-                <p className="text-xs font-medium text-slate-800 mt-1">Farmer Realization</p>
-                <span className="text-[11px] text-slate-500 font-normal">vs 34% in traditional mandi</span>
-              </div>
-
-              <div className="text-center p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70">
-                <p className="text-2xl sm:text-3xl font-semibold text-teal-700 tracking-tight">
-                  94.6%
-                </p>
-                <p className="text-xs font-medium text-slate-800 mt-1">Forecast Accuracy</p>
-                <span className="text-[11px] text-slate-500 font-normal">MAPE 5.34% across 8 crops</span>
-              </div>
-
-              <div className="text-center p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70">
-                <p className="text-2xl sm:text-3xl font-semibold text-indigo-700 tracking-tight">
-                  12k+
-                </p>
-                <p className="text-xs font-medium text-slate-800 mt-1">Orders Fulfilled</p>
-                <span className="text-[11px] text-slate-500 font-normal">100% verified settlement</span>
-              </div>
-
-              <div className="text-center p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70">
-                <p className="text-2xl sm:text-3xl font-semibold text-amber-700 tracking-tight">
-                  38.4%
-                </p>
-                <p className="text-xs font-medium text-slate-800 mt-1">Transit Saved</p>
-                <span className="text-[11px] text-slate-500 font-normal">42.6 km reduced per run</span>
               </div>
             </div>
           </div>
@@ -278,13 +230,13 @@ export const LandingPage: React.FC = () => {
           {/* Coordinated Action Buttons */}
           <div className="relative flex flex-wrap items-center justify-center gap-3.5 pt-2">
             <button
-              onClick={() => switchRole('FARMER')}
+              onClick={() => handleJoinAsRole('FARMER')}
               className="px-6 py-3.5 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-medium rounded-xl transition-all duration-150 text-xs uppercase tracking-wider shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white/80 cursor-pointer"
             >
               Join as Farmer / FPO
             </button>
             <button
-              onClick={() => switchRole('RETAIL_BUYER')}
+              onClick={() => handleJoinAsRole('RETAIL_BUYER')}
               className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl border border-white/30 hover:border-white/60 transition-all duration-150 text-xs uppercase tracking-wider backdrop-blur-xs shadow-2xs hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white/80 cursor-pointer"
             >
               Join as Institutional Buyer

@@ -28,8 +28,14 @@ import {
   DEMO_USERS
 } from '../data/mockData';
 
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { ApiClient } from './apiClient';
+import {
+  registerUserAccount,
+  authenticateCredentials,
+  normalizeEmail,
+  normalizeRole
+} from './authVault';
 
 // In-memory fallback store
 let listingsStore: ProduceListing[] = [];
@@ -38,101 +44,94 @@ let poolsStore: DemandPool[] = [];
 
 export const apiService = {
   // Authentication & User Service
-  login: async (role: UserRole, email?: string, password?: string): Promise<{ token: string; user: UserProfile }> => {
-    try {
-      // 1. Attempt Supabase Login
-      if (email && password && password !== 'SecurePass@2026') {
+  login: async (
+    arg1: UserRole | string,
+    arg2?: string,
+    arg3?: string
+  ): Promise<{ token: string; user: UserProfile }> => {
+    let identifier = '';
+    let password = '';
+    let roleHint: UserRole | undefined;
+
+    const validRoles: UserRole[] = ['FARMER', 'RETAIL_BUYER', 'FPO_AGGREGATOR', 'LOGISTICS', 'ADMIN'];
+    if (validRoles.includes(arg1 as UserRole) && arg2 && arg3) {
+      roleHint = arg1 as UserRole;
+      identifier = arg2;
+      password = arg3;
+    } else if (typeof arg1 === 'string' && arg2) {
+      identifier = arg1;
+      password = arg2;
+      if (arg3 && validRoles.includes(arg3 as UserRole)) {
+        roleHint = arg3 as UserRole;
+      }
+    } else {
+      identifier = String(arg1 || '');
+      password = String(arg2 || '');
+    }
+
+    const rawId = identifier.trim();
+    const rawPass = password.trim();
+
+    if (!rawId || !rawPass) {
+      throw new Error('Please enter both email and password.');
+    }
+
+    const normEmail = normalizeEmail(rawId);
+    const isEmail = rawId.includes('@');
+
+    // 1. Attempt Supabase Login if Supabase is properly configured and identifier is an email
+    if (isSupabaseConfigured && isEmail) {
+      try {
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-          email,
-          password
+          email: normEmail,
+          password: rawPass
         });
-        
+
         if (authError) throw authError;
-        
-        if (authData.user) {
+
+        if (authData?.user) {
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', authData.user.id)
             .single();
-            
+
           if (profile && !profileError) {
-            return {
-              token: authData.session.access_token,
-              user: {
-                id: profile.id,
-                name: profile.name,
-                role: profile.role,
-                phone: profile.phone || '',
-                email: profile.email || '',
-                location: profile.location || '',
-                organization: profile.organization || '',
-                village: profile.village,
-                district: profile.district,
-                state: profile.state,
-                farmSizeAcres: profile.farm_size_acres,
-                mainCrops: profile.main_crops,
-                fpoName: profile.fpo_name
-              }
+            const role = normalizeRole(profile.role || roleHint);
+            const userProfile: UserProfile = {
+              id: profile.id,
+              name: profile.name || 'Member',
+              role,
+              phone: profile.phone || '',
+              email: profile.email || normEmail,
+              location: profile.location || '',
+              organization: profile.organization || '',
+              village: profile.village,
+              district: profile.district,
+              state: profile.state,
+              farmSizeAcres: profile.farm_size_acres,
+              mainCrops: profile.main_crops,
+              fpoName: profile.fpo_name
             };
+
+            const token = authData.session?.access_token || `uzhavan_jwt_${role.toLowerCase()}_${Date.now()}`;
+            ApiClient.setToken(token);
+            return { token, user: userProfile };
           }
         }
+      } catch (err: any) {
+        console.warn('Supabase auth notice:', err?.message);
       }
-    } catch (err: any) {
-      console.warn("Supabase login failed, falling back to mock...", err.message);
     }
 
-    // 2. Fallback Mock Login Logic
-    await new Promise((res) => setTimeout(res, 200));
-
-    const mockUsers = JSON.parse(localStorage.getItem('mockUsers') || '[]');
-    
-    // Custom Admin Bypass
-    if (email === 'admin@gmail.com' && password === 'admin123') {
-      return {
-        token: `uzhavanconnect_jwt_admin_${Date.now()}`,
-        user: {
-          ...DEMO_USERS.ADMIN,
-          email: 'admin@gmail.com'
-        }
-      };
+    // 2. Authenticate against the Secure Cryptographic Auth Vault
+    try {
+      const { user, token } = await authenticateCredentials(rawId, rawPass);
+      ApiClient.setToken(token);
+      return { token, user };
+    } catch (vaultErr: any) {
+      throw new Error(vaultErr.message || 'Invalid email or password. Please check your credentials and try again.');
     }
-
-    const matchedUser = mockUsers.find((u: any) => (u.email === email || u.mobile === email) && u.password === password);
-
-    if (matchedUser) {
-      const mockToken = `uzhavanconnect_jwt_${matchedUser.profile.role.toLowerCase()}_${Date.now()}`;
-      return {
-        token: mockToken,
-        user: matchedUser.profile
-      };
-    }
-
-    // Allow demo users with SecurePass@2026
-    if (password === 'SecurePass@2026') {
-      const roleFallback = DEMO_USERS[role] || DEMO_USERS.FARMER;
-      const mockToken = `uzhavanconnect_jwt_${role.toLowerCase()}_${Date.now()}`;
-
-      let displayName = roleFallback.name;
-      if (email && email.includes('@')) {
-        const raw = email.split('@')[0].split('.')[0].replace(/[0-9_-]/g, ' ').trim();
-        displayName = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : email.split('@')[0];
-      } else if (email && !/^\+?[0-9\s-]+$/.test(email.trim())) {
-        displayName = email.trim().charAt(0).toUpperCase() + email.trim().slice(1);
-      }
-
-      return {
-        token: mockToken,
-        user: {
-          ...roleFallback,
-          name: displayName,
-          email: email?.includes('@') ? email : roleFallback.email,
-          phone: email && !email.includes('@') ? email : roleFallback.phone
-        }
-      };
-    }
-
-    throw new Error('Invalid credentials. Please enter the correct email/mobile and password.');
   },
 
   register: async (userData: {
@@ -148,74 +147,72 @@ export const apiService = {
     mainCrop?: string;
     farmSize?: number;
   }): Promise<UserProfile> => {
-    try {
-      // 1. Attempt Supabase Registration
-      const { data, error } = await supabase.auth.signUp({
-        email: userData.email,
-        password: userData.password || 'Farmer@2026',
-        options: {
-          data: {
-            name: userData.name,
-            role: userData.role
-          }
-        }
-      });
-      
-      if (error) throw error;
-      
-      if (data.user) {
-        // Update the profile record created by the trigger
-        const { data: updatedProfile, error: profileError } = await supabase
-          .from('profiles')
-          .update({
-            phone: userData.mobile,
-            location: `${userData.district || ''}, ${userData.state || ''}`,
-            village: userData.village,
-            district: userData.district,
-            state: userData.state,
-            farm_size_acres: userData.farmSize,
-            main_crops: userData.mainCrop ? [userData.mainCrop] : []
-          })
-          .eq('id', data.user.id)
-          .select()
-          .single();
-          
-        if (updatedProfile && !profileError) {
-          return {
-            id: updatedProfile.id,
-            name: updatedProfile.name,
-            role: updatedProfile.role,
-            phone: updatedProfile.phone || '',
-            email: updatedProfile.email || '',
-            location: updatedProfile.location || '',
-            organization: updatedProfile.organization || ''
-          };
-        }
-      }
-    } catch (err: any) {
-      console.warn("Supabase registration failed, falling back to mock...", err.message);
+    const rawEmail = (userData.email || '').trim();
+    const rawMobile = (userData.mobile || '').trim();
+    const rawPassword = (userData.password || '').trim();
+    const rawName = (userData.name || '').trim();
+
+    if (!rawName) {
+      throw new Error('Please enter your full name.');
+    }
+    if (!rawEmail) {
+      throw new Error('Please enter a valid email address.');
+    }
+    if (!rawMobile || rawMobile.replace(/\D/g, '').length < 10) {
+      throw new Error('Please enter a valid 10-digit mobile number.');
+    }
+    if (!rawPassword || rawPassword.length < 6) {
+      throw new Error('Password must be at least 6 characters long.');
     }
 
-    // 2. Fallback Mock Registration Logic
-    await new Promise((res) => setTimeout(res, 300));
-    const newProfile: UserProfile = {
-      id: `usr_${Date.now()}`,
-      name: userData.name || 'New Registered Member',
-      role: userData.role || 'FARMER',
-      phone: userData.mobile || '+91 90000 00000',
-      email: userData.email || 'user@uzhavanconnect.gov.in',
-      location: `${userData.district || 'Chengalpattu'}, ${userData.state || 'Tamil Nadu'}`,
-      organization: 'Uzhavan Connect Network'
-    };
+    const role = normalizeRole(userData.role);
+    const normEmail = normalizeEmail(rawEmail);
 
-    const mockUsers = JSON.parse(localStorage.getItem('mockUsers') || '[]');
-    mockUsers.push({
-      email: userData.email,
-      mobile: userData.mobile,
-      password: userData.password,
-      profile: newProfile
+    // 1. If Supabase is configured, create the user in Supabase Auth & profiles table
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email: normEmail,
+          password: rawPassword,
+          options: {
+            data: {
+              name: rawName,
+              role
+            }
+          }
+        });
+
+        if (!error && data.user) {
+          await supabase
+            .from('profiles')
+            .upsert({
+              id: data.user.id,
+              name: rawName,
+              role,
+              email: normEmail,
+              phone: rawMobile,
+              location: `${userData.district || ''}, ${userData.state || ''}`,
+              village: userData.village,
+              district: userData.district,
+              state: userData.state,
+              farm_size_acres: userData.farmSize,
+              main_crops: userData.mainCrop ? [userData.mainCrop] : []
+            });
+        }
+      } catch (err: any) {
+        console.warn('Supabase registration sync notice:', err?.message);
+      }
+    }
+
+    // 2. Store securely in client Auth Vault with cryptographic salt + SHA-256 hash
+    const newProfile = await registerUserAccount({
+      ...userData,
+      name: rawName,
+      email: normEmail,
+      mobile: rawMobile,
+      password: rawPassword,
+      role
     });
-    localStorage.setItem('mockUsers', JSON.stringify(mockUsers));
 
     return newProfile;
   },
