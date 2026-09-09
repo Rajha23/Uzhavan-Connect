@@ -268,7 +268,7 @@ export const LandingPage: React.FC = () => {
 
             <button
               onClick={() => switchRole('FARMER')}
-              className="px-8 py-4 bg-slate-50 hover:bg-slate-50 text-white font-bold rounded-[1.5rem] border border-slate-200 transition text-sm uppercase tracking-widest"
+              className="px-8 py-4 bg-slate-50 hover:bg-white text-emerald-900 font-bold rounded-[1.5rem] border border-slate-200 transition text-sm uppercase tracking-widest"
             >
               Join as Farmer / FPO
             </button>
