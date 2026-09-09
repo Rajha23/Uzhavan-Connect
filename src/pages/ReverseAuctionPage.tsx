@@ -103,56 +103,56 @@ export const ReverseAuctionPage: React.FC = () => {
       </div>
 
       {/* Reverse Auction Workflow Process */}
-      <div className="bg-cream rounded-[2.5rem] border border-olive/30 p-8 shadow-forest space-y-6">
+      <div className="bg-white/95 rounded-2xl border border-emerald-900/10 p-6 sm:p-8 shadow-xs space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="text-[10px] font-medium uppercase tracking-widest text-forest bg-sage/30 px-4 py-1.5 rounded-full border border-sage/50">
+            <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-200/80">
               Auction Protocol Workflow
             </span>
-            <h3 className="text-2xl font-semibold text-forest mt-3">
+            <h3 className="text-xl font-medium tracking-tight text-slate-900 mt-3">
               End-to-End Reverse Auction Flow
             </h3>
           </div>
 
           {/* Status Indicators: OPEN, CLOSING SOON, CLOSED */}
-          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-widest">
-            <span className="px-4 py-2 bg-sage/30 text-forest rounded-full border border-sage/50 flex items-center gap-2 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-forest animate-pulse" />
+          <div className="flex items-center gap-2.5 text-[10px] font-medium uppercase tracking-wider">
+            <span className="px-3.5 py-1.5 bg-emerald-50 text-emerald-800 rounded-full border border-emerald-200/80 flex items-center gap-1.5 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
               OPEN
             </span>
-            <span className="px-4 py-2 bg-olive/20 text-forest/70 rounded-full border border-olive/40">
+            <span className="px-3.5 py-1.5 bg-amber-50 text-amber-800 rounded-full border border-amber-200">
               CLOSING SOON
             </span>
-            <span className="px-4 py-2 bg-cream text-forest/40 rounded-full border border-olive/20">
+            <span className="px-3.5 py-1.5 bg-slate-100 text-slate-500 rounded-full border border-slate-200">
               CLOSED
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-xs text-center">
-          <div className="p-4 bg-olive/10 rounded-[1.5rem] border border-olive/30 shadow-sm">
-            <span className="text-[9px] text-forest/50 font-medium uppercase tracking-widest block mb-2">STEP 1</span>
-            <span className="font-medium text-forest">Buyer creates demand</span>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs text-center">
+          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">STEP 1</span>
+            <span className="font-medium text-slate-800">Buyer creates demand</span>
           </div>
-          <div className="p-4 bg-olive/10 rounded-[1.5rem] border border-olive/30 shadow-sm">
-            <span className="text-[9px] text-forest/50 font-medium uppercase tracking-widest block mb-2">STEP 2</span>
-            <span className="font-medium text-forest">Farmers/FPOs receive</span>
+          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">STEP 2</span>
+            <span className="font-medium text-slate-800">Farmers/FPOs receive</span>
           </div>
-          <div className="p-4 bg-olive/10 rounded-[1.5rem] border border-olive/30 shadow-sm">
-            <span className="text-[9px] text-forest/50 font-medium uppercase tracking-widest block mb-2">STEP 3</span>
-            <span className="font-medium text-forest">Submit prices</span>
+          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">STEP 3</span>
+            <span className="font-medium text-slate-800">Submit prices</span>
           </div>
-          <div className="p-4 bg-olive/10 rounded-[1.5rem] border border-olive/30 shadow-sm">
-            <span className="text-[9px] text-forest/50 font-medium uppercase tracking-widest block mb-2">STEP 4</span>
-            <span className="font-medium text-forest">Compare offers</span>
+          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">STEP 4</span>
+            <span className="font-medium text-slate-800">Compare offers</span>
           </div>
-          <div className="p-4 bg-olive/10 rounded-[1.5rem] border border-olive/30 shadow-sm">
-            <span className="text-[9px] text-forest/50 font-medium uppercase tracking-widest block mb-2">STEP 5</span>
-            <span className="font-medium text-forest">Select suitable offer</span>
+          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">STEP 5</span>
+            <span className="font-medium text-slate-800">Select suitable offer</span>
           </div>
-          <div className="p-4 bg-sage/20 rounded-[1.5rem] border border-sage shadow-sm transform hover:-translate-y-1 transition">
-            <span className="text-[9px] text-forest font-medium uppercase tracking-widest block mb-2">STEP 6</span>
-            <span className="font-medium text-forest">Order confirmed</span>
+          <div className="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-300/80 shadow-2xs transform hover:-translate-y-0.5 transition">
+            <span className="text-[9px] text-emerald-800 font-medium uppercase tracking-wider block mb-1.5">STEP 6</span>
+            <span className="font-medium text-emerald-900">Order confirmed</span>
           </div>
         </div>
       </div>
@@ -242,36 +242,36 @@ export const ReverseAuctionPage: React.FC = () => {
       <SmartMatchingEngine />
 
       {/* Live FPO Offers Table */}
-      <div className="bg-cream rounded-[2.5rem] border border-olive/30 shadow-forest overflow-hidden mt-8">
-        <div className="p-8 border-b border-olive/20 flex items-center justify-between">
+      <div className="bg-white/95 rounded-2xl border border-emerald-900/10 shadow-xs overflow-hidden mt-8">
+        <div className="p-6 sm:p-7 border-b border-emerald-900/10 flex items-center justify-between">
           <div>
-            <h3 className="text-2xl font-medium text-forest">
+            <h3 className="text-xl font-medium tracking-tight text-slate-900">
               Submitted FPO Auction Bids ({offers.length})
             </h3>
-            <p className="text-xs text-forest/60 mt-1 font-medium uppercase tracking-widest">Sorted by Smart Match Score combining price, distance, and historical fulfillment</p>
+            <p className="text-xs text-slate-500 mt-1 font-normal">Sorted by Smart Match Score combining price, distance, and historical fulfillment</p>
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-olive/10 border-b border-olive/20 text-forest/70 font-medium uppercase tracking-widest">
-                <th className="p-5">FPO / Collective</th>
-                <th className="p-5">Quantity</th>
-                <th className="p-5">Price / kg</th>
-                <th className="p-5">Quality Grade</th>
-                <th className="p-5">Distance</th>
-                <th className="p-5">Reliability</th>
-                <th className="p-5">Smart Match Score</th>
-                <th className="p-5 text-right">Action</th>
+              <tr className="bg-emerald-50/40 border-b border-emerald-900/10 text-slate-600 font-medium uppercase tracking-wider text-[11px]">
+                <th className="p-4 sm:p-5">FPO / Collective</th>
+                <th className="p-4 sm:p-5">Quantity</th>
+                <th className="p-4 sm:p-5">Price / kg</th>
+                <th className="p-4 sm:p-5">Quality Grade</th>
+                <th className="p-4 sm:p-5">Distance</th>
+                <th className="p-4 sm:p-5">Reliability</th>
+                <th className="p-4 sm:p-5">Smart Match Score</th>
+                <th className="p-4 sm:p-5 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-olive/20">
+            <tbody className="divide-y divide-slate-100">
               {offers.map((offer) => {
                 const isAccepted = offer.id === acceptedOfferId;
 
                 return (
-                  <tr key={offer.id} className="hover:bg-olive/10 transition">
+                  <tr key={offer.id} className="hover:bg-emerald-50/30 transition">
                     <td className="p-5">
                       <span className="font-medium text-slate-900 block">{offer.fpoName}</span>
                       <span className="text-[10px] text-slate-500 uppercase tracking-wider font-normal mt-1 block">Ready: {offer.readinessDate}</span>
@@ -339,43 +339,43 @@ export const ReverseAuctionPage: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsSubmitModalOpen(false)}
-                className="text-forest/50 hover:text-forest transition"
+                className="text-slate-400 hover:text-slate-700 transition"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleAddOffer} className="space-y-5 text-xs">
+            <form onSubmit={handleAddOffer} className="space-y-4 text-xs">
               <div>
-                <label className="font-medium text-forest uppercase tracking-widest block mb-2 text-[10px]">FPO Organization Name</label>
+                <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">FPO Organization Name</label>
                 <input
                   type="text"
                   value={fpoName}
                   onChange={(e) => setFpoName(e.target.value)}
-                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-medium text-forest shadow-sm focus:border-sage focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium text-slate-900 shadow-2xs focus:border-emerald-500 focus:bg-white focus:outline-none transition"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-medium text-forest uppercase tracking-widest block mb-2 text-[10px]">Offered Quantity (kg)</label>
+                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">Offered Quantity (kg)</label>
                   <input
                     type="number"
                     value={quantityKg}
                     onChange={(e) => setQuantityKg(Number(e.target.value))}
-                    className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-medium text-forest shadow-sm focus:border-sage focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium text-slate-900 shadow-2xs focus:border-emerald-500 focus:bg-white focus:outline-none transition"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="font-medium text-forest uppercase tracking-widest block mb-2 text-[10px]">Bid Price (₹/kg)</label>
+                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">Bid Price (₹/kg)</label>
                   <input
                     type="number"
                     value={pricePerKg}
                     onChange={(e) => setPricePerKg(Number(e.target.value))}
-                    className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-medium text-forest shadow-sm focus:border-sage focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium text-slate-900 shadow-2xs focus:border-emerald-500 focus:bg-white focus:outline-none transition"
                     step="0.5"
                     required
                   />
@@ -384,11 +384,11 @@ export const ReverseAuctionPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-medium text-forest uppercase tracking-widest block mb-2 text-[10px]">Quality Grade</label>
+                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">Quality Grade</label>
                   <select
                     value={grade}
                     onChange={(e) => setGrade(e.target.value as any)}
-                    className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-medium text-forest shadow-sm focus:border-sage focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium text-slate-900 shadow-2xs focus:border-emerald-500 focus:bg-white focus:outline-none transition"
                   >
                     <option value="Grade A">Grade A (Premium)</option>
                     <option value="Grade B">Grade B (Standard)</option>
@@ -396,28 +396,28 @@ export const ReverseAuctionPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-medium text-forest uppercase tracking-widest block mb-2 text-[10px]">Distance to Hub (km)</label>
+                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">Distance to Hub (km)</label>
                   <input
                     type="number"
                     value={distanceKm}
                     onChange={(e) => setDistanceKm(Number(e.target.value))}
-                    className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-medium text-forest shadow-sm focus:border-sage focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium text-slate-900 shadow-2xs focus:border-emerald-500 focus:bg-white focus:outline-none transition"
                     required
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-olive/20">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setIsSubmitModalOpen(false)}
-                  className="px-5 py-3 text-forest/70 hover:bg-olive/10 rounded-[1rem] font-medium uppercase tracking-widest transition"
+                  className="btn-ghost text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-sage hover:bg-cream text-forest font-medium rounded-[1rem] shadow-sm transition uppercase tracking-widest"
+                  className="btn-primary text-xs"
                 >
                   Publish Auction Bid
                 </button>

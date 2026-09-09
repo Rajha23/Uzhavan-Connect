@@ -5,20 +5,23 @@
 @layer base {
   :root {
     --bg-canvas: #f8faf9;
+    --bg-canvas-subtle: #f2f7f4;
     --bg-surface: #ffffff;
     --bg-surface-pale: #f0fdf4;
-    --border-agri-subtle: rgba(16, 185, 129, 0.12);
+    --bg-surface-mint: #f0fdfa;
+    --border-agri-subtle: rgba(16, 185, 129, 0.10);
+    --border-agri-medium: rgba(16, 185, 129, 0.22);
     --border-agri-focus: rgba(16, 185, 129, 0.35);
   }
 
   body {
     @apply bg-[#f8faf9] text-slate-800 font-sans font-normal;
     background-image: 
-      radial-gradient(ellipse at 8% 0%, rgba(209, 250, 229, 0.42) 0%, transparent 45%),
-      radial-gradient(ellipse at 92% 12%, rgba(204, 251, 241, 0.32) 0%, transparent 40%),
-      radial-gradient(ellipse at 50% 45%, rgba(236, 253, 245, 0.45) 0%, transparent 55%),
-      radial-gradient(ellipse at 88% 85%, rgba(209, 250, 229, 0.32) 0%, transparent 45%),
-      radial-gradient(ellipse at 12% 95%, rgba(240, 253, 244, 0.55) 0%, transparent 50%);
+      radial-gradient(ellipse at 8% 0%, rgba(209, 250, 229, 0.45) 0%, transparent 45%),
+      radial-gradient(ellipse at 92% 10%, rgba(204, 251, 241, 0.35) 0%, transparent 42%),
+      radial-gradient(ellipse at 50% 48%, rgba(236, 253, 245, 0.50) 0%, transparent 55%),
+      radial-gradient(ellipse at 88% 85%, rgba(209, 250, 229, 0.35) 0%, transparent 45%),
+      radial-gradient(ellipse at 12% 95%, rgba(240, 253, 244, 0.60) 0%, transparent 50%);
     background-attachment: fixed;
     background-size: 100% 100%;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
@@ -44,18 +47,18 @@
   }
 }
 
-/* Centralized AI Design System Tokens */
+/* Centralized Agricultural & AI Design System Tokens */
 @layer components {
   /* Reusable Application Background & Surface Tokens */
   .agri-canvas {
     @apply min-h-screen text-slate-800 font-sans relative;
     background-color: #f8faf9;
     background-image: 
-      radial-gradient(ellipse at 8% 0%, rgba(209, 250, 229, 0.42) 0%, transparent 45%),
-      radial-gradient(ellipse at 92% 12%, rgba(204, 251, 241, 0.32) 0%, transparent 40%),
-      radial-gradient(ellipse at 50% 45%, rgba(236, 253, 245, 0.45) 0%, transparent 55%),
-      radial-gradient(ellipse at 88% 85%, rgba(209, 250, 229, 0.32) 0%, transparent 45%),
-      radial-gradient(ellipse at 12% 95%, rgba(240, 253, 244, 0.55) 0%, transparent 50%);
+      radial-gradient(ellipse at 8% 0%, rgba(209, 250, 229, 0.45) 0%, transparent 45%),
+      radial-gradient(ellipse at 92% 10%, rgba(204, 251, 241, 0.35) 0%, transparent 42%),
+      radial-gradient(ellipse at 50% 48%, rgba(236, 253, 245, 0.50) 0%, transparent 55%),
+      radial-gradient(ellipse at 88% 85%, rgba(209, 250, 229, 0.35) 0%, transparent 45%),
+      radial-gradient(ellipse at 12% 95%, rgba(240, 253, 244, 0.60) 0%, transparent 50%);
     background-attachment: fixed;
     background-size: 100% 100%;
   }
@@ -68,6 +71,10 @@
     @apply bg-white rounded-2xl border border-emerald-900/10 shadow-sm hover:border-emerald-500/30 hover:shadow-md transition-all duration-200;
   }
 
+  .agri-card-subtle {
+    @apply bg-emerald-50/40 rounded-2xl border border-emerald-200/60 shadow-xs hover:border-emerald-300 transition-all duration-200;
+  }
+
   .agri-surface-pale {
     @apply bg-emerald-50/70 rounded-2xl border border-emerald-200/70;
   }
@@ -76,9 +83,17 @@
     @apply bg-gradient-to-r from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl border border-emerald-600/30 shadow-forest;
   }
 
+  .agri-nav-surface {
+    @apply bg-white/95 backdrop-blur-md border-b border-emerald-900/10 shadow-2xs;
+  }
+
+  .agri-sidebar-surface {
+    @apply bg-white/95 backdrop-blur-md border-r border-emerald-900/10 shadow-xs;
+  }
+
   /* AI Card Standard */
   .ai-card {
-    @apply bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-200/80 hover:shadow-md transition-all duration-200;
+    @apply bg-white/95 rounded-2xl border border-emerald-900/10 shadow-xs hover:border-emerald-300 hover:shadow-md transition-all duration-200;
   }
 
   .ai-card-active {
@@ -87,12 +102,12 @@
 
   /* Metric Stat Card */
   .metric-card {
-    @apply bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-200 transition-all duration-200;
+    @apply bg-white/95 p-5 rounded-2xl border border-emerald-900/10 shadow-xs hover:border-emerald-300 hover:shadow-ai-hover transition-all duration-200;
   }
 
   /* AI Pill & Badges */
   .ai-badge {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-200/80;
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium tracking-wide bg-emerald-50 text-emerald-800 border border-emerald-200/80;
   }
 
   .ai-badge-purple {
@@ -109,20 +124,56 @@
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-xs tracking-wide bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all duration-150 cursor-pointer;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-xs tracking-wide bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-900 border border-slate-200/80 hover:border-emerald-200 transition-all duration-150 cursor-pointer;
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-xs tracking-wide bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 hover:border-slate-300 shadow-2xs transition-all duration-150 cursor-pointer;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-xs tracking-wide bg-white hover:bg-emerald-50/50 text-slate-700 hover:text-emerald-900 border border-slate-200 hover:border-emerald-300 shadow-2xs transition-all duration-150 cursor-pointer;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl font-medium text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 transition-all duration-150 cursor-pointer;
+    @apply inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl font-medium text-xs text-slate-600 hover:text-emerald-900 hover:bg-emerald-50/70 transition-all duration-150 cursor-pointer;
   }
 
   /* Modern Inputs */
   .input-modern {
     @apply w-full px-3.5 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 placeholder-slate-400 text-slate-800 transition-all duration-150;
+  }
+}
+
+@layer utilities {
+  /* Subtle agricultural green border tint for standard cards and dividers */
+  .border-slate-200\/80 {
+    border-color: rgba(16, 185, 129, 0.12);
+  }
+  .border-slate-200\/90 {
+    border-color: rgba(16, 185, 129, 0.14);
+  }
+  .border-slate-200\/70 {
+    border-color: rgba(16, 185, 129, 0.10);
+  }
+  .border-slate-200 {
+    border-color: rgba(16, 185, 129, 0.12);
+  }
+  .border-slate-100 {
+    border-color: rgba(16, 185, 129, 0.08);
+  }
+
+  /* Subtle agricultural soft green tint for sub-panels and stat boxes */
+  .bg-slate-50\/80 {
+    background-color: rgba(240, 253, 244, 0.50);
+  }
+  .bg-slate-50\/70 {
+    background-color: rgba(240, 253, 244, 0.45);
+  }
+  .bg-slate-50\/60 {
+    background-color: rgba(240, 253, 244, 0.40);
+  }
+  .bg-slate-50\/50 {
+    background-color: rgba(240, 253, 244, 0.35);
+  }
+  .bg-slate-50 {
+    background-color: rgba(240, 253, 244, 0.60);
   }
 }
 
@@ -176,7 +227,7 @@
 .blur-reveal-btn {
   transform: translateY(20px);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  @apply bg-white text-forest uppercase tracking-widest font-medium px-6 py-3 rounded-full shadow-forest;
+  @apply bg-white text-emerald-950 uppercase tracking-widest font-medium px-6 py-3 rounded-full shadow-forest;
 }
 .blur-reveal-container:hover .blur-reveal-btn {
   transform: translateY(0);

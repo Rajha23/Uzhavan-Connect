@@ -111,14 +111,14 @@ export const FindBuyersPage: React.FC = () => {
       </div>
 
       {offerSuccess && (
-        <div className="p-5 bg-sage/20 border border-sage/60 text-forest rounded-[1.5rem] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
+        <div className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-2xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-5 h-5 text-forest shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0" />
             <span className="text-xs font-medium">{offerSuccess}</span>
           </div>
           <button
             onClick={() => setActiveTab('orders')}
-            className="px-4 py-2 bg-forest text-cream text-[10px] font-medium uppercase tracking-widest rounded-[0.8rem] shadow-sm hover:bg-[#023120] transition whitespace-nowrap self-start sm:self-auto cursor-pointer"
+            className="btn-primary text-xs whitespace-nowrap self-start sm:self-auto cursor-pointer"
           >
             Track in Orders Pipeline →
           </button>
@@ -126,15 +126,15 @@ export const FindBuyersPage: React.FC = () => {
       )}
 
       {/* 1. Received Buyer Offers */}
-      <div className="bg-cream rounded-[2.5rem] border border-olive/30 shadow-forest p-8 space-y-6">
-        <div className="flex items-center justify-between border-b border-olive/20 pb-4">
+      <div className="bg-white/95 rounded-2xl border border-emerald-900/10 shadow-xs p-6 sm:p-8 space-y-6">
+        <div className="flex items-center justify-between border-b border-emerald-900/10 pb-4">
           <div>
-            <h3 className="text-2xl font-semibold text-forest">
+            <h3 className="text-xl font-medium tracking-tight text-slate-900">
               Direct Buyer Offers for Your Produce
             </h3>
-            <p className="text-xs text-forest/60 mt-1 font-medium uppercase tracking-widest">Retailers bidding directly on your listings</p>
+            <p className="text-xs text-slate-500 mt-1 font-normal">Retailers bidding directly on your listings</p>
           </div>
-          <span className="text-[10px] font-medium text-forest bg-sage/30 px-3 py-1 rounded-full border border-sage/50 uppercase tracking-widest">
+          <span className="text-[10px] font-medium text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/80 uppercase tracking-wider">
             {offers.filter((o) => o.status === 'PENDING').length} Pending
           </span>
         </div>

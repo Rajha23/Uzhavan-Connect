@@ -163,7 +163,7 @@ export const DemandIntelligencePage: React.FC = () => {
       <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
           <div>
-            <h3 className="text-xs font-medium uppercase tracking-widest text-forest">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-emerald-800">
               1. Agricultural Parameters & Regional Corridors
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -245,10 +245,10 @@ export const DemandIntelligencePage: React.FC = () => {
       {/* 3. PREDICTION OUTPUT GAUGES */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-medium uppercase tracking-widest text-forest">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-emerald-800">
             2. Forecast Predictions & Supply Gap
           </h3>
-          <span className="text-[10px] font-mono text-forest/60">
+          <span className="text-[10px] font-mono text-slate-500">
             Target Date: {forecastResult?.forecast_date || '2026-09-15'}
           </span>
         </div>

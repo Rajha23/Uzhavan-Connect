@@ -243,16 +243,16 @@ export const DemandPoolPage: React.FC = () => {
           </div>
 
           {/* Stage 2: Multi-Factor Compatibility Rules Check (Col 4) */}
-          <div className="lg:col-span-4 bg-sage/10 rounded-[2rem] p-6 border border-sage/40 flex flex-col justify-between space-y-4">
+          <div className="lg:col-span-4 bg-emerald-50/50 rounded-2xl p-6 border border-emerald-200/70 flex flex-col justify-between space-y-4">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-medium uppercase tracking-widest text-forest/60">Stage 2</span>
+                <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-800">Stage 2</span>
                 <span className="text-[10px] bg-emerald-100 text-emerald-900 font-medium px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                   Compatibility Verified
                 </span>
               </div>
-              <h4 className="font-medium text-forest text-base mb-1">Aggregation Rule Engine</h4>
-              <p className="text-[11px] text-forest/60 mb-4 font-normal">
+              <h4 className="font-medium text-slate-900 text-base mb-1">Aggregation Rule Engine</h4>
+              <p className="text-[11px] text-slate-500 mb-4 font-normal">
                 Demands are grouped only when 4 core agricultural compatibility invariants hold:
               </p>
 
@@ -263,19 +263,19 @@ export const DemandPoolPage: React.FC = () => {
                   `Logistics Corridor Consolidation: ${activeCorridor}`,
                   `Synchronized Delivery Window: ${activeTargetDate} Morning Run`
                 ]).map((reason: string, idx: number) => (
-                  <div key={idx} className="flex items-start gap-2.5 text-xs bg-cream p-3 rounded-xl border border-olive/30 shadow-xs">
+                  <div key={idx} className="flex items-start gap-2.5 text-xs bg-white/95 p-3 rounded-xl border border-emerald-900/10 shadow-2xs">
                     <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                    <span className="text-forest font-normal">{reason}</span>
+                    <span className="text-slate-800 font-normal">{reason}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-4 p-3 bg-olive/10 rounded-xl border border-olive/30 text-[11px] text-forest/80 leading-relaxed font-normal">
-                🛡️ <strong className="text-forest font-medium">Integrity Invariant:</strong> Individual buyer demands are never modified, merged, or lost. Aggregation acts as a coordinated procurement umbrella.
+              <div className="mt-4 p-3 bg-emerald-50/70 rounded-xl border border-emerald-200/70 text-[11px] text-emerald-950 leading-relaxed font-normal">
+                🛡️ <strong className="text-emerald-950 font-medium">Integrity Invariant:</strong> Individual buyer demands are never modified, merged, or lost. Aggregation acts as a coordinated procurement umbrella.
               </div>
             </div>
 
-            <div className="pt-3 border-t border-sage/30 text-[11px] text-emerald-900 font-medium flex items-center gap-1">
+            <div className="pt-3 border-t border-emerald-200/60 text-[11px] text-emerald-900 font-medium flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>4 / 4 Compatibility Invariants Passed</span>
             </div>

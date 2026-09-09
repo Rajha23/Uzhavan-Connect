@@ -42,7 +42,7 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="space-y-20 pb-16">
       {/* 1. Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-16 lg:pt-16 lg:pb-24 border-b border-slate-200/80 bg-gradient-to-b from-white via-slate-50/50 to-slate-100/30">
+      <section className="relative overflow-hidden pt-12 pb-16 lg:pt-16 lg:pb-24 border-b border-emerald-900/10 bg-gradient-to-b from-white/90 via-emerald-50/25 to-[#f8faf9]/90">
         {/* Decorative backdrop gradients */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full overflow-hidden pointer-events-none -z-10">
           <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-emerald-100/40 blur-3xl" />
@@ -110,7 +110,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Ecosystem Architecture Flow Container */}
-          <div className="mt-14 max-w-5xl mx-auto bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-sm relative">
+          <div className="mt-14 max-w-5xl mx-auto bg-white/95 rounded-2xl p-6 sm:p-8 border border-emerald-900/10 shadow-xs relative">
             <div className="text-center mb-8">
               <span className="text-xs font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-200/80">
                 100% Traceable End-to-End Operating Cycle
@@ -240,7 +240,7 @@ export const LandingPage: React.FC = () => {
           {problemCards.map((card, idx) => (
             <div
               key={idx}
-              className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-sm transition space-y-2.5 group"
+              className="bg-white/95 p-5 rounded-2xl border border-emerald-900/10 shadow-xs hover:border-emerald-400/60 hover:shadow-ai-hover transition-all duration-200 space-y-2.5 group"
             >
               <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200/60 text-emerald-800 flex items-center justify-center font-medium text-xs shadow-2xs group-hover:scale-105 transition">
                 0{idx + 1}

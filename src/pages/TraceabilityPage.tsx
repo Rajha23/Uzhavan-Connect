@@ -5,11 +5,11 @@ import { QrCode, Search, CheckCircle2, Clock, Package, Truck, MapPin, ExternalLi
 const STATUS_STEPS = ['Harvested', 'Quality Checked', 'Packed', 'In Transit', 'Delivered'];
 
 const STATUS_COLORS: Record<string, string> = {
-  Harvested: 'bg-sage/20 text-forest border-sage',
-  'Quality Checked': 'bg-olive/20 text-forest border-olive',
-  Packed: 'bg-cream text-forest border-olive/30',
-  'In Transit': 'bg-olive/40 text-forest border-olive',
-  Delivered: 'bg-forest text-cream border-forest',
+  Harvested: 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+  'Quality Checked': 'bg-teal-50 text-teal-800 border-teal-200/80',
+  Packed: 'bg-cyan-50 text-cyan-800 border-cyan-200/80',
+  'In Transit': 'bg-sky-50 text-sky-800 border-sky-200/80',
+  Delivered: 'bg-emerald-700 text-white border-emerald-800',
 };
 
 export const TraceabilityPage: React.FC = () => {
@@ -164,8 +164,8 @@ export const TraceabilityPage: React.FC = () => {
               onClick={() => setSelectedBatchId(b.batchId)}
               className={`w-full text-left p-4 sm:p-5 rounded-xl border transition shadow-xs ${
                 selectedBatchId === b.batchId
-                  ? 'border-emerald-600 bg-emerald-50/40 ring-2 ring-emerald-500/20'
-                  : 'border-slate-200/80 bg-white hover:border-slate-300'
+                  ? 'border-emerald-600 bg-emerald-50/50 ring-2 ring-emerald-500/20'
+                  : 'border-emerald-900/10 bg-white hover:border-emerald-300'
               }`}
             >
               <div className="flex items-start justify-between gap-2">

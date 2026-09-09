@@ -50,27 +50,27 @@ type LifecycleStage = typeof STAGES[number]['key'];
 const getStageBadgeColor = (stage: LifecycleStage): string => {
   switch (stage) {
     case 'Listed':
-      return 'bg-sage/30 text-forest border-sage/60 font-medium';
+      return 'bg-emerald-50 text-emerald-800 border-emerald-200/80 font-medium';
     case 'Matched':
-      return 'bg-blue-100 text-blue-900 border-blue-300 font-medium';
+      return 'bg-blue-50 text-blue-800 border-blue-200 font-medium';
     case 'Agreement Pending':
-      return 'bg-indigo-100 text-indigo-900 border-indigo-300 font-medium';
+      return 'bg-indigo-50 text-indigo-800 border-indigo-200 font-medium';
     case 'Confirmed':
-      return 'bg-cyan-100 text-cyan-900 border-cyan-300 font-medium';
+      return 'bg-cyan-50 text-cyan-800 border-cyan-200 font-medium';
     case 'Collection':
-      return 'bg-amber-100 text-amber-900 border-amber-300 font-medium';
+      return 'bg-amber-50 text-amber-800 border-amber-200 font-medium';
     case 'Quality Check':
-      return 'bg-purple-100 text-purple-900 border-purple-300 font-medium';
+      return 'bg-purple-50 text-purple-800 border-purple-200 font-medium';
     case 'Packed':
-      return 'bg-teal-100 text-teal-900 border-teal-300 font-medium';
+      return 'bg-teal-50 text-teal-800 border-teal-200 font-medium';
     case 'In Transit':
-      return 'bg-sky-100 text-sky-900 border-sky-300 font-medium';
+      return 'bg-sky-50 text-sky-800 border-sky-200 font-medium';
     case 'Delivered':
       return 'bg-emerald-100 text-emerald-900 border-emerald-300 font-medium';
     case 'Payment Completed':
-      return 'bg-forest text-cream border-forest font-medium';
+      return 'bg-emerald-700 text-white border-emerald-800 font-medium';
     default:
-      return 'bg-cream text-forest border-olive/30 font-medium';
+      return 'bg-emerald-50 text-emerald-800 border-emerald-200 font-medium';
   }
 };
 

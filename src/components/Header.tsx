@@ -98,7 +98,7 @@ export const Header: React.FC = () => {
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder="Search produce, orders, demands..."
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition placeholder:text-slate-400 text-slate-800"
+            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50/70 border border-emerald-900/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition placeholder:text-slate-400 text-slate-800"
           />
         </div>
       </div>

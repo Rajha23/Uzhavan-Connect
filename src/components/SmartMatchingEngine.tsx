@@ -987,13 +987,13 @@ export const SmartMatchingEngine: React.FC = () => {
                   <div className="p-2 bg-emerald-700 text-white rounded-lg font-medium shadow-xs">
                     2. Agreement
                   </div>
-                  <div className="p-2 bg-olive/20 text-forest/70 rounded-lg">
+                  <div className="p-2 bg-slate-100 text-slate-600 rounded-lg">
                     3. Quantities
                   </div>
-                  <div className="p-2 bg-olive/20 text-forest/70 rounded-lg">
+                  <div className="p-2 bg-slate-100 text-slate-600 rounded-lg">
                     4. Price
                   </div>
-                  <div className="p-2 bg-olive/20 text-forest/70 rounded-lg">
+                  <div className="p-2 bg-slate-100 text-slate-600 rounded-lg">
                     5. Order
                   </div>
                 </div>
@@ -1001,13 +1001,13 @@ export const SmartMatchingEngine: React.FC = () => {
                 {/* Agreement Parties Summary */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Farmer Party */}
-                  <div className="p-4 rounded-xl bg-olive/10 border border-olive/30 space-y-2 text-xs">
-                    <span className="text-[10px] font-medium text-forest/60 uppercase tracking-wider block">Seller (Farmer / FPO)</span>
-                    <p className="font-medium text-forest text-sm">{agreementModal.listing.farmerName}</p>
-                    <p className="text-forest/70 font-medium">
+                  <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/80 space-y-2 text-xs">
+                    <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider block">Seller (Farmer / FPO)</span>
+                    <p className="font-medium text-slate-900 text-sm">{agreementModal.listing.farmerName}</p>
+                    <p className="text-slate-600 font-medium">
                       {agreementModal.listing.crop} ({agreementModal.listing.variety || 'Certified'}) • {agreementModal.listing.grade}
                     </p>
-                    <p className="text-[11px] text-forest/60">
+                    <p className="text-[11px] text-slate-500">
                       Location: {agreementModal.listing.location}
                     </p>
                     <p className="text-xs font-semibold text-emerald-800">
@@ -1016,30 +1016,30 @@ export const SmartMatchingEngine: React.FC = () => {
                   </div>
 
                   {/* Buyer Party */}
-                  <div className="p-4 rounded-xl bg-sage/15 border border-sage/40 space-y-2 text-xs">
-                    <span className="text-[10px] font-medium text-forest/60 uppercase tracking-wider block">Buyer / Procurement Pool</span>
-                    <p className="font-medium text-forest text-sm">{currentTarget.buyerName}</p>
-                    <p className="text-forest/70 font-medium">
+                  <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/70 space-y-2 text-xs">
+                    <span className="text-[10px] font-medium text-emerald-800 uppercase tracking-wider block">Buyer / Procurement Pool</span>
+                    <p className="font-medium text-slate-900 text-sm">{currentTarget.buyerName}</p>
+                    <p className="text-slate-600 font-medium">
                       Destination: {currentTarget.location}
                     </p>
-                    <p className="text-[11px] text-forest/60">
+                    <p className="text-[11px] text-slate-500">
                       Required by: {currentTarget.deliveryDate} ({currentTarget.deliveryTimeWindow})
                     </p>
-                    <p className="text-xs font-semibold text-forest">
+                    <p className="text-xs font-semibold text-emerald-800">
                       Demanded: {currentTarget.quantityKg.toLocaleString()} kg @ max ₹{currentTarget.maxTargetPricePerKg}/kg
                     </p>
                   </div>
                 </div>
 
                 {/* Agreement Negotiation Inputs */}
-                <div className="bg-cream rounded-2xl p-5 border border-olive/30 space-y-4">
-                  <h4 className="text-xs font-medium text-forest uppercase tracking-wider">
+                <div className="bg-white/95 rounded-2xl p-5 border border-emerald-900/10 shadow-2xs space-y-4">
+                  <h4 className="text-xs font-medium text-slate-900 uppercase tracking-wider">
                     Contractual Terms Confirmation
                   </h4>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="font-medium text-forest uppercase tracking-widest block mb-2 text-[10px]">
+                      <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">
                         Agreed Contract Quantity (kg)
                       </label>
                       <input
@@ -1176,7 +1176,7 @@ export const SmartMatchingEngine: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setAgreementModal((prev) => ({ ...prev, isOpen: false }))}
-                    className="w-full sm:w-auto px-6 py-3.5 bg-olive/20 hover:bg-olive/30 text-forest font-medium rounded-[1rem] transition uppercase tracking-widest text-xs"
+                    className="btn-secondary text-xs"
                   >
                     Done
                   </button>

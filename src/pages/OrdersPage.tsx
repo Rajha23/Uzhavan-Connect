@@ -265,7 +265,7 @@ export const OrdersPage: React.FC = () => {
                             e.stopPropagation();
                             setActiveTab('settlement');
                           }}
-                          className="px-3 py-1.5 bg-forest text-cream hover:bg-forest/90 text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1"
+                          className="btn-primary text-xs flex items-center gap-1.5 py-1.5 px-3"
                         >
                           <CreditCard className="w-3.5 h-3.5" />
                           <span>{isCompleted ? 'Receipt' : 'Escrow Payout'}</span>
