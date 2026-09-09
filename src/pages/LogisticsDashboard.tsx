@@ -83,16 +83,16 @@ export const LogisticsDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header Banner */}
-      <div className="bg-forest text-cream rounded-[2.5rem] p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest">
+      <div className="bg-emerald-700 text-white rounded-[2.5rem] p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-soft">
         <div>
-          <div className="flex items-center gap-2 text-sage text-xs font-bold uppercase tracking-widest mb-2">
+          <div className="flex items-center gap-2 text-emerald-600 text-xs font-bold uppercase tracking-widest mb-2">
             <Truck className="w-4 h-4" />
             <span>Multi-Hub Cold-Chain Logistics Control Tower</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight tracking-wide">
             {currentUser.organization || 'Sundar Logistics Control Tower'}
           </h1>
-          <p className="text-sm text-cream/70 mt-2 font-medium">
+          <p className="text-sm text-white/70 mt-2 font-medium">
             Vehicle fleet assignment, Google OR-Tools multi-stop route optimization, and GPS delivery handover.
           </p>
         </div>
@@ -100,7 +100,7 @@ export const LogisticsDashboard: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setActiveTab('route-optimization')}
-            className="flex items-center gap-2 bg-sage hover:bg-cream text-forest text-xs font-bold px-5 py-3 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
+            className="flex items-center gap-2 bg-emerald-100 hover:bg-white text-slate-900 text-xs font-bold px-5 py-3 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
           >
             <Navigation className="w-4 h-4" />
             <span>Route Optimizer Map</span>
@@ -168,7 +168,7 @@ export const LogisticsDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 font-['Outfit']">Packed Batches Ready for Carrier Assignment</h3>
+              <h3 className="text-lg font-bold text-slate-900 ">Packed Batches Ready for Carrier Assignment</h3>
               <p className="text-xs text-slate-500 mt-0.5">Assign temperature-controlled EV trucks, drivers, and delivery windows</p>
             </div>
             <span className="text-xs font-bold text-teal-800 bg-teal-100 px-3 py-1 rounded-full border border-teal-300">
@@ -453,7 +453,7 @@ export const LogisticsDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 font-['Outfit']">Delivered Shipments Handover Log</h3>
+              <h3 className="text-lg font-bold text-slate-900 ">Delivered Shipments Handover Log</h3>
               <p className="text-xs text-slate-500 mt-0.5">Shipments successfully delivered and acknowledged at institutional buyer receiving centers</p>
             </div>
             <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">

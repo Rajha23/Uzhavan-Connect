@@ -74,11 +74,11 @@ export const Header: React.FC = () => {
   const pageTitle = PAGE_TITLES[activeTab] || 'Dashboard';
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-cream border-b border-olive/30 flex items-center px-4 gap-3 shadow-sm">
+    <header className="sticky top-0 z-30 h-16 bg-white border-b border-slate-200 flex items-center px-4 gap-3 shadow-sm">
       {/* Hamburger — mobile only */}
       <button
         onClick={toggleSidebar}
-        className="lg:hidden p-2 rounded-full text-forest/60 hover:text-forest hover:bg-olive/20 transition"
+        className="lg:hidden p-2 rounded-full text-slate-900/60 hover:text-slate-900 hover:bg-slate-50 transition"
         aria-label="Toggle sidebar"
       >
         <Menu className="w-5 h-5" />
@@ -86,19 +86,19 @@ export const Header: React.FC = () => {
 
       {/* Page Title */}
       <div className="hidden sm:block min-w-0">
-        <h1 className="text-sm font-bold text-forest truncate tracking-wide">{pageTitle}</h1>
+        <h1 className="text-sm font-bold text-slate-900 truncate tracking-wide">{pageTitle}</h1>
       </div>
 
       {/* Search Bar — grows to fill space */}
       <div className="flex-1 max-w-sm mx-auto sm:mx-0 sm:ml-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-forest/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-900/40" />
           <input
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder="Search..."
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-olive/10 border border-olive/30 rounded-[1rem] focus:outline-none focus:border-sage focus:bg-white transition placeholder:text-forest/40 text-forest"
+            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-[1rem] focus:outline-none focus:border-sage focus:bg-white transition placeholder:text-slate-900/40 text-slate-900"
           />
         </div>
       </div>
@@ -146,10 +146,10 @@ export const Header: React.FC = () => {
         {isInstallable && (
           <button
             onClick={promptInstall}
-            className="hidden md:flex items-center gap-1.5 bg-forest hover:bg-[#023120] text-cream px-3 py-1.5 rounded-[1rem] text-xs font-bold transition shadow-xs"
+            className="hidden md:flex items-center gap-1.5 bg-emerald-700 hover:bg-[#023120] text-white px-3 py-1.5 rounded-[1rem] text-xs font-bold transition shadow-xs"
             title="Install UZHAVAN Connect to your home screen or desktop for fast offline field access"
           >
-            <Download className="w-3.5 h-3.5 text-sage" />
+            <Download className="w-3.5 h-3.5 text-emerald-600" />
             <span>Install App</span>
           </button>
         )}
@@ -161,17 +161,17 @@ export const Header: React.FC = () => {
               setIsRoleDropdownOpen(!isRoleDropdownOpen);
               setIsUserMenuOpen(false);
             }}
-            className="flex items-center gap-1.5 bg-olive/20 hover:bg-olive/30 border border-olive/30 text-forest px-3 py-1.5 rounded-[1rem] text-xs font-bold transition"
+            className="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-50 border border-slate-200 text-slate-900 px-3 py-1.5 rounded-[1rem] text-xs font-bold transition"
             aria-label="Role Switcher"
           >
-            <span className="w-2 h-2 rounded-full bg-forest animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-emerald-700 animate-pulse" />
             <span>{currentRole.replace('_', ' ')}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-forest/60" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-900/60" />
           </button>
 
           {isRoleDropdownOpen && (
-            <div className="absolute right-0 top-full mt-1 w-52 bg-cream rounded-[1.5rem] shadow-forest border border-olive/30 z-50 overflow-hidden py-1">
-              <div className="px-4 py-2 text-[10px] font-bold text-forest/50 uppercase tracking-widest border-b border-olive/20">
+            <div className="absolute right-0 top-full mt-1 w-52 bg-white rounded-[1.5rem] shadow-soft border border-slate-200 z-50 overflow-hidden py-1">
+              <div className="px-4 py-2 text-[10px] font-bold text-slate-900/50 uppercase tracking-widest border-b border-slate-200">
                 Switch Portal Role
               </div>
               <button
@@ -180,7 +180,7 @@ export const Header: React.FC = () => {
                   setIsRoleDropdownOpen(false);
                 }}
                 className={`w-full text-left px-4 py-2.5 text-xs font-bold transition ${
-                  currentRole === 'FARMER' ? 'bg-sage/20 text-forest' : 'text-forest/70 hover:bg-olive/20'
+                  currentRole === 'FARMER' ? 'bg-emerald-100/20 text-slate-900' : 'text-slate-900/70 hover:bg-slate-50'
                 }`}
               >
                 🌾 Farmer Portal
@@ -191,7 +191,7 @@ export const Header: React.FC = () => {
                   setIsRoleDropdownOpen(false);
                 }}
                 className={`w-full text-left px-4 py-2.5 text-xs font-bold transition ${
-                  currentRole === 'RETAIL_BUYER' ? 'bg-sage/20 text-forest' : 'text-forest/70 hover:bg-olive/20'
+                  currentRole === 'RETAIL_BUYER' ? 'bg-emerald-100/20 text-slate-900' : 'text-slate-900/70 hover:bg-slate-50'
                 }`}
               >
                 🛒 Buyer Portal
@@ -202,7 +202,7 @@ export const Header: React.FC = () => {
                   setIsRoleDropdownOpen(false);
                 }}
                 className={`w-full text-left px-4 py-2.5 text-xs font-bold transition ${
-                  currentRole === 'ADMIN' ? 'bg-sage/20 text-forest' : 'text-forest/70 hover:bg-olive/20'
+                  currentRole === 'ADMIN' ? 'bg-emerald-100/20 text-slate-900' : 'text-slate-900/70 hover:bg-slate-50'
                 }`}
               >
                 🛡️ Operations / Admin
@@ -215,49 +215,49 @@ export const Header: React.FC = () => {
         <div className="relative">
           <button
             onClick={() => { setIsUserMenuOpen(!isUserMenuOpen); }}
-            className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-[1.5rem] hover:bg-olive/20 transition border border-transparent hover:border-olive/30"
+            className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-[1.5rem] hover:bg-slate-50 transition border border-transparent hover:border-slate-200"
           >
             {/* Avatar */}
-            <div className="w-8 h-8 rounded-full bg-forest flex items-center justify-center text-sm font-bold text-cream shadow-sm shrink-0">
+            <div className="w-8 h-8 rounded-full bg-emerald-700 flex items-center justify-center text-sm font-bold text-white shadow-sm shrink-0">
               {currentUser.avatar || '👤'}
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-xs font-bold text-forest leading-tight">{(currentUser.name || 'User').split(' ')[0]}</p>
-              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded bg-sage/20 text-forest border border-sage/30`}>
+              <p className="text-xs font-bold text-slate-900 leading-tight">{(currentUser.name || 'User').split(' ')[0]}</p>
+              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100/20 text-slate-900 border border-sage/30`}>
                 {ROLE_LABELS[currentRole] || currentRole}
               </span>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-forest/50 hidden sm:block" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-900/50 hidden sm:block" />
           </button>
 
           {/* User Dropdown */}
           {isUserMenuOpen && (
-            <div className="absolute right-0 top-full mt-1 w-52 bg-cream rounded-[1.5rem] shadow-forest border border-olive/30 z-50 overflow-hidden py-1">
+            <div className="absolute right-0 top-full mt-1 w-52 bg-white rounded-[1.5rem] shadow-soft border border-slate-200 z-50 overflow-hidden py-1">
               {/* User info header */}
-              <div className="px-4 py-3 border-b border-olive/20">
-                <p className="text-xs font-bold text-forest">{currentUser.name || 'User'}</p>
-                <p className="text-[10px] text-forest/60">{currentUser.email || 'user@uzhavanconnect.gov.in'}</p>
-                <span className={`mt-1.5 inline-block text-[9px] font-bold px-2 py-0.5 rounded bg-sage/20 text-forest border border-sage/30`}>
+              <div className="px-4 py-3 border-b border-slate-200">
+                <p className="text-xs font-bold text-slate-900">{currentUser.name || 'User'}</p>
+                <p className="text-[10px] text-slate-900/60">{currentUser.email || 'user@uzhavanconnect.gov.in'}</p>
+                <span className={`mt-1.5 inline-block text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-100/20 text-slate-900 border border-sage/30`}>
                   {ROLE_LABELS[currentRole] || currentRole}
                 </span>
               </div>
               <button
                 onClick={() => { setActiveTab('profile'); setIsUserMenuOpen(false); }}
-                className="w-full flex items-center gap-2.5 px-4 py-3 text-xs text-forest/80 hover:bg-olive/20 hover:text-forest transition text-left"
+                className="w-full flex items-center gap-2.5 px-4 py-3 text-xs text-slate-900/80 hover:bg-slate-50 hover:text-slate-900 transition text-left"
               >
-                <User className="w-4 h-4 text-forest/50" />
+                <User className="w-4 h-4 text-slate-900/50" />
                 My Profile
               </button>
               {isInstallable && (
                 <button
                   onClick={() => { promptInstall(); setIsUserMenuOpen(false); }}
-                  className="w-full flex items-center gap-2.5 px-4 py-3 text-xs text-forest font-bold bg-sage/15 hover:bg-sage/25 transition text-left"
+                  className="w-full flex items-center gap-2.5 px-4 py-3 text-xs text-slate-900 font-bold bg-emerald-100/15 hover:bg-emerald-100/25 transition text-left"
                 >
-                  <Download className="w-4 h-4 text-forest" />
+                  <Download className="w-4 h-4 text-slate-900" />
                   Install App (PWA)
                 </button>
               )}
-              <div className="border-t border-olive/20 mt-1">
+              <div className="border-t border-slate-200 mt-1">
                 <button
                   onClick={logout}
                   className="w-full flex items-center gap-2.5 px-4 py-3 text-xs text-rose-700 hover:bg-rose-50 transition text-left"

@@ -47,7 +47,7 @@ export const ProducePassportModal: React.FC = () => {
                 </span>
                 <span className="text-xs text-slate-300">Batch Traceability</span>
               </div>
-              <h3 className="text-xl font-bold font-['Outfit'] text-white mt-0.5">
+              <h3 className="text-xl font-bold  text-white mt-0.5">
                 Batch: {passport.batchId}
               </h3>
             </div>

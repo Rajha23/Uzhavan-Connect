@@ -143,7 +143,7 @@ export const RouteOptimizationMap: React.FC = () => {
             )}
           </div>
 
-          <h3 className="text-xl font-bold font-['Outfit'] text-slate-900">
+          <h3 className="text-xl font-bold  text-slate-900">
             Multi-Stop Route & Logistics Optimization
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">

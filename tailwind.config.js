@@ -37,14 +37,25 @@ export default {
         olive: '#e9edc9',
         cream: '#fefae0',
         moss: '#a3b18a',
+        surface: {
+          light: '#F6FAF7',
+          card: '#FFFFFF',
+        }
       },
       fontFamily: {
-        sans: ['Outfit', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        anton: ['Anton', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'system-ui', '-apple-system', 'sans-serif'],
       },
       boxShadow: {
         'forest': '0 4px 20px -2px rgba(1, 71, 46, 0.2)',
         'forest-lg': '0 10px 25px -5px rgba(1, 71, 46, 0.2)',
+        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+        'hover': '0 10px 30px -5px rgba(0, 0, 0, 0.08)',
+        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+      },
+      borderRadius: {
+        '2xl': '1rem',
+        '3xl': '1.5rem',
+        '4xl': '2rem',
       }
     },
   },

@@ -4,12 +4,12 @@
 
 @layer base {
   body {
-    @apply bg-cream text-forest font-sans;
+    @apply bg-surface-light text-slate-900 font-sans antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-anton tracking-wide;
+    @apply font-bold tracking-tight text-slate-900;
   }
 }
 

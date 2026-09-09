@@ -50,7 +50,7 @@ type LifecycleStage = typeof STAGES[number]['key'];
 const getStageBadgeColor = (stage: LifecycleStage): string => {
   switch (stage) {
     case 'Listed':
-      return 'bg-sage/30 text-forest border-sage/60 font-bold';
+      return 'bg-emerald-100/30 text-slate-900 border-sage/60 font-bold';
     case 'Matched':
       return 'bg-blue-100 text-blue-900 border-blue-300 font-bold';
     case 'Agreement Pending':
@@ -68,9 +68,9 @@ const getStageBadgeColor = (stage: LifecycleStage): string => {
     case 'Delivered':
       return 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold';
     case 'Payment Completed':
-      return 'bg-forest text-cream border-forest font-bold';
+      return 'bg-emerald-700 text-white border-forest font-bold';
     default:
-      return 'bg-cream text-forest border-olive/30 font-bold';
+      return 'bg-white text-slate-900 border-slate-200 font-bold';
   }
 };
 
@@ -253,16 +253,16 @@ export const FarmerDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       {/* 1. Farmer Friendly Greeting Header */}
-      <div className="bg-forest text-cream rounded-[2.5rem] p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest">
+      <div className="bg-emerald-700 text-white rounded-[2.5rem] p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-soft">
         <div>
-          <div className="flex items-center gap-2 text-sage text-xs font-bold uppercase tracking-widest mb-2">
+          <div className="flex items-center gap-2 text-emerald-600 text-xs font-bold uppercase tracking-widest mb-2">
             <Sprout className="w-4 h-4" />
             <span>{currentUser.fpoName || 'GreenHarvest FPO Cluster'} • Farm Size: {currentUser.farmSizeAcres || 3.5} Acres</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight tracking-wide">
             Greetings, {(currentUser.name || 'Farmer').split(' ')[0]} 👨‍🌾
           </h1>
-          <p className="text-sm text-cream/70 mt-2 font-medium">
+          <p className="text-sm text-white/70 mt-2 font-medium">
             Connected Crop Lifecycle: Listing ➔ Smart Matching ➔ Agreement ➔ FPO Collection ➔ Grading ➔ Transport ➔ Escrow Payout.
           </p>
         </div>
@@ -270,7 +270,7 @@ export const FarmerDashboard: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setActiveTab('find-buyers')}
-            className="flex items-center gap-2 bg-sage hover:bg-cream text-forest text-xs font-bold px-5 py-3 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
+            className="flex items-center gap-2 bg-emerald-100 hover:bg-white text-slate-900 text-xs font-bold px-5 py-3 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
           >
             <span>Find Buyers</span>
             <ArrowRight className="w-4 h-4" />
@@ -278,17 +278,17 @@ export const FarmerDashboard: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('smart-matching')}
-            className="flex items-center gap-2 bg-olive/20 hover:bg-olive/30 text-cream text-xs font-bold px-5 py-3 rounded-[1rem] border border-olive/30 transition uppercase tracking-widest"
+            className="flex items-center gap-2 bg-slate-50 hover:bg-slate-50 text-white text-xs font-bold px-5 py-3 rounded-[1rem] border border-slate-200 transition uppercase tracking-widest"
           >
-            <Sparkles className="w-4 h-4 text-sage" />
+            <Sparkles className="w-4 h-4 text-emerald-600" />
             <span>Smart Match Pool</span>
           </button>
 
           <button
             onClick={() => openPassportModal()}
-            className="flex items-center gap-2 bg-olive/20 hover:bg-olive/30 text-cream text-xs font-bold px-5 py-3 rounded-[1rem] border border-olive/30 transition uppercase tracking-widest"
+            className="flex items-center gap-2 bg-slate-50 hover:bg-slate-50 text-white text-xs font-bold px-5 py-3 rounded-[1rem] border border-slate-200 transition uppercase tracking-widest"
           >
-            <QrCode className="w-4 h-4 text-sage" />
+            <QrCode className="w-4 h-4 text-emerald-600" />
             <span>My Batch QR</span>
           </button>
         </div>
@@ -302,32 +302,32 @@ export const FarmerDashboard: React.FC = () => {
       )}
 
       {/* 2. My Crops Section with Connected Lifecycle Tracker */}
-      <div className="bg-cream rounded-[2.5rem] border border-olive/30 shadow-forest overflow-hidden">
-        <div className="p-8 border-b border-olive/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-soft overflow-hidden">
+        <div className="p-8 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h3 className="text-2xl font-bold text-forest">
+              <h3 className="text-2xl font-bold text-slate-900">
                 My Crops & Produce Inventory ({listings.length})
               </h3>
-              <span className="text-[10px] bg-sage/30 text-forest font-bold px-3 py-1 rounded-full border border-sage/50 uppercase tracking-widest">
+              <span className="text-[10px] bg-emerald-100/30 text-slate-900 font-bold px-3 py-1 rounded-full border border-sage/50 uppercase tracking-widest">
                 Connected Workflow
               </span>
             </div>
-            <p className="text-xs text-forest/60 mt-1 font-bold uppercase tracking-widest">
+            <p className="text-xs text-slate-900/60 mt-1 font-bold uppercase tracking-widest">
               Live lifecycle state tracked across 10 stages from harvest to escrow settlement
             </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="inline-flex bg-olive/10 p-1 rounded-[1rem] border border-olive/20 text-xs">
+            <div className="inline-flex bg-slate-50 p-1 rounded-[1rem] border border-slate-200 text-xs">
               {(['ALL', 'ACTIVE', 'COMPLETED'] as const).map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setStatusFilter(filter)}
                   className={`px-3 py-1.5 rounded-[0.8rem] text-[10px] font-bold uppercase tracking-widest transition ${
                     statusFilter === filter
-                      ? 'bg-forest text-cream shadow-xs'
-                      : 'text-forest/70 hover:text-forest'
+                      ? 'bg-emerald-700 text-white shadow-xs'
+                      : 'text-slate-900/70 hover:text-slate-900'
                   }`}
                 >
                   {filter}
@@ -337,7 +337,7 @@ export const FarmerDashboard: React.FC = () => {
 
             <button
               onClick={() => setIsAddingListing(!isAddingListing)}
-              className="flex items-center gap-2 text-xs font-bold text-cream bg-forest hover:bg-[#023120] px-5 py-3 rounded-[1rem] transition uppercase tracking-widest shadow-sm"
+              className="flex items-center gap-2 text-xs font-bold text-white bg-emerald-700 hover:bg-[#023120] px-5 py-3 rounded-[1rem] transition uppercase tracking-widest shadow-sm"
             >
               <Plus className="w-4 h-4" />
               <span>{isAddingListing ? 'Close Form' : 'Add Crop'}</span>
@@ -347,14 +347,14 @@ export const FarmerDashboard: React.FC = () => {
 
         {/* Add Crop Form */}
         {isAddingListing && (
-          <form onSubmit={handleAddCrop} className="p-8 bg-olive/10 border-b border-olive/20 space-y-4 text-xs">
+          <form onSubmit={handleAddCrop} className="p-8 bg-slate-50 border-b border-slate-200 space-y-4 text-xs">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
               <div>
-                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Crop Name</label>
+                <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Crop Name</label>
                 <select
                   value={crop}
                   onChange={(e) => setCrop(e.target.value)}
-                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
                 >
                   <option value="Tomato">Tomato</option>
                   <option value="Onion">Onion</option>
@@ -369,25 +369,25 @@ export const FarmerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Variety</label>
+                <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Variety</label>
                 <input
                   type="text"
                   value={variety}
                   onChange={(e) => setVariety(e.target.value)}
                   placeholder="e.g. PKM-1 Hybrid / Nattu"
-                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Quantity</label>
+                <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Quantity</label>
                 <div className="flex gap-2">
                   <input
                     type="number"
                     value={quantity}
                     onChange={(e) => setQuantity(Number(e.target.value))}
-                    className="w-2/3 bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                    className="w-2/3 bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
                     min="10"
                     step="10"
                     required
@@ -395,7 +395,7 @@ export const FarmerDashboard: React.FC = () => {
                   <select
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
-                    className="w-1/3 bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none text-[10px]"
+                    className="w-1/3 bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none text-[10px]"
                   >
                     <option value="kg">kg</option>
                     <option value="Quintal">Quintal</option>
@@ -406,23 +406,23 @@ export const FarmerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Expected Price (₹/kg)</label>
+                <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Expected Price (₹/kg)</label>
                 <input
                   type="number"
                   value={price}
                   onChange={(e) => setPrice(Number(e.target.value))}
-                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
                   step="0.5"
                   required
                 />
               </div>
 
               <div>
-                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Quality Grade</label>
+                <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Quality Grade</label>
                 <select
                   value={quality}
                   onChange={(e) => setQuality(e.target.value as any)}
-                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
                 >
                   <option value="Grade A">Grade A (Export / Institutional)</option>
                   <option value="Grade B">Grade B (Retail Standard)</option>
@@ -432,43 +432,43 @@ export const FarmerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Location / Mandi Hub</label>
+                <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Location / Mandi Hub</label>
                 <input
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="e.g. Salem Mandi Hub"
-                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Harvest / Availability Date</label>
+                <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Harvest / Availability Date</label>
                 <input
                   type="date"
                   value={harvestDate}
                   onChange={(e) => setHarvestDate(e.target.value)}
-                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
                   required
                 />
               </div>
 
               <div className="lg:col-span-2">
-                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">FPO Association</label>
+                <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">FPO Association</label>
                 <input
                   type="text"
                   value={fpoName}
                   onChange={(e) => setFpoName(e.target.value)}
                   placeholder="e.g. GreenHarvest FPO / Kaveri Farmers Collective"
-                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
                 />
               </div>
 
               <div className="flex items-end">
                 <button
                   type="submit"
-                  className="w-full py-3 bg-sage hover:bg-cream text-forest font-bold rounded-[1rem] transition text-xs uppercase tracking-widest shadow-sm border border-sage"
+                  className="w-full py-3 bg-emerald-100 hover:bg-white text-slate-900 font-bold rounded-[1rem] transition text-xs uppercase tracking-widest shadow-sm border border-sage"
                 >
                   Publish to Matching Pool
                 </button>
@@ -480,12 +480,12 @@ export const FarmerDashboard: React.FC = () => {
         {/* Listings Cards with Lifecycle View */}
         <div className="p-8 grid grid-cols-1 gap-6">
           {filteredListings.length === 0 ? (
-            <div className="p-12 text-center text-forest/60">
+            <div className="p-12 text-center text-slate-900/60">
               <Sprout className="w-12 h-12 mx-auto mb-3 text-olive/40" />
               <p className="font-bold">No produce listings found matching filter.</p>
               <button
                 onClick={() => setIsAddingListing(true)}
-                className="mt-4 px-4 py-2 bg-forest text-cream text-xs font-bold rounded-[1rem] uppercase tracking-widest"
+                className="mt-4 px-4 py-2 bg-emerald-700 text-white text-xs font-bold rounded-[1rem] uppercase tracking-widest"
               >
                 Add Your First Crop
               </button>
@@ -502,17 +502,17 @@ export const FarmerDashboard: React.FC = () => {
               return (
                 <div
                   key={item.id}
-                  className="p-6 sm:p-8 rounded-[2rem] border border-olive/30 bg-cream shadow-sm hover:shadow-forest transition space-y-6"
+                  className="p-6 sm:p-8 rounded-[2rem] border border-slate-200 bg-white shadow-sm hover:shadow-soft transition space-y-6"
                 >
                   {/* Row 1: Crop Header, Variety, FPO, and Real-Time Lifecycle Status Badge */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-olive/20 pb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-3">
-                        <h4 className="font-anton text-3xl text-forest tracking-wide">
+                        <h4 className="font-bold tracking-tight text-3xl text-slate-900 tracking-wide">
                           {item.crop}
                         </h4>
                         {item.variety && (
-                          <span className="text-xs bg-olive/15 text-forest px-3 py-0.5 rounded-full font-bold">
+                          <span className="text-xs bg-slate-100/15 text-slate-900 px-3 py-0.5 rounded-full font-bold">
                             {item.variety}
                           </span>
                         )}
@@ -523,21 +523,21 @@ export const FarmerDashboard: React.FC = () => {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-forest/70 font-medium">
-                        Listing ID: <strong className="font-mono text-forest">{item.id}</strong> • FPO Association: <strong className="text-forest">{item.fpoName || 'GreenHarvest FPO'}</strong>
+                      <p className="text-xs text-slate-900/70 font-medium">
+                        Listing ID: <strong className="font-mono text-slate-900">{item.id}</strong> • FPO Association: <strong className="text-slate-900">{item.fpoName || 'GreenHarvest FPO'}</strong>
                       </p>
                     </div>
 
                     <div className="flex items-center gap-3 self-start sm:self-auto">
                       <div className="text-right">
-                        <span className="text-[9px] uppercase tracking-widest font-bold text-forest/50 block">Lifecycle Stage</span>
+                        <span className="text-[9px] uppercase tracking-widest font-bold text-slate-900/50 block">Lifecycle Stage</span>
                         <span className={`text-[10px] uppercase tracking-widest px-3.5 py-1 rounded-full border inline-block mt-0.5 ${lifecycle.badgeColor}`}>
                           {lifecycle.stage}
                         </span>
                       </div>
                       <button
                         onClick={() => handleRemove(item.id)}
-                        className="p-2.5 text-forest/40 hover:text-red-700 bg-olive/10 hover:bg-olive/20 rounded-[1rem] transition"
+                        className="p-2.5 text-slate-900/40 hover:text-red-700 bg-slate-50 hover:bg-slate-50 rounded-[1rem] transition"
                         title="Delete Listing"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -546,68 +546,68 @@ export const FarmerDashboard: React.FC = () => {
                   </div>
 
                   {/* Row 2: Inventory Allocation Bar (Remaining vs Allocated) & Specs */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-xs text-forest">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-xs text-slate-900">
                     {/* Inventory Allocation Box */}
-                    <div className="bg-olive/10 border border-olive/30 rounded-[1.5rem] p-5 space-y-3">
+                    <div className="bg-slate-50 border border-slate-200 rounded-[1.5rem] p-5 space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-forest/60">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-900/60">
                           Inventory Allocation
                         </span>
-                        <span className="text-[10px] font-bold text-forest">
+                        <span className="text-[10px] font-bold text-slate-900">
                           {allocatedPct}% Committed
                         </span>
                       </div>
 
-                      <div className="w-full bg-cream h-2.5 rounded-full overflow-hidden border border-olive/30">
+                      <div className="w-full bg-white h-2.5 rounded-full overflow-hidden border border-slate-200">
                         <div
-                          className="bg-forest h-full rounded-full transition-all duration-500"
+                          className="bg-emerald-700 h-full rounded-full transition-all duration-500"
                           style={{ width: `${Math.min(100, allocatedPct)}%` }}
                         />
                       </div>
 
                       <div className="grid grid-cols-3 gap-2 pt-1 text-center font-mono">
-                        <div className="bg-cream/80 p-2 rounded-[0.8rem] border border-olive/20">
-                          <span className="text-[8px] uppercase font-bold text-forest/50 block">Available</span>
-                          <strong className="text-forest text-sm">{available.toLocaleString()} kg</strong>
+                        <div className="bg-white/80 p-2 rounded-[0.8rem] border border-slate-200">
+                          <span className="text-[8px] uppercase font-bold text-slate-900/50 block">Available</span>
+                          <strong className="text-slate-900 text-sm">{available.toLocaleString()} kg</strong>
                         </div>
-                        <div className="bg-cream/80 p-2 rounded-[0.8rem] border border-olive/20">
-                          <span className="text-[8px] uppercase font-bold text-forest/50 block">Allocated</span>
+                        <div className="bg-white/80 p-2 rounded-[0.8rem] border border-slate-200">
+                          <span className="text-[8px] uppercase font-bold text-slate-900/50 block">Allocated</span>
                           <strong className="text-amber-800 text-sm">{allocated.toLocaleString()} kg</strong>
                         </div>
-                        <div className="bg-cream/80 p-2 rounded-[0.8rem] border border-olive/20">
-                          <span className="text-[8px] uppercase font-bold text-forest/50 block">Total Listed</span>
-                          <strong className="text-forest text-sm">{totalListed.toLocaleString()} kg</strong>
+                        <div className="bg-white/80 p-2 rounded-[0.8rem] border border-slate-200">
+                          <span className="text-[8px] uppercase font-bold text-slate-900/50 block">Total Listed</span>
+                          <strong className="text-slate-900 text-sm">{totalListed.toLocaleString()} kg</strong>
                         </div>
                       </div>
                     </div>
 
                     {/* Listing Parameters Box */}
-                    <div className="bg-olive/10 border border-olive/30 rounded-[1.5rem] p-5 grid grid-cols-2 gap-3 text-xs">
+                    <div className="bg-slate-50 border border-slate-200 rounded-[1.5rem] p-5 grid grid-cols-2 gap-3 text-xs">
                       <div>
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-forest/60 block">Expected Price</span>
-                        <strong className="text-forest text-base font-anton tracking-wide">₹{item.expectedPricePerKg}/kg</strong>
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-slate-900/60 block">Expected Price</span>
+                        <strong className="text-slate-900 text-base font-bold tracking-tight tracking-wide">₹{item.expectedPricePerKg}/kg</strong>
                       </div>
                       <div>
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-forest/60 block">Quality Grade</span>
-                        <strong className="text-forest font-bold">{item.grade}</strong>
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-slate-900/60 block">Quality Grade</span>
+                        <strong className="text-slate-900 font-bold">{item.grade}</strong>
                       </div>
                       <div>
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-forest/60 block">Location Hub</span>
-                        <span className="text-forest font-medium truncate block">{item.location}</span>
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-slate-900/60 block">Location Hub</span>
+                        <span className="text-slate-900 font-medium truncate block">{item.location}</span>
                       </div>
                       <div>
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-forest/60 block">Harvest Date</span>
-                        <span className="text-forest font-medium">{item.harvestDate}</span>
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-slate-900/60 block">Harvest Date</span>
+                        <span className="text-slate-900 font-medium">{item.harvestDate}</span>
                       </div>
                     </div>
 
                     {/* Actions & Navigation Box */}
-                    <div className="bg-olive/10 border border-olive/30 rounded-[1.5rem] p-5 flex flex-col justify-between gap-3">
+                    <div className="bg-slate-50 border border-slate-200 rounded-[1.5rem] p-5 flex flex-col justify-between gap-3">
                       <div>
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-forest/60 block mb-1">
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-slate-900/60 block mb-1">
                           Connected Buyer Matching
                         </span>
-                        <p className="text-[11px] text-forest/70 font-medium">
+                        <p className="text-[11px] text-slate-900/70 font-medium">
                           {available > 0
                             ? `✓ ${available.toLocaleString()} kg available for smart institutional matching.`
                             : 'Produce fully matched and allocated to active buyer orders.'}
@@ -618,15 +618,15 @@ export const FarmerDashboard: React.FC = () => {
                         {available > 0 ? (
                           <button
                             onClick={() => setActiveTab('smart-matching')}
-                            className="flex-1 py-2.5 bg-forest hover:bg-[#023120] text-cream text-[10px] font-bold uppercase tracking-widest rounded-[1rem] shadow-sm transition flex items-center justify-center gap-1.5"
+                            className="flex-1 py-2.5 bg-emerald-700 hover:bg-[#023120] text-white text-[10px] font-bold uppercase tracking-widest rounded-[1rem] shadow-sm transition flex items-center justify-center gap-1.5"
                           >
-                            <Sparkles className="w-3.5 h-3.5 text-sage" />
+                            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
                             <span>Match ({available.toLocaleString()} kg)</span>
                           </button>
                         ) : (
                           <button
                             onClick={() => setActiveTab('orders')}
-                            className="flex-1 py-2.5 bg-forest hover:bg-[#023120] text-cream text-[10px] font-bold uppercase tracking-widest rounded-[1rem] shadow-sm transition flex items-center justify-center gap-1.5"
+                            className="flex-1 py-2.5 bg-emerald-700 hover:bg-[#023120] text-white text-[10px] font-bold uppercase tracking-widest rounded-[1rem] shadow-sm transition flex items-center justify-center gap-1.5"
                           >
                             <span>View In Orders</span>
                             <ArrowRight className="w-3.5 h-3.5" />
@@ -635,7 +635,7 @@ export const FarmerDashboard: React.FC = () => {
 
                         <button
                           onClick={() => setExpandedCardId(isExpanded ? null : item.id)}
-                          className="px-3 py-2.5 bg-sage/40 hover:bg-sage/60 text-forest text-[10px] font-bold uppercase tracking-widest rounded-[1rem] border border-sage/60 transition flex items-center gap-1"
+                          className="px-3 py-2.5 bg-emerald-100/40 hover:bg-emerald-100/60 text-slate-900 text-[10px] font-bold uppercase tracking-widest rounded-[1rem] border border-sage/60 transition flex items-center gap-1"
                         >
                           <span>{isExpanded ? 'Hide' : 'Lifecycle'}</span>
                           {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -645,13 +645,13 @@ export const FarmerDashboard: React.FC = () => {
                   </div>
 
                   {/* Row 3: 10-Stage Connected Lifecycle Stepper */}
-                  <div className="bg-olive/5 border border-olive/20 rounded-[1.5rem] p-5 space-y-3">
+                  <div className="bg-slate-100/5 border border-slate-200 rounded-[1.5rem] p-5 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-forest/70 flex items-center gap-1.5">
-                        <Layers className="w-3.5 h-3.5 text-forest" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-900/70 flex items-center gap-1.5">
+                        <Layers className="w-3.5 h-3.5 text-slate-900" />
                         <span>Connected Supply Chain Lifecycle (Stage {lifecycle.stageIndex + 1} of 10)</span>
                       </span>
-                      <span className="text-[10px] font-bold text-forest font-mono">
+                      <span className="text-[10px] font-bold text-slate-900 font-mono">
                         Status Source: {lifecycle.activeOrder ? `Order #${lifecycle.activeOrder.id}` : 'Supply Pool'}
                       </span>
                     </div>
@@ -667,16 +667,16 @@ export const FarmerDashboard: React.FC = () => {
                             key={st.key}
                             className={`p-2 rounded-[0.8rem] border text-center transition flex flex-col items-center justify-center ${
                               isCurrent
-                                ? 'bg-forest text-cream border-forest shadow-sm ring-2 ring-forest/20'
+                                ? 'bg-emerald-700 text-white border-forest shadow-sm ring-2 ring-forest/20'
                                 : isPast
-                                ? 'bg-sage/30 text-forest border-sage/60 font-medium'
-                                : 'bg-cream/40 text-forest/40 border-olive/20'
+                                ? 'bg-emerald-100/30 text-slate-900 border-sage/60 font-medium'
+                                : 'bg-white/40 text-slate-900/40 border-slate-200'
                             }`}
                             title={st.desc}
                           >
                             <div className="w-5 h-5 rounded-full flex items-center justify-center mb-1 text-[10px] font-bold">
                               {isPast ? (
-                                <Check className="w-3.5 h-3.5 text-forest" />
+                                <Check className="w-3.5 h-3.5 text-slate-900" />
                               ) : (
                                 <span>{idx + 1}</span>
                               )}
@@ -692,16 +692,16 @@ export const FarmerDashboard: React.FC = () => {
 
                   {/* Row 4: Expandable Detailed Audit Drawer (Shows Order, Lab Assay, Carrier, and Escrow info) */}
                   {isExpanded && (
-                    <div className="bg-white/80 border border-olive/30 rounded-[1.5rem] p-6 space-y-4 text-xs animate-in fade-in duration-200">
-                      <div className="flex items-center justify-between border-b border-olive/20 pb-3">
-                        <div className="flex items-center gap-2 text-forest font-bold text-sm">
-                          <ShieldCheck className="w-4 h-4 text-sage" />
+                    <div className="bg-white/80 border border-slate-200 rounded-[1.5rem] p-6 space-y-4 text-xs animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                        <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
+                          <ShieldCheck className="w-4 h-4 text-emerald-600" />
                           <span>Connected Order & Verification Audit Trail</span>
                         </div>
                         {lifecycle.activeOrder && (
                           <button
                             onClick={() => openPassportModal(lifecycle.activeOrder?.batchId)}
-                            className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-forest bg-sage/30 px-3 py-1.5 rounded-[0.8rem] border border-sage/50 hover:bg-sage/50 transition"
+                            className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-900 bg-emerald-100/30 px-3 py-1.5 rounded-[0.8rem] border border-sage/50 hover:bg-emerald-100/50 transition"
                           >
                             <QrCode className="w-3.5 h-3.5" />
                             <span>Digital Produce Passport ({lifecycle.activeOrder.batchId})</span>
@@ -711,22 +711,22 @@ export const FarmerDashboard: React.FC = () => {
 
                       {lifecycle.activeOrder ? (
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                          <div className="p-3 bg-olive/10 rounded-[1rem] border border-olive/20">
-                            <span className="text-[9px] font-bold uppercase tracking-widest text-forest/60 block">Order & Buyer</span>
-                            <strong className="text-forest block">{lifecycle.activeOrder.id}</strong>
-                            <span className="text-forest/70">{lifecycle.activeOrder.buyerName}</span>
+                          <div className="p-3 bg-slate-50 rounded-[1rem] border border-slate-200">
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-900/60 block">Order & Buyer</span>
+                            <strong className="text-slate-900 block">{lifecycle.activeOrder.id}</strong>
+                            <span className="text-slate-900/70">{lifecycle.activeOrder.buyerName}</span>
                           </div>
 
-                          <div className="p-3 bg-olive/10 rounded-[1rem] border border-olive/20">
-                            <span className="text-[9px] font-bold uppercase tracking-widest text-forest/60 block">Agreed Terms</span>
-                            <strong className="text-forest block">{lifecycle.activeOrder.quantityKg.toLocaleString()} kg @ ₹{lifecycle.activeOrder.pricePerKg}/kg</strong>
+                          <div className="p-3 bg-slate-50 rounded-[1rem] border border-slate-200">
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-900/60 block">Agreed Terms</span>
+                            <strong className="text-slate-900 block">{lifecycle.activeOrder.quantityKg.toLocaleString()} kg @ ₹{lifecycle.activeOrder.pricePerKg}/kg</strong>
                             <span className="text-emerald-800 font-bold">Total: ₹{lifecycle.activeOrder.totalValue.toLocaleString()}</span>
                           </div>
 
-                          <div className="p-3 bg-olive/10 rounded-[1rem] border border-olive/20">
-                            <span className="text-[9px] font-bold uppercase tracking-widest text-forest/60 block">Lab Quality Metrics</span>
+                          <div className="p-3 bg-slate-50 rounded-[1rem] border border-slate-200">
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-900/60 block">Lab Quality Metrics</span>
                             {lifecycle.activeOrder.inspectionMetrics ? (
-                              <span className="text-forest font-medium">
+                              <span className="text-slate-900 font-medium">
                                 Brix: {lifecycle.activeOrder.inspectionMetrics.sugarBrix}° • {lifecycle.activeOrder.inspectionMetrics.verifiedGrade}
                               </span>
                             ) : (
@@ -734,19 +734,19 @@ export const FarmerDashboard: React.FC = () => {
                             )}
                           </div>
 
-                          <div className="p-3 bg-olive/10 rounded-[1rem] border border-olive/20">
-                            <span className="text-[9px] font-bold uppercase tracking-widest text-forest/60 block">Logistics / Reefer</span>
+                          <div className="p-3 bg-slate-50 rounded-[1rem] border border-slate-200">
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-900/60 block">Logistics / Reefer</span>
                             {lifecycle.activeOrder.transportDetails ? (
-                              <span className="text-forest font-medium">
+                              <span className="text-slate-900 font-medium">
                                 {lifecycle.activeOrder.transportDetails.vehicleNumber} ({lifecycle.activeOrder.transportDetails.driverName})
                               </span>
                             ) : (
-                              <span className="text-forest/60 font-medium">Awaiting Carrier Dispatch</span>
+                              <span className="text-slate-900/60 font-medium">Awaiting Carrier Dispatch</span>
                             )}
                           </div>
                         </div>
                       ) : (
-                        <div className="p-4 bg-olive/10 rounded-[1rem] border border-olive/20 text-forest/70">
+                        <div className="p-4 bg-slate-50 rounded-[1rem] border border-slate-200 text-slate-900/70">
                           <p>
                             This produce is published and currently active in the Smart Matching Pool. When an institutional buyer creates or confirms demand, an agreement and order will automatically bind here.
                           </p>

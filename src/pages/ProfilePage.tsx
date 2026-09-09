@@ -28,7 +28,7 @@ export const ProfilePage: React.FC = () => {
 
           <div className="flex-1 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-2xl font-bold font-['Outfit'] text-slate-900">
+              <h2 className="text-2xl font-bold  text-slate-900">
                 {currentUser.name}
               </h2>
               <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full border border-emerald-300">

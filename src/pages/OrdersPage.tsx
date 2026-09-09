@@ -75,7 +75,7 @@ export const OrdersPage: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 font-['Outfit']">Order Fulfillment & Tracking</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 ">Order Fulfillment & Tracking</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             End-to-end transaction lifecycle from crop reservation to delivery and settlement
           </p>
@@ -212,7 +212,7 @@ export const OrdersPage: React.FC = () => {
                             e.stopPropagation();
                             setActiveTab('settlement');
                           }}
-                          className="px-3 py-1.5 bg-forest text-cream hover:bg-forest/90 text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1"
+                          className="px-3 py-1.5 bg-emerald-700 text-white hover:bg-emerald-700/90 text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-1"
                         >
                           <CreditCard className="w-3.5 h-3.5" />
                           <span>{isCompleted ? 'Receipt' : 'Escrow Payout'}</span>

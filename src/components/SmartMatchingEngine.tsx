@@ -188,7 +188,7 @@ export const SmartMatchingEngine: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5" />
             <span>AI Dynamic Supply-Demand Matcher</span>
           </div>
-          <h3 className="text-xl font-bold font-['Outfit'] text-slate-900">
+          <h3 className="text-xl font-bold  text-slate-900">
             Smart Matching & Allocation Engine
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
