@@ -34,7 +34,11 @@ export const PATH_TO_TAB: Record<string, string> = {
   '/demand-pool': 'demand-pool',
   '/reverse-auction': 'reverse-auction',
   '/smart-matching': 'smart-matching',
-  '/bulk-demand': 'create-demand',
+  '/bulk-demand': 'bulk-demand',
+  '/bulk-buyer': 'bulk-buyer',
+  '/bulk-dashboard': 'bulk-buyer',
+  '/bulk-procurement': 'bulk-buyer',
+  '/bulk-tracking': 'tracking',
   '/fpo': 'fpo',
   '/fpo-dashboard': 'fpo',
   '/fpo-members': 'fpo',
@@ -81,6 +85,8 @@ export const TAB_TO_PATH: Record<string, string> = {
   dashboard: '/dashboard',
   farmer: '/farmer',
   buyer: '/buyer',
+  'bulk-buyer': '/bulk-buyer',
+  'bulk-demand': '/bulk-buyer',
   fpo: '/fpo',
   logistics: '/operations',
   admin: '/admin',
@@ -147,6 +153,26 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'orders',
     'traceability',
     'tracking',
+    'profile',
+    'access-denied'
+  ],
+  BULK_BUYER: [
+    'home',
+    'landing',
+    'login',
+    'register',
+    'dashboard',
+    'bulk-buyer',
+    'bulk-demand',
+    'create-demand',
+    'demand-pool',
+    'reverse-auction',
+    'smart-matching',
+    'orders',
+    'shipments',
+    'traceability',
+    'tracking',
+    'settlement',
     'profile',
     'access-denied'
   ],
@@ -221,6 +247,8 @@ export const TAB_FEATURE_NAMES: Record<string, string> = {
   'farmer-offers': 'Farmer Matched Trade Offers',
   'cost-simulator': 'Middleman Net Realization Simulator',
   buyer: 'Institutional Buyer Portal & Dashboard',
+  'bulk-buyer': 'Bulk Buyer Procurement & Logistics Portal',
+  'bulk-demand': 'Bulk Buyer Procurement Allocation',
   'create-demand': 'Institutional Buyer Demand Creation',
   'demand-pool': 'Demand Aggregation Pools',
   'reverse-auction': 'Institutional Reverse Auction',
@@ -246,6 +274,7 @@ export const TAB_FEATURE_NAMES: Record<string, string> = {
 export const ROLE_DISPLAY_LABELS: Record<UserRole, string> = {
   FARMER: 'FARMER',
   RETAIL_BUYER: 'BUYER',
+  BULK_BUYER: 'BULK BUYER',
   FPO_AGGREGATOR: 'FPO',
   LOGISTICS: 'OPERATIONS',
   ADMIN: 'ADMIN'
@@ -266,6 +295,12 @@ export const ROLE_BADGE_STYLES: Record<UserRole, { dot: string; bg: string; bord
     bg: 'bg-blue-50',
     border: 'border-blue-200',
     text: 'text-blue-900'
+  },
+  BULK_BUYER: {
+    dot: 'bg-emerald-600',
+    bg: 'bg-emerald-50',
+    border: 'border-emerald-300',
+    text: 'text-emerald-950'
   },
   FPO_AGGREGATOR: {
     dot: 'bg-amber-600',
@@ -337,6 +372,8 @@ export const getPathFromTab = (tab: string): string => {
  */
 export const getAuthorizedDashboardTab = (role: UserRole): string => {
   switch (role) {
+    case 'BULK_BUYER':
+      return 'bulk-buyer';
     case 'RETAIL_BUYER':
       return 'buyer';
     case 'FPO_AGGREGATOR':

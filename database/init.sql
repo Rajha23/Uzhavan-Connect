@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     mobile VARCHAR(32) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(32) NOT NULL CHECK (role IN ('FARMER', 'FPO', 'BUYER', 'RETAILER', 'BULK_PURCHASER', 'LOGISTICS', 'ADMIN', 'GOVERNMENT', 'SYSADMIN')),
+    role VARCHAR(32) NOT NULL CHECK (role IN ('FARMER', 'FPO', 'BUYER', 'RETAILER', 'BULK_BUYER', 'BULK_PURCHASER', 'LOGISTICS', 'ADMIN', 'GOVERNMENT', 'SYSADMIN')),
     status VARCHAR(32) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE', 'SUSPENDED')),
     organization VARCHAR(255),
     location VARCHAR(255),
@@ -43,6 +43,23 @@ CREATE TABLE IF NOT EXISTS farmer_profiles (
 );
 
 CREATE INDEX idx_farmer_profiles_user ON farmer_profiles(user_id);
+
+-- 2B. BULK BUYER PROFILES (Food Processors, Wholesalers, Retail Chains)
+CREATE TABLE IF NOT EXISTS bulk_buyer_profiles (
+    id VARCHAR(64) PRIMARY KEY,
+    user_id VARCHAR(64) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    business_name VARCHAR(255) NOT NULL,
+    buyer_type VARCHAR(128) DEFAULT 'Food Processor',
+    procurement_capacity_mt NUMERIC(10, 2) DEFAULT 50.00,
+    receiving_facility_address VARCHAR(255),
+    gstin VARCHAR(32),
+    rating NUMERIC(3, 2) DEFAULT 4.95,
+    completed_bulk_orders INT DEFAULT 0,
+    total_procured_kg NUMERIC(14, 2) DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_bulk_buyer_profiles_user ON bulk_buyer_profiles(user_id);
 
 -- 3. FPOS (Farmer Producer Organisations)
 CREATE TABLE IF NOT EXISTS fpos (

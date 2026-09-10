@@ -20,6 +20,7 @@ const PAGE_TITLES: Record<string, string> = {
   'smart-matching': 'Smart Matching',
   'reverse-auction': 'Reverse Auction',
   'bulk-demand': 'Bulk Demand',
+  'bulk-buyer': 'Bulk Procurement Console',
   'fpo-members': 'Members',
   'fpo-produce': 'Produce',
   shipments: 'Shipments',

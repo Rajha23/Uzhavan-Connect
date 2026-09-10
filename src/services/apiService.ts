@@ -53,7 +53,7 @@ export const apiService = {
     let password = '';
     let roleHint: UserRole | undefined;
 
-    const validRoles: UserRole[] = ['FARMER', 'RETAIL_BUYER', 'FPO_AGGREGATOR', 'LOGISTICS', 'ADMIN'];
+    const validRoles: UserRole[] = ['FARMER', 'RETAIL_BUYER', 'BULK_BUYER', 'FPO_AGGREGATOR', 'LOGISTICS', 'ADMIN'];
     if (validRoles.includes(arg1 as UserRole) && arg2 && arg3) {
       roleHint = arg1 as UserRole;
       identifier = arg2;

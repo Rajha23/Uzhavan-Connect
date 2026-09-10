@@ -107,6 +107,16 @@ export const OrdersPage: React.FC = () => {
         o.buyerName.toLowerCase().includes('anita')
       );
     }
+    if (currentRole === 'BULK_BUYER') {
+      return (
+        Boolean(o.isBulkOrder) ||
+        (currentUser.id && o.buyerId === currentUser.id) ||
+        (currentUser.name && o.buyerName.toLowerCase().includes(currentUser.name.toLowerCase().split(' ')[0])) ||
+        o.buyerName.toLowerCase().includes('bulk') ||
+        o.buyerName.toLowerCase().includes('metro') ||
+        o.buyerName.toLowerCase().includes('vikram')
+      );
+    }
     if (currentRole === 'FARMER') {
       return (
         (currentUser.id && o.farmerId === currentUser.id) ||

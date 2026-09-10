@@ -49,6 +49,15 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'TRACEABILITY',
     'REPORTS'
   ],
+  BULK_BUYER: [
+    'VIEW_DASHBOARD',
+    'CREATE_DEMAND',
+    'SMART_MATCHING',
+    'ORDERS',
+    'LOGISTICS',
+    'TRACEABILITY',
+    'REPORTS'
+  ],
   FPO_AGGREGATOR: [
     'VIEW_DASHBOARD',
     'MARKET_PRICES',
@@ -112,6 +121,21 @@ export const DEMO_USERS: Record<UserRole, UserProfile> = {
     organization: 'ABC Retail',
     rating: 4.95,
     avatar: '🏬'
+  },
+  BULK_BUYER: {
+    id: 'usr-bulkbuyer-01',
+    name: 'Vikramaditya Singhania',
+    role: 'BULK_BUYER',
+    phone: '+91 98402 88990',
+    email: 'vikram.procurement@metroagri.in',
+    location: 'Ambattur Industrial Hub, Chennai',
+    businessName: 'Metro Agri Processors & Wholesale Ltd.',
+    buyerType: 'Food Processor & Institutional Wholesale Chain',
+    totalListings: 0,
+    completedOrders: 38,
+    organization: 'Metro Agri Processors',
+    rating: 4.96,
+    avatar: '🏭'
   },
   FPO_AGGREGATOR: {
     id: 'usr-fpo-01',
@@ -258,6 +282,25 @@ export const BUYER_DEMAND_OPPORTUNITIES: BuyerDemandOpportunity[] = [];
 export const FARMER_OFFERS_DATA: FarmerOfferItem[] = [];
 
 export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [
+  {
+    id: 'DEM-BULK-2026-01',
+    buyerId: 'usr-bulkbuyer-01',
+    buyerName: 'Metro Agri Processors & Wholesale Ltd.',
+    buyerType: 'Food Processor',
+    crop: 'Tomato',
+    variety: 'Sivam Hybrid',
+    quantityKg: 5000,
+    initialQuantityKg: 5000,
+    allocatedQuantityKg: 5000,
+    unit: 'kg',
+    qualityRequirement: 'Grade A',
+    location: 'Ambattur Processing Terminal, Chennai',
+    deliveryDate: '2026-09-11',
+    deliveryTimeWindow: '05:00 AM - 08:30 AM',
+    maxTargetPricePerKg: 31.0,
+    status: 'ALLOCATED',
+    createdAt: '2026-09-08 07:30'
+  },
   {
     id: 'DEM-TN-001',
     buyerId: 'BUYER-01',
@@ -638,6 +681,206 @@ export const DEMO_SETTLEMENT: SettlementRecord = {
 };
 
 export const INITIAL_ORDERS: WorkflowOrder[] = [
+  {
+    id: 'ORD-BULK-2026-088',
+    agreementId: 'AGR-BULK-2026-088',
+    produceListingId: 'LST-001',
+    demandRequestId: 'DEM-BULK-2026-01',
+    bulkDemandId: 'DEM-BULK-2026-01',
+    batchId: 'AGP-BULK-TOM-088',
+    farmerId: 'usr-fpo-01',
+    farmerName: 'Consolidated Bulk Supply (3 Farmers + 1 FPO)',
+    buyerId: 'usr-bulkbuyer-01',
+    buyerName: 'Metro Agri Processors & Wholesale Ltd.',
+    crop: 'Tomato',
+    variety: 'Sivam Hybrid (Firm Grade A)',
+    quantityKg: 5000,
+    pricePerKg: 30.0,
+    totalValue: 150000,
+    status: 'In Transit',
+    date: '10 Sep 2026',
+    deliveryLocation: 'Ambattur Processing Terminal, Chennai',
+    farmerLocation: 'Sriperumbudur - Kanchipuram Agro Corridor',
+    fpoName: 'Villupuram Collective & GreenHarvest Alliance',
+    qualityGrade: 'Grade A',
+    isBulkOrder: true,
+    lifecycleStage: 'IN_TRANSIT',
+    multiSupplierAllocations: [
+      {
+        supplierId: 'usr-farmer-01',
+        supplierName: 'Rajesh Kumar (Sunguvarchatram Farm Gate)',
+        supplierType: 'FARMER',
+        location: 'Sunguvarchatram, Kanchipuram',
+        crop: 'Tomato',
+        variety: 'Sivam Hybrid',
+        availableKg: 1000,
+        allocatedKg: 1000,
+        pricePerKg: 30.0,
+        qualityGrade: 'Grade A',
+        distanceKm: 42,
+        confirmed: true
+      },
+      {
+        supplierId: 'usr-farmer-02',
+        supplierName: 'K. Selvam (Kanchipuram North Farms)',
+        supplierType: 'FARMER',
+        location: 'Kanchipuram North',
+        crop: 'Tomato',
+        variety: 'Sivam Hybrid',
+        availableKg: 800,
+        allocatedKg: 800,
+        pricePerKg: 29.5,
+        qualityGrade: 'Grade A',
+        distanceKm: 65,
+        confirmed: true
+      },
+      {
+        supplierId: 'usr-fpo-01',
+        supplierName: 'Villupuram Farmer Collective (FPO Hub)',
+        supplierType: 'FPO',
+        location: 'Villupuram Agro Hub',
+        crop: 'Tomato',
+        variety: 'Sivam Hybrid',
+        availableKg: 2500,
+        allocatedKg: 2000,
+        pricePerKg: 30.5,
+        qualityGrade: 'Grade A',
+        distanceKm: 135,
+        confirmed: true
+      },
+      {
+        supplierId: 'usr-farmer-03',
+        supplierName: 'Murugesan P. (Sriperumbudur Agro Hub)',
+        supplierType: 'FARMER',
+        location: 'Sriperumbudur Rural Hub',
+        crop: 'Tomato',
+        variety: 'Sivam Hybrid',
+        availableKg: 1200,
+        allocatedKg: 1200,
+        pricePerKg: 30.0,
+        qualityGrade: 'Grade A',
+        distanceKm: 36,
+        confirmed: true
+      }
+    ],
+    farmerContributions: [
+      {
+        farmerId: 'usr-farmer-01',
+        farmerName: 'Rajesh Kumar',
+        farmerLocation: 'Sunguvarchatram, Kanchipuram',
+        produceListingId: 'LST-001',
+        contributedQuantityKg: 1000,
+        collectedQuantityKg: 1000,
+        collectionStatus: 'FULLY_COLLECTED',
+        collectedAt: '10 Sep 2026, 04:30 AM',
+        notes: 'Farm-gate collection verified. Brix 4.9.'
+      },
+      {
+        farmerId: 'usr-farmer-02',
+        farmerName: 'K. Selvam',
+        farmerLocation: 'Kanchipuram North',
+        produceListingId: 'LST-002',
+        contributedQuantityKg: 800,
+        collectedQuantityKg: 800,
+        collectionStatus: 'FULLY_COLLECTED',
+        collectedAt: '10 Sep 2026, 04:55 AM',
+        notes: 'Pre-cooled crates loaded.'
+      },
+      {
+        farmerId: 'usr-fpo-01',
+        farmerName: 'Villupuram Collective (FPO)',
+        farmerLocation: 'Villupuram Agro Hub',
+        produceListingId: 'LST-003',
+        contributedQuantityKg: 2000,
+        collectedQuantityKg: 2000,
+        collectionStatus: 'FULLY_COLLECTED',
+        collectedAt: '10 Sep 2026, 05:20 AM',
+        notes: 'Graded Grade A certified crates.'
+      },
+      {
+        farmerId: 'usr-farmer-03',
+        farmerName: 'Murugesan P.',
+        farmerLocation: 'Sriperumbudur Rural Hub',
+        produceListingId: 'LST-004',
+        contributedQuantityKg: 1200,
+        collectedQuantityKg: 1200,
+        collectionStatus: 'FULLY_COLLECTED',
+        collectedAt: '10 Sep 2026, 05:45 AM',
+        notes: 'Direct hub consolidation complete.'
+      }
+    ],
+    collectionStatus: 'Fully Collected',
+    collectedQuantityKg: 5000,
+    remainingCollectionKg: 0,
+    qualityStatus: 'Passed',
+    acceptedQuantityKg: 5000,
+    rejectedQuantityKg: 0,
+    packingStatus: 'Packed',
+    packedQuantityKg: 5000,
+    crateCount: 200,
+    packageType: 'Ventilated 25kg Food-Grade Agro Crates',
+    isReadyForTransport: true,
+    transportStatus: 'In Transit',
+    transportDetails: {
+      carrierName: 'Sundar Logistics CoolReefer Fleet',
+      vehicleNumber: 'TN-09-BK-9182',
+      driverName: 'Karthik S.',
+      driverPhone: '+91 98410 44021',
+      vehicleType: 'Heavy Reefer EV 5.5T',
+      departureTime: '05:50 AM',
+      estimatedArrival: 'Today, 06:45 AM',
+      assignedAt: '2026-09-10 05:30',
+      temperatureC: 4.2
+    },
+    gpsTracking: {
+      isLive: false,
+      currentLat: 13.0489,
+      currentLng: 80.0912,
+      speedKmH: 54,
+      reeferTempC: 4.2,
+      distanceCoveredKm: 48.5,
+      remainingDistanceKm: 19.9,
+      estimatedArrival: 'Today, 06:45 AM',
+      lastPingAt: 'Just now (Telemetry Cycle #42)',
+      routeWaypoints: [
+        { lat: 12.9675, lng: 79.9431, label: 'Farmer A (Sunguvarchatram - 1,000 kg)', type: 'PICKUP', timestamp: '04:30 AM', completed: true },
+        { lat: 12.8342, lng: 79.7036, label: 'Farmer B (Kanchipuram - 800 kg)', type: 'PICKUP', timestamp: '04:55 AM', completed: true },
+        { lat: 12.9712, lng: 79.9488, label: 'Sriperumbudur Rural Micro-Hub (Aggregation & QC)', type: 'HUB', timestamp: '05:30 AM', completed: true },
+        { lat: 13.0489, lng: 80.0912, label: 'CoolReefer EV TN-09-BK-9182 (Current Location - NH-48)', type: 'TRANSIT', timestamp: 'Live', completed: false },
+        { lat: 13.1143, lng: 80.1548, label: 'Bulk Buyer: Metro Agri Processing Terminal (Ambattur)', type: 'DESTINATION', timestamp: 'ETA 06:45 AM', completed: false }
+      ]
+    },
+    inspectionMetrics: {
+      sugarBrix: 5.1,
+      firmnessKgCm: 3.7,
+      pesticideResidueTest: 'PASS - Organic / ND',
+      moistureContent: '91.8%',
+      verifiedGrade: 'Grade A',
+      inspectorName: 'Dr. R. Malathi (FPO QA Officer)',
+      inspectionDate: '10 Sep 2026, 05:25 AM',
+      hubLocation: 'Sriperumbudur Rural Micro-Hub',
+      status: 'PASSED',
+      acceptedQuantityKg: 5000,
+      rejectedQuantityKg: 0,
+      inspectionNotes: 'Bulk consignment uniformly graded Grade A. Firm pericarp, zero rot.'
+    },
+    timeline: [
+      { step: 'DEMAND_CREATED', title: 'Bulk Demand Created (5,000 kg)', location: 'Metro Agri Terminal', timestamp: '08 Sep 2026, 07:30 AM', operator: 'Vikramaditya Singhania', completed: true },
+      { step: 'SUPPLIERS_MATCHED', title: 'Smart Multi-Supplier Matching', location: 'Uzhavan AI Engine', timestamp: '08 Sep 2026, 07:32 AM', operator: 'AI Algorithmic Engine', completed: true },
+      { step: 'SUPPLY_CONFIRMED', title: 'Supply Confirmed (3 Farmers + 1 FPO)', location: 'Uzhavan Platform', timestamp: '08 Sep 2026, 08:00 AM', operator: 'Metro Agri Procurement', completed: true },
+      { step: 'PRODUCE_READY', title: 'Farm Harvest Harvested & Sorted', location: 'Farm Gates & Hub', timestamp: '10 Sep 2026, 03:30 AM', operator: 'Farmer Producer Collective', completed: true },
+      { step: 'COLLECTION_SCHEDULED', title: 'Multi-Stop Collection Route Scheduled', location: 'Logistics Control', timestamp: '10 Sep 2026, 04:00 AM', operator: 'Sundar Dispatch', completed: true },
+      { step: 'COLLECTED', title: 'All 4 Supply Batches Collected (5,000 kg)', location: 'Farm Gates', timestamp: '10 Sep 2026, 05:15 AM', operator: 'Sundar Fleet Logistics', completed: true },
+      { step: 'AT_AGGREGATION_HUB', title: 'Consolidated at Micro-Hub', location: 'Sriperumbudur Micro-Hub', timestamp: '10 Sep 2026, 05:20 AM', operator: 'Hub Warehouse Officer', completed: true },
+      { step: 'QUALITY_VERIFIED', title: 'NABL Quality & Brix Verified (Grade A)', location: 'Hub QC Bay', timestamp: '10 Sep 2026, 05:28 AM', operator: 'Dr. R. Malathi', completed: true },
+      { step: 'LOADED_FOR_TRANSPORT', title: '200 Crates Loaded into CoolReefer EV', location: 'Hub Dock #2', timestamp: '10 Sep 2026, 05:45 AM', operator: 'Logistics Cold Crew', completed: true },
+      { step: 'IN_TRANSIT', title: 'In Transit via NH-48 Expressway (Active)', location: 'NH-48 Corridor (Poonamallee)', timestamp: '10 Sep 2026, 05:50 AM', operator: 'Driver: Karthik S.', completed: true },
+      { step: 'NEAR_DESTINATION', title: 'Approaching Ambattur Dock (~15 mins)', location: 'Chennai Outer Ring Road', timestamp: 'Expected 06:30 AM', operator: 'Telematics Geofence', completed: false },
+      { step: 'DELIVERED', title: 'Arrival & Crates Unloading at Bay', location: 'Metro Agri Processing Dock', timestamp: 'Expected 06:45 AM', operator: 'Dock Receiving In-Charge', completed: false },
+      { step: 'DELIVERY_CONFIRMED', title: 'Digital Crates & Weight Acceptance OTP', location: 'Metro Agri Quality Desk', timestamp: 'Pending Arrival', operator: 'Vikramaditya Singhania', completed: false },
+      { step: 'SETTLEMENT_COMPLETED', title: 'Programmable Escrow Farmer Payout', location: 'e-RUPI Banking Gateway', timestamp: 'Auto on Verification', operator: 'NPCI / RBI Escrow', completed: false }
+    ]
+  },
   {
     id: 'ORD-TN-001',
     agreementId: 'AGR-TN-001',

@@ -244,6 +244,66 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                   </button>
                 </div>
               </form>
+
+              {/* SIH Evaluator One-Click Credential Fills */}
+              <div className="mt-5 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    SIH Quick Demo Logins
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-1.5 text-[11px]">
+                  <button
+                    type="button"
+                    onClick={() => { setIdentifier('vikram.procurement@metroagri.in'); setPassword('BulkBuyer@2026'); }}
+                    className="p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-medium transition text-center cursor-pointer flex flex-col items-center"
+                    title="Procure bulk commodities and track 14-stage logistics"
+                  >
+                    <span className="text-sm">🏭</span>
+                    <span className="font-semibold text-[10px] mt-0.5">Bulk Buyer</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setIdentifier('rajesh.kumar@uzhavanconnect.gov.in'); setPassword('Farmer@2026'); }}
+                    className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 font-medium transition text-center cursor-pointer flex flex-col items-center"
+                  >
+                    <span className="text-sm">👨‍🌾</span>
+                    <span className="font-semibold text-[10px] mt-0.5">Farmer</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setIdentifier('anita.procurement@abcretail.in'); setPassword('Buyer@2026'); }}
+                    className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 font-medium transition text-center cursor-pointer flex flex-col items-center"
+                  >
+                    <span className="text-sm">🏬</span>
+                    <span className="font-semibold text-[10px] mt-0.5">Retail Buyer</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setIdentifier('ravi.fpo@uzhavanconnect.gov.in'); setPassword('Fpo@2026'); }}
+                    className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 font-medium transition text-center cursor-pointer flex flex-col items-center"
+                  >
+                    <span className="text-sm">🌾</span>
+                    <span className="font-semibold text-[10px] mt-0.5">FPO</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setIdentifier('dispatch@sundartrans.in'); setPassword('Logistics@2026'); }}
+                    className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 font-medium transition text-center cursor-pointer flex flex-col items-center"
+                  >
+                    <span className="text-sm">🚚</span>
+                    <span className="font-semibold text-[10px] mt-0.5">Logistics</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setIdentifier('admin@uzhavanconnect.gov.in'); setPassword('Admin@2026'); }}
+                    className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 font-medium transition text-center cursor-pointer flex flex-col items-center"
+                  >
+                    <span className="text-sm">🛡️</span>
+                    <span className="font-semibold text-[10px] mt-0.5">Admin</span>
+                  </button>
+                </div>
+              </div>
             </div>
           ) : (
             /* Create Account Form */
@@ -269,6 +329,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                   >
                     <option value="FARMER">Farmer (Producer)</option>
                     <option value="RETAIL_BUYER">Retail Buyer</option>
+                    <option value="BULK_BUYER">Bulk Buyer (Wholesaler / Processor / Institutional)</option>
                     <option value="FPO_AGGREGATOR">FPO Aggregator</option>
                     <option value="LOGISTICS">Logistics Carrier Transport</option>
                   </select>

@@ -22,6 +22,7 @@ import { FarmerDashboard } from './pages/FarmerDashboard';
 import { FindBuyersPage } from './pages/FindBuyersPage';
 
 import { BuyerDashboard } from './pages/BuyerDashboard';
+import { BulkBuyerDashboard } from './pages/BulkBuyerDashboard';
 import { DemandPoolPage } from './pages/DemandPoolPage';
 import { ReverseAuctionPage } from './pages/ReverseAuctionPage';
 import { DemandIntelligencePage } from './pages/DemandIntelligencePage';
@@ -49,7 +50,8 @@ const PUBLIC_TABS = ['home', 'landing', 'login', 'register', 'traceability', 'tr
 
 // Role definitions for protected features
 const FARMER_ALLOWED_ROLES: UserRole[] = ['FARMER', 'FPO_AGGREGATOR', 'ADMIN'];
-const BUYER_ALLOWED_ROLES: UserRole[] = ['RETAIL_BUYER', 'ADMIN'];
+const BUYER_ALLOWED_ROLES: UserRole[] = ['RETAIL_BUYER', 'BULK_BUYER', 'ADMIN'];
+const BULK_BUYER_ALLOWED_ROLES: UserRole[] = ['BULK_BUYER', 'ADMIN'];
 const LOGISTICS_ALLOWED_ROLES: UserRole[] = ['LOGISTICS', 'ADMIN'];
 const REPORTS_ALLOWED_ROLES: UserRole[] = ['ADMIN', 'FPO_AGGREGATOR'];
 
@@ -79,6 +81,7 @@ const PageContent: React.FC = () => {
 
     // ── Dashboard based on Authorized Role ────────────
     case 'dashboard':
+      if (currentRole === 'BULK_BUYER') return <BulkBuyerDashboard />;
       if (currentRole === 'RETAIL_BUYER') return <BuyerDashboard />;
       if (currentRole === 'FPO_AGGREGATOR') return <FpoDashboard />;
       if (currentRole === 'LOGISTICS') return <LogisticsDashboard />;
@@ -87,6 +90,14 @@ const PageContent: React.FC = () => {
       return <AccessDenied attemptedFeature="Unrecognized User Role Dashboard" />;
 
     // ── Direct Portal Routes ─────────────────────────
+    case 'bulk-buyer':
+    case 'bulk-dashboard':
+    case 'bulk-demand':
+      if (currentRole !== 'BULK_BUYER' && currentRole !== 'ADMIN') {
+        return <AccessDenied attemptedFeature="Bulk Buyer Procurement Portal" />;
+      }
+      return <BulkBuyerDashboard />;
+
     case 'farmer':
     case 'farmer-dashboard':
       if (currentRole !== 'FARMER' && currentRole !== 'ADMIN') {
@@ -232,6 +243,7 @@ const PageContent: React.FC = () => {
       return <ProfilePage />;
 
     default:
+      if (currentRole === 'BULK_BUYER') return <BulkBuyerDashboard />;
       if (currentRole === 'RETAIL_BUYER') return <BuyerDashboard />;
       if (currentRole === 'FPO_AGGREGATOR') return <FpoDashboard />;
       if (currentRole === 'LOGISTICS') return <LogisticsDashboard />;

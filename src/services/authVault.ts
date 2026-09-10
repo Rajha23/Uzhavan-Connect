@@ -44,6 +44,9 @@ export const normalizeRole = (role?: string): UserRole => {
   if (!role) return 'FARMER';
   const clean = role.trim().toUpperCase().replace(/[\s-]+/g, '_');
   
+  if (clean.includes('BULK')) {
+    return 'BULK_BUYER';
+  }
   if (clean.includes('BUYER') || clean.includes('RETAIL')) {
     return 'RETAIL_BUYER';
   }
@@ -124,6 +127,12 @@ export const seedDemoAccounts = async (): Promise<void> => {
       email: 'anita.procurement@abcretail.in',
       mobile: '9884055667',
       passwords: ['Buyer@2026', 'SecurePass@2026']
+    },
+    {
+      user: DEMO_USERS.BULK_BUYER,
+      email: 'vikram.procurement@metroagri.in',
+      mobile: '9840288990',
+      passwords: ['BulkBuyer@2026', 'SecurePass@2026', 'buyer123']
     },
     {
       user: DEMO_USERS.FPO_AGGREGATOR,

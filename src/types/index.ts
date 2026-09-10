@@ -1,6 +1,7 @@
 export type UserRole =
   | 'FARMER'
   | 'RETAIL_BUYER'
+  | 'BULK_BUYER'
   | 'FPO_AGGREGATOR'
   | 'LOGISTICS'
   | 'ADMIN';
@@ -254,6 +255,82 @@ export interface WorkflowOrder {
 
   // Buyer Delivery Confirmation (Part G)
   buyerConfirmation?: BuyerDeliveryConfirmation;
+
+  // Bulk Procurement & 14-Stage Tracking (Part H)
+  isBulkOrder?: boolean;
+  bulkDemandId?: string;
+  multiSupplierAllocations?: SupplierAllocation[];
+  lifecycleStage?: ShipmentLifecycleStage;
+  gpsTracking?: {
+    isLive: boolean;
+    currentLat: number;
+    currentLng: number;
+    speedKmH: number;
+    reeferTempC: number;
+    distanceCoveredKm: number;
+    remainingDistanceKm: number;
+    estimatedArrival: string;
+    lastPingAt: string;
+    routeWaypoints?: Array<{
+      lat: number;
+      lng: number;
+      label: string;
+      type: 'PICKUP' | 'HUB' | 'TRANSIT' | 'DESTINATION';
+      timestamp?: string;
+      completed?: boolean;
+    }>;
+  };
+}
+
+export type ShipmentLifecycleStage =
+  | 'DEMAND_CREATED'
+  | 'SUPPLIERS_MATCHED'
+  | 'SUPPLY_CONFIRMED'
+  | 'PRODUCE_READY'
+  | 'COLLECTION_SCHEDULED'
+  | 'COLLECTED'
+  | 'AT_AGGREGATION_HUB'
+  | 'QUALITY_VERIFIED'
+  | 'LOADED_FOR_TRANSPORT'
+  | 'IN_TRANSIT'
+  | 'NEAR_DESTINATION'
+  | 'DELIVERED'
+  | 'DELIVERY_CONFIRMED'
+  | 'SETTLEMENT_COMPLETED';
+
+export interface SupplierAllocation {
+  supplierId: string;
+  supplierName: string;
+  supplierType: 'FARMER' | 'FPO';
+  location: string;
+  crop: string;
+  variety?: string;
+  availableKg: number;
+  allocatedKg: number;
+  pricePerKg: number;
+  qualityGrade: string;
+  distanceKm: number;
+  confirmed: boolean;
+}
+
+export interface BulkDemandRequirement {
+  id: string;
+  buyerId: string;
+  buyerName: string;
+  buyerOrganization: string;
+  crop: string;
+  variety: string;
+  totalRequiredKg: number;
+  confirmedKg: number;
+  targetPricePerKg: number;
+  qualityRequirement: string;
+  grade: 'Grade A' | 'Grade B' | 'Standard' | 'Premium';
+  deliveryLocation: string;
+  requiredDeliveryDate: string;
+  deliveryTimeWindow?: string;
+  status: 'OPEN' | 'ALLOCATING' | 'CONFIRMED' | 'IN_TRANSIT' | 'COMPLETED';
+  allocations: SupplierAllocation[];
+  createdAt: string;
 }
 
 export interface ProduceListing {
