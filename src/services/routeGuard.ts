@@ -150,23 +150,6 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'profile',
     'access-denied'
   ],
-  BULK_BUYER: [
-    'home',
-    'landing',
-    'login',
-    'register',
-    'dashboard',
-    'buyer',
-    'demand-pool',
-    'reverse-auction',
-    'smart-matching',
-    'orders',
-    'traceability',
-    'tracking',
-    'quality-assessment',
-    'profile',
-    'access-denied'
-  ],
   FPO_AGGREGATOR: [
     'home',
     'landing',
@@ -263,7 +246,6 @@ export const TAB_FEATURE_NAMES: Record<string, string> = {
 export const ROLE_DISPLAY_LABELS: Record<UserRole, string> = {
   FARMER: 'FARMER',
   RETAIL_BUYER: 'BUYER',
-  BULK_BUYER: 'BULK BUYER',
   FPO_AGGREGATOR: 'FPO',
   LOGISTICS: 'OPERATIONS',
   ADMIN: 'ADMIN'
@@ -284,12 +266,6 @@ export const ROLE_BADGE_STYLES: Record<UserRole, { dot: string; bg: string; bord
     bg: 'bg-blue-50',
     border: 'border-blue-200',
     text: 'text-blue-900'
-  },
-  BULK_BUYER: {
-    dot: 'bg-indigo-600',
-    bg: 'bg-indigo-50',
-    border: 'border-indigo-200',
-    text: 'text-indigo-900'
   },
   FPO_AGGREGATOR: {
     dot: 'bg-amber-600',

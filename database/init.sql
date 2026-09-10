@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     mobile VARCHAR(32) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(32) NOT NULL CHECK (role IN ('FARMER', 'FPO', 'BUYER', 'RETAILER', 'BULK_BUYER', 'LOGISTICS', 'ADMIN', 'GOVERNMENT', 'SYSADMIN')),
+    role VARCHAR(32) NOT NULL CHECK (role IN ('FARMER', 'FPO', 'BUYER', 'RETAILER', 'BULK_PURCHASER', 'LOGISTICS', 'ADMIN', 'GOVERNMENT', 'SYSADMIN')),
     status VARCHAR(32) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE', 'SUSPENDED')),
     organization VARCHAR(255),
     location VARCHAR(255),
@@ -279,3 +279,68 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO produce_batches (id, batch_code, product, farmer_id, fpo_id, quantity, harvest_date, quality, brix_sugar, firmness, pesticide_pass, collection_center, status, qr_code) VALUES
 ('pb_01', 'AGP-TOM-2026-001', 'Tomato', 'usr_farmer_01', 'fpo_01', 3000.00, '2026-09-06', 'Grade A', 4.85, 3.42, TRUE, 'Sriperumbudur Hub Bay 2', 'In Transit', 'https://agripulse.gov.in/trace/AGP-TOM-2026-001')
 ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- ROW LEVEL SECURITY (RLS) POLICIES
+-- Enforces backend and database-level authorization independently from frontend UI
+-- ============================================================
+
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE farmer_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE produce_listings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE demand_requests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shipments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE settlements ENABLE ROW LEVEL SECURITY;
+
+-- 1. Users table policies: users can read their own profile or platform admins can inspect
+CREATE POLICY user_read_policy ON users
+    FOR SELECT
+    USING (id = current_setting('request.jwt.claim.sub', true) OR role IN ('ADMIN', 'SYSADMIN', 'GOVERNMENT'));
+
+CREATE POLICY user_update_policy ON users
+    FOR UPDATE
+    USING (id = current_setting('request.jwt.claim.sub', true));
+
+-- 2. Farmer profiles policies: farmer can view/edit own profile, FPO/Admin can view
+CREATE POLICY farmer_profile_policy ON farmer_profiles
+    FOR ALL
+    USING (user_id = current_setting('request.jwt.claim.sub', true) OR EXISTS (
+        SELECT 1 FROM users WHERE id = current_setting('request.jwt.claim.sub', true) AND role IN ('ADMIN', 'FPO', 'SYSADMIN')
+    ));
+
+-- 3. Produce listings policies: readable for market matching; only Farmer/FPO/Admin can create
+CREATE POLICY produce_read_policy ON produce_listings
+    FOR SELECT
+    USING (TRUE);
+
+CREATE POLICY produce_write_policy ON produce_listings
+    FOR INSERT
+    WITH CHECK (farmer_id = current_setting('request.jwt.claim.sub', true) OR EXISTS (
+        SELECT 1 FROM users WHERE id = current_setting('request.jwt.claim.sub', true) AND role IN ('FARMER', 'FPO', 'ADMIN')
+    ));
+
+-- 4. Demand requests policies: readable for matching; only Buyer/Admin can create
+CREATE POLICY demand_read_policy ON demand_requests
+    FOR SELECT
+    USING (TRUE);
+
+CREATE POLICY demand_write_policy ON demand_requests
+    FOR INSERT
+    WITH CHECK (buyer_id = current_setting('request.jwt.claim.sub', true) OR EXISTS (
+        SELECT 1 FROM users WHERE id = current_setting('request.jwt.claim.sub', true) AND role IN ('BUYER', 'RETAILER', 'BULK_PURCHASER', 'ADMIN')
+    ));
+
+-- 5. Shipments policies: Logistics and Admins only
+CREATE POLICY shipment_policy ON shipments
+    FOR ALL
+    USING (EXISTS (
+        SELECT 1 FROM users WHERE id = current_setting('request.jwt.claim.sub', true) AND role IN ('LOGISTICS', 'ADMIN', 'SYSADMIN')
+    ));
+
+-- 6. Settlements policies: Farmer can view their own, Admins & FPOs can view
+CREATE POLICY settlement_policy ON settlements
+    FOR SELECT
+    USING (farmer_id = current_setting('request.jwt.claim.sub', true) OR EXISTS (
+        SELECT 1 FROM users WHERE id = current_setting('request.jwt.claim.sub', true) AND role IN ('ADMIN', 'SYSADMIN', 'GOVERNMENT', 'FPO')
+    ));
+

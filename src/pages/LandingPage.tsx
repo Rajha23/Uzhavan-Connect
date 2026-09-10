@@ -3,31 +3,17 @@ import { useApp } from '../context/AppContext';
 import {
   Sprout,
   TrendingUp,
-  Layers,
   Sparkles,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  AlertTriangle,
-  PlayCircle,
   Truck,
-  QrCode,
-  Building2,
   ShoppingBag,
   User,
-  ExternalLink,
-  ChevronDown,
-  Info,
-  Scale,
-  DollarSign,
   HeartHandshake,
   Lock,
   UserPlus
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
-  const { setActiveTab, switchRole } = useApp();
-
+  const { setActiveTab, handleJoinAsRole } = useApp();
 
   const problemCards = [
     { title: 'Fragmented Demand', desc: 'Small retailers & restaurants purchase independently, inflating ordering costs and driving speculative local arbitrage.' },
@@ -40,180 +26,151 @@ export const LandingPage: React.FC = () => {
     { title: 'Opaque Farmer Realization', desc: 'No itemized visibility into transport, mandi cess, or commission deductions, leaving farmers in perpetual debt.' }
   ];
 
-
   return (
-    <div className="space-y-24 pb-16">
+    <div className="space-y-14 sm:space-y-16 pb-16">
       {/* 1. Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 bg-surface-light border-b border-emerald-100/50">
-        {/* Subtle decorative background circles */}
+      <section className="relative overflow-hidden pt-12 pb-12 sm:pb-14 lg:pt-16 lg:pb-16 border-b border-emerald-900/10 bg-gradient-to-b from-white/90 via-emerald-50/25 to-[#f8faf9]/90">
+        {/* Decorative backdrop gradients */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full overflow-hidden pointer-events-none -z-10">
-          <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-emerald-100/30 blur-3xl" />
-          <div className="absolute top-48 -right-32 w-96 h-96 rounded-full bg-emerald-50 blur-3xl" />
+          <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-emerald-100/40 blur-3xl" />
+          <div className="absolute top-48 -right-32 w-96 h-96 rounded-full bg-teal-100/30 blur-3xl" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto space-y-6">
 
+            {/* AI Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/70 text-emerald-800 text-xs font-medium shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+              <span>Demand-Driven Agricultural Marketplace & Operating System</span>
+            </div>
+
             {/* Main Headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 leading-[1.1]">
-              Sell Directly.<br />
-              <span className="text-emerald-600">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-slate-900 tracking-tight leading-[1.15]">
+              Sell Directly.{' '}
+              <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 Earn Better.
-              </span><br />Grow Smarter.
+              </span>
+              <br />
+              Grow Smarter with AI.
             </h1>
 
             {/* Subheading */}
-            <p className="text-base sm:text-lg text-slate-900/70 leading-relaxed max-w-2xl mx-auto font-medium">
-              Uzhavan Connect connects farmers directly with buyers using demand forecasts, smart matching, better price discovery and simple logistics.
+            <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal">
+              Uzhavan Connect unifies smallholder farmers directly with institutional buyers using real-time demand forecasting, algorithmic matching, fair price discovery, and cold-chain route coordination.
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
               <button
                 onClick={() => setActiveTab('login')}
-                className="rounded-2xl flex items-center gap-2.5 bg-emerald-700 text-white font-bold px-8 py-4 shadow-soft hover:shadow-hover hover:-translate-y-1 transition-all text-sm"
+                className="btn-primary flex items-center gap-2 px-6 py-3.5 shadow-sm text-sm"
               >
-                <Lock className="w-5 h-5 text-emerald-100" />
-                <span>Login</span>
+                <Lock className="w-4 h-4 text-emerald-300" />
+                <span>Sign In to Platform</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('register')}
-                className="rounded-2xl flex items-center gap-2.5 bg-white text-emerald-900 font-bold px-8 py-4 border border-emerald-200 hover:bg-emerald-50 hover:-translate-y-1 transition-all shadow-sm text-sm"
+                className="btn-secondary flex items-center gap-2 px-6 py-3.5 text-sm"
               >
-                <UserPlus className="w-5 h-5 text-emerald-700" />
-                <span>Register</span>
+                <UserPlus className="w-4 h-4 text-emerald-700" />
+                <span>Create New Account</span>
               </button>
-
             </div>
 
             {/* 4-Benefit Card Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-8 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 max-w-4xl mx-auto">
               {[
-                { icon: Sprout, title: 'Direct Market', desc: 'Sell directly to verified buyers', color: 'text-emerald-900 bg-emerald-50 border-emerald-200' },
-                { icon: TrendingUp, title: 'Demand Forecast', desc: 'Know what buyers need first', color: 'text-indigo-900 bg-indigo-50 border-indigo-200' },
-                { icon: Sparkles, title: 'Smart Matching', desc: 'Best matches by price & distance', color: 'text-blue-900 bg-blue-50 border-blue-200' },
-                { icon: Truck, title: 'Easy Logistics', desc: 'Route-optimised direct delivery', color: 'text-amber-900 bg-amber-50 border-amber-200' },
+                { icon: Sprout, title: 'Direct Market', desc: 'Sell directly to verified buyers', color: 'text-emerald-700 bg-emerald-50/70 border-emerald-200/60' },
+                { icon: TrendingUp, title: 'Demand Forecast', desc: 'Predictive consumption spikes', color: 'text-teal-700 bg-teal-50/70 border-teal-200/60' },
+                { icon: Sparkles, title: 'Smart Matching', desc: 'Optimized price & proximity', color: 'text-indigo-700 bg-indigo-50/70 border-indigo-200/60' },
+                { icon: Truck, title: 'Easy Logistics', desc: 'Route-optimized multi-stop delivery', color: 'text-amber-700 bg-amber-50/70 border-amber-200/60' },
               ].map((b) => (
-                <div key={b.title} className={`p-4 rounded-2xl border text-left ${b.color} transition-all duration-300 hover:-translate-y-1 hover:shadow-soft`}>
-                  <b.icon className="w-6 h-6 mb-2 text-emerald-600" />
-                  <p className="text-sm font-bold leading-tight">{b.title}</p>
-                  <p className="text-[11px] opacity-70 mt-1 leading-snug">{b.desc}</p>
+                <div key={b.title} className={`p-4 rounded-xl border text-left ${b.color} transition hover:-translate-y-0.5 hover:shadow-xs`}>
+                  <b.icon className="w-5 h-5 mb-2" />
+                  <p className="text-xs font-medium leading-tight text-slate-900">{b.title}</p>
+                  <p className="text-[11px] text-slate-600 mt-1 leading-snug font-normal">{b.desc}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Agriculture-Themed Interactive Ecosystem Diagram */}
-          <div className="mt-16 max-w-5xl mx-auto bg-surface-light rounded-[2.5rem] p-6 sm:p-10 border border-slate-200 shadow-soft relative">
-            <div className="text-center mb-10">
-              <span className="text-xs font-bold uppercase tracking-widest text-slate-900 bg-emerald-100/20 px-4 py-1.5 rounded-full border border-sage/40">
-                Complete Supply Chain
+          {/* Ecosystem Architecture Flow Container */}
+          <div className="mt-14 max-w-5xl mx-auto bg-white/95 rounded-2xl p-6 sm:p-8 border border-emerald-900/10 shadow-xs relative">
+            <div className="text-center mb-8">
+              <span className="text-xs font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-200/80">
+                100% Traceable End-to-End Operating Cycle
               </span>
-              <p className="text-xs text-slate-900/50 mt-3 font-semibold uppercase tracking-widest">
-                Farmer ↓ Uzhavan Connect ↓ Buyer ↓ Logistics ↓ Customer
+              <p className="text-xs text-slate-500 mt-2 font-normal">
+                Farmer Produce → AI Demand Aggregation → Smart Matching → FPO Hub → QC & Cold Transport → Buyer Settlement
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 relative">
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3.5 relative">
               {/* Node 1: Farmer */}
               <div
-                onClick={() => switchRole('FARMER')}
-                className="p-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer transition text-center group"
+                onClick={() => handleJoinAsRole('FARMER')}
+                className="p-4 rounded-xl border border-slate-200 hover:border-emerald-300 bg-slate-50/60 hover:bg-emerald-50/30 cursor-pointer transition text-center group"
               >
-                <div className="w-12 h-12 mx-auto rounded-[1rem] bg-emerald-100 text-slate-900 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
-                  <Sprout className="w-6 h-6" />
+                <div className="w-10 h-10 mx-auto rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-medium mb-2.5 group-hover:scale-105 transition shadow-2xs">
+                  <Sprout className="w-5 h-5" />
                 </div>
-                <h4 className="text-sm font-bold text-slate-900">1. Farmer</h4>
-                <p className="text-[11px] text-slate-900/70 mt-1.5 leading-relaxed">Direct crop listing & harvest information</p>
-                <span className="text-[10px] text-slate-900 font-bold mt-3 inline-block uppercase tracking-widest">Switch →</span>
+                <h4 className="text-xs font-medium text-slate-900">1. Farmer</h4>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Direct crop listing & harvest forecast</p>
+                <span className="text-[10px] text-emerald-700 font-medium mt-2.5 inline-block uppercase tracking-wider">Farmer Portal →</span>
               </div>
 
-              {/* Node 2: Uzhavan Connect */}
+              {/* Node 2: Uzhavan Connect Engine */}
               <div
                 onClick={() => setActiveTab('demand-intel')}
-                className="p-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer transition text-center group"
+                className="p-4 rounded-xl border border-slate-200 hover:border-emerald-300 bg-slate-50/60 hover:bg-emerald-50/30 cursor-pointer transition text-center group"
               >
-                <div className="w-12 h-12 mx-auto rounded-[1rem] bg-emerald-800 text-white flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
-                  <TrendingUp className="w-6 h-6" />
+                <div className="w-10 h-10 mx-auto rounded-lg bg-slate-900 text-emerald-400 flex items-center justify-center font-medium mb-2.5 group-hover:scale-105 transition shadow-2xs">
+                  <TrendingUp className="w-5 h-5" />
                 </div>
-                <h4 className="text-sm font-bold text-slate-900">2. Uzhavan Connect</h4>
-                <p className="text-[11px] text-slate-900/70 mt-1.5 leading-relaxed">Demand forecast, smart matching & pricing</p>
-                <span className="text-[10px] text-slate-900 font-bold mt-3 inline-block uppercase tracking-widest">Forecasts →</span>
+                <h4 className="text-xs font-medium text-slate-900">2. Uzhavan AI</h4>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Smart matching & algorithmic pricing</p>
+                <span className="text-[10px] text-emerald-700 font-medium mt-2.5 inline-block uppercase tracking-wider">Forecasts →</span>
               </div>
 
               {/* Node 3: Buyers */}
               <div
-                onClick={() => switchRole('RETAIL_BUYER')}
-                className="p-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer transition text-center group"
+                onClick={() => handleJoinAsRole('RETAIL_BUYER')}
+                className="p-4 rounded-xl border border-slate-200 hover:border-emerald-300 bg-slate-50/60 hover:bg-emerald-50/30 cursor-pointer transition text-center group"
               >
-                <div className="w-12 h-12 mx-auto rounded-[1rem] bg-emerald-100 text-slate-900 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
-                  <ShoppingBag className="w-6 h-6" />
+                <div className="w-10 h-10 mx-auto rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-medium mb-2.5 group-hover:scale-105 transition shadow-2xs">
+                  <ShoppingBag className="w-5 h-5" />
                 </div>
-                <h4 className="text-sm font-bold text-slate-900">3. Pooled Buyers</h4>
-                <p className="text-[11px] text-slate-900/70 mt-1.5 leading-relaxed">Consolidated demand & reverse auctions</p>
-                <span className="text-[10px] text-slate-900 font-bold mt-3 inline-block uppercase tracking-widest">Switch →</span>
+                <h4 className="text-xs font-medium text-slate-900">3. Pooled Buyers</h4>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Bulk demand pooling & reverse auctions</p>
+                <span className="text-[10px] text-emerald-700 font-medium mt-2.5 inline-block uppercase tracking-wider">Buyer Portal →</span>
               </div>
 
               {/* Node 4: Logistics */}
               <div
-                onClick={() => switchRole('ADMIN')}
-                className="p-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer transition text-center group"
+                onClick={() => handleJoinAsRole('LOGISTICS')}
+                className="p-4 rounded-xl border border-slate-200 hover:border-emerald-300 bg-slate-50/60 hover:bg-emerald-50/30 cursor-pointer transition text-center group"
               >
-                <div className="w-12 h-12 mx-auto rounded-[1rem] bg-emerald-800 text-white flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
-                  <Truck className="w-6 h-6" />
+                <div className="w-10 h-10 mx-auto rounded-lg bg-slate-900 text-emerald-400 flex items-center justify-center font-medium mb-2.5 group-hover:scale-105 transition shadow-2xs">
+                  <Truck className="w-5 h-5" />
                 </div>
-                <h4 className="text-sm font-bold text-slate-900">4. Logistics</h4>
-                <p className="text-[11px] text-slate-900/70 mt-1.5 leading-relaxed">Centroid micro-hubs & VRP route optimization</p>
-                <span className="text-[10px] text-slate-900 font-bold mt-3 inline-block uppercase tracking-widest">View VRP →</span>
+                <h4 className="text-xs font-medium text-slate-900">4. Logistics Hub</h4>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Micro-hubs & VRP route dispatch</p>
+                <span className="text-[10px] text-emerald-700 font-medium mt-2.5 inline-block uppercase tracking-wider">Hub Operations →</span>
               </div>
 
               {/* Node 5: Consumer & Trace */}
               <div
                 onClick={() => setActiveTab('traceability')}
-                className="p-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer transition text-center group"
+                className="p-4 rounded-xl border border-slate-200 hover:border-emerald-300 bg-slate-50/60 hover:bg-emerald-50/30 cursor-pointer transition text-center group"
               >
-                <div className="w-12 h-12 mx-auto rounded-[1rem] bg-emerald-100 text-slate-900 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-sm">
-                  <User className="w-6 h-6" />
+                <div className="w-10 h-10 mx-auto rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-medium mb-2.5 group-hover:scale-105 transition shadow-2xs">
+                  <User className="w-5 h-5" />
                 </div>
-                <h4 className="text-sm font-bold text-slate-900">5. Consumer</h4>
-                <p className="text-[11px] text-slate-900/70 mt-1.5 leading-relaxed">Digital QR produce passport & transparency</p>
-                <span className="text-[10px] text-slate-900 font-bold mt-3 inline-block uppercase tracking-widest">Explore →</span>
-              </div>
-            </div>
-
-            {/* 4 Floating Live Statistics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-slate-200">
-              <div className="text-center p-4 bg-slate-50 rounded-[1.5rem] border border-slate-200">
-                <p className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 tracking-wide">
-                  85.9%
-                </p>
-                <p className="text-xs font-bold text-slate-900 mt-1">Farmer Realization</p>
-                <span className="text-[11px] text-slate-900/60 font-medium">vs 34% in mandi</span>
-              </div>
-
-              <div className="text-center p-4 bg-slate-50 rounded-[1.5rem] border border-slate-200">
-                <p className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 tracking-wide">
-                  94.6%
-                </p>
-                <p className="text-xs font-bold text-slate-900 mt-1">Forecast Accuracy</p>
-                <span className="text-[11px] text-slate-900/60 font-medium">MAPE 5.34%</span>
-              </div>
-
-              <div className="text-center p-4 bg-slate-50 rounded-[1.5rem] border border-slate-200">
-                <p className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 tracking-wide">
-                  12k+
-                </p>
-                <p className="text-xs font-bold text-slate-900 mt-1">Orders Fulfilled</p>
-                <span className="text-[11px] text-slate-900/60 font-medium">100% on-time</span>
-              </div>
-
-              <div className="text-center p-4 bg-slate-50 rounded-[1.5rem] border border-slate-200">
-                <p className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 tracking-wide">
-                  38.4%
-                </p>
-                <p className="text-xs font-bold text-slate-900 mt-1">Distance Saved</p>
-                <span className="text-[11px] text-slate-900/60 font-medium">42.6 km per run</span>
+                <h4 className="text-xs font-medium text-slate-900">5. Consumer</h4>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Digital QR produce passport audit</p>
+                <span className="text-[10px] text-emerald-700 font-medium mt-2.5 inline-block uppercase tracking-wider">Explore →</span>
               </div>
             </div>
           </div>
@@ -221,56 +178,68 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* 2. Problem Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
-        <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900 tracking-wide">
-            Why Agricultural Supply Chains Need Better Coordination
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
+            Why Agricultural Supply Chains Need Coordinated Intelligence
           </h2>
-          <p className="text-sm text-slate-900/70 leading-relaxed font-medium">
-            The problem is not simply the existence of intermediaries. Intermediary functions like transport and quality sorting are physically essential. The deeper problem is <strong>inefficient, uncoordinated information and speculative negotiation layers</strong> across Supply, Demand, Pricing, Aggregation, Logistics, and Traceability.
+          <p className="text-sm text-slate-600 leading-relaxed font-normal">
+            Physical intermediary functions like transport and quality grading are essential. The breakdown occurs with <span className="font-medium text-slate-700">inefficient, uncoordinated information and speculative negotiation layers</span> across supply, demand, pricing, aggregation, logistics, and traceability.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {problemCards.map((card, idx) => (
             <div
               key={idx}
-              className="bg-surface-light p-6 rounded-[2.5rem] border border-slate-200 shadow-soft hover:border-sage hover:shadow-sm transition space-y-3 group"
+              className="bg-white/95 p-5 rounded-2xl border border-emerald-900/10 shadow-xs hover:border-emerald-400/60 hover:shadow-ai-hover transition-all duration-200 space-y-2.5 group"
             >
-              <div className="w-10 h-10 rounded-[1rem] bg-emerald-100 border border-sage/50 text-slate-900 flex items-center justify-center font-bold text-sm shadow-sm group-hover:scale-110 transition">
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200/60 text-emerald-800 flex items-center justify-center font-medium text-xs shadow-2xs group-hover:scale-105 transition">
                 0{idx + 1}
               </div>
-              <h3 className="font-bold text-slate-900 text-sm tracking-wide">{card.title}</h3>
-              <p className="text-xs text-slate-900/70 leading-relaxed">{card.desc}</p>
+              <h3 className="font-medium text-slate-900 text-sm tracking-normal">{card.title}</h3>
+              <p className="text-xs text-slate-600 leading-relaxed font-normal">{card.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
+      {/* 3. Final Call to Action Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-br from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-3xl p-8 sm:p-12 text-center space-y-6 shadow-forest-lg relative overflow-hidden border border-emerald-600/30">
+          {/* Subtle ambient agricultural glow highlights */}
+          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-emerald-400/15 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-emerald-300/10 blur-3xl pointer-events-none" />
 
-      {/* 6. Final Call to Action Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
-        <div className="bg-emerald-800 text-white rounded-[3rem] p-10 sm:p-16 text-center space-y-8 shadow-2xl relative overflow-hidden border border-emerald-800">
-          <div className="inline-flex items-center gap-2 bg-emerald-100/20 text-emerald-600 px-4 py-2 rounded-[1rem] text-xs font-bold border border-sage/40 uppercase tracking-widest">
-            <HeartHandshake className="w-4 h-4 text-emerald-600" />
-            <span>From Fragmented Supply to Coordinated Demand</span>
+          {/* Programmatic Transparency Badge */}
+          <div className="relative inline-flex items-center gap-2 bg-emerald-950/50 text-emerald-200 px-4 py-1.5 rounded-full text-xs font-medium border border-emerald-400/40 shadow-xs backdrop-blur-xs">
+            <HeartHandshake className="w-4 h-4 text-emerald-300" />
+            <span>From Speculative Intermediaries to Programmatic Transparency</span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight tracking-wide max-w-3xl mx-auto leading-[1.1]">
-            Start Building a Smarter Agricultural Supply Chain
+          {/* High-Contrast Main Heading */}
+          <h2 className="relative text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight max-w-2xl mx-auto leading-[1.25] text-white">
+            Start Building a Smarter Agricultural Operating Network
           </h2>
 
-          <p className="text-sm sm:text-base text-white/70 max-w-2xl mx-auto leading-relaxed font-medium">
+          {/* High-Contrast Supporting Copy */}
+          <p className="relative text-sm sm:text-base text-emerald-50/95 max-w-2xl mx-auto leading-relaxed font-normal">
             Empower smallholders with forward demand visibility, eliminate speculative middlemen, and deliver fresh produce with guaranteed quality.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-
+          {/* Coordinated Action Buttons */}
+          <div className="relative flex flex-wrap items-center justify-center gap-3.5 pt-2">
             <button
-              onClick={() => switchRole('FARMER')}
-              className="px-8 py-4 bg-slate-50 hover:bg-white text-emerald-900 font-bold rounded-[1.5rem] border border-slate-200 transition text-sm uppercase tracking-widest"
+              onClick={() => handleJoinAsRole('FARMER')}
+              className="px-6 py-3.5 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-medium rounded-xl transition-all duration-150 text-xs uppercase tracking-wider shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white/80 cursor-pointer"
             >
               Join as Farmer / FPO
+            </button>
+            <button
+              onClick={() => handleJoinAsRole('RETAIL_BUYER')}
+              className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl border border-white/30 hover:border-white/60 transition-all duration-150 text-xs uppercase tracking-wider backdrop-blur-xs shadow-2xs hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white/80 cursor-pointer"
+            >
+              Join as Institutional Buyer
             </button>
           </div>
         </div>
@@ -278,3 +247,4 @@ export const LandingPage: React.FC = () => {
     </div>
   );
 };
+

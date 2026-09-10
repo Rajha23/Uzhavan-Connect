@@ -42,3 +42,5 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+scratch/
+.vercel/

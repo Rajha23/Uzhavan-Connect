@@ -28,10 +28,10 @@ export const ProfilePage: React.FC = () => {
 
           <div className="flex-1 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-2xl font-bold  text-slate-900">
+              <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
                 {currentUser.name}
               </h2>
-              <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full border border-emerald-300">
+              <span className="text-xs bg-emerald-100 text-emerald-800 font-medium px-2.5 py-0.5 rounded-full border border-emerald-300">
                 {currentRole.replace('_', ' ')}
               </span>
             </div>
@@ -63,7 +63,7 @@ export const ProfilePage: React.FC = () => {
         <div className="space-y-6">
           {/* Farmer Details */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+            <h3 className="text-sm font-medium text-slate-900 uppercase tracking-wider">
               Farm & Agrarian Profile
             </h3>
 
@@ -78,7 +78,7 @@ export const ProfilePage: React.FC = () => {
               </div>
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 text-[11px] block">Farm Size:</span>
-                <strong className="text-emerald-700 font-mono font-bold">{currentUser.farmSizeAcres || 0} Acres</strong>
+                <strong className="text-emerald-700 font-mono font-medium">{currentUser.farmSizeAcres || 0} Acres</strong>
               </div>
               <div className="p-3 bg-slate-50 rounded-xl">
                 <span className="text-slate-400 text-[11px] block">Registered FPO:</span>
@@ -90,7 +90,7 @@ export const ProfilePage: React.FC = () => {
               <span className="text-xs font-semibold text-slate-500 block mb-1">Main Harvest Crops:</span>
               <div className="flex gap-2">
                 {(currentUser.mainCrops && currentUser.mainCrops.length > 0 ? currentUser.mainCrops : ['None specified']).map((c, i) => (
-                  <span key={i} className="bg-emerald-50 text-emerald-800 font-semibold px-2.5 py-1 rounded-lg text-xs border border-emerald-200">
+                  <span key={i} className="bg-emerald-50 text-emerald-800 font-medium px-2.5 py-1 rounded-lg text-xs border border-emerald-200">
                     {c}
                   </span>
                 ))}
@@ -102,15 +102,15 @@ export const ProfilePage: React.FC = () => {
           <div className="grid grid-cols-3 gap-4">
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs text-center">
               <span className="text-xs text-slate-500 font-medium">Total Listings</span>
-              <p className="text-2xl font-bold font-mono text-slate-900 mt-1">{currentUser.totalListings || 0}</p>
+              <p className="text-2xl font-semibold font-mono text-slate-900 mt-1">{currentUser.totalListings || 0}</p>
             </div>
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs text-center">
               <span className="text-xs text-slate-500 font-medium">Completed Orders</span>
-              <p className="text-2xl font-bold font-mono text-emerald-700 mt-1">{currentUser.completedOrders || 0}</p>
+              <p className="text-2xl font-semibold font-mono text-emerald-700 mt-1">{currentUser.completedOrders || 0}</p>
             </div>
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs text-center">
               <span className="text-xs text-slate-500 font-medium">Quantity Sold</span>
-              <p className="text-2xl font-bold font-mono text-blue-700 mt-1">{(currentUser.quantitySoldKg || 0).toLocaleString()} kg</p>
+              <p className="text-2xl font-semibold font-mono text-blue-700 mt-1">{(currentUser.quantitySoldKg || 0).toLocaleString()} kg</p>
             </div>
           </div>
         </div>
@@ -119,7 +119,7 @@ export const ProfilePage: React.FC = () => {
       {/* Buyer Profile */}
       {(currentRole === 'RETAIL_BUYER') && (
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+          <h3 className="text-sm font-medium text-slate-900 uppercase tracking-wider">
             Commercial Buyer Credentials
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
@@ -133,7 +133,7 @@ export const ProfilePage: React.FC = () => {
             </div>
             <div className="p-3 bg-slate-50 rounded-xl">
               <span className="text-slate-400 text-[11px] block">Active Demands:</span>
-              <strong className="text-emerald-700 font-mono font-bold">0 Lots</strong>
+              <strong className="text-emerald-700 font-mono font-medium">0 Lots</strong>
             </div>
             <div className="p-3 bg-slate-50 rounded-xl">
               <span className="text-slate-400 text-[11px] block">Completed Orders:</span>
@@ -146,7 +146,7 @@ export const ProfilePage: React.FC = () => {
       {/* Logistics Profile */}
       {currentRole === 'ADMIN' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+          <h3 className="text-sm font-medium text-slate-900 uppercase tracking-wider">
             Carrier & Fleet Credentials
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
@@ -164,7 +164,7 @@ export const ProfilePage: React.FC = () => {
             </div>
             <div className="p-3 bg-slate-50 rounded-xl">
               <span className="text-slate-400 text-[11px] block">Active Shipments:</span>
-              <strong className="text-emerald-700 font-mono font-bold">4 Loads</strong>
+              <strong className="text-emerald-700 font-mono font-medium">4 Loads</strong>
             </div>
           </div>
         </div>

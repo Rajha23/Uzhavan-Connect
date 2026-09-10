@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-export const BulkBuyerDashboard: React.FC = () => {
+export const BuyerDashboard: React.FC = () => {
   const {
     currentUser,
     setActiveTab,
@@ -75,16 +75,16 @@ export const BulkBuyerDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-emerald-700 text-white rounded-[2.5rem] p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-soft">
+      <div className="bg-forest text-cream rounded-[2.5rem] p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest">
         <div>
-          <div className="flex items-center gap-2 text-emerald-600 text-xs font-bold uppercase tracking-widest mb-2">
+          <div className="flex items-center gap-2 text-sage text-xs font-bold uppercase tracking-widest mb-2">
             <ShoppingBag className="w-4 h-4" />
             <span>Bulk Institutional Buyer Procurement Hub</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight tracking-wide">
+          <h1 className="text-4xl sm:text-5xl font-anton tracking-wide">
             Buyer Dashboard
           </h1>
-          <p className="text-sm text-white/70 mt-2 font-medium">
+          <p className="text-sm text-cream/70 mt-2 font-medium">
             {currentUser.organization} • Active Multi-Buyer Forward Demands
           </p>
         </div>
@@ -92,7 +92,7 @@ export const BulkBuyerDashboard: React.FC = () => {
         <div className="flex flex-wrap items-center gap-4">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 bg-emerald-100 hover:bg-white text-slate-900 text-xs font-bold px-5 py-3 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
+            className="flex items-center gap-2 bg-sage hover:bg-cream text-forest text-xs font-bold px-5 py-3 rounded-[1rem] shadow-sm transition uppercase tracking-widest"
           >
             <Plus className="w-4 h-4" />
             <span>Create Demand</span>
@@ -100,9 +100,9 @@ export const BulkBuyerDashboard: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('demand-pool')}
-            className="flex items-center gap-2 bg-slate-50 hover:bg-slate-50 text-white text-xs font-bold px-5 py-3 rounded-[1rem] border border-slate-200 transition uppercase tracking-widest"
+            className="flex items-center gap-2 bg-olive/20 hover:bg-olive/30 text-cream text-xs font-bold px-5 py-3 rounded-[1rem] border border-olive/30 transition uppercase tracking-widest"
           >
-            <Layers className="w-4 h-4 text-emerald-600" />
+            <Layers className="w-4 h-4 text-sage" />
             <span>Demand Pool</span>
           </button>
         </div>
@@ -111,19 +111,19 @@ export const BulkBuyerDashboard: React.FC = () => {
 
 
       {/* Active Demands Table */}
-      <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-soft overflow-hidden">
-        <div className="p-8 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+      <div className="bg-cream rounded-[2.5rem] border border-olive/30 shadow-forest overflow-hidden">
+        <div className="p-8 border-b border-olive/20 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div>
-            <h3 className="text-2xl font-bold text-slate-900">
+            <h3 className="text-2xl font-bold text-forest">
               Active Institutional Demands
             </h3>
-            <p className="text-xs text-slate-900/60 mt-1 font-bold uppercase tracking-widest">Forward procurement commitments ready for matching</p>
+            <p className="text-xs text-forest/60 mt-1 font-bold uppercase tracking-widest">Forward procurement commitments ready for matching</p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveTab('reverse-auction')}
-              className="text-xs font-bold text-slate-900 hover:bg-white bg-emerald-100 px-5 py-3 rounded-[1rem] transition shadow-sm uppercase tracking-widest"
+              className="text-xs font-bold text-forest hover:bg-cream bg-sage px-5 py-3 rounded-[1rem] transition shadow-sm uppercase tracking-widest"
             >
               Open Reverse Auction →
             </button>
@@ -133,7 +133,7 @@ export const BulkBuyerDashboard: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-900/70 font-bold uppercase tracking-widest">
+              <tr className="bg-olive/10 border-b border-olive/20 text-forest/70 font-bold uppercase tracking-widest">
                 <th className="p-5">Demand ID</th>
                 <th className="p-5">Buyer Entity</th>
                 <th className="p-5">Crop</th>
@@ -147,25 +147,25 @@ export const BulkBuyerDashboard: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-olive/20">
               {demands.map((dem) => (
-                <tr key={dem.id} className="hover:bg-slate-50 transition">
-                  <td className="p-5 font-bold text-slate-900/60">{dem.id}</td>
-                  <td className="p-5 font-bold text-slate-900">{dem.buyerName}</td>
-                  <td className="p-5 font-bold text-slate-900">{dem.crop}</td>
-                  <td className="p-5 font-bold text-slate-900">{dem.quantityKg.toLocaleString()} kg</td>
+                <tr key={dem.id} className="hover:bg-olive/10 transition">
+                  <td className="p-5 font-bold text-forest/60">{dem.id}</td>
+                  <td className="p-5 font-bold text-forest">{dem.buyerName}</td>
+                  <td className="p-5 font-bold text-forest">{dem.crop}</td>
+                  <td className="p-5 font-bold text-forest">{dem.quantityKg.toLocaleString()} kg</td>
                   <td className="p-5">
-                    <span className="bg-emerald-100/20 text-slate-900 px-3 py-1.5 rounded-full font-bold text-[10px] uppercase tracking-widest border border-sage/40">
+                    <span className="bg-sage/20 text-forest px-3 py-1.5 rounded-full font-bold text-[10px] uppercase tracking-widest border border-sage/40">
                       {dem.qualityRequirement}
                     </span>
                   </td>
-                  <td className="p-5 text-slate-900/70 font-medium">
-                    <span className="block font-bold text-slate-900">{dem.deliveryDate}</span>
+                  <td className="p-5 text-forest/70 font-medium">
+                    <span className="block font-bold text-forest">{dem.deliveryDate}</span>
                     <span className="text-[10px] uppercase tracking-widest">{dem.deliveryTimeWindow}</span>
                   </td>
-                  <td className="p-5 font-bold tracking-tight text-lg text-slate-900 tracking-wide">₹{dem.maxTargetPricePerKg} <span className="text-sm font-sans tracking-normal">/kg</span></td>
+                  <td className="p-5 font-anton text-lg text-forest tracking-wide">₹{dem.maxTargetPricePerKg} <span className="text-sm font-sans tracking-normal">/kg</span></td>
                   <td className="p-5">
                     <div className="flex flex-col gap-1 items-start">
-                      <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-slate-900 bg-emerald-100/30 px-3 py-1.5 rounded-full border border-sage/50 uppercase tracking-widest">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-700 animate-pulse" />
+                      <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-forest bg-sage/30 px-3 py-1.5 rounded-full border border-sage/50 uppercase tracking-widest">
+                        <span className="w-1.5 h-1.5 rounded-full bg-forest animate-pulse" />
                         <span>{dem.status}</span>
                       </span>
                       {dem.syncStatus === 'PENDING_SYNC' && (
@@ -179,7 +179,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                   <td className="p-5 text-right">
                     <button
                       onClick={() => deleteDemandRequest(dem.id)}
-                      className="p-1.5 text-slate-900/40 hover:text-red-700 bg-slate-50 hover:bg-slate-50 rounded-lg transition"
+                      className="p-1.5 text-forest/40 hover:text-red-700 bg-olive/10 hover:bg-olive/20 rounded-lg transition"
                       title="Remove Demand"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -195,17 +195,17 @@ export const BulkBuyerDashboard: React.FC = () => {
       {/* Create Demand Modal Dialog */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#01472e]/60 backdrop-blur-md p-4 animate-in fade-in">
-          <div className="bg-white rounded-[2.5rem] shadow-soft border border-slate-200 p-8 max-w-xl w-full space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+          <div className="bg-cream rounded-[2.5rem] shadow-forest border border-olive/30 p-8 max-w-xl w-full space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-olive/20">
               <div className="flex items-center gap-3">
-                <ShoppingBag className="w-6 h-6 text-slate-900" />
-                <h3 className="text-2xl font-bold tracking-tight text-slate-900 tracking-wide">
+                <ShoppingBag className="w-6 h-6 text-forest" />
+                <h3 className="text-2xl font-anton text-forest tracking-wide">
                   Create Forward Demand Request
                 </h3>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-900/50 hover:text-slate-900 transition"
+                className="text-forest/50 hover:text-forest transition"
               >
                 ✕
               </button>
@@ -214,11 +214,11 @@ export const BulkBuyerDashboard: React.FC = () => {
             <form onSubmit={handleCreateDemand} className="space-y-5 text-xs">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Crop Commodity</label>
+                  <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Crop Commodity</label>
                   <select
                     value={crop}
                     onChange={(e) => setCrop(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
+                    className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
                   >
                     <option value="Tomato">Tomato (Grade A)</option>
                     <option value="Green Chilli">Green Chilli (G4)</option>
@@ -228,12 +228,12 @@ export const BulkBuyerDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Target Quantity (kg)</label>
+                  <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Target Quantity (kg)</label>
                   <input
                     type="number"
                     value={quantityKg}
                     onChange={(e) => setQuantityKg(Number(e.target.value))}
-                    className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
+                    className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
                     min="200"
                     step="100"
                     required
@@ -243,11 +243,11 @@ export const BulkBuyerDashboard: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Quality Grade Required</label>
+                  <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Quality Grade Required</label>
                   <select
                     value={quality}
                     onChange={(e) => setQuality(e.target.value as any)}
-                    className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
+                    className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
                   >
                     <option value="Grade A">Grade A (Brix &gt; 4.5, Firm)</option>
                     <option value="Grade B">Grade B (Standard Commercial)</option>
@@ -256,12 +256,12 @@ export const BulkBuyerDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Max Ceiling Price (₹/kg)</label>
+                  <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Max Ceiling Price (₹/kg)</label>
                   <input
                     type="number"
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(Number(e.target.value))}
-                    className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
+                    className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
                     step="0.5"
                     required
                   />
@@ -269,55 +269,55 @@ export const BulkBuyerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Delivery Destination Hub</label>
+                <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Delivery Destination Hub</label>
                 <input
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
+                  className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Required Delivery Date</label>
+                  <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Required Delivery Date</label>
                   <input
                     type="date"
                     value={deliveryDate}
                     onChange={(e) => setDeliveryDate(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
+                    className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-900 uppercase tracking-widest block mb-2 text-[10px]">Delivery Time Window</label>
+                  <label className="font-bold text-forest uppercase tracking-widest block mb-2 text-[10px]">Delivery Time Window</label>
                   <input
                     type="text"
                     value={deliveryWindow}
                     onChange={(e) => setDeliveryWindow(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-[1rem] p-3 font-bold text-slate-900 shadow-sm focus:border-sage focus:outline-none"
+                    className="w-full bg-cream border border-olive/30 rounded-[1rem] p-3 font-bold text-forest shadow-sm focus:border-sage focus:outline-none"
                     required
                   />
                 </div>
               </div>
 
-              <div className="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-200 text-xs text-slate-900/80 leading-relaxed font-medium">
-                ⚡ <strong className="text-slate-900">Demand-First Automation:</strong> Once submitted, Uzhavan Connect pools this demand with related regional requests, queries the forecast model, and initiates supplier allocation.
+              <div className="p-4 bg-olive/10 rounded-[1.5rem] border border-olive/30 text-xs text-forest/80 leading-relaxed font-medium">
+                ⚡ <strong className="text-forest">Demand-First Automation:</strong> Once submitted, Uzhavan Connect pools this demand with related regional requests, queries the forecast model, and initiates supplier allocation.
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-olive/20">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-3 text-slate-900/70 hover:bg-slate-50 rounded-[1rem] font-bold uppercase tracking-widest transition"
+                  className="px-5 py-3 text-forest/70 hover:bg-olive/10 rounded-[1rem] font-bold uppercase tracking-widest transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-emerald-100 hover:bg-white text-slate-900 font-bold rounded-[1rem] shadow-sm transition uppercase tracking-widest"
+                  className="px-6 py-3 bg-sage hover:bg-cream text-forest font-bold rounded-[1rem] shadow-sm transition uppercase tracking-widest"
                 >
                   Create Demand Request
                 </button>

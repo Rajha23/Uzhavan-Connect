@@ -1,7 +1,6 @@
 export type UserRole =
   | 'FARMER'
   | 'RETAIL_BUYER'
-  | 'BULK_BUYER'
   | 'FPO_AGGREGATOR'
   | 'LOGISTICS'
   | 'ADMIN';
@@ -89,17 +88,53 @@ export type BuyerDemandStatus =
 export type OrderStatus =
   | 'Created'
   | 'Produce Collection Pending'
+  | 'Partially Collected'
   | 'Collected'
   | 'Quality Checked'
+  | 'Quality Rejected'
   | 'Packed'
   | 'Transport Assigned'
   | 'In Transit'
   | 'Delivered'
+  | 'Buyer Confirmation Pending'
   | 'Buyer Confirmed'
   | 'Payment Pending'
   | 'Completed'
   | 'Pending'
   | 'Confirmed';
+
+export interface FarmerContribution {
+  farmerId: string;
+  farmerName: string;
+  farmerLocation: string;
+  produceListingId: string;
+  contributedQuantityKg: number;
+  collectedQuantityKg: number;
+  collectionStatus: 'PENDING' | 'PARTIALLY_COLLECTED' | 'FULLY_COLLECTED';
+  collectedAt?: string;
+  notes?: string;
+  agreedPricePerKg?: number;
+  settlementAmount?: number;
+  settlementStatus?: 'PENDING' | 'PROCESSING' | 'COMPLETED';
+  farmerUtr?: string;
+  settledAt?: string;
+}
+
+export interface FarmerSettlementItem {
+  farmerId: string;
+  farmerName: string;
+  farmerLocation: string;
+  produceListingId: string;
+  contributedQuantityKg: number;
+  collectedQuantityKg: number;
+  agreedPricePerKg: number;
+  grossAmount: number;
+  netFarmerAmount: number; // 89% net realization
+  status: 'PENDING' | 'PROCESSING' | 'COMPLETED';
+  utrNumber?: string;
+  settledAt?: string;
+  bankAccountMasked?: string;
+}
 
 export interface QualityInspectionData {
   sugarBrix: number;
@@ -110,6 +145,25 @@ export interface QualityInspectionData {
   inspectorName: string;
   inspectionDate: string;
   hubLocation: string;
+  status?: 'PASSED' | 'REJECTED' | 'CONDITIONALLY_PASSED';
+  acceptedQuantityKg?: number;
+  rejectedQuantityKg?: number;
+  rejectionReason?: string;
+  inspectionNotes?: string;
+}
+
+export interface BuyerDeliveryConfirmation {
+  orderId: string;
+  deliveredQuantityKg: number;
+  receivedQuantityKg: number;
+  acceptedQuantityKg: number;
+  rejectedQuantityKg?: number;
+  acceptanceStatus: 'ACCEPTED_FULL' | 'ACCEPTED_PARTIAL' | 'REJECTED';
+  issuesReported?: string;
+  receiverName: string;
+  receiverRole: string;
+  confirmedAt: string;
+  signatureOrOtp?: string;
 }
 
 export interface TransportAssignment {
@@ -121,6 +175,7 @@ export interface TransportAssignment {
   departureTime?: string;
   estimatedArrival?: string;
   assignedAt: string;
+  temperatureC?: string | number;
 }
 
 export interface WorkflowAgreement {
@@ -154,6 +209,7 @@ export interface WorkflowOrder {
   agreementId?: string;
   produceListingId: string;
   demandRequestId: string;
+  aggregatedGroupId?: string;
   batchId: string;
   farmerId: string;
   farmerName: string;
@@ -174,6 +230,30 @@ export interface WorkflowOrder {
   transportDetails?: TransportAssignment;
   timeline: OrderTimelineEvent[];
   settlementId?: string;
+
+  // Collection tracking (Part B & C)
+  farmerContributions?: FarmerContribution[];
+  collectionStatus?: 'Collection Pending' | 'Partially Collected' | 'Fully Collected';
+  collectedQuantityKg?: number;
+  remainingCollectionKg?: number;
+
+  // Quality & Grading tracking (Part D)
+  qualityStatus?: 'Pending' | 'Passed' | 'Rejected' | 'Conditionally Passed';
+  acceptedQuantityKg?: number;
+  rejectedQuantityKg?: number;
+
+  // Packing tracking (Part E)
+  packingStatus?: 'Packing Pending' | 'Packing In Progress' | 'Packed';
+  packedQuantityKg?: number;
+  crateCount?: number;
+  packageType?: string;
+  isReadyForTransport?: boolean;
+
+  // Transport tracking (Part F)
+  transportStatus?: 'Transport Pending' | 'Vehicle Assigned' | 'Ready for Pickup' | 'In Transit' | 'Delivered';
+
+  // Buyer Delivery Confirmation (Part G)
+  buyerConfirmation?: BuyerDeliveryConfirmation;
 }
 
 export interface ProduceListing {
@@ -206,7 +286,11 @@ export interface DemandRequest {
   buyerName: string;
   buyerType: 'Supermarket' | 'Retailer' | 'Bulk Purchaser' | 'Hospitality' | 'Food Processor' | 'Consumer Coop';
   crop: string;
+  variety?: string;
   quantityKg: number;
+  initialQuantityKg?: number;
+  allocatedQuantityKg?: number;
+  unit?: string;
   qualityRequirement: 'Standard' | 'Premium' | 'Grade A' | 'Grade B' | 'Any';
   location: string;
   deliveryDate: string;
@@ -217,6 +301,25 @@ export interface DemandRequest {
   coordinates?: { lat: number; lng: number };
   syncStatus?: 'SYNCED' | 'PENDING_SYNC';
   offlineCreated?: boolean;
+  aggregatedGroupId?: string;
+}
+
+export interface AggregatedDemandGroup {
+  id: string;
+  crop: string;
+  variety?: string;
+  qualityRequirement: string;
+  region: string;
+  targetDate: string;
+  deliveryTimeWindow?: string;
+  totalQuantityKg: number;
+  initialQuantityKg?: number;
+  contributingDemands: DemandRequest[];
+  contributingDemandIds: string[];
+  buyersCount: number;
+  avgMaxPricePerKg: number;
+  status: 'FORMED' | 'MATCHING' | 'PARTIALLY_MATCHED' | 'ALLOCATED';
+  compatibilityReasons: string[];
 }
 
 export interface DemandPool {
@@ -361,8 +464,20 @@ export interface ProducePassport {
     operator: string;
     metrics?: { label: string; value: string }[];
     completed: boolean;
+    notes?: string;
   }[];
 }
+
+export type SettlementStatus =
+  | 'Payment Pending'
+  | 'Buyer Payment Confirmed'
+  | 'FPO Settlement Pending'
+  | 'Farmer Settlement Processing'
+  | 'Farmer Payment Completed'
+  | 'Transaction Completed'
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'COMPLETED';
 
 export interface SettlementRecord {
   id: string;
@@ -379,9 +494,15 @@ export interface SettlementRecord {
   farmerRealizationPercentage: number;
   traditionalFarmerEarnings: number;
   earningsGainPercentage: number;
-  status: 'PENDING' | 'PROCESSING' | 'COMPLETED';
+  status: SettlementStatus;
   settlementDate: string;
   utrNumber: string;
+  paymentMode?: 'UPI e-RUPI Programmable Escrow (Prototype Simulator)' | 'Bank RTGS / Direct NEFT Batch';
+  buyerPaymentReference?: string;
+  buyerPaymentRecordedAt?: string;
+  fpoSettledAt?: string;
+  farmerSettledAt?: string;
+  farmerBreakdown?: FarmerSettlementItem[];
 }
 
 export interface AppNotification {
