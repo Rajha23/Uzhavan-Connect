@@ -66,8 +66,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
     try {
       const res = await apiService.login(cleanId, cleanPass);
       setIsSubmitting(false);
+      // login() internally executes navigateToTab(getAuthorizedDashboardTab(role), false, role)
+      // Calling setActiveTab('dashboard') here previously caused a race condition with React state updates
       login(res.user);
-      setActiveTab('dashboard');
     } catch (err: any) {
       setIsSubmitting(false);
       setErrorMsg(err.message || 'Invalid email or password. Please check your credentials and try again.');

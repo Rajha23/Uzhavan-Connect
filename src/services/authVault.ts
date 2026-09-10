@@ -211,6 +211,7 @@ export const seedDemoAccounts = async (): Promise<void> => {
  * 3. Saves the profile in the profile store, keyed by userId.
  */
 export const registerUserAccount = async (userData: {
+  userId?: string;
   name: string;
   email: string;
   mobile: string;
@@ -238,7 +239,8 @@ export const registerUserAccount = async (userData: {
     c => (normEmail && c.email === normEmail) || (normMobile && c.mobile === normMobile)
   );
 
-  const userId = existing ? existing.userId : `usr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  // Authoritative user ID: prioritize explicit ID from auth provider (e.g. Supabase UUID)
+  const userId = userData.userId || (existing ? existing.userId : `usr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`);
   const salt = generateSalt();
   const passwordHash = await hashPassword(rawPassword, salt);
 
@@ -253,8 +255,12 @@ export const registerUserAccount = async (userData: {
 
   if (existing) {
     // Update existing user credential
-    const idx = credentials.findIndex(c => c.userId === userId);
-    credentials[idx] = newCredential;
+    const idx = credentials.findIndex(c => c.userId === existing.userId || c.userId === userId);
+    if (idx !== -1) {
+      credentials[idx] = newCredential;
+    } else {
+      credentials.push(newCredential);
+    }
   } else {
     credentials.push(newCredential);
   }
@@ -271,7 +277,7 @@ export const registerUserAccount = async (userData: {
     state: userData.state?.trim(),
     farmSizeAcres: userData.farmSize,
     mainCrops: userData.mainCrop ? [userData.mainCrop.trim()] : [],
-    organization: role === 'FARMER' ? 'Uzhavan Farmer Collective' : role === 'FPO_AGGREGATOR' ? 'FPO Aggregator Hub' : 'Uzhavan Connect Network'
+    organization: role === 'FARMER' ? 'Uzhavan Farmer Collective' : role === 'FPO_AGGREGATOR' ? 'FPO Aggregator Hub' : role === 'BULK_BUYER' ? 'Metro Agri Processors & Wholesale' : 'Uzhavan Connect Network'
   };
 
   profiles[userId] = newProfile;
@@ -280,6 +286,82 @@ export const registerUserAccount = async (userData: {
   localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
 
   return newProfile;
+};
+
+/**
+ * Updates permitted profile fields in the local profile vault.
+ * Security enforcement: id, role, and authentication identifiers are strictly immutable.
+ */
+export const updateUserProfile = (
+  userId: string,
+  updates: Partial<Omit<UserProfile, 'id' | 'role'>>
+): UserProfile => {
+  const profiles = getStoredProfiles();
+  let profile = profiles[userId];
+  if (!profile) {
+    throw new Error(`Profile for user ${userId} does not exist.`);
+  }
+
+  // Strip forbidden fields to prevent role tampering or ID spoofing
+  const { id: _ignoredId, role: _ignoredRole, ...permittedUpdates } = updates as any;
+
+  const updatedProfile: UserProfile = {
+    ...profile,
+    ...permittedUpdates,
+    id: profile.id, // Primary key is immutable
+    role: profile.role // Role is determined exclusively by authorized profile record
+  };
+
+  profiles[userId] = updatedProfile;
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+
+  // Sync active local session cache if the updated profile belongs to currently active user
+  try {
+    const rawFallback = localStorage.getItem('uzhavan_fallback_session');
+    if (rawFallback) {
+      const parsed = JSON.parse(rawFallback);
+      if (parsed && parsed.id === userId) {
+        localStorage.setItem('uzhavan_fallback_session', JSON.stringify(updatedProfile));
+      }
+    }
+  } catch (err) {
+    console.warn('Could not sync updated profile to fallback session cache', err);
+  }
+
+  return updatedProfile;
+};
+
+/**
+ * Retrieves a user profile by ID, or creates a safe fallback profile if missing.
+ */
+export const getOrCreateProfile = (
+  userId: string,
+  fallbackData: Partial<UserProfile>
+): UserProfile => {
+  const profiles = getStoredProfiles();
+  if (profiles[userId]) {
+    return profiles[userId];
+  }
+
+  const role = normalizeRole(fallbackData.role);
+  const createdProfile: UserProfile = {
+    id: userId,
+    name: fallbackData.name || 'Registered Member',
+    role,
+    phone: fallbackData.phone || '',
+    email: normalizeEmail(fallbackData.email),
+    location: fallbackData.location || 'Tamil Nadu, India',
+    organization: fallbackData.organization || (role === 'FARMER' ? 'Uzhavan Farmer Collective' : 'Uzhavan Connect Network'),
+    village: fallbackData.village,
+    district: fallbackData.district,
+    state: fallbackData.state,
+    farmSizeAcres: fallbackData.farmSizeAcres,
+    mainCrops: fallbackData.mainCrops || []
+  };
+
+  profiles[userId] = createdProfile;
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+  return createdProfile;
 };
 
 /**
@@ -313,32 +395,28 @@ export const authenticateCredentials = async (
   });
 
   if (!cred) {
-    // Demo fallback for SecurePass@2026
-    if (cleanPassword === 'SecurePass@2026') {
-      const demoUser = DEMO_USERS.FARMER;
-      return {
-        token: `uzhavan_jwt_farmer_${Date.now()}`,
-        user: {
-          ...demoUser,
-          email: normEmail || demoUser.email,
-          phone: normMobile || demoUser.phone
-        }
-      };
-    }
     throw new Error('Invalid email or password. Please check your credentials and try again.');
   }
 
   // Cryptographic hash validation
   const calculatedHash = await hashPassword(cleanPassword, cred.salt);
-
   let isMatch = calculatedHash === cred.passwordHash;
 
-  // Backward-compatible fallback for demo accounts with secondary master keys
+  // Strict check: Only authorized seeded demo accounts may utilize demo master keys
   if (!isMatch) {
-    if (cleanPassword === 'SecurePass@2026' || cleanPassword === 'Farmer@2026') {
-      isMatch = true;
-    } else if (cred.email === 'admin@gmail.com' && cleanPassword === 'admin123') {
-      isMatch = true;
+    const isDemoAccount =
+      cred.email.includes('uzhavanconnect.gov.in') ||
+      cred.email.includes('abcretail.in') ||
+      cred.email.includes('metroagri.in') ||
+      cred.email.includes('sundartrans.in') ||
+      cred.email === 'admin@gmail.com';
+
+    if (isDemoAccount) {
+      if (cleanPassword === 'SecurePass@2026' || cleanPassword === 'Farmer@2026') {
+        isMatch = true;
+      } else if (cred.email === 'admin@gmail.com' && cleanPassword === 'admin123') {
+        isMatch = true;
+      }
     }
   }
 
@@ -349,10 +427,10 @@ export const authenticateCredentials = async (
   // Load the corresponding profile
   let profile = profiles[cred.userId];
   if (!profile) {
-    // Reconstruct profile if missing
+    // Safe profile recovery mechanism (Case A: Auth exists, profile missing)
     profile = {
       id: cred.userId,
-      name: 'Registered User',
+      name: 'Registered Member',
       role: 'FARMER',
       email: cred.email,
       phone: cred.mobile,
@@ -389,6 +467,8 @@ export const authVault = {
   createAccountRecord: registerUserAccount,
   registerUserAccount,
   authenticateCredentials,
+  updateUserProfile,
+  getOrCreateProfile,
   verifyUserSession: (userId: string, claimedRole?: string): UserProfile | null => {
     const profiles = getStoredProfiles();
     const profile = profiles[userId];

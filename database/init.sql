@@ -21,8 +21,31 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+
+-- 1B. PROFILES TABLE (Canonical Application Profile linked to Auth User)
+CREATE TABLE IF NOT EXISTS profiles (
+    id VARCHAR(64) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    role VARCHAR(32) NOT NULL CHECK (role IN ('FARMER', 'RETAIL_BUYER', 'BULK_BUYER', 'FPO_AGGREGATOR', 'LOGISTICS', 'ADMIN')),
+    email VARCHAR(255) UNIQUE,
+    phone VARCHAR(32),
+    location VARCHAR(255),
+    organization VARCHAR(255),
+    village VARCHAR(255),
+    district VARCHAR(255),
+    state VARCHAR(255),
+    farm_size_acres NUMERIC(10, 2),
+    main_crops TEXT[],
+    fpo_name VARCHAR(255),
+    avatar VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_profiles_role ON profiles(role);
+CREATE INDEX IF NOT EXISTS idx_profiles_email ON profiles(email);
 
 -- 2. FARMER PROFILES
 CREATE TABLE IF NOT EXISTS farmer_profiles (
@@ -42,7 +65,7 @@ CREATE TABLE IF NOT EXISTS farmer_profiles (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_farmer_profiles_user ON farmer_profiles(user_id);
+CREATE INDEX IF NOT EXISTS idx_farmer_profiles_user ON farmer_profiles(user_id);
 
 -- 2B. BULK BUYER PROFILES (Food Processors, Wholesalers, Retail Chains)
 CREATE TABLE IF NOT EXISTS bulk_buyer_profiles (
@@ -59,7 +82,7 @@ CREATE TABLE IF NOT EXISTS bulk_buyer_profiles (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_bulk_buyer_profiles_user ON bulk_buyer_profiles(user_id);
+CREATE INDEX IF NOT EXISTS idx_bulk_buyer_profiles_user ON bulk_buyer_profiles(user_id);
 
 -- 3. FPOS (Farmer Producer Organisations)
 CREATE TABLE IF NOT EXISTS fpos (
@@ -92,31 +115,92 @@ CREATE TABLE IF NOT EXISTS produce_listings (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_produce_crop ON produce_listings(crop);
-CREATE INDEX idx_produce_status ON produce_listings(status);
+CREATE INDEX IF NOT EXISTS idx_produce_crop ON produce_listings(crop);
+CREATE INDEX IF NOT EXISTS idx_produce_status ON produce_listings(status);
 
 -- 5. DEMAND REQUESTS
 CREATE TABLE IF NOT EXISTS demand_requests (
     id VARCHAR(64) PRIMARY KEY,
     buyer_id VARCHAR(64) REFERENCES users(id) ON DELETE SET NULL,
-    product VARCHAR(128) NOT NULL,
-    quantity NUMERIC(12, 2) NOT NULL,
+    crop VARCHAR(128) NOT NULL DEFAULT 'Tomato',
+    product VARCHAR(128) NOT NULL DEFAULT 'Tomato',
+    quantity NUMERIC(12, 2) NOT NULL DEFAULT 1000.00,
+    quantity_kg NUMERIC(12, 2) DEFAULT 1000.00,
     location VARCHAR(255) NOT NULL,
-    required_date DATE NOT NULL,
+    required_date DATE NOT NULL DEFAULT CURRENT_DATE + INTERVAL '5 days',
+    delivery_date DATE DEFAULT CURRENT_DATE + INTERVAL '5 days',
     delivery_time_window VARCHAR(128),
     quality VARCHAR(64) DEFAULT 'Grade A',
-    max_price NUMERIC(10, 2) NOT NULL,
+    quality_requirement VARCHAR(64) DEFAULT 'Grade A',
+    max_price NUMERIC(10, 2) NOT NULL DEFAULT 35.00,
+    max_target_price_per_kg NUMERIC(10, 2) DEFAULT 35.00,
+    buyer_name VARCHAR(255),
+    buyer_type VARCHAR(64),
     status VARCHAR(32) DEFAULT 'OPEN' CHECK (status IN ('OPEN', 'POOLED', 'MATCHED', 'CONFIRMED', 'COMPLETED', 'CANCELLED')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_demand_product ON demand_requests(product);
-CREATE INDEX idx_demand_status ON demand_requests(status);
+-- Idempotent column alignment: ensures both crop and product exist on pre-existing tables
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'demand_requests') THEN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'demand_requests' AND column_name = 'crop') THEN
+            ALTER TABLE demand_requests ADD COLUMN crop VARCHAR(128) DEFAULT 'Tomato';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'demand_requests' AND column_name = 'product') THEN
+            ALTER TABLE demand_requests ADD COLUMN product VARCHAR(128) DEFAULT 'Tomato';
+            UPDATE demand_requests SET product = crop WHERE product IS NULL;
+        ELSE
+            UPDATE demand_requests SET crop = product WHERE crop IS NULL;
+        END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'demand_pools') THEN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'demand_pools' AND column_name = 'product') THEN
+            ALTER TABLE demand_pools ADD COLUMN product VARCHAR(128) DEFAULT 'Tomato';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'demand_pools' AND column_name = 'crop') THEN
+            ALTER TABLE demand_pools ADD COLUMN crop VARCHAR(128) DEFAULT 'Tomato';
+            UPDATE demand_pools SET crop = product WHERE crop IS NULL;
+        END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'forecasts') THEN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'forecasts' AND column_name = 'product') THEN
+            ALTER TABLE forecasts ADD COLUMN product VARCHAR(128) DEFAULT 'Tomato';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'forecasts' AND column_name = 'crop') THEN
+            ALTER TABLE forecasts ADD COLUMN crop VARCHAR(128) DEFAULT 'Tomato';
+            UPDATE forecasts SET crop = product WHERE crop IS NULL;
+        END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'produce_batches') THEN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'produce_batches' AND column_name = 'product') THEN
+            ALTER TABLE produce_batches ADD COLUMN product VARCHAR(128) DEFAULT 'Tomato';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'produce_batches' AND column_name = 'crop') THEN
+            ALTER TABLE produce_batches ADD COLUMN crop VARCHAR(128) DEFAULT 'Tomato';
+            UPDATE produce_batches SET crop = product WHERE crop IS NULL;
+        END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'shipments') THEN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'shipments' AND column_name = 'product') THEN
+            ALTER TABLE shipments ADD COLUMN product VARCHAR(128) DEFAULT 'Tomato';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'shipments' AND column_name = 'crop') THEN
+            ALTER TABLE shipments ADD COLUMN crop VARCHAR(128) DEFAULT 'Tomato';
+            UPDATE shipments SET crop = product WHERE crop IS NULL;
+        END IF;
+    END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_demand_product ON demand_requests(product);
+CREATE INDEX IF NOT EXISTS idx_demand_crop ON demand_requests(crop);
+CREATE INDEX IF NOT EXISTS idx_demand_status ON demand_requests(status);
 
 -- 6. DEMAND POOLS
 CREATE TABLE IF NOT EXISTS demand_pools (
     id VARCHAR(64) PRIMARY KEY,
-    product VARCHAR(128) NOT NULL,
+    product VARCHAR(128) NOT NULL DEFAULT 'Tomato',
+    crop VARCHAR(128) DEFAULT 'Tomato',
     total_quantity NUMERIC(12, 2) NOT NULL,
     location VARCHAR(255) NOT NULL,
     required_date DATE NOT NULL,
@@ -232,7 +316,7 @@ CREATE TABLE IF NOT EXISTS produce_batches (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_produce_batches_code ON produce_batches(batch_code);
+CREATE INDEX IF NOT EXISTS idx_produce_batches_code ON produce_batches(batch_code);
 
 -- 14. SETTLEMENTS
 CREATE TABLE IF NOT EXISTS settlements (
@@ -263,7 +347,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_notifications_user ON notifications(user_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read);
 
 -- ============================================================
 -- SEED DATA (SIH2026 Evaluation Scenarios)
@@ -297,11 +381,21 @@ INSERT INTO produce_batches (id, batch_code, product, farmer_id, fpo_id, quantit
 ('pb_01', 'AGP-TOM-2026-001', 'Tomato', 'usr_farmer_01', 'fpo_01', 3000.00, '2026-09-06', 'Grade A', 4.85, 3.42, TRUE, 'Sriperumbudur Hub Bay 2', 'In Transit', 'https://agripulse.gov.in/trace/AGP-TOM-2026-001')
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO profiles (id, name, email, phone, role, organization, location, avatar) VALUES
+('usr_farmer_01', 'Rajesh Kumar', 'rajesh.kumar@uzhavanconnect.gov.in', '9840123456', 'FARMER', 'Sunguvarchatram Cluster', 'Kanchipuram, Tamil Nadu', '👨‍🌾'),
+('usr_retailer_01', 'Anita Sharma', 'anita.procurement@abcretail.in', '9884055667', 'RETAIL_BUYER', 'ABC Retail Stores', 'Chennai Metro Hub', '🏬'),
+('usr_bulk_01', 'Vikramaditya Singhania', 'vikram.procurement@metroagri.in', '9840288990', 'BULK_BUYER', 'Metro Agri Wholesale', 'Ambattur Hub, Chennai', '🏭'),
+('usr_fpo_01', 'Ramanathan S.', 'ravi.fpo@uzhavanconnect.gov.in', '9770011223', 'FPO_AGGREGATOR', 'GreenHarvest FPO', 'Sriperumbudur, Tamil Nadu', '🌾'),
+('usr_logistics_01', 'Karthik S.', 'dispatch@sundartrans.in', '9660022334', 'LOGISTICS', 'GreenTransit Cold Chain', 'Kanchipuram Corridor', '🚚'),
+('usr_admin_01', 'System Administrator', 'admin@uzhavanconnect.gov.in', '9900011122', 'ADMIN', 'Ministry of Consumer Affairs', 'Regional Directorate TN', '⚙️')
+ON CONFLICT (id) DO NOTHING;
+
 -- ============================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- Enforces backend and database-level authorization independently from frontend UI
 -- ============================================================
 
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE farmer_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE produce_listings ENABLE ROW LEVEL SECURITY;
@@ -309,16 +403,36 @@ ALTER TABLE demand_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE shipments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE settlements ENABLE ROW LEVEL SECURITY;
 
+-- 0. Profiles table policies: authenticated users can view/edit their own profile; Admins can view all
+DROP POLICY IF EXISTS profile_read_policy ON profiles;
+CREATE POLICY profile_read_policy ON profiles
+    FOR SELECT
+    USING (id = current_setting('request.jwt.claim.sub', true) OR (SELECT role FROM profiles WHERE id = current_setting('request.jwt.claim.sub', true)) = 'ADMIN');
+
+DROP POLICY IF EXISTS profile_update_policy ON profiles;
+CREATE POLICY profile_update_policy ON profiles
+    FOR UPDATE
+    USING (id = current_setting('request.jwt.claim.sub', true))
+    WITH CHECK (id = current_setting('request.jwt.claim.sub', true));
+
+DROP POLICY IF EXISTS profile_insert_policy ON profiles;
+CREATE POLICY profile_insert_policy ON profiles
+    FOR INSERT
+    WITH CHECK (id = current_setting('request.jwt.claim.sub', true));
+
 -- 1. Users table policies: users can read their own profile or platform admins can inspect
+DROP POLICY IF EXISTS user_read_policy ON users;
 CREATE POLICY user_read_policy ON users
     FOR SELECT
     USING (id = current_setting('request.jwt.claim.sub', true) OR role IN ('ADMIN', 'SYSADMIN', 'GOVERNMENT'));
 
+DROP POLICY IF EXISTS user_update_policy ON users;
 CREATE POLICY user_update_policy ON users
     FOR UPDATE
     USING (id = current_setting('request.jwt.claim.sub', true));
 
 -- 2. Farmer profiles policies: farmer can view/edit own profile, FPO/Admin can view
+DROP POLICY IF EXISTS farmer_profile_policy ON farmer_profiles;
 CREATE POLICY farmer_profile_policy ON farmer_profiles
     FOR ALL
     USING (user_id = current_setting('request.jwt.claim.sub', true) OR EXISTS (
@@ -326,10 +440,12 @@ CREATE POLICY farmer_profile_policy ON farmer_profiles
     ));
 
 -- 3. Produce listings policies: readable for market matching; only Farmer/FPO/Admin can create
+DROP POLICY IF EXISTS produce_read_policy ON produce_listings;
 CREATE POLICY produce_read_policy ON produce_listings
     FOR SELECT
     USING (TRUE);
 
+DROP POLICY IF EXISTS produce_write_policy ON produce_listings;
 CREATE POLICY produce_write_policy ON produce_listings
     FOR INSERT
     WITH CHECK (farmer_id = current_setting('request.jwt.claim.sub', true) OR EXISTS (
@@ -337,10 +453,12 @@ CREATE POLICY produce_write_policy ON produce_listings
     ));
 
 -- 4. Demand requests policies: readable for matching; only Buyer/Admin can create
+DROP POLICY IF EXISTS demand_read_policy ON demand_requests;
 CREATE POLICY demand_read_policy ON demand_requests
     FOR SELECT
     USING (TRUE);
 
+DROP POLICY IF EXISTS demand_write_policy ON demand_requests;
 CREATE POLICY demand_write_policy ON demand_requests
     FOR INSERT
     WITH CHECK (buyer_id = current_setting('request.jwt.claim.sub', true) OR EXISTS (
@@ -348,6 +466,7 @@ CREATE POLICY demand_write_policy ON demand_requests
     ));
 
 -- 5. Shipments policies: Logistics and Admins only
+DROP POLICY IF EXISTS shipment_policy ON shipments;
 CREATE POLICY shipment_policy ON shipments
     FOR ALL
     USING (EXISTS (
@@ -355,6 +474,7 @@ CREATE POLICY shipment_policy ON shipments
     ));
 
 -- 6. Settlements policies: Farmer can view their own, Admins & FPOs can view
+DROP POLICY IF EXISTS settlement_policy ON settlements;
 CREATE POLICY settlement_policy ON settlements
     FOR SELECT
     USING (farmer_id = current_setting('request.jwt.claim.sub', true) OR EXISTS (

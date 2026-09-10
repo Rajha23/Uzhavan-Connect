@@ -34,7 +34,10 @@ import {
   registerUserAccount,
   authenticateCredentials,
   normalizeEmail,
-  normalizeRole
+  normalizeRole,
+  updateUserProfile,
+  getOrCreateProfile,
+  authVault
 } from './authVault';
 
 // In-memory fallback store
@@ -79,7 +82,7 @@ export const apiService = {
     const normEmail = normalizeEmail(rawId);
     const isEmail = rawId.includes('@');
 
-    // 1. Attempt Supabase Login if Supabase is properly configured and identifier is an email
+    // 1. Primary Source of Truth: Attempt Supabase Auth when configured
     if (isSupabaseConfigured && isEmail) {
       try {
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
@@ -87,44 +90,88 @@ export const apiService = {
           password: rawPass
         });
 
-        if (authError) throw authError;
+        if (authError) {
+          const errMsg = (authError.message || '').toLowerCase();
+          if (errMsg.includes('invalid login credentials') || errMsg.includes('invalid credentials')) {
+            throw new Error('The email or password is incorrect. Please check your credentials and try again.');
+          }
+          console.warn('[Supabase Auth] Notice:', authError.message);
+        }
 
         if (authData?.user) {
-          const { data: profile, error: profileError } = await supabase
+          let { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', authData.user.id)
             .single();
 
-          if (profile && !profileError) {
-            const role = normalizeRole(profile.role || roleHint);
-            const userProfile: UserProfile = {
-              id: profile.id,
-              name: profile.name || 'Member',
-              role,
-              phone: profile.phone || '',
-              email: profile.email || normEmail,
-              location: profile.location || '',
-              organization: profile.organization || '',
-              village: profile.village,
-              district: profile.district,
-              state: profile.state,
-              farmSizeAcres: profile.farm_size_acres,
-              mainCrops: profile.main_crops,
-              fpoName: profile.fpo_name
+          // Case A Recovery: User exists in Auth, but Profile record is missing
+          if (!profile || profileError) {
+            console.info(`[Auth Recovery] Auto-recovering missing profile record for auth user ${authData.user.id}...`);
+            const meta = authData.user.user_metadata || {};
+            const recoveredRole = normalizeRole(meta.role || roleHint || 'FARMER');
+            const recoveredName = meta.name || 'Member';
+            const recoveredProfile = {
+              id: authData.user.id,
+              name: recoveredName,
+              role: recoveredRole,
+              email: normEmail,
+              phone: meta.phone || '',
+              location: meta.location || 'Tamil Nadu, India',
+              organization: meta.organization || (recoveredRole === 'FARMER' ? 'Uzhavan Farmer Collective' : 'Uzhavan Connect Network')
             };
 
-            const token = authData.session?.access_token || `uzhavan_jwt_${role.toLowerCase()}_${Date.now()}`;
-            ApiClient.setToken(token);
-            return { token, user: userProfile };
+            try {
+              const { data: createdRemoteProfile } = await supabase
+                .from('profiles')
+                .upsert(recoveredProfile)
+                .select()
+                .single();
+              if (createdRemoteProfile) {
+                profile = createdRemoteProfile;
+              }
+            } catch (healErr) {
+              console.warn('[Auth Recovery] Remote profile auto-heal warning:', healErr);
+            }
+
+            if (!profile) {
+              profile = recoveredProfile;
+            }
           }
+
+          const role = normalizeRole(profile.role || roleHint);
+          const userProfile: UserProfile = {
+            id: profile.id,
+            name: profile.name || 'Member',
+            role,
+            phone: profile.phone || '',
+            email: profile.email || normEmail,
+            location: profile.location || '',
+            organization: profile.organization || '',
+            village: profile.village,
+            district: profile.district,
+            state: profile.state,
+            farmSizeAcres: profile.farm_size_acres,
+            mainCrops: profile.main_crops,
+            fpoName: profile.fpo_name
+          };
+
+          // Cache verified profile locally with identical ID
+          getOrCreateProfile(profile.id, userProfile);
+
+          const token = authData.session?.access_token || `uzhavan_jwt_${role.toLowerCase()}_${Date.now()}`;
+          ApiClient.setToken(token);
+          return { token, user: userProfile };
         }
       } catch (err: any) {
-        console.warn('Supabase auth notice:', err?.message);
+        if (err.message && err.message.includes('incorrect')) {
+          throw err;
+        }
+        console.warn('Supabase auth network notice:', err?.message);
       }
     }
 
-    // 2. Authenticate against the Secure Cryptographic Auth Vault
+    // 2. Cryptographic Local Credential Vault (Local development / offline mode)
     try {
       const { user, token } = await authenticateCredentials(rawId, rawPass);
       ApiClient.setToken(token);
@@ -167,6 +214,7 @@ export const apiService = {
 
     const role = normalizeRole(userData.role);
     const normEmail = normalizeEmail(rawEmail);
+    let authoritativeUserId: string | undefined;
 
     // 1. If Supabase is configured, create the user in Supabase Auth & profiles table
     if (isSupabaseConfigured) {
@@ -177,12 +225,24 @@ export const apiService = {
           options: {
             data: {
               name: rawName,
-              role
+              role,
+              phone: rawMobile,
+              district: userData.district,
+              state: userData.state
             }
           }
         });
 
-        if (!error && data.user) {
+        if (error) {
+          const lowerMsg = (error.message || '').toLowerCase();
+          if (lowerMsg.includes('already registered') || lowerMsg.includes('already exists')) {
+            throw new Error('An account with this email address already exists. Please sign in instead.');
+          }
+          console.warn('[Supabase SignUp Notice]:', error.message);
+        }
+
+        if (data?.user) {
+          authoritativeUserId = data.user.id;
           await supabase
             .from('profiles')
             .upsert({
@@ -200,13 +260,18 @@ export const apiService = {
             });
         }
       } catch (err: any) {
+        if (err.message && err.message.includes('already exists')) {
+          throw err;
+        }
         console.warn('Supabase registration sync notice:', err?.message);
       }
     }
 
-    // 2. Store securely in client Auth Vault with cryptographic salt + SHA-256 hash
+    // 2. Store in client Auth Vault with cryptographic salt + SHA-256 hash
+    // Enforce 1:1 ID alignment between Auth User ID and Profile
     const newProfile = await registerUserAccount({
       ...userData,
+      userId: authoritativeUserId,
       name: rawName,
       email: normEmail,
       mobile: rawMobile,
@@ -215,6 +280,50 @@ export const apiService = {
     });
 
     return newProfile;
+  },
+
+  // Profile Update Service
+  updateProfile: async (
+    userId: string,
+    updates: Partial<Omit<UserProfile, 'id' | 'role'>>
+  ): Promise<UserProfile> => {
+    if (!userId) {
+      throw new Error('User ID is required to update profile.');
+    }
+
+    // 1. If Supabase is configured, update remote database
+    if (isSupabaseConfigured) {
+      try {
+        const dbUpdates: Record<string, any> = {
+          updated_at: new Date().toISOString()
+        };
+        if (updates.name !== undefined) dbUpdates.name = updates.name.trim();
+        if (updates.phone !== undefined) dbUpdates.phone = updates.phone.trim();
+        if (updates.location !== undefined) dbUpdates.location = updates.location.trim();
+        if (updates.organization !== undefined) dbUpdates.organization = updates.organization.trim();
+        if (updates.village !== undefined) dbUpdates.village = updates.village?.trim();
+        if (updates.district !== undefined) dbUpdates.district = updates.district?.trim();
+        if (updates.state !== undefined) dbUpdates.state = updates.state?.trim();
+        if (updates.farmSizeAcres !== undefined) dbUpdates.farm_size_acres = Number(updates.farmSizeAcres);
+        if (updates.mainCrops !== undefined) dbUpdates.main_crops = updates.mainCrops;
+        if (updates.fpoName !== undefined) dbUpdates.fpo_name = updates.fpoName?.trim();
+
+        const { error } = await supabase
+          .from('profiles')
+          .update(dbUpdates)
+          .eq('id', userId);
+
+        if (error) {
+          console.warn('[Database Notice] Remote profile update failed:', error.message);
+        }
+      } catch (err: any) {
+        console.warn('[Database Notice] Remote update exception:', err?.message);
+      }
+    }
+
+    // 2. Update local vault and synchronize session cache
+    const updated = updateUserProfile(userId, updates);
+    return updated;
   },
 
   // Marketplace Service - Farmer Produce

@@ -39,6 +39,7 @@ import {
 } from '../data/mockData';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { authVault, normalizeRole, seedDemoAccounts } from '../services/authVault';
+import { apiService } from '../services/apiService';
 import { onInstallableChange, promptAppInstall } from '../services/serviceWorkerRegistration';
 import {
   PUBLIC_TABS,
@@ -56,6 +57,7 @@ interface AppContextType {
   registerUser: (user: UserProfile) => void;
   logout: () => void;
   currentUser: UserProfile;
+  updateCurrentUserProfile: (updates: Partial<UserProfile>) => Promise<boolean>;
   currentRole: UserRole;
   switchRole: (role: UserRole) => void;
   intendedRegistrationRole: UserRole | null;
@@ -1618,11 +1620,32 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         if (isSupabaseConfigured) {
           const { data: { session } } = await supabase.auth.getSession();
           if (session?.user) {
-            const { data: profile } = await supabase
+            let { data: profile, error: profileError } = await supabase
               .from('profiles')
               .select('*')
               .eq('id', session.user.id)
               .single();
+
+            // Safe recovery: if profile table record was missing, heal it from session metadata
+            if (!profile || profileError) {
+              const meta = session.user.user_metadata || {};
+              const recoveredRole = normalizeRole(meta.role || 'FARMER');
+              const recoveredProfile = {
+                id: session.user.id,
+                name: meta.name || 'Member',
+                role: recoveredRole,
+                email: session.user.email || '',
+                phone: meta.phone || '',
+                location: meta.location || 'Tamil Nadu, India',
+                organization: meta.organization || (recoveredRole === 'FARMER' ? 'Uzhavan Farmer Collective' : 'Uzhavan Connect Network')
+              };
+
+              try {
+                const { data: healed } = await supabase.from('profiles').upsert(recoveredProfile).select().single();
+                if (healed) profile = healed;
+              } catch {}
+              if (!profile) profile = recoveredProfile;
+            }
 
             if (profile) {
               const role = normalizeRole(profile.role);
@@ -1641,6 +1664,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                 mainCrops: profile.main_crops,
                 fpoName: profile.fpo_name
               };
+              authVault.getOrCreateProfile(profile.id, authenticatedUser);
             }
           }
         }
@@ -1711,6 +1735,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setCurrentUser(GUEST_USER);
         setCurrentRole('FARMER');
         navigateToTab('home', true, 'FARMER');
+      } else if (event === 'TOKEN_REFRESHED' && session?.access_token) {
+        localStorage.setItem('uzhavanconnect_jwt_token', session.access_token);
       }
     });
 
@@ -1858,6 +1884,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     );
   };
 
+  const updateCurrentUserProfile = async (updates: Partial<UserProfile>): Promise<boolean> => {
+    if (!currentUser.id) return false;
+    try {
+      const updated = await apiService.updateProfile(currentUser.id, updates);
+      setCurrentUser(updated);
+      localStorage.setItem('uzhavan_fallback_session', JSON.stringify(updated));
+      return true;
+    } catch (err) {
+      console.error('Failed to update profile:', err);
+      return false;
+    }
+  };
+
   // Development / automated verification hook
   if (typeof window !== 'undefined') {
     (window as any).__UZHAVAN_TEST__ = {
@@ -1877,6 +1916,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         registerUser,
         logout,
         currentUser,
+        updateCurrentUserProfile,
         currentRole,
         switchRole,
         intendedRegistrationRole,
