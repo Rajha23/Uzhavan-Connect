@@ -12,6 +12,14 @@ import { Footer } from './components/Footer';
 import { ProducePassportModal } from './components/ProducePassportModal';
 import { LanguageSelectorModal } from './components/LanguageSelectorModal';
 import { LanguageOnboardingModal } from './components/LanguageOnboardingModal';
+import { ChatbotWidget } from './components/ChatbotWidget';
+import { initGemini } from './lib/gemini';
+
+// Initialize Gemini API
+const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+if (geminiApiKey) {
+  initGemini(geminiApiKey);
+}
 
 // Public pages (no sidebar)
 import { LandingPage } from './pages/LandingPage';
@@ -284,6 +292,7 @@ const PublicShell: React.FC = () => (
     <ProducePassportModal />
     <LanguageSelectorModal />
     <LanguageOnboardingModal />
+    <ChatbotWidget />
   </div>
 );
 
@@ -309,6 +318,7 @@ const AuthenticatedShell: React.FC = () => {
       <ProducePassportModal />
       <LanguageSelectorModal />
       <LanguageOnboardingModal />
+      <ChatbotWidget />
     </div>
   );
 };
