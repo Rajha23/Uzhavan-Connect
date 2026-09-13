@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, Send, Bot, User, Loader2 } from 'lucide-react';
-import { ChatMessage, sendChatMessage, isGeminiInitialized } from '../lib/gemini';
+import { ChatMessage, sendChatMessage } from '../lib/gemini';
 
 export const ChatbotWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,23 +30,13 @@ export const ChatbotWidget: React.FC = () => {
     const trimmedInput = input.trim();
     if (!trimmedInput) return;
 
-    if (!isGeminiInitialized()) {
-      setMessages(prev => [
-        ...prev,
-        { role: 'user', content: trimmedInput },
-        { role: 'model', content: 'The AI is currently unavailable (API key missing or not configured).' }
-      ]);
-      setInput('');
-      return;
-    }
-
     const newMessages: ChatMessage[] = [...messages, { role: 'user', content: trimmedInput }];
     setMessages(newMessages);
     setInput('');
     setIsLoading(true);
 
     try {
-      // Pass the previous history (excluding the very first hardcoded greeting if needed, but it's fine to pass)
+      // Pass the previous history
       const responseText = await sendChatMessage(newMessages.slice(0, -1), trimmedInput);
       setMessages(prev => [...prev, { role: 'model', content: responseText }]);
     } catch (error: any) {
