@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, Send, Bot, User, Loader2 } from 'lucide-react';
+import { MessageSquare, X, Send, Bot, User, Loader2, Mic, Volume2, VolumeX } from 'lucide-react';
 import { ChatMessage, sendChatMessage } from '../lib/gemini';
 
 export const ChatbotWidget: React.FC = () => {
@@ -7,7 +7,12 @@ export const ChatbotWidget: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Speech recognition instance ref
+  const recognitionRef = useRef<any>(null);
 
   // Initial greeting
   useEffect(() => {
@@ -20,6 +25,68 @@ export const ChatbotWidget: React.FC = () => {
       ]);
     }
   }, [messages.length]);
+
+  // Initialize Speech Recognition
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          // Set the input field and submit it
+          submitMessage(transcript);
+        };
+
+        recognition.onerror = (event: any) => {
+          console.error('Speech recognition error', event.error);
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, []); // Run once on mount
+
+  const startListening = () => {
+    if (!recognitionRef.current) {
+      alert("Voice recognition is not supported in this browser.");
+      return;
+    }
+    setIsOpen(true);
+    setIsListening(true);
+    try {
+      recognitionRef.current.start();
+    } catch (e) {
+      console.error(e);
+      setIsListening(false);
+    }
+  };
+
+  const speakResponse = (text: string) => {
+    if (!isVoiceEnabled || !('speechSynthesis' in window)) return;
+    
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+
+    // Strip markdown formatting like asterisks or hash symbols for better speech
+    const cleanText = text.replace(/[*#]/g, '').trim();
+    
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.lang = 'en-US';
+    
+    window.speechSynthesis.speak(utterance);
+  };
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
@@ -39,6 +106,7 @@ export const ChatbotWidget: React.FC = () => {
       // Pass the previous history
       const responseText = await sendChatMessage(newMessages.slice(0, -1), trimmedInput);
       setMessages(prev => [...prev, { role: 'model', content: responseText }]);
+      speakResponse(responseText);
     } catch (error: any) {
       setMessages(prev => [
         ...prev, 
@@ -62,6 +130,15 @@ export const ChatbotWidget: React.FC = () => {
 
   return (
     <>
+      {/* Voice Assistant Floating Button */}
+      <button
+        onClick={startListening}
+        className={`fixed bottom-6 right-24 p-4 bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-xl transition-all duration-300 z-50 flex items-center justify-center ${isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'} ${isListening ? 'animate-pulse bg-red-500 hover:bg-red-600' : ''}`}
+        aria-label="Start Voice Assistant"
+      >
+        <Mic className="w-6 h-6" />
+      </button>
+
       {/* Floating Action Button */}
       <button
         onClick={() => setIsOpen(true)}
@@ -87,12 +164,24 @@ export const ChatbotWidget: React.FC = () => {
               <p className="text-[10px] text-emerald-100 opacity-90">Powered by Google Gemini</p>
             </div>
           </div>
-          <button 
-            onClick={() => setIsOpen(false)}
-            className="p-1 hover:bg-white/20 rounded-md transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => {
+                setIsVoiceEnabled(!isVoiceEnabled);
+                if (isVoiceEnabled) window.speechSynthesis.cancel();
+              }}
+              className="p-1 hover:bg-white/20 rounded-md transition-colors mr-1"
+              title={isVoiceEnabled ? "Mute AI Voice" : "Enable AI Voice"}
+            >
+              {isVoiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-emerald-300" />}
+            </button>
+            <button 
+              onClick={() => setIsOpen(false)}
+              className="p-1 hover:bg-white/20 rounded-md transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Messages Area */}
@@ -159,18 +248,28 @@ export const ChatbotWidget: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask anything..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-10 py-2.5 text-sm resize-none focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-shadow"
+              placeholder={isListening ? "Listening..." : "Ask anything..."}
+              className={`w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-20 py-2.5 text-sm resize-none focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-shadow ${isListening ? 'bg-red-50 border-red-200 text-red-900 placeholder-red-400' : ''}`}
               rows={1}
               style={{ minHeight: '44px', maxHeight: '120px' }}
             />
-            <button 
-              onClick={handleSend}
-              disabled={!input.trim() || isLoading}
-              className="absolute right-2 p-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white rounded-lg transition-colors flex items-center justify-center"
-            >
-              <Send className="w-4 h-4" />
-            </button>
+            <div className="absolute right-2 flex items-center gap-1">
+              <button 
+                onClick={isListening ? () => { recognitionRef.current?.stop(); setIsListening(false); } : startListening}
+                disabled={isLoading}
+                title={isListening ? "Stop Listening" : "Start Voice Typing"}
+                className={`p-1.5 rounded-lg transition-colors flex items-center justify-center ${isListening ? 'bg-red-100 text-red-600 hover:bg-red-200 animate-pulse' : 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50'}`}
+              >
+                <Mic className="w-4 h-4" />
+              </button>
+              <button 
+                onClick={handleSend}
+                disabled={!input.trim() || isLoading}
+                className="p-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white rounded-lg transition-colors flex items-center justify-center"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
           </div>
           <div className="text-center mt-1.5">
             <span className="text-[9px] text-slate-400">Press Shift+Enter for new line</span>
