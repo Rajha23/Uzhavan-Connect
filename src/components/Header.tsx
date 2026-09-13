@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Menu, Search, ChevronDown, LogOut, User, Wifi, WifiOff, RefreshCw, Download, CheckCircle2, Globe2 } from 'lucide-react';
+import { Menu, Search, ChevronDown, LogOut, User, Wifi, WifiOff, RefreshCw, Download, CheckCircle2, Globe2, Bell } from 'lucide-react';
 import { ROLE_DISPLAY_LABELS, ROLE_BADGE_STYLES } from '../services/routeGuard';
+import { NotificationBell } from './NotificationBell';
 
 // Maps tab ids to human-readable page titles
 const PAGE_TITLES: Record<string, string> = {
@@ -16,6 +17,7 @@ const PAGE_TITLES: Record<string, string> = {
   traceability: 'Traceability',
   'cost-simulator': 'Cost Simulator',
   profile: 'My Profile',
+  notifications: 'Notifications & Alerts',
   'create-demand': 'Create Demand',
   'demand-pool': 'Demand Pool',
   'smart-matching': 'Smart Matching',
@@ -61,6 +63,7 @@ export const Header: React.FC = () => {
     currentRole,
     setActiveTab,
     logout,
+    unreadNotificationsCount,
     isOnline,
     syncStatus,
     pendingSyncCount,
@@ -161,6 +164,9 @@ export const Header: React.FC = () => {
           <span className="hidden xl:inline text-[10px] text-slate-500 font-normal">({currentLanguageDef.name})</span>
         </button>
 
+        {/* Centralized Notifications & Operational Alerts Bell */}
+        <NotificationBell />
+
         {/* PWA Install Button when installable */}
         {isInstallable && (
           <button
@@ -217,6 +223,21 @@ export const Header: React.FC = () => {
               >
                 <User className="w-4 h-4 text-[#788c80]" />
                 {t('profile.title')}
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('notifications'); setIsUserMenuOpen(false); }}
+                className="w-full flex items-center justify-between px-4 py-2.5 text-xs text-[#01472e] hover:bg-[#eef2e1]/50 transition text-left cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Bell className="w-4 h-4 text-[#788c80]" />
+                  <span>Notifications & Alerts</span>
+                </div>
+                {unreadNotificationsCount > 0 && (
+                  <span className="text-[10px] font-bold text-[#fefae0] bg-[#01472e] px-2 py-0.5 rounded-full">
+                    {unreadNotificationsCount} new
+                  </span>
+                )}
               </button>
 
               {/* Language Selection trigger in dropdown */}

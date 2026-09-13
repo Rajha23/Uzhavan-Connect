@@ -582,15 +582,47 @@ export interface SettlementRecord {
   farmerBreakdown?: FarmerSettlementItem[];
 }
 
+export type NotificationPriority = 'INFO' | 'SUCCESS' | 'WARNING' | 'URGENT';
+
+export type NotificationCategory =
+  | 'CROPS'
+  | 'MARKET_DEMAND'
+  | 'MATCH'
+  | 'ORDERS'
+  | 'LOGISTICS'
+  | 'SETTLEMENT'
+  | 'TRACEABILITY'
+  | 'ADVISORY'
+  | 'SYSTEM'
+  | 'DEMAND'
+  | 'ORDER';
+
+export interface NotificationPreferences {
+  marketDemand: boolean;
+  orders: boolean;
+  logistics: boolean;
+  payments: boolean;
+  traceability: boolean;
+  advisory: boolean;
+  system: boolean; // Locked true for security and platform governance
+}
+
 export interface AppNotification {
   id: string;
   title: string;
   message: string;
   timestamp: string;
+  createdAt?: number;
   targetRole: UserRole | 'ALL';
+  userId?: string;
   read: boolean;
-  type: 'DEMAND' | 'MATCH' | 'LOGISTICS' | 'SETTLEMENT' | 'SYSTEM';
+  type: NotificationCategory;
+  priority?: NotificationPriority;
+  actionTab?: string;
   actionUrl?: string;
+  actionLabel?: string;
+  entityId?: string;
+  entityType?: string;
 }
 
 export interface CropRecommendation {

@@ -23,6 +23,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import { LanguageSettingsCard } from '../components/LanguageSettingsCard';
+import { NotificationPreferencesCard } from '../components/NotificationPreferencesCard';
 
 export const ProfilePage: React.FC = () => {
   const { currentUser, currentRole, updateCurrentUserProfile } = useApp();
@@ -648,6 +649,9 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Operational Notification & Alert Preferences Card */}
+      <NotificationPreferencesCard />
 
       {/* Multilingual Localization Settings Card */}
       <LanguageSettingsCard />

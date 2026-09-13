@@ -4,6 +4,9 @@ import {
   UserRole,
   Permission,
   AppNotification,
+  NotificationCategory,
+  NotificationPriority,
+  NotificationPreferences,
   MarketPriceItem,
   SystemUserRecord,
   ProduceListing,
@@ -49,6 +52,14 @@ import {
   TAB_FEATURE_NAMES,
   getAuthorizedDashboardTab
 } from '../services/routeGuard';
+import {
+  generateRealNotifications,
+  loadReadNotificationIds,
+  saveReadNotificationIds,
+  loadNotificationPreferences,
+  saveNotificationPreferences,
+  DEFAULT_NOTIFICATION_PREFERENCES
+} from '../services/notificationService';
 
 interface AppContextType {
   isInitializing: boolean;
@@ -74,6 +85,11 @@ interface AppContextType {
   notifications: AppNotification[];
   unreadNotificationsCount: number;
   markNotificationRead: (id: string) => void;
+  markAllNotificationsRead: () => void;
+  notificationPreferences: NotificationPreferences;
+  updateNotificationPreferences: (updates: Partial<NotificationPreferences>) => void;
+  resetNotificationPreferences: () => void;
+  addNotificationEvent: (notification: Omit<AppNotification, 'id' | 'read' | 'timestamp'> & { id?: string }) => void;
   isPassportModalOpen: boolean;
   selectedPassportBatchId: string;
   openPassportModal: (batchId?: string) => void;
@@ -236,7 +252,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
   const [attemptedFeature, setAttemptedFeature] = useState<string>('');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
-  const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
+  const [readNotificationIds, setReadNotificationIds] = useState<Set<string>>(() => loadReadNotificationIds());
+  const [notificationPreferences, setNotificationPreferences] = useState<NotificationPreferences>(() => loadNotificationPreferences());
+  const [eventNotifications, setEventNotifications] = useState<AppNotification[]>([]);
   const [isPassportModalOpen, setIsPassportModalOpen] = useState<boolean>(false);
   const [selectedPassportBatchId, setSelectedPassportBatchId] = useState<string>('AGP-TOM-2026-001');
   const [isDemoModeOpen, setIsDemoModeOpen] = useState<boolean>(false);
@@ -766,18 +784,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setOrders((prev) => [newOrder, ...prev]);
     setProducePassports((prev) => [newPassport, ...prev]);
 
-    // Send notification
+    // Send notification event
     const newNotif: AppNotification = {
-      id: `notif-${Date.now()}`,
+      id: `order-created-event-${orderId}`,
       title: 'Match Confirmed & Order Created!',
-      message: `Order ${orderId} created for ${finalQty.toLocaleString()} kg of ${listing.crop} @ ₹${finalPrice}/kg. Produce reserved.`,
+      message: `Order ${orderId} created for ${finalQty.toLocaleString()} kg of ${listing.crop} @ ₹${finalPrice}/kg. Escrow reserved.`,
       timestamp: 'Just now',
+      createdAt: Date.now(),
       targetRole: 'ALL',
       read: false,
-      type: 'ORDER' as any,
-      actionUrl: '/orders'
+      type: 'ORDERS',
+      priority: 'SUCCESS',
+      actionTab: 'orders',
+      actionUrl: '/orders',
+      actionLabel: 'View Order',
+      entityId: orderId,
+      entityType: 'Order'
     };
-    setNotifications((prev) => [newNotif, ...prev]);
+    setEventNotifications((prev) => [newNotif, ...prev]);
 
     return newOrder;
   };
@@ -1834,12 +1858,83 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const markNotificationRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+    setReadNotificationIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      saveReadNotificationIds(next);
+      return next;
+    });
   };
 
-  const unreadNotificationsCount = notifications.filter((n) => !n.read).length;
+  const markAllNotificationsRead = () => {
+    setReadNotificationIds((prev) => {
+      const next = new Set(prev);
+      notifications.forEach((n) => next.add(n.id));
+      saveReadNotificationIds(next);
+      return next;
+    });
+  };
+
+  const updateNotificationPreferences = (updates: Partial<NotificationPreferences>) => {
+    setNotificationPreferences((prev) => {
+      const next = { ...prev, ...updates, system: true };
+      saveNotificationPreferences(next);
+      return next;
+    });
+  };
+
+  const resetNotificationPreferences = () => {
+    setNotificationPreferences(DEFAULT_NOTIFICATION_PREFERENCES);
+    saveNotificationPreferences(DEFAULT_NOTIFICATION_PREFERENCES);
+  };
+
+  const addNotificationEvent = (
+    notif: Omit<AppNotification, 'id' | 'read' | 'timestamp'> & { id?: string }
+  ) => {
+    const eventId = notif.id || `event-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+    const newNotif: AppNotification = {
+      ...notif,
+      id: eventId,
+      read: false,
+      timestamp: 'Just now',
+      createdAt: Date.now()
+    };
+    setEventNotifications((prev) => [newNotif, ...prev]);
+  };
+
+  const notifications = useMemo(() => {
+    return generateRealNotifications({
+      currentUser,
+      currentRole,
+      produceListings,
+      demandRequests,
+      orders,
+      settlements,
+      producePassports,
+      systemUsers,
+      marketPrices,
+      eventNotifications,
+      readIds: readNotificationIds,
+      preferences: notificationPreferences
+    });
+  }, [
+    currentUser,
+    currentRole,
+    produceListings,
+    demandRequests,
+    orders,
+    settlements,
+    producePassports,
+    systemUsers,
+    marketPrices,
+    eventNotifications,
+    readNotificationIds,
+    notificationPreferences
+  ]);
+
+  const unreadNotificationsCount = useMemo(() => {
+    return notifications.filter((n) => !n.read).length;
+  }, [notifications]);
 
   const openPassportModal = (batchId = 'AGP-TOM-2026-001') => {
     setSelectedPassportBatchId(batchId);
@@ -1933,6 +2028,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         notifications,
         unreadNotificationsCount,
         markNotificationRead,
+        markAllNotificationsRead,
+        notificationPreferences,
+        updateNotificationPreferences,
+        resetNotificationPreferences,
+        addNotificationEvent,
         isPassportModalOpen,
         selectedPassportBatchId,
         openPassportModal,

@@ -28,7 +28,8 @@ import {
   ChevronDown,
   X,
   Scale,
-  Globe2
+  Globe2,
+  Bell
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -47,7 +48,8 @@ export const Sidebar: React.FC = () => {
     setActiveTab,
     sidebarOpen,
     setSidebarOpen,
-    logout
+    logout,
+    unreadNotificationsCount
   } = useApp();
 
   const { t, currentLanguageDef, openLanguageSelector } = useLanguage();
@@ -64,6 +66,7 @@ export const Sidebar: React.FC = () => {
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'settlement', label: t('nav.settlement'), icon: Scale, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'notifications', label: 'Notifications', icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
@@ -76,6 +79,7 @@ export const Sidebar: React.FC = () => {
           { id: 'reverse-auction', label: t('nav.reverseAuction'), icon: Gavel, section: 'MARKET' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'notifications', label: 'Notifications', icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
@@ -87,6 +91,7 @@ export const Sidebar: React.FC = () => {
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
           { id: 'settlement', label: t('nav.settlement'), icon: Scale, section: 'OPERATIONS' },
+          { id: 'notifications', label: 'Notifications', icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
@@ -97,6 +102,7 @@ export const Sidebar: React.FC = () => {
           { id: 'demand-forecast', label: t('nav.demandForecast'), icon: TrendingUp, section: 'MAIN' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'notifications', label: 'Notifications', icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
@@ -106,6 +112,7 @@ export const Sidebar: React.FC = () => {
           { id: 'shipments', label: t('nav.shipments'), icon: Truck, section: 'LOGISTICS' },
           { id: 'route-optimization', label: t('nav.routeOptimization'), icon: Navigation, section: 'LOGISTICS' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
+          { id: 'notifications', label: 'Notifications', icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
@@ -119,6 +126,7 @@ export const Sidebar: React.FC = () => {
           { id: 'shipments', label: t('nav.shipments'), icon: Truck, section: 'LOGISTICS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
           { id: 'reports', label: t('nav.reports'), icon: FileText, section: 'OPERATIONS' },
+          { id: 'notifications', label: 'Notifications', icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
@@ -224,6 +232,13 @@ export const Sidebar: React.FC = () => {
                           <Icon className={`w-4 h-4 ${isActive ? 'text-[#fefae0]' : 'text-[#788c80]'}`} />
                           <span>{item.label}</span>
                         </div>
+                        {item.id === 'notifications' && unreadNotificationsCount > 0 && (
+                          <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-full transition-colors ${
+                            isActive ? 'bg-[#fefae0] text-[#01472e]' : 'bg-[#01472e] text-[#fefae0]'
+                          } leading-none`}>
+                            {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                          </span>
+                        )}
                       </button>
                     );
                   })}

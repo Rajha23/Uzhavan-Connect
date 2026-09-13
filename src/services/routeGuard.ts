@@ -71,6 +71,7 @@ export const PATH_TO_TAB: Record<string, string> = {
   '/analytics': 'reports',
   '/demand-intel': 'demand-intel',
   '/demand-forecast': 'demand-forecast',
+  '/notifications': 'notifications',
   '/access-denied': 'access-denied'
 };
 
@@ -106,6 +107,7 @@ export const TAB_TO_PATH: Record<string, string> = {
   settlement: '/settlement',
   traceability: '/traceability',
   profile: '/profile',
+  notifications: '/notifications',
   reports: '/reports',
   'demand-intel': '/demand-intel',
   'demand-forecast': '/demand-forecast',
@@ -137,6 +139,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'traceability',
     'tracking',
     'profile',
+    'notifications',
     'access-denied'
   ],
   RETAIL_BUYER: [
@@ -154,6 +157,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'traceability',
     'tracking',
     'profile',
+    'notifications',
     'access-denied'
   ],
   BULK_BUYER: [
@@ -174,6 +178,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'tracking',
     'settlement',
     'profile',
+    'notifications',
     'access-denied'
   ],
   FPO_AGGREGATOR: [
@@ -192,6 +197,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'traceability',
     'tracking',
     'profile',
+    'notifications',
     'access-denied'
   ],
   LOGISTICS: [
@@ -209,6 +215,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'traceability',
     'tracking',
     'profile',
+    'notifications',
     'access-denied'
   ],
   ADMIN: [
@@ -233,6 +240,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'traceability',
     'tracking',
     'profile',
+    'notifications',
     'access-denied'
   ]
 };
