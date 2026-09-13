@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Menu, Search, ChevronDown, LogOut, User, Wifi, WifiOff, RefreshCw, Download, CheckCircle2 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { Menu, Search, ChevronDown, LogOut, User, Wifi, WifiOff, RefreshCw, Download, CheckCircle2, Globe2 } from 'lucide-react';
 import { ROLE_DISPLAY_LABELS, ROLE_BADGE_STYLES } from '../services/routeGuard';
 
 // Maps tab ids to human-readable page titles
@@ -67,6 +68,8 @@ export const Header: React.FC = () => {
     isInstallable,
     promptInstall,
   } = useApp();
+
+  const { currentLanguageDef, openLanguageSelector, t } = useLanguage();
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -145,6 +148,19 @@ export const Header: React.FC = () => {
           </div>
         )}
 
+        {/* Multilingual 22-Language Quick Switch Pill */}
+        <button
+          type="button"
+          onClick={openLanguageSelector}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-semibold bg-white/90 hover:bg-white text-[#01472e] border border-[#ccd5ae]/80 shadow-2xs hover:border-[#01472e]/60 transition hover:scale-[1.02] cursor-pointer"
+          title="Change platform language (22 Constitutional Languages supported)"
+          aria-label="Change Language"
+        >
+          <Globe2 className="w-3.5 h-3.5 text-[#01472e] shrink-0" />
+          <span className="font-bold tracking-tight">{currentLanguageDef.nativeName}</span>
+          <span className="hidden xl:inline text-[10px] text-slate-500 font-normal">({currentLanguageDef.name})</span>
+        </button>
+
         {/* PWA Install Button when installable */}
         {isInstallable && (
           <button
@@ -185,7 +201,7 @@ export const Header: React.FC = () => {
 
           {/* User Dropdown */}
           {isUserMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-[24px] shadow-forest-lg border border-[#ccd5ae]/60 z-50 overflow-hidden py-1.5 animate-in fade-in duration-150">
+            <div className="absolute right-0 top-full mt-2 w-60 bg-white rounded-[24px] shadow-forest-lg border border-[#ccd5ae]/60 z-50 overflow-hidden py-1.5 animate-in fade-in duration-150">
               {/* User info header */}
               <div className="px-4 py-3 border-b border-[#ccd5ae]/30 bg-[#faf9f5]">
                 <p className="text-xs font-medium text-[#01472e]">{currentUser.name || 'User'}</p>
@@ -194,13 +210,29 @@ export const Header: React.FC = () => {
                   {ROLE_LABELS[currentRole] || currentRole}
                 </span>
               </div>
+
               <button
                 onClick={() => { setActiveTab('profile'); setIsUserMenuOpen(false); }}
                 className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-[#01472e] hover:bg-[#eef2e1]/50 transition text-left cursor-pointer"
               >
                 <User className="w-4 h-4 text-[#788c80]" />
-                My Profile
+                {t('profile.title')}
               </button>
+
+              {/* Language Selection trigger in dropdown */}
+              <button
+                onClick={() => { openLanguageSelector(); setIsUserMenuOpen(false); }}
+                className="w-full flex items-center justify-between px-4 py-2.5 text-xs text-[#01472e] hover:bg-[#eef2e1]/50 transition text-left cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Globe2 className="w-4 h-4 text-[#788c80]" />
+                  <span>Language / மொழி</span>
+                </div>
+                <span className="text-[10px] font-bold text-[#01472e] bg-[#eaf4ec] border border-[#a3b18a]/40 px-2 py-0.5 rounded-md">
+                  {currentLanguageDef.nativeName}
+                </span>
+              </button>
+
               {isInstallable && (
                 <button
                   onClick={() => { promptInstall(); setIsUserMenuOpen(false); }}

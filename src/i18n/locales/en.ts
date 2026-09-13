@@ -200,9 +200,10 @@ export const enTranslations: TranslationDictionary = {
   },
 
   landing: {
-    heroTitle: 'Sell Directly. Earn 89% Realization. Powered by AI & Escrow.',
+    heroTitle: 'Sell Directly.',
     heroSubtitle: 'Uzhavan Connect unifies smallholder farmers directly with institutional food processors and retailers using ML demand forecasting, algorithmic matching, fair price discovery, and cold-chain route coordination.',
-    earnRealization: 'Earn 89% Realization',
+    earnRealization: 'Sell Directly',
+
     launchConsole: 'Launch Operational Console',
     registerAccount: 'Register Direct Account',
     directMarket: 'Direct Market',

@@ -128,6 +128,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   const contextValue: LanguageContextType = {
     currentLanguage,
+    currentLanguageDef: currentLanguage,
     direction,
     setLanguage,
     t,
@@ -141,6 +142,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     startPostRegistrationOnboarding,
     completePostRegistrationOnboarding
   };
+
 
   return (
     <LanguageContext.Provider value={contextValue}>

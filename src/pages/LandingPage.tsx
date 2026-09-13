@@ -48,13 +48,9 @@ export const LandingPage: React.FC = () => {
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#01472e] tracking-tight leading-[1.12]">
-              Sell Directly.{' '}
-              <span className="text-[#025a3b] underline decoration-[#ccd5ae] decoration-wavy decoration-2">
-                Earn 89% Realization.
-              </span>
-              <br />
-              Powered by AI & Escrow.
+              Sell Directly.
             </h1>
+
 
             {/* Subheading */}
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal">
@@ -85,7 +81,7 @@ export const LandingPage: React.FC = () => {
               {[
                 { icon: Sprout, title: 'Direct Market', desc: 'Direct contracts without APMC middlemen', bg: 'bg-white border-[#ccd5ae]/60' },
                 { icon: TrendingUp, title: 'Demand Forecast', desc: 'FastAPI XGBoost ML demand spikes', bg: 'bg-white border-[#ccd5ae]/60' },
-                { icon: Sparkles, title: 'Autonomous Escrow', desc: 'Zero credit risk, 89% net realization', bg: 'bg-white border-[#ccd5ae]/60' },
+                { icon: Sparkles, title: 'Autonomous Escrow', desc: 'Zero credit risk, transparent direct payout', bg: 'bg-white border-[#ccd5ae]/60' },
                 { icon: Truck, title: 'Cold Chain VRP', desc: 'Sensor-monitored multi-stop routes', bg: 'bg-white border-[#ccd5ae]/60' },
               ].map((b) => (
                 <div key={b.title} className={`p-4 rounded-2xl border text-left ${b.bg} shadow-2xs transition hover:-translate-y-0.5 hover:shadow-xs group`}>

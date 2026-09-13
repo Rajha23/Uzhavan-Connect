@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import { UserRole } from '../types';
 import { apiService } from '../services/apiService';
 import { indianStatesData } from '../data/indianStates';
@@ -23,8 +24,10 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) => {
   const { login, registerUser, setActiveTab, intendedRegistrationRole } = useApp();
+  const { startPostRegistrationOnboarding } = useLanguage();
 
   const [mode, setMode] = useState<'LOGIN' | 'REGISTER'>(initialMode);
+
 
   // Update mode if prop changes
   React.useEffect(() => {
@@ -118,7 +121,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
       setRegSuccess(true);
       setTimeout(() => {
         registerUser(registered);
+        startPostRegistrationOnboarding();
       }, 800);
+
     } catch (err: any) {
       setErrorMsg(err.message || 'Registration failed. Please check your information and try again.');
     } finally {

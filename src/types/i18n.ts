@@ -3,6 +3,7 @@ export type ScriptDirection = 'ltr' | 'rtl';
 export interface LanguageDefinition {
   code: string;           // Primary application locale identifier (ISO 639-1 or ISO 639-3)
   nameEnglish: string;    // Standard English name
+  name?: string;          // Alias for nameEnglish
   nativeName: string;     // Native script display name
   iso6391: string;        // ISO 639-1 two-letter code where applicable
   iso6393: string;        // ISO 639-3 three-letter code
@@ -33,8 +34,10 @@ export interface TranslationDictionary {
 
 export interface LanguageContextType {
   currentLanguage: LanguageDefinition;
+  currentLanguageDef: LanguageDefinition; // Convenient alias for currentLanguage
   direction: ScriptDirection;
   setLanguage: (code: string) => void;
+
   t: (key: string, params?: Record<string, string | number>, defaultText?: string) => string;
   formatCurrency: (amount: number) => string;
   formatNumber: (value: number) => string;

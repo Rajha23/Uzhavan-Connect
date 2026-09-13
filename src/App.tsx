@@ -9,8 +9,9 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 
 // Global modals (always mounted regardless of shell)
-
 import { ProducePassportModal } from './components/ProducePassportModal';
+import { LanguageSelectorModal } from './components/LanguageSelectorModal';
+import { LanguageOnboardingModal } from './components/LanguageOnboardingModal';
 
 // Public pages (no sidebar)
 import { LandingPage } from './pages/LandingPage';
@@ -281,6 +282,8 @@ const PublicShell: React.FC = () => (
     <Footer />
 
     <ProducePassportModal />
+    <LanguageSelectorModal />
+    <LanguageOnboardingModal />
   </div>
 );
 
@@ -304,6 +307,8 @@ const AuthenticatedShell: React.FC = () => {
 
       {/* Global modals */}
       <ProducePassportModal />
+      <LanguageSelectorModal />
+      <LanguageOnboardingModal />
     </div>
   );
 };

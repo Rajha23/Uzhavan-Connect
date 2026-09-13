@@ -22,6 +22,7 @@ import {
   Check,
   Briefcase
 } from 'lucide-react';
+import { LanguageSettingsCard } from '../components/LanguageSettingsCard';
 
 export const ProfilePage: React.FC = () => {
   const { currentUser, currentRole, updateCurrentUserProfile } = useApp();
@@ -647,6 +648,9 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Multilingual Localization Settings Card */}
+      <LanguageSettingsCard />
     </div>
   );
 };

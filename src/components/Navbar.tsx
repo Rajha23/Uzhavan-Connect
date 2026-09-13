@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Sprout } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { Sprout, Globe2 } from 'lucide-react';
 import { ROLE_DISPLAY_LABELS, ROLE_BADGE_STYLES } from '../services/routeGuard';
 
 export const Navbar: React.FC = () => {
@@ -10,6 +11,8 @@ export const Navbar: React.FC = () => {
     currentUser,
     setActiveTab
   } = useApp();
+
+  const { currentLanguageDef, openLanguageSelector } = useLanguage();
 
   const displayRole = ROLE_DISPLAY_LABELS[currentRole] || currentRole;
   const badgeStyle = ROLE_BADGE_STYLES[currentRole] || ROLE_BADGE_STYLES.FARMER;
@@ -45,7 +48,20 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Multilingual 22-Language Selector Quick Pill */}
+            <button
+              type="button"
+              onClick={openLanguageSelector}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-semibold bg-white/90 hover:bg-white text-[#01472e] border border-[#ccd5ae]/80 shadow-2xs hover:border-[#01472e]/60 transition hover:scale-[1.02] cursor-pointer"
+              title="Change Language (22 Constitutional Languages supported)"
+              aria-label="Select Language"
+            >
+              <Globe2 className="w-3.5 h-3.5 text-[#01472e] shrink-0" />
+              <span className="font-bold tracking-tight">{currentLanguageDef.nativeName}</span>
+              <span className="hidden md:inline text-[10px] text-slate-500 font-normal">({currentLanguageDef.name})</span>
+            </button>
+
             {/* Authenticated session or Sign In / Register Buttons */}
             {isAuthenticated ? (
               <div className="flex items-center gap-2.5">

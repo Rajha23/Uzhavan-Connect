@@ -27,8 +27,10 @@ import {
   Clock,
   ChevronDown,
   X,
-  Scale
+  Scale,
+  Globe2
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface MenuItem {
   id: string;
@@ -48,80 +50,83 @@ export const Sidebar: React.FC = () => {
     logout
   } = useApp();
 
+  const { t, currentLanguageDef, openLanguageSelector } = useLanguage();
+
   // Role-specific sidebars per user specification
   const getMenuItems = (): MenuItem[] => {
     switch (currentRole) {
       case 'FARMER':
         return [
-          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'MAIN' },
-          { id: 'demand-forecast', label: 'Demand Signals', icon: TrendingUp, section: 'MAIN' },
-          { id: 'my-crops', label: 'My Produce', icon: Sprout, section: 'MAIN' },
-          { id: 'find-buyers', label: 'My Matches', icon: Search, section: 'MARKET' },
-          { id: 'orders', label: 'Orders', icon: Package, section: 'OPERATIONS' },
-          { id: 'settlement', label: 'Earnings', icon: Scale, section: 'OPERATIONS' },
-          { id: 'traceability', label: 'Traceability', icon: QrCode, section: 'OPERATIONS' },
-          { id: 'profile', label: 'Profile', icon: User, section: 'SETTINGS' }
+          { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, section: 'MAIN' },
+          { id: 'demand-forecast', label: t('nav.demandForecast'), icon: TrendingUp, section: 'MAIN' },
+          { id: 'my-crops', label: t('nav.myCrops'), icon: Sprout, section: 'MAIN' },
+          { id: 'find-buyers', label: t('nav.findBuyers'), icon: Search, section: 'MARKET' },
+          { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
+          { id: 'settlement', label: t('nav.settlement'), icon: Scale, section: 'OPERATIONS' },
+          { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
       case 'RETAIL_BUYER':
         return [
-          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'MAIN' },
-          { id: 'create-demand', label: 'Create Demand', icon: Sparkles, section: 'MAIN' },
-          { id: 'demand-pool', label: 'Demand Pools', icon: Layers, section: 'MARKET' },
-          { id: 'smart-matching', label: 'Supplier Matches', icon: Search, section: 'MARKET' },
-          { id: 'reverse-auction', label: 'Reverse Auction', icon: Gavel, section: 'MARKET' },
-          { id: 'orders', label: 'Orders', icon: Package, section: 'OPERATIONS' },
-          { id: 'traceability', label: 'Traceability', icon: QrCode, section: 'OPERATIONS' },
-          { id: 'profile', label: 'Profile', icon: User, section: 'SETTINGS' }
+          { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, section: 'MAIN' },
+          { id: 'create-demand', label: t('nav.createDemand'), icon: Sparkles, section: 'MAIN' },
+          { id: 'demand-pool', label: t('nav.demandPool'), icon: Layers, section: 'MARKET' },
+          { id: 'smart-matching', label: t('nav.smartMatching'), icon: Search, section: 'MARKET' },
+          { id: 'reverse-auction', label: t('nav.reverseAuction'), icon: Gavel, section: 'MARKET' },
+          { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
+          { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
       case 'BULK_BUYER':
         return [
-          { id: 'dashboard', label: 'Procurement Console', icon: LayoutDashboard, section: 'MAIN' },
-          { id: 'bulk-demand', label: 'Bulk Aggregation', icon: Users, section: 'MAIN' },
+          { id: 'dashboard', label: t('nav.bulkProcurement'), icon: LayoutDashboard, section: 'MAIN' },
+          { id: 'bulk-demand', label: t('nav.bulkDemand'), icon: Users, section: 'MAIN' },
           { id: 'tracking', label: 'Fleet Telematics', icon: Truck, section: 'OPERATIONS' },
-          { id: 'orders', label: 'Bulk Orders', icon: Package, section: 'OPERATIONS' },
-          { id: 'traceability', label: 'Traceability & QR', icon: QrCode, section: 'OPERATIONS' },
-          { id: 'settlement', label: 'Settlement Ledger', icon: Scale, section: 'OPERATIONS' },
-          { id: 'profile', label: 'Profile', icon: User, section: 'SETTINGS' }
+          { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
+          { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'settlement', label: t('nav.settlement'), icon: Scale, section: 'OPERATIONS' },
+          { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
       case 'FPO_AGGREGATOR':
         return [
-          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'MAIN' },
-          { id: 'my-crops', label: 'Aggregated Produce', icon: Sprout, section: 'MAIN' },
-          { id: 'demand-forecast', label: 'Demand Signals', icon: TrendingUp, section: 'MAIN' },
-          { id: 'orders', label: 'Orders', icon: Package, section: 'OPERATIONS' },
-          { id: 'traceability', label: 'Traceability', icon: QrCode, section: 'OPERATIONS' },
-          { id: 'profile', label: 'Profile', icon: User, section: 'SETTINGS' }
+          { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, section: 'MAIN' },
+          { id: 'my-crops', label: t('nav.aggregatedProduce'), icon: Sprout, section: 'MAIN' },
+          { id: 'demand-forecast', label: t('nav.demandForecast'), icon: TrendingUp, section: 'MAIN' },
+          { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
+          { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
       case 'LOGISTICS':
         return [
-          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'MAIN' },
-          { id: 'shipments', label: 'Shipments', icon: Truck, section: 'LOGISTICS' },
-          { id: 'route-optimization', label: 'Route Planning', icon: Navigation, section: 'LOGISTICS' },
-          { id: 'orders', label: 'Active Pickups', icon: Package, section: 'OPERATIONS' },
-          { id: 'profile', label: 'Profile', icon: User, section: 'SETTINGS' }
+          { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, section: 'MAIN' },
+          { id: 'shipments', label: t('nav.shipments'), icon: Truck, section: 'LOGISTICS' },
+          { id: 'route-optimization', label: t('nav.routeOptimization'), icon: Navigation, section: 'LOGISTICS' },
+          { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
+          { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
       case 'ADMIN':
         return [
-          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'MAIN' },
-          { id: 'demand-intel', label: 'Demand Intelligence', icon: TrendingUp, section: 'MAIN' },
-          { id: 'smart-matching', label: 'Matching', icon: Search, section: 'MARKET' },
+          { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, section: 'MAIN' },
+          { id: 'demand-intel', label: t('nav.demandIntelligence'), icon: TrendingUp, section: 'MAIN' },
+          { id: 'smart-matching', label: t('nav.smartMatching'), icon: Search, section: 'MARKET' },
           { id: 'hubs', label: 'Hubs', icon: MapPin, section: 'LOGISTICS' },
-          { id: 'route-optimization', label: 'Route Optimization', icon: Navigation, section: 'LOGISTICS' },
-          { id: 'shipments', label: 'Shipments', icon: Truck, section: 'LOGISTICS' },
-          { id: 'traceability', label: 'Traceability', icon: QrCode, section: 'OPERATIONS' },
-          { id: 'reports', label: 'Analytics', icon: FileText, section: 'OPERATIONS' },
-          { id: 'profile', label: 'Profile', icon: User, section: 'SETTINGS' }
+          { id: 'route-optimization', label: t('nav.routeOptimization'), icon: Navigation, section: 'LOGISTICS' },
+          { id: 'shipments', label: t('nav.shipments'), icon: Truck, section: 'LOGISTICS' },
+          { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'reports', label: t('nav.reports'), icon: FileText, section: 'OPERATIONS' },
+          { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
       default:
         return [];
     }
   };
+
 
   const menuItems = getMenuItems();
 
@@ -241,6 +246,20 @@ export const Sidebar: React.FC = () => {
               <p className="text-[10px] text-[#5c7065] truncate uppercase tracking-wider font-normal">{currentUser.role.replace('_', ' ')}</p>
             </div>
           </div>
+
+          {/* Language selector button in sidebar footer */}
+          <button
+            type="button"
+            onClick={openLanguageSelector}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-semibold bg-white/70 hover:bg-white text-[#01472e] border border-[#ccd5ae]/60 shadow-2xs hover:border-[#01472e]/50 transition cursor-pointer"
+            title="Change platform language (22 Constitutional Languages)"
+          >
+            <div className="flex items-center gap-2">
+              <Globe2 className="w-3.5 h-3.5 text-[#01472e]" />
+              <span className="font-bold">{currentLanguageDef.nativeName}</span>
+            </div>
+            <span className="text-[10px] text-slate-500 font-normal">22 Langs</span>
+          </button>
 
           <button
             onClick={logout}

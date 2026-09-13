@@ -241,16 +241,26 @@ export const SUPPORTED_LANGUAGES: LanguageDefinition[] = [
   }
 ];
 
-export const DEFAULT_LANGUAGE: LanguageDefinition = SUPPORTED_LANGUAGES[0]; // English
+export const DEFAULT_LANGUAGE: LanguageDefinition = {
+  ...SUPPORTED_LANGUAGES[0],
+  name: SUPPORTED_LANGUAGES[0].nameEnglish
+};
+
+export const INDIAN_LANGUAGES: Record<string, LanguageDefinition> = SUPPORTED_LANGUAGES.reduce(
+  (acc, lang) => {
+    const enriched = { ...lang, name: lang.nameEnglish };
+    acc[lang.code] = enriched;
+    return acc;
+  },
+  {} as Record<string, LanguageDefinition>
+);
 
 /**
  * Searches and filters languages by English name, Native name, ISO 639-1, or ISO 639-3 code.
  */
 export const searchLanguages = (query: string): LanguageDefinition[] => {
   const clean = query.trim().toLowerCase();
-  if (!clean) return SUPPORTED_LANGUAGES;
-
-  return SUPPORTED_LANGUAGES.filter((lang) => {
+  const list = clean ? SUPPORTED_LANGUAGES.filter((lang) => {
     const matchesEnglish = lang.nameEnglish.toLowerCase().includes(clean);
     const matchesNative = lang.nativeName.toLowerCase().includes(clean);
     const matchesIso1 = lang.iso6391.toLowerCase() === clean;
@@ -259,7 +269,9 @@ export const searchLanguages = (query: string): LanguageDefinition[] => {
     const matchesRegion = lang.regions.some((r) => r.toLowerCase().includes(clean));
 
     return matchesEnglish || matchesNative || matchesIso1 || matchesIso3 || matchesCode || matchesRegion;
-  });
+  }) : SUPPORTED_LANGUAGES;
+
+  return list.map((l) => ({ ...l, name: l.nameEnglish }));
 };
 
 /**
@@ -270,5 +282,9 @@ export const getLanguageByCode = (code: string): LanguageDefinition => {
   const found = SUPPORTED_LANGUAGES.find(
     (l) => l.code.toLowerCase() === clean || l.iso6391.toLowerCase() === clean || l.iso6393.toLowerCase() === clean
   );
-  return found || DEFAULT_LANGUAGE;
+  if (found) {
+    return { ...found, name: found.nameEnglish };
+  }
+  return DEFAULT_LANGUAGE;
 };
+
