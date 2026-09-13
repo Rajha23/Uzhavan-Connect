@@ -86,7 +86,7 @@ export const AdminDashboard: React.FC = () => {
       await apiService.adminCreateUser(data);
       alert('User created successfully!');
       setIsCreateUserModalOpen(false);
-      // In a real app we would refresh the users list here
+      window.location.reload(); // Refresh the users list
     } catch (error: any) {
       alert(error.message);
     }

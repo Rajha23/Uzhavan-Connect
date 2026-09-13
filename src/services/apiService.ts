@@ -597,5 +597,20 @@ export const apiService = {
       console.error('Admin reset password error:', err);
       throw err;
     }
+  },
+
+  async getAllUsers() {
+    if (isSupabaseConfigured) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*');
+        
+      if (error) {
+        console.error('Error fetching users:', error);
+        return [];
+      }
+      return data;
+    }
+    return [];
   }
 };
