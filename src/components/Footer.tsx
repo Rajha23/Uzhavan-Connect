@@ -1,9 +1,11 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Sprout, ShieldCheck } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { setActiveTab } = useApp();
+  const { t } = useLanguage();
 
   return (
     <footer className="bg-gradient-to-b from-[#01472e] via-[#013b26] to-[#002618] text-[#fefae0]/90 border-t border-[#a3b18a]/30 mt-20">
@@ -15,8 +17,12 @@ export const Footer: React.FC = () => {
               <Sprout className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs text-[#ccd5ae] font-medium uppercase tracking-wider">The Demand-First Philosophy</p>
-              <p className="text-sm text-white font-medium tracking-wide">"Don't wait for the market. Let the market tell the farmer what to grow."</p>
+              <p className="text-xs text-[#ccd5ae] font-medium uppercase tracking-wider">
+                {t('footer.philosophyTitle', undefined, 'The Demand-First Philosophy')}
+              </p>
+              <p className="text-sm text-white font-medium tracking-wide">
+                "{t('footer.philosophyQuote', undefined, "Don't wait for the market. Let the market tell the farmer what to grow.")}"
+              </p>
             </div>
           </div>
 

@@ -24,7 +24,7 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) => {
   const { login, registerUser, setActiveTab, intendedRegistrationRole } = useApp();
-  const { startPostRegistrationOnboarding } = useLanguage();
+  const { startPostRegistrationOnboarding, t } = useLanguage();
 
   const [mode, setMode] = useState<'LOGIN' | 'REGISTER'>(initialMode);
 
@@ -171,7 +171,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                   : 'text-slate-600 hover:text-[#01472e]'
               }`}
             >
-              Sign In
+              {t('auth.signIn', undefined, 'Sign In')}
             </button>
             <button
               type="button"
@@ -182,7 +182,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                   : 'text-slate-600 hover:text-[#01472e]'
               }`}
             >
-              Create Account
+              {t('auth.createAccount', undefined, 'Create Account')}
             </button>
           </div>
 
@@ -190,7 +190,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
             <div className="p-4 bg-[#eaf4ec] border border-[#a3b18a]/60 rounded-2xl mb-4 flex items-center gap-3 text-xs text-[#01472e] animate-in fade-in duration-200">
               <CheckCircle2 className="w-5 h-5 text-[#01472e] shrink-0" />
               <div>
-                <p className="font-bold text-[#01472e]">Account Created Successfully!</p>
+                <p className="font-bold text-[#01472e]">{t('common.success', undefined, 'Account Created Successfully!')}</p>
                 <p className="text-slate-600 font-normal">Connecting to Uzhavan Connect network and redirecting to console...</p>
               </div>
             </div>
@@ -206,10 +206,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
             <div>
               <div className="space-y-1 mb-5">
                 <h2 className="text-xl font-bold tracking-tight text-[#01472e]">
-                  Operational Access Portal
+                  {t('auth.welcomeTitle', undefined, 'Operational Access Portal')}
                 </h2>
                 <p className="text-xs text-slate-500 font-medium">
-                  "Don't wait for the market. Let the market tell the farmer what to grow."
+                  "{t('footer.philosophyQuote', undefined, "Don't wait for the market. Let the market tell the farmer what to grow.")}"
                 </p>
               </div>
 
@@ -217,8 +217,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
               <form onSubmit={handleManualLogin} className="space-y-4 text-xs">
                 <div>
                   <label className="font-bold text-slate-700 block mb-1.5">
-
-                    Select Role
+                    {t('auth.selectRole', undefined, 'Select Role')}
                   </label>
                   <select
                     value={loginRole}
@@ -236,7 +235,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
 
                 <div>
                   <label className="font-bold text-slate-700 block mb-1.5">
-                    Mobile Number / Registered Email
+                    {t('auth.mobileOrEmail', undefined, 'Mobile Number / Registered Email')}
                   </label>
 
                   <div className="relative">
@@ -254,9 +253,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="font-bold text-slate-700">Account Password</label>
+                    <label className="font-bold text-slate-700">{t('auth.password', undefined, 'Account Password')}</label>
                     <span className="text-[#01472e] hover:underline text-[11px] font-semibold cursor-pointer">
-                      Forgot Password?
+                      {t('auth.forgotPassword', undefined, 'Forgot Password?')}
                     </span>
                   </div>
                   <div className="relative">
@@ -278,7 +277,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                     disabled={isSubmitting}
                     className="w-full py-3 bg-[#01472e] hover:bg-[#025a3b] text-white font-semibold rounded-2xl shadow-md transition flex items-center justify-center gap-2 text-xs cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
                   >
-                    <span>{isSubmitting ? 'Authenticating...' : 'Login to Uzhavan Connect'}</span>
+                    <span>{isSubmitting ? t('common.loading', undefined, 'Authenticating...') : t('auth.loginButton', undefined, 'Login to Uzhavan Connect')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -288,7 +287,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
               <div className="mt-6 pt-5 border-t border-[#ccd5ae]/40">
                 <div className="flex items-center justify-between mb-2.5">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                    SIH Demo Quick-Logins (One-Click)
+                    {t('auth.quickDemoLogins', undefined, 'SIH Demo Quick-Logins (One-Click)')}
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-[11px]">
@@ -349,17 +348,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
             <div>
               <div className="space-y-1 mb-4">
                 <h2 className="text-xl font-bold tracking-tight text-[#01472e]">
-                  Create Verified Account
+                  {t('auth.createAccount', undefined, 'Create Verified Account')}
                 </h2>
                 <p className="text-xs text-slate-500 font-medium">
-                  Join India's demand-first agricultural supply chain ecosystem.
+                  {t('auth.registerPrompt', undefined, "Join India's demand-first agricultural supply chain ecosystem.")}
                 </p>
               </div>
 
               <form onSubmit={handleRegister} className="space-y-3.5 text-xs">
                 <div>
                   <label className="font-bold text-slate-700 block mb-1">
-                    Select Role (Public Registration)
+                    {t('auth.selectRole', undefined, 'Select Role (Public Registration)')}
                   </label>
                   <select
                     value={regRole}
@@ -379,7 +378,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">Full Name</label>
+                    <label className="font-bold text-slate-700 block mb-1">{t('auth.fullName', undefined, 'Full Name')}</label>
                     <input
                       type="text"
                       value={regName}
@@ -390,7 +389,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                     />
                   </div>
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">Mobile Number</label>
+                    <label className="font-bold text-slate-700 block mb-1">{t('profile.mobileContact', undefined, 'Mobile Number')}</label>
                     <div className="relative">
                       <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                       <input
@@ -410,7 +409,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">State</label>
+                    <label className="font-bold text-slate-700 block mb-1">{t('common.location', undefined, 'State')}</label>
                     <select
                       value={regState}
                       onChange={(e) => {
@@ -427,7 +426,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                     </select>
                   </div>
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">District</label>
+                    <label className="font-bold text-slate-700 block mb-1">{t('common.location', undefined, 'District')}</label>
                     <select
                       value={regDistrict}
                       onChange={(e) => setRegDistrict(e.target.value)}
@@ -445,21 +444,21 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">Email</label>
+                    <label className="font-bold text-slate-700 block mb-1">{t('common.email', undefined, 'Email')}</label>
                     <div className="relative">
                       <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                       <input
                         type="email"
                         value={regEmail}
                         onChange={(e) => setRegEmail(e.target.value)}
-                        placeholder="user@example.com"
+                        placeholder="e.g. shivani@email.com"
                         required
                         className="w-full bg-[#faf9f5] border border-[#ccd5ae] rounded-2xl pl-8 pr-2.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-[#01472e]"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">Password</label>
+                    <label className="font-bold text-slate-700 block mb-1">{t('auth.password', undefined, 'Password')}</label>
                     <div className="relative">
                       <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                       <input
@@ -482,7 +481,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                     className="w-full py-3 bg-[#01472e] hover:bg-[#025a3b] text-white font-semibold rounded-2xl shadow-md transition flex items-center justify-center gap-2 text-xs cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
                   >
                     <UserPlus className="w-4 h-4" />
-                    <span>{isSubmitting ? 'Creating Profile...' : 'Complete Registration'}</span>
+                    <span>{isSubmitting ? t('common.loading', undefined, 'Creating Profile...') : t('auth.completeRegistration', undefined, 'Complete Registration')}</span>
                   </button>
                 </div>
               </form>
@@ -493,22 +492,22 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
         <div className="pt-4 border-t border-[#ccd5ae]/40 flex items-center justify-between text-xs text-slate-500 font-medium">
           {mode === 'LOGIN' ? (
             <>
-              <span>New to Uzhavan Connect?</span>
+              <span>{t('auth.noAccount', undefined, "Don't have an account?")}</span>
               <button
                 onClick={() => setMode('REGISTER')}
                 className="text-[#01472e] font-bold hover:underline cursor-pointer"
               >
-                Create Account
+                {t('auth.createAccount', undefined, 'Create Account')}
               </button>
             </>
           ) : (
             <>
-              <span>Already registered?</span>
+              <span>{t('auth.haveAccount', undefined, 'Already have an operational account?')}</span>
               <button
                 onClick={() => setMode('LOGIN')}
                 className="text-[#01472e] font-bold hover:underline cursor-pointer"
               >
-                Continue to Sign In
+                {t('auth.signIn', undefined, 'Continue to Sign In')}
               </button>
             </>
           )}
@@ -517,4 +516,5 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
     </div>
   );
 };
+
 

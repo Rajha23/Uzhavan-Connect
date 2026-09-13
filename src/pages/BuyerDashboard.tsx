@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import { INITIAL_DEMAND_REQUESTS, SMART_MATCH_SUPPLIERS } from '../data/mockData';
 import { DemandRequest, WorkflowOrder, BuyerDeliveryConfirmation } from '../types';
 import {
@@ -28,6 +29,7 @@ import { AiInsightCard } from '../components/AiInsightCard';
 import confetti from 'canvas-confetti';
 
 export const BuyerDashboard: React.FC = () => {
+  const { t } = useLanguage();
   const {
     currentUser,
     setActiveTab,
@@ -162,16 +164,16 @@ export const BuyerDashboard: React.FC = () => {
         <div className="relative z-10">
           <div className="flex items-center gap-2 text-[#ccd5ae] text-xs font-semibold uppercase tracking-wider mb-2">
             <ShoppingBag className="w-4 h-4" />
-            <span>Institutional Procurement Hub</span>
+            <span>{t('buyer.institutionalProcurementHub', 'Institutional Procurement Hub')}</span>
             <span className="bg-[#e9edc9]/20 text-[#fefae0] text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-[#e9edc9]/30">
-              Demand Aggregation Active
+              {t('buyer.demandAggregationActive', 'Demand Aggregation Active')}
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
-            Buyer Dashboard
+            {t('buyer.buyerDashboard', 'Buyer Dashboard')}
           </h1>
           <p className="text-sm text-white/80 mt-2 font-normal">
-            {currentUser.organization || 'Uzhavan Institutional Network'} • Real-Time Forward Demand & Procurement Pipeline
+            {currentUser.organization || 'Uzhavan Institutional Network'} • {t('buyer.buyerSubtitle', 'Real-Time Forward Demand & Procurement Pipeline')}
           </p>
         </div>
 
@@ -181,7 +183,7 @@ export const BuyerDashboard: React.FC = () => {
             className="flex items-center gap-2 bg-[#e9edc9] hover:bg-[#fefae0] text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-sm transition tracking-wide"
           >
             <Plus className="w-4 h-4" />
-            <span>Create Demand</span>
+            <span>{t('buyer.createDemand', 'Create Demand')}</span>
           </button>
 
           <button
@@ -189,7 +191,7 @@ export const BuyerDashboard: React.FC = () => {
             className="flex items-center gap-2 bg-white/10 hover:bg-white/15 text-white text-xs font-medium px-5 py-3 rounded-2xl border border-white/20 transition tracking-wide backdrop-blur-sm"
           >
             <Layers className="w-4 h-4 text-[#ccd5ae]" />
-            <span>Demand Pool</span>
+            <span>{t('buyer.demandPool', 'Demand Pool')}</span>
           </button>
         </div>
       </div>
@@ -213,27 +215,27 @@ export const BuyerDashboard: React.FC = () => {
       {/* Procurement Metrics Overview Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="agri-card p-6 rounded-[28px] border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-300">
-          <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-1.5">Active Demands</span>
+          <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-1.5">{t('buyer.activeDemands', 'Active Demands')}</span>
           <p className="text-3xl font-semibold tracking-tight text-[#01472e]">{demands.length}</p>
-          <span className="text-xs text-[#01472e]/70 font-medium mt-1 block">Across {activeCropsCount} Commodities</span>
+          <span className="text-xs text-[#01472e]/70 font-medium mt-1 block">{t('buyer.acrossCommodities', 'Across {count} Commodities', { count: activeCropsCount })}</span>
         </div>
 
         <div className="agri-card p-6 rounded-[28px] border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-300">
-          <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-1.5">Unmet Target Volume</span>
+          <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-1.5">{t('buyer.unmetTargetVolume', 'Unmet Target Volume')}</span>
           <p className="text-3xl font-semibold tracking-tight text-[#01472e]">{totalDemandVolumeKg.toLocaleString()} <span className="text-sm font-normal text-[#01472e]/60">kg</span></p>
-          <span className="text-xs text-[#01472e] font-semibold mt-1 block">Open for Allocation</span>
+          <span className="text-xs text-[#01472e] font-semibold mt-1 block">{t('buyer.openForAllocation', 'Open for Allocation')}</span>
         </div>
 
         <div className="agri-card p-6 rounded-[28px] border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-300">
-          <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-1.5">Allocated Volume</span>
+          <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-1.5">{t('buyer.allocatedVolume', 'Allocated Volume')}</span>
           <p className="text-3xl font-semibold tracking-tight text-[#01472e]">{totalAllocatedVolumeKg.toLocaleString()} <span className="text-sm font-normal text-[#01472e]/60">kg</span></p>
-          <span className="text-xs text-[#01472e]/70 font-medium mt-1 block">Under Contract</span>
+          <span className="text-xs text-[#01472e]/70 font-medium mt-1 block">{t('buyer.underContract', 'Under Contract')}</span>
         </div>
 
         <div className="agri-card p-6 rounded-[28px] border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-300">
-          <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-1.5">Aggregation Ready</span>
+          <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-1.5">{t('buyer.aggregationReady', 'Aggregation Ready')}</span>
           <p className="text-3xl font-semibold tracking-tight text-[#01472e]">100%</p>
-          <span className="text-xs text-[#01472e] font-semibold uppercase tracking-wider mt-1 block">Coordinated Logistics</span>
+          <span className="text-xs text-[#01472e] font-semibold uppercase tracking-wider mt-1 block">{t('buyer.coordinatedLogistics', 'Coordinated Logistics')}</span>
         </div>
       </div>
 
@@ -242,9 +244,9 @@ export const BuyerDashboard: React.FC = () => {
         <div className="p-6 sm:p-8 border-b border-[#ccd5ae]/30 bg-gradient-to-r from-white via-[#fefae0]/20 to-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#01472e]">
-              Active Institutional Demands
+              {t('buyer.activeInstitutionalDemands', 'Active Institutional Demands')}
             </h3>
-            <p className="text-xs text-[#01472e]/70 mt-1 font-normal">Forward procurement commitments ready for multi-buyer aggregation and farmer matching</p>
+            <p className="text-xs text-[#01472e]/70 mt-1 font-normal">{t('buyer.activeDemandsSubtitle', 'Forward procurement commitments ready for multi-buyer aggregation and farmer matching')}</p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -253,13 +255,13 @@ export const BuyerDashboard: React.FC = () => {
               className="btn-primary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-2 shadow-sm"
             >
               <Sparkles className="w-4 h-4 text-[#ccd5ae]" />
-              <span>Launch Smart Matching</span>
+              <span>{t('buyer.launchSmartMatching', 'Launch Smart Matching')}</span>
             </button>
             <button
               onClick={() => setActiveTab('reverse-auction')}
               className="btn-secondary text-xs py-2.5 px-5 rounded-2xl"
             >
-              Open Reverse Auction →
+              {t('buyer.openReverseAuction', 'Open Reverse Auction →')}
             </button>
           </div>
         </div>
@@ -268,15 +270,15 @@ export const BuyerDashboard: React.FC = () => {
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-[#fefae0]/50 border-b border-[#ccd5ae]/40 text-[#01472e]/70 font-semibold uppercase text-[11px] tracking-wider">
-                <th className="p-4 sm:px-6">Demand ID</th>
-                <th className="p-4">Buyer Entity</th>
-                <th className="p-4">Crop & Variety</th>
-                <th className="p-4">Target Qty</th>
-                <th className="p-4">Quality</th>
-                <th className="p-4">Delivery Corridor</th>
-                <th className="p-4">Ceiling Price</th>
-                <th className="p-4">Status</th>
-                <th className="p-4 sm:pr-6 text-right">Actions</th>
+                <th className="p-4 sm:px-6">{t('buyer.demandId', 'Demand ID')}</th>
+                <th className="p-4">{t('buyer.buyerEntity', 'Buyer Entity')}</th>
+                <th className="p-4">{t('buyer.cropVariety', 'Crop & Variety')}</th>
+                <th className="p-4">{t('buyer.targetQty', 'Target Qty')}</th>
+                <th className="p-4">{t('buyer.quality', 'Quality')}</th>
+                <th className="p-4">{t('buyer.deliveryCorridor', 'Delivery Corridor')}</th>
+                <th className="p-4">{t('buyer.ceilingPrice', 'Ceiling Price')}</th>
+                <th className="p-4">{t('buyer.status', 'Status')}</th>
+                <th className="p-4 sm:pr-6 text-right">{t('common.actions', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#ccd5ae]/20">
@@ -387,22 +389,22 @@ export const BuyerDashboard: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 text-[#01472e] text-xs font-semibold uppercase tracking-wider mb-1">
               <Truck className="w-4 h-4 text-[#01472e]" />
-              <span>Inbound Logistics & Receiving Bay</span>
+              <span>{t('buyer.inboundLogistics', 'Inbound Logistics & Receiving Bay')}</span>
             </div>
             <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#01472e]">
-              Active Procurement Shipments & Gate Receiving
+              {t('buyer.activeShipments', 'Active Procurement Shipments & Gate Receiving')}
             </h3>
             <p className="text-xs text-[#01472e]/70 font-normal mt-0.5">
-              Live traceability from FPO farm collections, quality inspection, cold-chain transit to dock receipt
+              {t('buyer.shipmentsSubtitle', 'Live traceability from FPO farm collections, quality inspection, cold-chain transit to dock receipt')}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-[#01472e] bg-[#e9edc9]/40 border border-[#ccd5ae]/50 px-3.5 py-1.5 rounded-xl">
-              {orders.length} Total Orders
+              {t('buyer.totalOrders', '{count} Total Orders', { count: orders.length })}
             </span>
             <span className="text-xs font-semibold text-[#01472e] bg-[#eaf4ec] px-3.5 py-1.5 rounded-xl border border-[#a3b18a]/40">
-              {orders.filter(o => o.status === 'Delivered' || o.transportStatus === 'Delivered').length} Arrived at Dock
+              {t('buyer.arrivedAtDock', '{count} Arrived at Dock', { count: orders.filter(o => o.status === 'Delivered' || o.transportStatus === 'Delivered').length })}
             </span>
           </div>
         </div>
@@ -410,8 +412,8 @@ export const BuyerDashboard: React.FC = () => {
         {orders.length === 0 ? (
           <div className="p-12 text-center text-[#01472e]/40">
             <Truck className="w-12 h-12 mx-auto mb-3 opacity-30 text-[#01472e]" />
-            <p className="font-semibold text-[#01472e] text-base">No active procurement shipments yet</p>
-            <p className="text-xs mt-1 text-[#01472e]/60">Execute Smart Matching on forward demands to create fulfillment orders.</p>
+            <p className="font-semibold text-[#01472e] text-base">{t('buyer.noShipments', 'No active procurement shipments yet')}</p>
+            <p className="text-xs mt-1 text-[#01472e]/60">{t('buyer.executeSmartMatchingHint', 'Execute Smart Matching on forward demands to create fulfillment orders.')}</p>
           </div>
         ) : (
           <div className="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -439,7 +441,7 @@ export const BuyerDashboard: React.FC = () => {
                         {order.crop} <span className="text-xs font-normal text-[#01472e]/60">({order.variety || 'Hybrid'})</span>
                       </h4>
                       <p className="text-xs text-[#01472e]/70 mt-0.5">
-                        Origin: <strong className="text-[#01472e] font-semibold">{order.fpoName || 'GreenHarvest FPO'}</strong> ({order.farmerLocation})
+                        {t('buyer.origin', 'Origin')}: <strong className="text-[#01472e] font-semibold">{order.fpoName || 'GreenHarvest FPO'}</strong> ({order.farmerLocation})
                       </p>
                     </div>
 
@@ -471,7 +473,7 @@ export const BuyerDashboard: React.FC = () => {
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-semibold text-[#01472e] flex items-center gap-1.5">
                         <Building2 className="w-3.5 h-3.5 text-[#a3b18a]" />
-                        <span>Farm Consolidation ({farmerCount} Member Farmer{farmerCount > 1 ? 's' : ''})</span>
+                        <span>{t('buyer.farmConsolidation', 'Farm Consolidation ({count} Member Farmer{s})', { count: farmerCount, s: farmerCount > 1 ? 's' : '' })}</span>
                       </span>
                       <span className="font-mono text-[#01472e] font-semibold text-[11px]">
                         {collectedKg.toLocaleString()} / {order.quantityKg.toLocaleString()} kg ({percentCollected}%)
@@ -502,7 +504,7 @@ export const BuyerDashboard: React.FC = () => {
                   {/* Quality & Packing Highlights */}
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="bg-white/70 p-3.5 rounded-2xl border border-[#ccd5ae]/30">
-                      <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-0.5">Quality Signoff</span>
+                      <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-0.5">{t('buyer.qualitySignoff', 'Quality Signoff')}</span>
                       {order.inspectionMetrics ? (
                         <div className="space-y-0.5 text-[#01472e]">
                           <p className="font-semibold text-[#01472e]">{order.qualityGrade || 'Grade A'} Certified</p>
@@ -512,12 +514,12 @@ export const BuyerDashboard: React.FC = () => {
                           )}
                         </div>
                       ) : (
-                        <p className="text-[11px] text-[#01472e]/40 italic">Inspection pending at hub</p>
+                        <p className="text-[11px] text-[#01472e]/40 italic">{t('buyer.inspectionPending', 'Inspection pending at hub')}</p>
                       )}
                     </div>
 
                     <div className="bg-white/70 p-3.5 rounded-2xl border border-[#ccd5ae]/30">
-                      <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-0.5">Packing & Crates</span>
+                      <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-0.5">{t('buyer.packingAndCrates', 'Packing & Crates')}</span>
                       {order.packingStatus === 'Packed' ? (
                         <div className="space-y-0.5 text-[#01472e]">
                           <p className="font-semibold text-[#01472e]">{order.crateCount || Math.ceil((order.packedQuantityKg || order.quantityKg) / 25)} Crates Packed</p>
@@ -525,7 +527,7 @@ export const BuyerDashboard: React.FC = () => {
                           <span className="text-[10px] font-mono text-[#01472e]/50">QR: {order.batchId}</span>
                         </div>
                       ) : (
-                        <p className="text-[11px] text-[#01472e]/40 italic">Packing in queue</p>
+                        <p className="text-[11px] text-[#01472e]/40 italic">{t('buyer.packingInQueue', 'Packing in queue')}</p>
                       )}
                     </div>
                   </div>
@@ -555,7 +557,7 @@ export const BuyerDashboard: React.FC = () => {
                       className="text-xs font-semibold text-[#01472e] hover:text-[#025a3b] flex items-center gap-1.5 transition"
                     >
                       <QrCode className="w-4 h-4 text-[#01472e]" />
-                      <span>Produce Passport</span>
+                      <span>{t('buyer.producePassport', 'Produce Passport')}</span>
                     </button>
 
                     <div className="flex items-center gap-2">
@@ -565,7 +567,7 @@ export const BuyerDashboard: React.FC = () => {
                           className="flex items-center gap-1.5 px-4 py-2 bg-[#01472e] hover:bg-[#025a3b] text-white font-semibold text-xs rounded-xl transition shadow-sm animate-pulse"
                         >
                           <FileCheck2 className="w-3.5 h-3.5" />
-                          <span>Inspect & Confirm Delivery</span>
+                          <span>{t('buyer.inspectConfirm', 'Inspect & Confirm Delivery')}</span>
                         </button>
                       )}
 
@@ -573,20 +575,20 @@ export const BuyerDashboard: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <span className="text-[11px] font-semibold text-[#01472e] bg-[#eaf4ec] border border-[#a3b18a]/40 px-3 py-1 rounded-xl flex items-center gap-1">
                             <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e]" />
-                            <span>Receipt Confirmed ({order.buyerConfirmation?.acceptedQuantityKg || order.quantityKg} kg)</span>
+                            <span>{t('buyer.receiptConfirmedWithQty', 'Receipt Confirmed ({count} kg)', { count: order.buyerConfirmation?.acceptedQuantityKg || order.quantityKg })}</span>
                           </span>
                           <button
                             onClick={() => setActiveTab('settlement')}
                             className="px-3 py-1 bg-[#01472e] hover:bg-[#025a3b] text-white text-[11px] font-semibold rounded-xl transition"
                           >
-                            Escrow →
+                            {t('buyer.escrowBtn', 'Escrow →')}
                           </button>
                         </div>
                       )}
 
                       {!isDelivered && !isBuyerConfirmed && (
                         <span className="text-xs text-[#01472e]/50 font-normal italic">
-                          Awaiting dock delivery
+                          {t('buyer.awaitingDockDelivery', 'Awaiting dock delivery')}
                         </span>
                       )}
                     </div>
@@ -609,10 +611,10 @@ export const BuyerDashboard: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#01472e]">
-                    Create Forward Demand Request
+                    {t('buyer.createForwardDemand', 'Create Forward Demand Request')}
                   </h3>
                   <p className="text-xs text-[#01472e]/70 font-normal">
-                    Register institutional procurement specifications for pooling and smart farmer matching.
+                    {t('buyer.createDemandModalSubtitle', 'Register institutional procurement specifications for pooling and smart farmer matching.')}
                   </p>
                 </div>
               </div>
@@ -627,7 +629,7 @@ export const BuyerDashboard: React.FC = () => {
             <form onSubmit={handleCreateDemand} className="space-y-4 text-xs">
               {/* Buyer Entity Representation */}
               <div>
-                <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">Buyer Entity Name</label>
+                <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">{t('buyer.buyerEntityName', 'Buyer Entity Name')}</label>
                 <input
                   type="text"
                   value={buyerName}
@@ -641,7 +643,7 @@ export const BuyerDashboard: React.FC = () => {
               {/* Crop Commodity & Variety */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">Crop Commodity</label>
+                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">{t('buyer.cropCommodity', 'Crop Commodity')}</label>
                   <select
                     value={crop}
                     onChange={(e) => {
@@ -664,7 +666,7 @@ export const BuyerDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">Variety / Cultivar</label>
+                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">{t('buyer.varietyCultivar', 'Variety / Cultivar')}</label>
                   <input
                     type="text"
                     value={variety}
@@ -679,7 +681,7 @@ export const BuyerDashboard: React.FC = () => {
               {/* Target Quantity & Unit */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">Target Quantity</label>
+                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">{t('buyer.targetQuantity', 'Target Quantity')}</label>
                   <input
                     type="number"
                     value={rawQuantity}
@@ -692,7 +694,7 @@ export const BuyerDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">Measurement Unit</label>
+                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">{t('buyer.measurementUnit', 'Measurement Unit')}</label>
                   <select
                     value={unit}
                     onChange={(e) => setUnit(e.target.value as any)}
@@ -709,7 +711,7 @@ export const BuyerDashboard: React.FC = () => {
               {/* Converted kg preview */}
               {unit !== 'kg' && (
                 <div className="p-3.5 bg-[#eaf4ec] border border-[#a3b18a]/40 rounded-2xl flex items-center justify-between text-xs text-[#01472e] font-semibold">
-                  <span>Standardized Agricultural Volume:</span>
+                  <span>{t('buyer.standardizedVolume', 'Standardized Agricultural Volume:')}</span>
                   <span className="font-mono text-sm font-semibold">{calculatedKg.toLocaleString()} kg</span>
                 </div>
               )}
@@ -717,7 +719,7 @@ export const BuyerDashboard: React.FC = () => {
               {/* Quality & Ceiling Price */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">Quality Grade Requirement</label>
+                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">{t('buyer.qualityRequirement', 'Quality Grade Requirement')}</label>
                   <select
                     value={quality}
                     onChange={(e) => setQuality(e.target.value as any)}
@@ -732,7 +734,7 @@ export const BuyerDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">Max Ceiling Price (₹/kg)</label>
+                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">{t('buyer.maxCeilingPrice', 'Max Ceiling Price (₹/kg)')}</label>
                   <input
                     type="number"
                     value={maxPrice}
@@ -747,7 +749,7 @@ export const BuyerDashboard: React.FC = () => {
 
               {/* Delivery Hub Location */}
               <div>
-                <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">Delivery Destination Hub / Corridor</label>
+                <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">{t('buyer.deliveryLocation', 'Delivery Destination Hub / Corridor')}</label>
                 <input
                   type="text"
                   value={location}
@@ -761,7 +763,7 @@ export const BuyerDashboard: React.FC = () => {
               {/* Delivery Date & Time Window */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">Required Delivery Date</label>
+                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">{t('buyer.requiredDeliveryDate', 'Required Delivery Date')}</label>
                   <input
                     type="date"
                     value={deliveryDate}
@@ -772,7 +774,7 @@ export const BuyerDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">Delivery Time Window</label>
+                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[11px]">{t('buyer.deliveryTimeWindow', 'Delivery Time Window')}</label>
                   <input
                     type="text"
                     value={deliveryWindow}
@@ -785,7 +787,7 @@ export const BuyerDashboard: React.FC = () => {
               </div>
 
               <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 text-xs text-[#01472e]/80 leading-relaxed font-normal">
-                ⚡ <strong className="text-[#01472e] font-semibold">Connected Lifecycle Integration:</strong> Once created, this demand is instantly persisted in shared storage, eligible for multi-buyer aggregation in the Demand Pool, and ranked in real-time by the Smart Matching Engine.
+                ⚡ <strong className="text-[#01472e] font-semibold">{t('buyer.connectedLifecycle', 'Connected Lifecycle Integration:')}</strong> {t('buyer.connectedLifecycleDesc', 'Once created, this demand is instantly persisted in shared storage, eligible for multi-buyer aggregation in the Demand Pool, and ranked in real-time by the Smart Matching Engine.')}
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#ccd5ae]/30">
@@ -794,13 +796,13 @@ export const BuyerDashboard: React.FC = () => {
                   onClick={() => setIsModalOpen(false)}
                   className="px-5 py-2.5 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-2xl font-semibold transition"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="btn-primary py-3 px-6 rounded-2xl"
                 >
-                  Create Demand Request
+                  {t('buyer.createDemandBtn', 'Create Demand Request')}
                 </button>
               </div>
             </form>
@@ -819,10 +821,10 @@ export const BuyerDashboard: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#01472e]">
-                    Dockside Produce Inspection & Receiving Handover
+                    {t('buyer.docksideInspectionTitle', 'Dockside Produce Inspection & Receiving Handover')}
                   </h3>
                   <p className="text-xs text-[#01472e]/70 font-normal">
-                    Order <span className="font-mono font-semibold text-[#01472e]">{deliveryReceiptOrder.id}</span> • Batch <span className="font-mono font-semibold text-[#01472e]">{deliveryReceiptOrder.batchId}</span>
+                    {t('buyer.order', 'Order')} <span className="font-mono font-semibold text-[#01472e]">{deliveryReceiptOrder.id}</span> • {t('buyer.batch', 'Batch')} <span className="font-mono font-semibold text-[#01472e]">{deliveryReceiptOrder.batchId}</span>
                   </p>
                 </div>
               </div>
@@ -837,12 +839,12 @@ export const BuyerDashboard: React.FC = () => {
             {/* Shipment Summary Strip */}
             <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
               <div>
-                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">Produce</span>
+                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.produce', 'Produce')}</span>
                 <strong className="text-[#01472e] text-sm font-semibold">{deliveryReceiptOrder.crop}</strong>
                 <span className="text-[11px] text-[#01472e]/70 block">({deliveryReceiptOrder.variety})</span>
               </div>
               <div>
-                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">Delivered Volume</span>
+                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.deliveredVolume', 'Delivered Volume')}</span>
                 <strong className="text-[#01472e] text-sm font-semibold">
                   {(deliveryReceiptOrder.packedQuantityKg || deliveryReceiptOrder.quantityKg).toLocaleString()} kg
                 </strong>
@@ -851,12 +853,12 @@ export const BuyerDashboard: React.FC = () => {
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">Contract Rate</span>
+                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.contractRate', 'Contract Rate')}</span>
                 <strong className="text-[#01472e] text-sm font-semibold">₹{deliveryReceiptOrder.pricePerKg}/kg</strong>
                 <span className="text-[11px] text-[#01472e]/70 block">Grade {deliveryReceiptOrder.qualityGrade || 'A'}</span>
               </div>
               <div>
-                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">Inbound Carrier</span>
+                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.inboundCarrier', 'Inbound Carrier')}</span>
                 <strong className="text-[#01472e] text-xs truncate block font-semibold">
                   {deliveryReceiptOrder.transportDetails?.carrierName || 'Cold-Chain Express'}
                 </strong>
@@ -871,7 +873,7 @@ export const BuyerDashboard: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1 text-[10px]">
-                    Gross Received (kg)
+                    {t('buyer.grossReceived', 'Gross Received (kg)')}
                   </label>
                   <input
                     type="number"
@@ -888,7 +890,7 @@ export const BuyerDashboard: React.FC = () => {
 
                 <div>
                   <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1 text-[10px]">
-                    Accepted Volume (kg)
+                    {t('buyer.acceptedVolume', 'Accepted Volume (kg)')}
                   </label>
                   <input
                     type="number"
@@ -908,7 +910,7 @@ export const BuyerDashboard: React.FC = () => {
 
                 <div>
                   <label className="font-semibold text-rose-800 uppercase tracking-wider block mb-1 text-[10px]">
-                    Rejected / Damaged (kg)
+                    {t('buyer.rejectedDamaged', 'Rejected / Damaged (kg)')}
                   </label>
                   <input
                     type="number"
@@ -929,24 +931,24 @@ export const BuyerDashboard: React.FC = () => {
               {/* Acceptance Status Decision */}
               <div>
                 <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[10px]">
-                  Quality Gate Signoff Decision
+                  {t('buyer.qualityDecision', 'Quality Gate Signoff Decision')}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {[
                     {
                       id: 'ACCEPTED_FULL',
-                      label: 'Full Acceptance (100%)',
-                      desc: 'Produce conforms to Grade A standard'
+                      label: t('buyer.fullAcceptance', 'Full Acceptance (100%)'),
+                      desc: t('buyer.fullAcceptanceDesc', 'Produce conforms to Grade A standard')
                     },
                     {
                       id: 'ACCEPTED_PARTIAL',
-                      label: 'Partial Acceptance',
-                      desc: 'Deduct non-conforming crates'
+                      label: t('buyer.partialAcceptance', 'Partial Acceptance'),
+                      desc: t('buyer.partialAcceptanceDesc', 'Deduct non-conforming crates')
                     },
                     {
                       id: 'REJECTED',
-                      label: 'Consignment Rejected',
-                      desc: 'Quality failure or critical damage'
+                      label: t('buyer.consignmentRejected', 'Consignment Rejected'),
+                      desc: t('buyer.consignmentRejectedDesc', 'Quality failure or critical damage')
                     }
                   ].map((opt) => (
                     <button
@@ -983,7 +985,7 @@ export const BuyerDashboard: React.FC = () => {
               {/* Issues Reported / Receiving Remarks */}
               <div>
                 <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1 text-[10px]">
-                  Receiving Inspection Remarks & Observations
+                  {t('buyer.inspectionRemarks', 'Receiving Inspection Remarks & Observations')}
                 </label>
                 <textarea
                   value={issuesReported}
@@ -1015,7 +1017,7 @@ export const BuyerDashboard: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1 text-[10px]">
-                    Receiving Officer Name
+                    {t('buyer.receivingOfficer', 'Receiving Officer Name')}
                   </label>
                   <input
                     type="text"
@@ -1028,7 +1030,7 @@ export const BuyerDashboard: React.FC = () => {
 
                 <div>
                   <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1 text-[10px]">
-                    Officer Designation / Role
+                    {t('buyer.officerRole', 'Officer Designation / Role')}
                   </label>
                   <input
                     type="text"
@@ -1044,7 +1046,7 @@ export const BuyerDashboard: React.FC = () => {
               <div className="p-4 bg-[#eaf4ec] rounded-2xl border border-[#a3b18a]/40 text-xs text-[#01472e] space-y-1">
                 <div className="flex items-center gap-2 font-semibold text-[#01472e]">
                   <ShieldCheck className="w-4 h-4 text-[#01472e]" />
-                  <span>Transparent Escrow Payout Impact</span>
+                  <span>{t('buyer.escrowImpact', 'Transparent Escrow Payout Impact')}</span>
                 </div>
                 <p className="text-[11px] leading-relaxed text-[#01472e]/80">
                   Signing this receipt locks final accepted volume at <strong>{acceptedKg.toLocaleString()} kg</strong> (₹{(acceptedKg * deliveryReceiptOrder.pricePerKg).toLocaleString()} total value).
@@ -1059,14 +1061,14 @@ export const BuyerDashboard: React.FC = () => {
                   onClick={() => setDeliveryReceiptOrder(null)}
                   className="px-5 py-2.5 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-2xl font-semibold transition"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="btn-primary py-3 px-6 rounded-2xl flex items-center gap-2"
                 >
                   <FileCheck2 className="w-4 h-4" />
-                  <span>Confirm Receipt & Release Escrow Queue</span>
+                  <span>{t('buyer.confirmReceiptBtn', 'Confirm Receipt & Release Escrow Queue')}</span>
                 </button>
               </div>
             </form>

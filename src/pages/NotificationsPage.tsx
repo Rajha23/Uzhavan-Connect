@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { AppNotification, NotificationCategory, NotificationPriority } from '../types';
 import { ROLE_DISPLAY_LABELS, ROLE_BADGE_STYLES } from '../services/routeGuard';
+import { useLanguage } from '../context/LanguageContext';
 
 export const NotificationsPage: React.FC = () => {
   const {
@@ -36,6 +37,8 @@ export const NotificationsPage: React.FC = () => {
     currentUser,
     setActiveTab
   } = useApp();
+
+  const { t } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
@@ -62,30 +65,30 @@ export const NotificationsPage: React.FC = () => {
   // Filter categories based on role
   const categoryTabs = useMemo(() => {
     const tabs = [
-      { id: 'ALL', label: 'All Alerts' },
-      { id: 'UNREAD', label: `Unread (${stats.unread})` },
-      { id: 'ACTION_REQUIRED', label: `Action Required (${stats.actionRequired})` }
+      { id: 'ALL', label: t('notifications.allAlerts', 'All Alerts') },
+      { id: 'UNREAD', label: `${t('notifications.unreadOnly', 'Unread')} (${stats.unread})` },
+      { id: 'ACTION_REQUIRED', label: `${t('notifications.actionRequired', 'Action Required')} (${stats.actionRequired})` }
     ];
 
     if (currentRole === 'FARMER' || currentRole === 'FPO_AGGREGATOR') {
-      tabs.push({ id: 'CROPS', label: 'Crops & Harvest' });
+      tabs.push({ id: 'CROPS', label: t('nav.myCrops', 'Crops & Harvest') });
     }
-    tabs.push({ id: 'ORDERS', label: 'Orders' });
-    tabs.push({ id: 'MARKET_DEMAND', label: 'Market & Demand' });
-    tabs.push({ id: 'LOGISTICS', label: 'Logistics & Fleet' });
-    tabs.push({ id: 'SETTLEMENT', label: 'Settlement & Escrow' });
-    tabs.push({ id: 'TRACEABILITY', label: 'Traceability & QR' });
+    tabs.push({ id: 'ORDERS', label: t('nav.orders', 'Orders') });
+    tabs.push({ id: 'MARKET_DEMAND', label: t('nav.demandSignals', 'Market & Demand') });
+    tabs.push({ id: 'LOGISTICS', label: t('nav.logistics', 'Logistics & Fleet') });
+    tabs.push({ id: 'SETTLEMENT', label: t('nav.settlement', 'Settlement & Escrow') });
+    tabs.push({ id: 'TRACEABILITY', label: t('nav.traceability', 'Traceability & QR') });
 
     if (currentRole === 'FARMER') {
-      tabs.push({ id: 'ADVISORY', label: 'AI Advisory' });
+      tabs.push({ id: 'ADVISORY', label: t('ai.agronomistMentor', 'AI Advisory') });
     }
 
     if (currentRole === 'ADMIN') {
-      tabs.push({ id: 'SYSTEM', label: 'System & Governance' });
+      tabs.push({ id: 'SYSTEM', label: t('nav.systemMonitoring', 'System & Governance') });
     }
 
     return tabs;
-  }, [currentRole, stats]);
+  }, [currentRole, stats, t]);
 
   // Filtered alerts list
   const filteredNotifications = useMemo(() => {
@@ -158,21 +161,21 @@ export const NotificationsPage: React.FC = () => {
         return (
           <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-rose-50 text-rose-800 border border-rose-200 uppercase tracking-wider shadow-2xs">
             <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse" />
-            Urgent Action
+            {t('notifications.urgentBadge', 'Urgent Action')}
           </span>
         );
       case 'WARNING':
         return (
           <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-200 uppercase tracking-wider shadow-2xs">
             <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-            Action Required
+            {t('notifications.warningBadge', 'Action Required')}
           </span>
         );
       case 'SUCCESS':
         return (
           <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200 uppercase tracking-wider shadow-2xs">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            Completed
+            {t('notifications.successBadge', 'Completed')}
           </span>
         );
       case 'INFO':
@@ -180,7 +183,7 @@ export const NotificationsPage: React.FC = () => {
         return (
           <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40 uppercase tracking-wider shadow-2xs">
             <Info className="w-3.5 h-3.5 text-[#01472e]" />
-            Information
+            {t('notifications.infoBadge', 'Information')}
           </span>
         );
     }
@@ -194,21 +197,21 @@ export const NotificationsPage: React.FC = () => {
           <div className="space-y-2 max-w-2xl">
             <div className="flex items-center gap-2.5 flex-wrap">
               <span className="text-[11px] font-bold text-[#01472e] uppercase tracking-wider bg-[#eaf4ec] px-3 py-1 rounded-full border border-[#a3b18a]/40">
-                Operational Intelligence
+                {t('notifications.tag', 'Operational Intelligence')}
               </span>
               <div
                 className={`flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-medium border ${badgeStyle.bg} ${badgeStyle.border} ${badgeStyle.text}`}
               >
                 <span className={`w-2 h-2 rounded-full ${badgeStyle.dot} animate-pulse`} />
-                <span>{displayRole} Session</span>
+                <span>{t('roles.' + currentRole, displayRole)}</span>
               </div>
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#01472e] tracking-tight">
-              Notifications & Operational Alerts
+              {t('notifications.title', 'Notifications & Operational Alerts')}
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-              Real-time agricultural supply chain events, harvest windows, cold-chain dispatches, and programmable escrow settlements tailored to your authorized operational workflow.
+              {t('notifications.subtitle', 'Real-time agricultural supply chain events, harvest windows, cold-chain dispatches, and programmable escrow settlements tailored to your authorized operational workflow.')}
             </p>
           </div>
 
@@ -220,7 +223,7 @@ export const NotificationsPage: React.FC = () => {
                 className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white hover:bg-[#faf9f5] text-[#01472e] border border-[#ccd5ae] font-semibold text-xs shadow-2xs hover:shadow-xs transition cursor-pointer"
               >
                 <CheckCheck className="w-4 h-4 text-[#01472e]" />
-                <span>Mark All Read ({unreadNotificationsCount})</span>
+                <span>{t('notifications.markAllRead', 'Mark All Read')} ({unreadNotificationsCount})</span>
               </button>
             )}
 
@@ -230,7 +233,7 @@ export const NotificationsPage: React.FC = () => {
               className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#01472e] hover:bg-[#025a3b] text-white font-semibold text-xs shadow-soft transition cursor-pointer"
             >
               <Settings className="w-4 h-4 text-[#e9edc9]" />
-              <span>Configure Preferences</span>
+              <span>{t('notifications.preferences', 'Configure Preferences')}</span>
             </button>
           </div>
         </div>
@@ -239,41 +242,37 @@ export const NotificationsPage: React.FC = () => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-6 mt-6 border-t border-[#ccd5ae]/40">
           <div className="p-4 bg-white/90 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
             <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">
-              Total Alerts
+              {t('notifications.kpiTotal', 'Total Alerts')}
             </span>
             <div className="flex items-baseline gap-1.5">
               <strong className="text-xl font-bold text-[#01472e]">{stats.total}</strong>
-              <span className="text-[11px] text-slate-500">records</span>
             </div>
           </div>
 
           <div className="p-4 bg-white/90 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
             <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">
-              Unread
+              {t('notifications.kpiUnread', 'Unread')}
             </span>
             <div className="flex items-baseline gap-1.5">
               <strong className="text-xl font-bold text-amber-700">{stats.unread}</strong>
-              <span className="text-[11px] text-slate-500">pending view</span>
             </div>
           </div>
 
           <div className="p-4 bg-white/90 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
             <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">
-              Action Required
+              {t('notifications.kpiAction', 'Action Required')}
             </span>
             <div className="flex items-baseline gap-1.5">
               <strong className="text-xl font-bold text-rose-700">{stats.actionRequired}</strong>
-              <span className="text-[11px] text-slate-500">urgent / warning</span>
             </div>
           </div>
 
           <div className="p-4 bg-white/90 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
             <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">
-              Completed Events
+              {t('notifications.kpiSettled', 'Completed Events')}
             </span>
             <div className="flex items-baseline gap-1.5">
               <strong className="text-xl font-bold text-emerald-800">{stats.success}</strong>
-              <span className="text-[11px] text-slate-500">settled / passed</span>
             </div>
           </div>
         </div>
@@ -307,7 +306,7 @@ export const NotificationsPage: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search notifications by crop, order ID, buyer, location..."
+              placeholder={t('notifications.searchPlaceholder', 'Search notifications by crop, order ID, buyer, location...')}
               className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-[#ccd5ae]/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#01472e]/20 focus:border-[#01472e] transition text-[#01472e] shadow-2xs"
             />
             {searchQuery && (
@@ -316,7 +315,7 @@ export const NotificationsPage: React.FC = () => {
                 onClick={() => setSearchQuery('')}
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 cursor-pointer"
               >
-                Clear
+                {t('common.clear', 'Clear')}
               </button>
             )}
           </div>
@@ -328,11 +327,11 @@ export const NotificationsPage: React.FC = () => {
               onChange={(e) => setSelectedPriority(e.target.value)}
               className="w-full sm:w-auto bg-white border border-[#ccd5ae]/80 rounded-2xl px-3.5 py-2.5 text-xs text-slate-800 font-semibold focus:outline-none focus:border-[#01472e] shadow-2xs cursor-pointer"
             >
-              <option value="ALL">All Priorities</option>
-              <option value="URGENT">Urgent Only</option>
-              <option value="WARNING">Action Required</option>
-              <option value="SUCCESS">Completed / Success</option>
-              <option value="INFO">Information</option>
+              <option value="ALL">{t('common.all', 'All Priorities')}</option>
+              <option value="URGENT">{t('notifications.urgentBadge', 'Urgent Action')}</option>
+              <option value="WARNING">{t('notifications.warningBadge', 'Action Required')}</option>
+              <option value="SUCCESS">{t('notifications.successBadge', 'Completed')}</option>
+              <option value="INFO">{t('notifications.infoBadge', 'Information')}</option>
             </select>
           </div>
         </div>
@@ -345,9 +344,9 @@ export const NotificationsPage: React.FC = () => {
             <div className="w-12 h-12 mx-auto rounded-2xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
               <CheckCircle2 className="w-6 h-6" />
             </div>
-            <h3 className="text-sm font-bold text-[#01472e]">No Matching Notifications</h3>
+            <h3 className="text-sm font-bold text-[#01472e]">{t('notifications.emptyTitle', 'No Matching Notifications')}</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              No alerts match your current filter criteria. All pending tasks for your profile are up to date.
+              {t('notifications.emptySubtitle', 'No alerts match your current filter criteria. All pending tasks for your profile are up to date.')}
             </p>
             {(searchQuery || selectedCategory !== 'ALL' || selectedPriority !== 'ALL') && (
               <button
@@ -359,7 +358,7 @@ export const NotificationsPage: React.FC = () => {
                 }}
                 className="mt-2 px-4 py-2 rounded-2xl bg-[#eaf4ec] text-[#01472e] font-bold text-xs hover:bg-[#d5ebd9] transition cursor-pointer"
               >
-                Reset All Filters
+                {t('common.reset', 'Reset All Filters')}
               </button>
             )}
           </div>
@@ -425,10 +424,10 @@ export const NotificationsPage: React.FC = () => {
                         ? 'bg-[#eaf4ec] hover:bg-[#d5ebd9] text-[#01472e] border-[#a3b18a]/50'
                         : 'bg-white hover:bg-slate-50 text-slate-400 border-slate-200'
                     }`}
-                    title={isUnread ? 'Mark as read' : 'Already read'}
+                    title={isUnread ? t('notifications.markAsRead', 'Mark as read') : t('common.read', 'Read')}
                   >
                     <Check className={`w-3.5 h-3.5 ${isUnread ? 'text-[#01472e]' : 'text-slate-400'}`} />
-                    <span className="hidden lg:inline">{isUnread ? 'Mark Read' : 'Read'}</span>
+                    <span className="hidden lg:inline">{isUnread ? t('notifications.markAsRead', 'Mark Read') : t('common.read', 'Read')}</span>
                   </button>
 
                   {/* Direct workflow action button */}
@@ -438,7 +437,7 @@ export const NotificationsPage: React.FC = () => {
                       onClick={() => handleActionClick(notif)}
                       className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#01472e] hover:bg-[#025a3b] text-white font-bold text-xs shadow-soft transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                     >
-                      <span>{notif.actionLabel || 'Take Action'}</span>
+                      <span>{notif.actionLabel || t('common.actions', 'Take Action')}</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#e9edc9]" />
                     </button>
                   )}

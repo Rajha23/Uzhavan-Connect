@@ -12,7 +12,7 @@ export const Navbar: React.FC = () => {
     setActiveTab
   } = useApp();
 
-  const { currentLanguageDef, openLanguageSelector } = useLanguage();
+  const { currentLanguageDef, openLanguageSelector, t } = useLanguage();
 
   const displayRole = ROLE_DISPLAY_LABELS[currentRole] || currentRole;
   const badgeStyle = ROLE_BADGE_STYLES[currentRole] || ROLE_BADGE_STYLES.FARMER;
@@ -41,7 +41,7 @@ export const Navbar: React.FC = () => {
                   </span>
                 </div>
                 <p className="text-[11px] text-[#5c7065] -mt-0.5 font-normal tracking-normal hidden sm:block">
-                  Demand-First Agricultural Intelligence
+                  {t('auth.operationalAccess', undefined, 'Demand-First Agricultural Intelligence')}
                 </p>
               </div>
             </button>
@@ -69,7 +69,7 @@ export const Navbar: React.FC = () => {
                   onClick={() => setActiveTab('dashboard')}
                   className="btn-primary text-xs flex items-center gap-1.5 shadow-soft"
                 >
-                  <span>Go to Dashboard</span>
+                  <span>{t('nav.dashboard', undefined, 'Dashboard')}</span>
                 </button>
                 {/* Authenticated Role Indicator Badge (Informational, Non-Clickable) */}
                 <div
@@ -87,13 +87,13 @@ export const Navbar: React.FC = () => {
                   onClick={() => setActiveTab('login')}
                   className="btn-primary text-xs shadow-soft"
                 >
-                  Sign In
+                  {t('auth.signIn', undefined, 'Sign In')}
                 </button>
                 <button
                   onClick={() => setActiveTab('register')}
                   className="btn-secondary text-xs hidden sm:block"
                 >
-                  Register
+                  {t('auth.createAccount', undefined, 'Register')}
                 </button>
               </div>
             )}

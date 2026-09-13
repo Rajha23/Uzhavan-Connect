@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import { DEMO_PRODUCE_PASSPORT } from '../data/mockData';
 import {
   X,
@@ -24,6 +25,7 @@ import {
 } from 'lucide-react';
 
 export const ProducePassportModal: React.FC = () => {
+  const { t } = useLanguage();
   const {
     isPassportModalOpen,
     closePassportModal,
@@ -98,13 +100,13 @@ export const ProducePassportModal: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] bg-emerald-400/20 text-emerald-300 px-2.5 py-0.5 rounded font-mono font-medium border border-emerald-400/30 uppercase tracking-widest">
-                  Cryptographic Produce Passport
+                  {t('passport.title', 'Cryptographic Produce Passport')}
                 </span>
-                <span className="text-xs text-slate-300">• Live Custody Traceability</span>
+                <span className="text-xs text-slate-300">• {t('passport.subtitle', 'Live Custody Traceability')}</span>
               </div>
               <h3 className="text-xl font-semibold tracking-tight text-white mt-0.5">
-                Batch: <span className="font-mono text-emerald-300">{batchId}</span>
-                {orderId && <span className="text-xs text-slate-300 font-sans ml-2 font-normal">(Order: {orderId})</span>}
+                {t('passport.batch', 'Batch')}: <span className="font-mono text-emerald-300">{batchId}</span>
+                {orderId && <span className="text-xs text-slate-300 font-sans ml-2 font-normal">({t('passport.order', 'Order')}: {orderId})</span>}
               </h3>
             </div>
           </div>
@@ -125,7 +127,7 @@ export const ProducePassportModal: React.FC = () => {
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
-              placeholder="Scan or Enter Batch ID / Order ID (e.g. BATCH-TN-...)..."
+              placeholder={t('passport.searchPlaceholder', 'Scan or Enter Batch ID / Order ID (e.g. BATCH-TN-...)...')}
               value={lookupQuery}
               onChange={(e) => setLookupQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 text-xs bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500 font-mono shadow-2xs"
@@ -133,7 +135,7 @@ export const ProducePassportModal: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-1.5 overflow-x-auto text-[10px]">
-            <span className="text-slate-500 font-medium uppercase tracking-wider shrink-0">Quick Lookup:</span>
+            <span className="text-slate-500 font-medium uppercase tracking-wider shrink-0">{t('passport.quickLookup', 'Quick Lookup')}:</span>
             {recentReferences.map((ref, idx) => (
               <button
                 key={idx}
@@ -195,10 +197,10 @@ export const ProducePassportModal: React.FC = () => {
               </span>
               <button
                 onClick={handleCopy}
-                className="text-xs flex items-center gap-1 text-emerald-700 hover:text-emerald-800 font-medium transition"
+                className="text-xs flex items-center gap-1 text-emerald-700 hover:text-emerald-800 font-medium transition cursor-pointer"
               >
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copied ? 'URL Copied!' : 'Copy Trace URL'}</span>
+                <span>{copied ? t('passport.urlCopied', 'URL Copied!') : t('passport.copyLink', 'Copy Trace URL')}</span>
               </button>
             </div>
 
@@ -206,33 +208,33 @@ export const ProducePassportModal: React.FC = () => {
             <div className="md:col-span-2 space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Verified Agricultural Produce</span>
+                  <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">{t('passport.verifiedProduce', 'Verified Agricultural Produce')}</span>
                   <h4 className="text-2xl font-semibold tracking-tight text-slate-900">{crop}</h4>
                   <p className="text-xs text-slate-500 font-medium">{variety}</p>
                 </div>
 
                 <div className="flex items-center gap-1.5 bg-emerald-100 text-emerald-900 px-3.5 py-1.5 rounded-full border border-emerald-300 text-xs font-medium">
                   <Award className="w-4 h-4 text-emerald-700" />
-                  <span>{qualityGrade} CERTIFIED</span>
+                  <span>{qualityGrade} {t('passport.certified', 'CERTIFIED')}</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
                 <div className="p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="text-slate-400 text-[10px] font-medium uppercase block">FPO / Producer:</span>
+                  <span className="text-slate-400 text-[10px] font-medium uppercase block">{t('passport.fpoProducer', 'FPO / Producer')}:</span>
                   <p className="font-medium text-slate-800 truncate mt-0.5">{producer}</p>
                 </div>
                 <div className="p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="text-slate-400 text-[10px] font-medium uppercase block">Harvest / Listed:</span>
+                  <span className="text-slate-400 text-[10px] font-medium uppercase block">{t('passport.harvestListed', 'Harvest / Listed')}:</span>
                   <p className="font-medium text-slate-800 mt-0.5">{harvestDate}</p>
                 </div>
                 <div className="p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="text-slate-400 text-[10px] font-medium uppercase block">Source Origin:</span>
+                  <span className="text-slate-400 text-[10px] font-medium uppercase block">{t('passport.sourceOrigin', 'Source Origin')}:</span>
                   <p className="font-medium text-slate-800 truncate mt-0.5">{location}</p>
                 </div>
                 <div className="p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="text-slate-400 text-[10px] font-medium uppercase block">Verified Volume:</span>
-                  <p className="font-semibold text-emerald-700 font-mono mt-0.5">{quantityKg.toLocaleString()} kg</p>
+                  <span className="text-slate-400 text-[10px] font-medium uppercase block">{t('passport.verifiedVolume', 'Verified Volume')}:</span>
+                  <p className="font-semibold text-emerald-700 font-mono mt-0.5">{quantityKg.toLocaleString()} {t('common.kg', 'kg')}</p>
                 </div>
               </div>
 
@@ -242,10 +244,10 @@ export const ProducePassportModal: React.FC = () => {
                   <div className="flex items-center justify-between text-[11px] text-slate-600 font-medium">
                     <span className="flex items-center gap-1.5">
                       <Building2 className="w-3.5 h-3.5 text-emerald-700" />
-                      <span>Traceable Farmer Contributors ({farmerContributions.length} Member Farm{farmerContributions.length > 1 ? 's' : ''})</span>
+                      <span>{t('passport.traceableContributors', 'Traceable Farmer Contributors')} ({farmerContributions.length} {t('passport.memberFarms', 'Member Farms')})</span>
                     </span>
                     <span className="font-mono font-medium text-emerald-800">
-                      {farmerContributions.reduce((s, c) => s + (c.collectedQuantityKg || c.contributedQuantityKg), 0).toLocaleString()} kg total
+                      {farmerContributions.reduce((s, c) => s + (c.collectedQuantityKg || c.contributedQuantityKg), 0).toLocaleString()} {t('common.kg', 'kg')} {t('common.total', 'Total')}
                     </span>
                   </div>
 
@@ -260,7 +262,7 @@ export const ProducePassportModal: React.FC = () => {
                           <span className="text-[10px] text-slate-400">{fc.farmerLocation}</span>
                         </div>
                         <span className="font-mono font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                          {fc.collectedQuantityKg || fc.contributedQuantityKg} kg
+                          {fc.collectedQuantityKg || fc.contributedQuantityKg} {t('common.kg', 'kg')}
                         </span>
                       </div>
                     ))}
@@ -276,29 +278,29 @@ export const ProducePassportModal: React.FC = () => {
             <div className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 space-y-2">
               <p className="text-[10px] font-medium text-emerald-900 uppercase tracking-wider flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-emerald-700" />
-                <span>NABL Quality Assay</span>
+                <span>{t('passport.nablAssay', 'NABL Quality Assay')}</span>
               </p>
               {inspectionMetrics ? (
                 <div className="space-y-1.5 text-xs text-slate-700">
                   <div className="flex justify-between">
-                    <span>Sugar Content (Brix):</span>
+                    <span>{t('passport.sugarBrix', 'Sugar Content (Brix)')}:</span>
                     <strong className="font-mono font-medium text-slate-900">{inspectionMetrics.sugarBrix} °Bx</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span>Firmness:</span>
+                    <span>{t('passport.firmness', 'Firmness')}:</span>
                     <strong className="font-mono font-medium text-slate-900">{inspectionMetrics.firmnessKgCm} kg/cm²</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span>Moisture Content:</span>
+                    <span>{t('passport.moistureContent', 'Moisture Content')}:</span>
                     <strong className="font-mono font-medium text-slate-900">{inspectionMetrics.moistureContent}</strong>
                   </div>
                   <div className="flex justify-between pt-1 border-t border-emerald-200 text-[11px]">
-                    <span>Pesticide Residue:</span>
+                    <span>{t('passport.pesticideResidue', 'Pesticide Residue')}:</span>
                     <strong className="text-emerald-800 font-semibold">{inspectionMetrics.pesticideResidueTest}</strong>
                   </div>
                 </div>
               ) : (
-                <p className="text-slate-400 italic text-[11px]">Quality assay pending at hub</p>
+                <p className="text-slate-400 italic text-[11px]">{t('passport.assayPending', 'Quality assay pending at hub')}</p>
               )}
             </div>
 
@@ -306,32 +308,32 @@ export const ProducePassportModal: React.FC = () => {
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2">
               <p className="text-[10px] font-medium text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                 <Truck className="w-4 h-4 text-slate-600" />
-                <span>Cold-Chain Transit Telemetry</span>
+                <span>{t('passport.coldChainTransit', 'Cold-Chain Transit Telemetry')}</span>
               </p>
               {transport ? (
                 <div className="space-y-1.5 text-xs text-slate-700">
                   <div className="flex justify-between">
-                    <span>Carrier:</span>
+                    <span>{t('passport.carrier', 'Carrier')}:</span>
                     <strong className="text-slate-900 truncate max-w-[120px] font-medium">{transport.carrierName}</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span>Vehicle Number:</span>
+                    <span>{t('passport.vehicleNumber', 'Vehicle Number')}:</span>
                     <strong className="font-mono font-medium text-slate-900">{transport.vehicleNumber}</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span>Reefer Temp:</span>
+                    <span>{t('passport.reeferTemp', 'Reefer Temp')}:</span>
                     <strong className="font-mono text-teal-800 font-semibold">{transport.temperatureC || 4.0} °C</strong>
                   </div>
                   <div className="flex justify-between pt-1 border-t border-slate-200 text-[11px]">
-                    <span>Driver Contact:</span>
+                    <span>{t('passport.driverContact', 'Driver Contact')}:</span>
                     <strong className="text-slate-800 font-medium">{transport.driverName}</strong>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-1 text-slate-500 text-[11px]">
-                  <p>Packed: <strong>{matchedOrder?.crateCount || Math.ceil(quantityKg / 25)} Crates (25kg)</strong></p>
-                  <p>QR Tamper Seal: <strong className="font-mono text-emerald-800">Verified</strong></p>
-                  <p className="text-[10px] text-slate-400">Transport in dispatch staging</p>
+                  <p>{t('passport.packedCrates', 'Packed Crates')}: <strong>{matchedOrder?.crateCount || Math.ceil(quantityKg / 25)} Crates (25kg)</strong></p>
+                  <p>{t('passport.qrTamperSeal', 'QR Tamper Seal')}: <strong className="font-mono text-emerald-800">{t('common.verified', 'Verified')}</strong></p>
+                  <p className="text-[10px] text-slate-400">{t('passport.dispatchStaging', 'Transport in dispatch staging')}</p>
                 </div>
               )}
             </div>
@@ -340,30 +342,30 @@ export const ProducePassportModal: React.FC = () => {
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2">
               <p className="text-[10px] font-medium text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                 <FileCheck2 className="w-4 h-4 text-slate-600" />
-                <span>Buyer Receiving Signoff</span>
+                <span>{t('passport.buyerReceivingSignoff', 'Buyer Receiving Signoff')}</span>
               </p>
               {buyerConfirmation ? (
                 <div className="space-y-1.5 text-xs text-slate-700">
                   <div className="flex justify-between">
-                    <span>Decision:</span>
+                    <span>{t('passport.decision', 'Decision')}:</span>
                     <strong className="text-emerald-800 font-semibold">{buyerConfirmation.acceptanceStatus}</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span>Accepted Volume:</span>
-                    <strong className="font-mono text-slate-900 font-medium">{buyerConfirmation.acceptedQuantityKg.toLocaleString()} kg</strong>
+                    <span>{t('passport.acceptedVolume', 'Accepted Volume')}:</span>
+                    <strong className="font-mono text-slate-900 font-medium">{buyerConfirmation.acceptedQuantityKg.toLocaleString()} {t('common.kg', 'kg')}</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span>Receiving Officer:</span>
+                    <span>{t('passport.receivingOfficer', 'Receiving Officer')}:</span>
                     <strong className="text-slate-900 truncate max-w-[120px]">{buyerConfirmation.receiverName}</strong>
                   </div>
                   <div className="pt-1 border-t border-slate-200 text-[10px] text-slate-500 truncate">
-                    Remarks: {buyerConfirmation.issuesReported || 'Full conformance verified'}
+                    {t('passport.remarks', 'Remarks')}: {buyerConfirmation.issuesReported || t('passport.conformanceVerified', 'Full conformance verified')}
                   </div>
                 </div>
               ) : (
                 <div className="space-y-1 text-slate-400 text-[11px]">
-                  <p className="font-medium">Current Status: <strong className="text-slate-700">{currentStatus}</strong></p>
-                  <p className="text-[10px]">Awaiting destination dock verification</p>
+                  <p className="font-medium">{t('passport.currentStatus', 'Current Status')}: <strong className="text-slate-700">{t('orderStatus.' + currentStatus, currentStatus)}</strong></p>
+                  <p className="text-[10px]">{t('passport.awaitingDock', 'Awaiting destination dock verification')}</p>
                 </div>
               )}
             </div>
@@ -372,7 +374,7 @@ export const ProducePassportModal: React.FC = () => {
           {/* Chronological Movement Timeline */}
           <div>
             <h4 className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-3">
-              Immutable Custody & Movement Timeline
+              {t('passport.movementTimeline', 'Immutable Custody & Movement Timeline')}
             </h4>
 
             <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-emerald-200">
@@ -421,20 +423,20 @@ export const ProducePassportModal: React.FC = () => {
         {/* Modal Footer */}
         <div className="bg-slate-50 p-4 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <span className="text-slate-500">
-            Immutable Batch ID: <strong className="font-mono text-slate-800">{batchId}</strong> • Verified via Uzhavan Trust Ledger
+            {t('passport.batch', 'Batch')}: <strong className="font-mono text-slate-800">{batchId}</strong> • {t('passport.trustLedger', 'Verified via Uzhavan Trust Ledger')}
           </span>
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopy}
-              className="px-4 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium rounded-xl transition uppercase tracking-wider text-[10px]"
+              className="px-4 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium rounded-xl transition uppercase tracking-wider text-[10px] cursor-pointer"
             >
-              Copy Verification Link
+              {t('passport.copyVerificationLink', 'Copy Verification Link')}
             </button>
             <button
               onClick={closePassportModal}
-              className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl transition uppercase tracking-wider text-[10px]"
+              className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl transition uppercase tracking-wider text-[10px] cursor-pointer"
             >
-              Done
+              {t('passport.done', 'Done')}
             </button>
           </div>
         </div>

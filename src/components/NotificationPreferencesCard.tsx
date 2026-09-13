@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   Bell,
   Check,
@@ -17,6 +18,7 @@ import {
 import { NotificationPreferences } from '../types';
 
 export const NotificationPreferencesCard: React.FC = () => {
+  const { t } = useLanguage();
   const {
     notificationPreferences,
     updateNotificationPreferences,
@@ -43,56 +45,56 @@ export const NotificationPreferencesCard: React.FC = () => {
     {
       key: 'marketDemand' as const,
       icon: TrendingUp,
-      title: 'Market & Direct Demand',
-      description: 'Matching buyer demands, wholesale pricing spikes, and regional aggregation pools',
+      title: t('profile.marketDemandTitle', 'Market & Direct Demand'),
+      description: t('profile.marketDemandDesc', 'Matching buyer demands, wholesale pricing spikes, and regional aggregation pools'),
       enabled: notificationPreferences.marketDemand,
       locked: false
     },
     {
       key: 'orders' as const,
       icon: Package,
-      title: 'Order Lifecycle & Procurement',
-      description: 'Order placement, farm-gate collection notices, packaging, and buyer delivery acceptance',
+      title: t('profile.ordersTitle', 'Order Lifecycle & Procurement'),
+      description: t('profile.ordersDesc', 'Order placement, farm-gate collection notices, packaging, and buyer delivery acceptance'),
       enabled: notificationPreferences.orders,
       locked: false
     },
     {
       key: 'logistics' as const,
       icon: Truck,
-      title: 'Cold-Chain & Fleet Telematics',
-      description: 'Pickup schedules, vehicle dispatches, temperature sensor pings, and delivery tracking',
+      title: t('profile.logisticsTitle', 'Cold-Chain & Fleet Telematics'),
+      description: t('profile.logisticsDesc', 'Pickup schedules, vehicle dispatches, temperature sensor pings, and delivery tracking'),
       enabled: notificationPreferences.logistics,
       locked: false
     },
     {
       key: 'payments' as const,
       icon: Scale,
-      title: 'Payments & Direct Settlement',
-      description: 'Direct bank credits, e-RUPI programmable escrow settlements, and statutory cess audits',
+      title: t('profile.paymentsTitle', 'Payments & Direct Settlement'),
+      description: t('profile.paymentsDesc', 'Direct bank credits, e-RUPI programmable escrow settlements, and statutory cess audits'),
       enabled: notificationPreferences.payments,
       locked: false
     },
     {
       key: 'traceability' as const,
       icon: QrCode,
-      title: 'Traceability & Quality Grading',
-      description: 'Sugar brix & firmness test certifications, residue lab results, and QR batch passports',
+      title: t('profile.traceabilityTitle', 'Traceability & Quality Grading'),
+      description: t('profile.traceabilityDesc', 'Sugar brix & firmness test certifications, residue lab results, and QR batch passports'),
       enabled: notificationPreferences.traceability,
       locked: false
     },
     {
       key: 'advisory' as const,
       icon: Sparkles,
-      title: 'AI Advisory & Harvest Reminders',
-      description: 'AI Farmer Mentor suggestions, upcoming harvest readiness windows, and price trends',
+      title: t('profile.advisoryTitle', 'AI Advisory & Harvest Reminders'),
+      description: t('profile.advisoryDesc', 'AI Farmer Mentor suggestions, upcoming harvest readiness windows, and price trends'),
       enabled: notificationPreferences.advisory,
       locked: false
     },
     {
       key: 'system' as const,
       icon: ShieldCheck,
-      title: 'Platform Governance & Security',
-      description: 'Mandatory statutory compliance, apex audit alerts, and security-protected account notices',
+      title: t('profile.systemTitle', 'Platform Governance & Security'),
+      description: t('profile.systemDesc', 'Mandatory statutory compliance, apex audit alerts, and security-protected account notices'),
       enabled: true,
       locked: true
     }
@@ -108,16 +110,16 @@ export const NotificationPreferencesCard: React.FC = () => {
           </div>
           <div>
             <h3 className="text-sm font-bold text-[#01472e] uppercase tracking-wider flex items-center gap-2">
-              <span>Notification & Alert Preferences</span>
+              <span>{t('profile.notificationPreferences', 'Notification & Alert Preferences')}</span>
               {savedFeedback && (
                 <span className="text-[11px] font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1 normal-case animate-in fade-in">
                   <Check className="w-3 h-3 text-emerald-700" />
-                  Preferences Saved
+                  {t('profile.preferencesSaved', 'Preferences Saved')}
                 </span>
               )}
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              Control which operational alert streams you receive. Settings are preserved across all sessions.
+              {t('profile.controlAlerts', 'Control which operational alert streams you receive. Settings are preserved across all sessions.')}
             </p>
           </div>
         </div>
@@ -130,7 +132,7 @@ export const NotificationPreferencesCard: React.FC = () => {
             title="Restore default recommended notification settings"
           >
             <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-            <span>Reset Defaults</span>
+            <span>{t('profile.resetDefaults', 'Reset Defaults')}</span>
           </button>
 
           <button
@@ -138,7 +140,7 @@ export const NotificationPreferencesCard: React.FC = () => {
             onClick={() => setActiveTab('notifications')}
             className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-[#01472e] hover:bg-[#025a3b] text-white font-semibold text-xs shadow-soft transition cursor-pointer"
           >
-            <span>Open Notification Center</span>
+            <span>{t('profile.openNotificationCenter', 'Open Notification Center')}</span>
             <ArrowRight className="w-3.5 h-3.5 text-[#e9edc9]" />
           </button>
         </div>
@@ -177,7 +179,7 @@ export const NotificationPreferencesCard: React.FC = () => {
                     {cat.locked && (
                       <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40 uppercase tracking-wider">
                         <Lock className="w-2.5 h-2.5 text-[#01472e]" />
-                        Mandatory
+                        {t('profile.mandatory', 'Mandatory')}
                       </span>
                     )}
                   </div>

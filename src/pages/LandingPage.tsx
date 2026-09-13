@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   Sprout,
   TrendingUp,
@@ -15,16 +16,17 @@ import {
 
 export const LandingPage: React.FC = () => {
   const { setActiveTab, handleJoinAsRole } = useApp();
+  const { t } = useLanguage();
 
   const problemCards = [
-    { title: 'Fragmented Demand', desc: 'Small retailers & restaurants purchase independently, inflating ordering costs and driving speculative local arbitrage.' },
-    { title: 'Fragmented Supply', desc: '86% of Indian farmers are smallholders (<2 hectares) lacking individual bargaining power or volume scale for bulk buyers.' },
-    { title: 'Uncertain Pricing', desc: 'Farmers bring produce blindly to mandis, where distress sales and unauthorized cuts depress gate prices to 30-40% of retail.' },
-    { title: 'Duplicate Logistics', desc: 'Uncoordinated mini-trucks make redundant single-drop runs, burning fuel with 40%+ empty return miles and no cold-chain.' },
-    { title: 'Slow Matching', desc: 'Spot telephone negotiations and 4-6 intermediary touchpoints create 48 to 72 hour delays for highly perishable commodities.' },
-    { title: 'Limited Demand Visibility', desc: 'Farmers plant without knowing what the market will need 3 months later, triggering recurrent glut-and-famine cycles.' },
-    { title: 'Post-Harvest Value Loss', desc: 'Over 20% of Indian horticultural produce rots in transit due to lack of pre-cooling micro-hubs and refrigerated routing.' },
-    { title: 'Opaque Farmer Realization', desc: 'No itemized visibility into transport, mandi cess, or commission deductions, leaving farmers in perpetual debt.' }
+    { title: t('landing.fragmentedDemand', undefined, 'Fragmented Demand'), desc: t('landing.fragmentedDemandDesc', undefined, 'Small retailers & restaurants purchase independently, inflating ordering costs and driving speculative local arbitrage.') },
+    { title: t('landing.fragmentedSupply', undefined, 'Fragmented Supply'), desc: t('landing.fragmentedSupplyDesc', undefined, '86% of Indian farmers are smallholders (<2 hectares) lacking individual bargaining power or volume scale for bulk buyers.') },
+    { title: t('landing.uncertainPricing', undefined, 'Uncertain Pricing'), desc: t('landing.uncertainPricingDesc', undefined, 'Farmers bring produce blindly to mandis, where distress sales and unauthorized cuts depress gate prices to 30-40% of retail.') },
+    { title: t('landing.duplicateLogistics', undefined, 'Duplicate Logistics'), desc: t('landing.duplicateLogisticsDesc', undefined, 'Uncoordinated mini-trucks make redundant single-drop runs, burning fuel with 40%+ empty return miles and no cold-chain.') },
+    { title: t('landing.slowMatching', undefined, 'Slow Matching'), desc: t('landing.slowMatchingDesc', undefined, 'Spot telephone negotiations and 4-6 intermediary touchpoints create 48 to 72 hour delays for highly perishable commodities.') },
+    { title: t('landing.limitedDemandVisibility', undefined, 'Limited Demand Visibility'), desc: t('landing.limitedDemandVisibilityDesc', undefined, 'Farmers plant without knowing what the market will need 3 months later, triggering recurrent glut-and-famine cycles.') },
+    { title: t('landing.postHarvestLoss', undefined, 'Post-Harvest Value Loss'), desc: t('landing.postHarvestLossDesc', undefined, 'Over 20% of Indian horticultural produce rots in transit due to lack of pre-cooling micro-hubs and refrigerated routing.') },
+    { title: t('landing.opaqueRealization', undefined, 'Opaque Farmer Realization'), desc: t('landing.opaqueRealizationDesc', undefined, 'No itemized visibility into transport, mandi cess, or commission deductions, leaving farmers in perpetual debt.') }
   ];
 
   return (
@@ -41,12 +43,12 @@ export const LandingPage: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto space-y-6">
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#01472e] tracking-tight leading-[1.12]">
-              Sell Directly.
+              {t('landing.heroTitle', undefined, 'Sell Directly.')}
             </h1>
 
             {/* Subheading */}
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal">
-              Uzhavan Connect unifies smallholder farmers directly with institutional food processors and retailers using ML demand forecasting, algorithmic matching, fair price discovery, and cold-chain route coordination.
+              {t('landing.heroSubtitle', undefined, 'Uzhavan Connect unifies smallholder farmers directly with institutional food processors and retailers using ML demand forecasting, algorithmic matching, fair price discovery, and cold-chain route coordination.')}
             </p>
 
             {/* CTA Buttons */}
@@ -56,7 +58,7 @@ export const LandingPage: React.FC = () => {
                 className="px-7 py-3.5 rounded-2xl bg-[#01472e] hover:bg-[#025a3b] text-white font-semibold text-sm shadow-md transition hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2.5 cursor-pointer"
               >
                 <Lock className="w-4 h-4 text-[#e9edc9]" />
-                <span>Launch Operational Console</span>
+                <span>{t('landing.launchConsole', undefined, 'Launch Operational Console')}</span>
               </button>
 
               <button
@@ -64,17 +66,17 @@ export const LandingPage: React.FC = () => {
                 className="px-7 py-3.5 rounded-2xl bg-white hover:bg-[#fefae0] text-[#01472e] border border-[#ccd5ae] font-semibold text-sm shadow-xs transition hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2.5 cursor-pointer"
               >
                 <UserPlus className="w-4 h-4 text-[#01472e]" />
-                <span>Register Direct Account</span>
+                <span>{t('landing.registerAccount', undefined, 'Register Direct Account')}</span>
               </button>
             </div>
 
             {/* 4-Benefit Card Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-6 max-w-4xl mx-auto">
               {[
-                { icon: Sprout, title: 'Direct Market', desc: 'Direct contracts without APMC middlemen', bg: 'bg-white border-[#ccd5ae]/60' },
-                { icon: TrendingUp, title: 'Demand Forecast', desc: 'FastAPI XGBoost ML demand spikes', bg: 'bg-white border-[#ccd5ae]/60' },
-                { icon: Sparkles, title: 'Autonomous Escrow', desc: 'Zero credit risk, transparent direct payout', bg: 'bg-white border-[#ccd5ae]/60' },
-                { icon: Truck, title: 'Cold Chain VRP', desc: 'Sensor-monitored multi-stop routes', bg: 'bg-white border-[#ccd5ae]/60' },
+                { icon: Sprout, title: t('landing.directMarket', undefined, 'Direct Market'), desc: t('landing.directMarketDesc', undefined, 'Direct contracts without APMC middlemen'), bg: 'bg-white border-[#ccd5ae]/60' },
+                { icon: TrendingUp, title: t('landing.demandForecast', undefined, 'Demand Forecast'), desc: t('landing.demandForecastDesc', undefined, 'FastAPI XGBoost ML demand spikes'), bg: 'bg-white border-[#ccd5ae]/60' },
+                { icon: Sparkles, title: t('landing.autonomousEscrow', undefined, 'Autonomous Escrow'), desc: t('landing.autonomousEscrowDesc', undefined, 'Zero credit risk, transparent direct payout'), bg: 'bg-white border-[#ccd5ae]/60' },
+                { icon: Truck, title: t('landing.coldChainVrp', undefined, 'Cold Chain VRP'), desc: t('landing.coldChainVrpDesc', undefined, 'Sensor-monitored multi-stop routes'), bg: 'bg-white border-[#ccd5ae]/60' },
               ].map((b) => (
                 <div key={b.title} className={`p-4 rounded-2xl border text-left ${b.bg} shadow-2xs transition hover:-translate-y-0.5 hover:shadow-xs group`}>
                   <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center mb-2.5 group-hover:scale-105 transition">
@@ -91,10 +93,10 @@ export const LandingPage: React.FC = () => {
           <div className="mt-14 max-w-5xl mx-auto bg-white rounded-[32px] p-6 sm:p-9 border border-[#ccd5ae]/60 shadow-sm relative">
             <div className="text-center mb-8">
               <span className="text-xs font-bold uppercase tracking-wider text-[#01472e] bg-[#eaf4ec] px-4 py-1.5 rounded-full border border-[#a3b18a]/50">
-                100% Traceable End-to-End Operating Cycle
+                {t('landing.traceableCycle', undefined, '100% Traceable End-to-End Operating Cycle')}
               </span>
               <p className="text-xs text-slate-500 mt-2 font-normal">
-                Farmer Produce → AI Demand Aggregation → Smart Matching → FPO Hub → QC & Cold Transport → Dockside Settlement
+                {t('landing.cycleFlow', undefined, 'Farmer Produce → AI Demand Aggregation → Smart Matching → FPO Hub → QC & Cold Transport → Dockside Settlement')}
               </p>
             </div>
 
@@ -107,10 +109,10 @@ export const LandingPage: React.FC = () => {
                 <div className="w-11 h-11 mx-auto rounded-2xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center font-bold mb-2.5 group-hover:scale-105 transition shadow-2xs">
                   <Sprout className="w-5 h-5" />
                 </div>
-                <h4 className="text-xs font-bold text-[#01472e]">1. Farmer</h4>
-                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Direct crop listing & harvest forecast</p>
+                <h4 className="text-xs font-bold text-[#01472e]">1. {t('landing.joinFarmer', undefined, 'Farmer')}</h4>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">{t('farmer.heroSubtitle', undefined, 'Direct crop listing & harvest forecast')}</p>
                 <span className="text-[10px] text-[#01472e] font-bold mt-2.5 inline-flex items-center gap-1 uppercase tracking-wider">
-                  Farmer Portal <ArrowRight className="w-2.5 h-2.5" />
+                  {t('farmer.findBuyersBtn', undefined, 'Farmer Portal')} <ArrowRight className="w-2.5 h-2.5" />
                 </span>
               </div>
 
@@ -122,10 +124,10 @@ export const LandingPage: React.FC = () => {
                 <div className="w-11 h-11 mx-auto rounded-2xl bg-[#01472e] text-[#fefae0] flex items-center justify-center font-bold mb-2.5 group-hover:scale-105 transition shadow-2xs">
                   <TrendingUp className="w-5 h-5" />
                 </div>
-                <h4 className="text-xs font-bold text-[#01472e]">2. Uzhavan AI</h4>
-                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Smart matching & algorithmic pricing</p>
+                <h4 className="text-xs font-bold text-[#01472e]">2. {t('ai.demandIntelligence', undefined, 'Uzhavan AI')}</h4>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">{t('ai.priceOptimization', undefined, 'Smart matching & algorithmic pricing')}</p>
                 <span className="text-[10px] text-[#01472e] font-bold mt-2.5 inline-flex items-center gap-1 uppercase tracking-wider">
-                  Forecasts <ArrowRight className="w-2.5 h-2.5" />
+                  {t('nav.demandForecast', undefined, 'Forecasts')} <ArrowRight className="w-2.5 h-2.5" />
                 </span>
               </div>
 
@@ -137,10 +139,10 @@ export const LandingPage: React.FC = () => {
                 <div className="w-11 h-11 mx-auto rounded-2xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center font-bold mb-2.5 group-hover:scale-105 transition shadow-2xs">
                   <ShoppingBag className="w-5 h-5" />
                 </div>
-                <h4 className="text-xs font-bold text-[#01472e]">3. Pooled Buyers</h4>
-                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Bulk demand pooling & reverse auctions</p>
+                <h4 className="text-xs font-bold text-[#01472e]">3. {t('landing.joinBuyer', undefined, 'Pooled Buyers')}</h4>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">{t('buyer.demandPools', undefined, 'Bulk demand pooling & reverse auctions')}</p>
                 <span className="text-[10px] text-[#01472e] font-bold mt-2.5 inline-flex items-center gap-1 uppercase tracking-wider">
-                  Buyer Portal <ArrowRight className="w-2.5 h-2.5" />
+                  {t('nav.procurement', undefined, 'Buyer Portal')} <ArrowRight className="w-2.5 h-2.5" />
                 </span>
               </div>
 
@@ -152,10 +154,10 @@ export const LandingPage: React.FC = () => {
                 <div className="w-11 h-11 mx-auto rounded-2xl bg-[#01472e] text-[#fefae0] flex items-center justify-center font-bold mb-2.5 group-hover:scale-105 transition shadow-2xs">
                   <Truck className="w-5 h-5" />
                 </div>
-                <h4 className="text-xs font-bold text-[#01472e]">4. Logistics Hub</h4>
-                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Micro-hubs & VRP route dispatch</p>
+                <h4 className="text-xs font-bold text-[#01472e]">4. {t('nav.logistics', undefined, 'Logistics Hub')}</h4>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">{t('logistics.routeOptimization', undefined, 'Micro-hubs & VRP route dispatch')}</p>
                 <span className="text-[10px] text-[#01472e] font-bold mt-2.5 inline-flex items-center gap-1 uppercase tracking-wider">
-                  Hub Fleet <ArrowRight className="w-2.5 h-2.5" />
+                  {t('logistics.fleetTelematics', undefined, 'Hub Fleet')} <ArrowRight className="w-2.5 h-2.5" />
                 </span>
               </div>
 
@@ -167,10 +169,10 @@ export const LandingPage: React.FC = () => {
                 <div className="w-11 h-11 mx-auto rounded-2xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center font-bold mb-2.5 group-hover:scale-105 transition shadow-2xs">
                   <User className="w-5 h-5" />
                 </div>
-                <h4 className="text-xs font-bold text-[#01472e]">5. Consumer</h4>
-                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">Digital QR produce passport audit</p>
+                <h4 className="text-xs font-bold text-[#01472e]">5. {t('traceability.producePassport', undefined, 'Consumer')}</h4>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed font-normal">{t('traceability.digitalQrAudit', undefined, 'Digital QR produce passport audit')}</p>
                 <span className="text-[10px] text-[#01472e] font-bold mt-2.5 inline-flex items-center gap-1 uppercase tracking-wider">
-                  Audit QR <ArrowRight className="w-2.5 h-2.5" />
+                  {t('traceability.scanQr', undefined, 'Audit QR')} <ArrowRight className="w-2.5 h-2.5" />
                 </span>
               </div>
             </div>
@@ -182,13 +184,13 @@ export const LandingPage: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#01472e] bg-[#e9edc9]/50 px-3 py-1 rounded-full border border-[#ccd5ae]/60">
-            Structural Agrarian Inefficiencies
+            {t('landing.whyTitle', undefined, 'Structural Agrarian Inefficiencies')}
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-[#01472e] tracking-tight">
-            Why India's Agricultural Supply Chains Need Coordinated Intelligence
+            {t('landing.problemTitle', undefined, "Why India's Agricultural Supply Chains Need Coordinated Intelligence")}
           </h2>
           <p className="text-sm text-slate-600 leading-relaxed font-normal">
-            Physical intermediary functions like transport and quality grading are essential. The breakdown occurs with <span className="font-semibold text-slate-800">inefficient, uncoordinated information and speculative negotiation layers</span> across supply, demand, pricing, aggregation, logistics, and traceability.
+            {t('landing.problemSubtitle', undefined, 'Physical intermediary functions like transport and quality grading are essential. The breakdown occurs with inefficient, uncoordinated information and speculative negotiation layers.')}
           </p>
         </div>
 
@@ -218,17 +220,17 @@ export const LandingPage: React.FC = () => {
           {/* Programmatic Transparency Badge */}
           <div className="relative inline-flex items-center gap-2 bg-[#fefae0]/15 text-[#fefae0] px-4 py-1.5 rounded-full text-xs font-semibold border border-[#fefae0]/30 shadow-xs backdrop-blur-xs">
             <HeartHandshake className="w-4 h-4 text-[#fefae0]" />
-            <span>From Speculative Intermediaries to Programmatic Transparency</span>
+            <span>{t('landing.autonomousEscrowDesc', undefined, 'From Speculative Intermediaries to Programmatic Transparency')}</span>
           </div>
 
           {/* High-Contrast Main Heading */}
           <h2 className="relative text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight max-w-2xl mx-auto leading-[1.2] text-white">
-            Start Building a Smarter Agricultural Operating Network
+            {t('landing.joinTitle', undefined, 'Start Building a Smarter Agricultural Operating Network')}
           </h2>
 
           {/* High-Contrast Supporting Copy */}
           <p className="relative text-sm sm:text-base text-emerald-100/90 max-w-2xl mx-auto leading-relaxed font-normal">
-            Empower smallholders with forward demand visibility, eliminate speculative middlemen, and deliver fresh produce with guaranteed quality.
+            {t('landing.joinSubtitle', undefined, 'Empower smallholders with forward demand visibility, eliminate speculative middlemen, and deliver fresh produce with guaranteed quality.')}
           </p>
 
           {/* Coordinated Action Buttons */}
@@ -237,13 +239,13 @@ export const LandingPage: React.FC = () => {
               onClick={() => handleJoinAsRole('FARMER')}
               className="px-6 py-3.5 bg-[#fefae0] hover:bg-white text-[#01472e] font-bold rounded-2xl transition-all duration-150 text-xs uppercase tracking-wider shadow-sm hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
-              Join as Farmer / FPO Hub
+              {t('landing.joinFarmer', undefined, 'Join as Farmer / FPO Hub')}
             </button>
             <button
               onClick={() => handleJoinAsRole('RETAIL_BUYER')}
               className="px-6 py-3.5 bg-white/15 hover:bg-white/25 text-white font-bold rounded-2xl border border-white/25 transition-all duration-150 text-xs uppercase tracking-wider backdrop-blur-xs shadow-2xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
-              Join as Institutional Buyer
+              {t('landing.joinBuyer', undefined, 'Join as Institutional Buyer')}
             </button>
           </div>
         </div>
@@ -251,4 +253,3 @@ export const LandingPage: React.FC = () => {
     </div>
   );
 };
-

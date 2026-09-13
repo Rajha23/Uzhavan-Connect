@@ -96,7 +96,7 @@ export const SUPPORTED_LANGUAGES: LanguageDefinition[] = [
     iso6391: 'ks',
     iso6393: 'kas',
     script: 'Devanagari / Perso-Arabic',
-    direction: 'ltr', // Supports both scripts, defaults to LTR with script-toggle capability
+    direction: 'rtl',
     regions: ['Jammu & Kashmir']
   },
   {
@@ -206,7 +206,7 @@ export const SUPPORTED_LANGUAGES: LanguageDefinition[] = [
     iso6391: 'sd',
     iso6393: 'snd',
     script: 'Devanagari / Perso-Arabic',
-    direction: 'ltr',
+    direction: 'rtl',
     regions: ['Gujarat', 'Maharashtra', 'Rajasthan', 'Madhya Pradesh']
   },
   {

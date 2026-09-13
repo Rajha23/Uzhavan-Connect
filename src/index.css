@@ -37,15 +37,62 @@
   }
 
   /* RTL Support for Urdu, Kashmiri, Sindhi */
-  [dir="rtl"] {
+  [dir="rtl"],
+  .rtl-layout {
     text-align: right;
+    direction: rtl;
+  }
+
+  [dir="rtl"] aside,
+  .rtl-layout aside {
+    right: 0 !important;
+    left: auto !important;
+    border-left-width: 1px !important;
+    border-right-width: 0 !important;
+  }
+
+  @media (min-width: 1024px) {
+    [dir="rtl"] .lg\:pl-64,
+    .rtl-layout .lg\:pl-64 {
+      padding-left: 0 !important;
+      padding-right: 16rem !important;
+    }
+  }
+
+  [dir="rtl"] .text-left,
+  .rtl-layout .text-left {
+    text-align: right !important;
+  }
+
+  [dir="rtl"] .text-right,
+  .rtl-layout .text-right {
+    text-align: left !important;
+  }
+
+  [dir="rtl"] input:not([type="checkbox"]):not([type="radio"]),
+  [dir="rtl"] textarea,
+  [dir="rtl"] select,
+  .rtl-layout input:not([type="checkbox"]):not([type="radio"]),
+  .rtl-layout textarea,
+  .rtl-layout select {
+    text-align: right;
+    direction: rtl;
   }
 
   [dir="rtl"] .font-mono,
   [dir="rtl"] code,
-  [dir="rtl"] pre {
-    direction: ltr;
+  [dir="rtl"] pre,
+  .rtl-layout .font-mono,
+  .rtl-layout code,
+  .rtl-layout pre {
+    direction: ltr !important;
+    text-align: left !important;
     display: inline-block;
+  }
+
+  [dir="rtl"] .rtl-flip,
+  .rtl-layout .rtl-flip {
+    transform: scaleX(-1);
   }
 
 

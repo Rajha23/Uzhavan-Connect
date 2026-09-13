@@ -30,6 +30,15 @@ export interface TranslationDictionary {
   auth: TranslationMap;
   onboarding: TranslationMap;
   landing: TranslationMap;
+  orders: TranslationMap;
+  notifications: TranslationMap;
+  matching: TranslationMap;
+  demand: TranslationMap;
+  reports: TranslationMap;
+  modals: TranslationMap;
+  stages: TranslationMap;
+  footer: TranslationMap;
+  [section: string]: TranslationMap | any;
 }
 
 export interface LanguageContextType {

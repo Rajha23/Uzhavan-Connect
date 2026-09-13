@@ -19,6 +19,7 @@ import {
   FileCheck2,
   AlertTriangle
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const STATUS_STYLES: Record<string, string> = {
   'Created': 'bg-[#faf9f5] text-slate-700 border-[#ccd5ae]/60',
@@ -46,6 +47,8 @@ export const OrdersPage: React.FC = () => {
     openPassportModal,
     setActiveTab
   } = useApp();
+
+  const { t } = useLanguage();
 
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
@@ -163,13 +166,13 @@ export const OrdersPage: React.FC = () => {
           <div className="space-y-1.5">
             <div className="inline-flex items-center gap-2 bg-[#fefae0]/15 border border-[#fefae0]/25 px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-[#fefae0]">
               <Package className="w-3.5 h-3.5 text-[#fefae0]" />
-              <span>Direct Farm-to-Buyer Transaction Ledger</span>
+              <span>{t('orders.ledgerBadge', 'Direct Farm-to-Buyer Transaction Ledger')}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-              Order Fulfillment & Lifecycle Tracking
+              {t('orders.title', 'Order Fulfillment & Lifecycle Tracking')}
             </h1>
             <p className="text-xs sm:text-sm text-emerald-100/80 font-normal max-w-2xl">
-              End-to-end audit trail tracking crop collection, hub QA grading, cold-chain transit, dockside verification, and escrow settlement.
+              {t('orders.subtitle', 'End-to-end audit trail tracking crop collection, hub QA grading, cold-chain transit, dockside verification, and escrow settlement.')}
             </p>
           </div>
 
@@ -184,7 +187,11 @@ export const OrdersPage: React.FC = () => {
               className="flex items-center gap-2 bg-[#fefae0] hover:bg-white text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-soft hover:shadow-md transition-all cursor-pointer"
             >
               <span>
-                {currentRole === 'FARMER' ? 'Discover Buyer Matches' : currentRole === 'LOGISTICS' ? 'View Shipments' : 'Match More Produce'}
+                {currentRole === 'FARMER'
+                  ? t('farmer.findBuyersBtn', 'Discover Buyer Matches')
+                  : currentRole === 'LOGISTICS'
+                  ? t('nav.shipments', 'View Shipments')
+                  : t('matching.matchPool', 'Match More Produce')}
               </span>
               <ArrowRight className="w-3.5 h-3.5 text-[#01472e]" />
             </button>
@@ -195,10 +202,10 @@ export const OrdersPage: React.FC = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
         {[
-          { label: 'Total Orders', value: orders.length.toString(), color: 'text-slate-900', bg: 'bg-[#faf9f5]' },
-          { label: 'Delivered / Settled', value: deliveredCount.toString(), color: 'text-[#01472e]', bg: 'bg-[#eaf4ec]' },
-          { label: 'In Progress', value: inProgressCount.toString(), color: 'text-amber-700', bg: 'bg-amber-50' },
-          { label: 'Total Value', value: `₹${totalRevenue.toLocaleString()}`, color: 'text-[#01472e]', bg: 'bg-[#faf9f5]' },
+          { label: t('orders.totalOrders', 'Total Orders'), value: orders.length.toString(), color: 'text-slate-900', bg: 'bg-[#faf9f5]' },
+          { label: t('orders.deliveredSettled', 'Delivered / Settled'), value: deliveredCount.toString(), color: 'text-[#01472e]', bg: 'bg-[#eaf4ec]' },
+          { label: t('orders.inProgress', 'In Progress'), value: inProgressCount.toString(), color: 'text-amber-700', bg: 'bg-amber-50' },
+          { label: t('orders.totalValue', 'Total Value'), value: `₹${totalRevenue.toLocaleString()}`, color: 'text-[#01472e]', bg: 'bg-[#faf9f5]' },
         ].map((card) => (
           <div key={card.label} className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
             <p className="text-xs text-slate-500 font-medium">{card.label}</p>
@@ -213,26 +220,35 @@ export const OrdersPage: React.FC = () => {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
-            placeholder="Search by Order ID, Batch ID, Crop, Farmer or Buyer..."
+            placeholder={t('orders.searchPlaceholder', 'Search by Order ID, Batch ID, Crop, Farmer or Buyer...')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="input-modern w-full pl-10 pr-4 py-2.5 text-xs rounded-2xl"
           />
         </div>
         <div className="flex gap-2 flex-wrap items-center">
-          {['All', 'Pending', 'Processing', 'In Transit', 'Delivered'].map((s) => (
-            <button
-              key={s}
-              onClick={() => setFilter(s)}
-              className={`px-4 py-2 text-xs font-semibold rounded-2xl border transition-all cursor-pointer ${
-                filter === s
-                  ? 'bg-[#01472e] text-white border-[#01472e] shadow-soft'
-                  : 'bg-white text-slate-600 border-[#ccd5ae]/50 hover:bg-[#faf9f5] hover:text-[#01472e]'
-              }`}
-            >
-              {s}
-            </button>
-          ))}
+          {['All', 'Pending', 'Processing', 'In Transit', 'Delivered'].map((s) => {
+            const label =
+              s === 'All' ? t('common.all', 'All') :
+              s === 'Pending' ? t('common.pending', 'Pending') :
+              s === 'Processing' ? t('common.processing', 'Processing') :
+              s === 'In Transit' ? t('stages.inTransit', 'In Transit') :
+              s === 'Delivered' ? t('stages.delivered', 'Delivered') : s;
+
+            return (
+              <button
+                key={s}
+                onClick={() => setFilter(s)}
+                className={`px-4 py-2 text-xs font-semibold rounded-2xl border transition-all cursor-pointer ${
+                  filter === s
+                    ? 'bg-[#01472e] text-white border-[#01472e] shadow-soft'
+                    : 'bg-white text-slate-600 border-[#ccd5ae]/50 hover:bg-[#faf9f5] hover:text-[#01472e]'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -243,8 +259,8 @@ export const OrdersPage: React.FC = () => {
             <div className="w-14 h-14 mx-auto rounded-2xl bg-[#faf9f5] flex items-center justify-center text-slate-400 mb-3 border border-dashed border-[#ccd5ae]/60">
               <Package className="w-7 h-7" />
             </div>
-            <p className="text-sm font-bold text-[#01472e]">No matching orders found</p>
-            <p className="text-xs text-slate-400 mt-1">Try changing search filters or create a new order via Smart Matching</p>
+            <p className="text-sm font-bold text-[#01472e]">{t('orders.noOrders', 'No matching orders found')}</p>
+            <p className="text-xs text-slate-400 mt-1">{t('orders.noOrdersDesc', 'Try changing search filters or create a new order via Smart Matching')}</p>
           </div>
         ) : (
           <div className="divide-y divide-[#ccd5ae]/30">
@@ -272,16 +288,16 @@ export const OrdersPage: React.FC = () => {
                           <span className="text-slate-300">•</span>
                           <span className="font-mono text-[11px] text-slate-500 font-semibold">{order.batchId}</span>
                           <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${STATUS_STYLES[order.status] || 'bg-slate-100 text-slate-700'}`}>
-                            {order.status}
+                            {t('orderStatus.' + order.status, order.status)}
                           </span>
                         </div>
 
                         <h4 className="text-base font-bold text-slate-900 mt-1.5">
-                          {order.crop} ({order.variety || 'Hybrid'}) • <span className="font-mono text-[#01472e]">{order.quantityKg.toLocaleString()} kg</span> @ ₹{order.pricePerKg}/kg
+                          {order.crop} ({order.variety || t('common.hybrid', 'Hybrid')}) • <span className="font-mono text-[#01472e]">{order.quantityKg.toLocaleString()} kg</span> @ ₹{order.pricePerKg}/kg
                         </h4>
 
                         <p className="text-xs text-slate-500 mt-0.5">
-                          From: <strong className="text-slate-700 font-medium">{order.farmerName}</strong> ({order.farmerLocation}) ➔ To: <strong className="text-slate-700 font-medium">{order.buyerName}</strong> ({order.deliveryLocation})
+                          {t('common.from', 'From')}: <strong className="text-slate-700 font-medium">{order.farmerName}</strong> ({order.farmerLocation}) ➔ {t('common.to', 'To')}: <strong className="text-slate-700 font-medium">{order.buyerName}</strong> ({order.deliveryLocation})
                         </p>
                       </div>
                     </div>
@@ -289,7 +305,7 @@ export const OrdersPage: React.FC = () => {
                     {/* Right side Value & Actions */}
                     <div className="flex items-center gap-4 self-end md:self-center">
                       <div className="text-right">
-                        <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold">Order Value</span>
+                        <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold">{t('orders.orderValue', 'Order Value')}</span>
                         <span className="text-lg font-bold font-mono text-[#01472e]">₹{order.totalValue.toLocaleString()}</span>
                       </div>
 
@@ -303,14 +319,14 @@ export const OrdersPage: React.FC = () => {
                           className="btn-primary px-4 py-2 text-xs font-semibold rounded-xl shadow-soft flex items-center gap-1.5 animate-pulse cursor-pointer"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>Accept & Confirm</span>
+                          <span>{t('orders.acceptAndConfirm', 'Accept & Confirm')}</span>
                         </button>
                       )}
 
                       {order.buyerConfirmation && (
                         <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#01472e] bg-[#eaf4ec] border border-[#a3b18a]/50 px-3 py-1.5 rounded-xl shadow-xs">
                           <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e]" />
-                          <span>Receipt Confirmed ({order.buyerConfirmation.acceptedQuantityKg} kg)</span>
+                          <span>{t('orders.receiptConfirmed', 'Receipt Confirmed')} ({order.buyerConfirmation.acceptedQuantityKg} kg)</span>
                         </span>
                       )}
 
@@ -324,7 +340,7 @@ export const OrdersPage: React.FC = () => {
                           className="btn-primary text-xs font-semibold flex items-center gap-1.5 py-2 px-3.5 rounded-xl shadow-soft cursor-pointer"
                         >
                           <CreditCard className="w-3.5 h-3.5" />
-                          <span>{isCompleted ? 'Receipt' : 'Escrow Payout'}</span>
+                          <span>{isCompleted ? t('orders.receipt', 'Receipt') : t('orders.escrowPayout', 'Escrow Payout')}</span>
                         </button>
                       )}
 
@@ -334,7 +350,7 @@ export const OrdersPage: React.FC = () => {
                           openPassportModal(order.batchId);
                         }}
                         className="p-2 text-slate-400 hover:text-[#01472e] hover:bg-[#eaf4ec] rounded-xl transition cursor-pointer"
-                        title="View Produce Digital Passport"
+                        title={t('orders.viewProducePassport', 'View Produce Digital Passport')}
                       >
                         <QrCode className="w-4 h-4" />
                       </button>
@@ -351,21 +367,23 @@ export const OrdersPage: React.FC = () => {
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                         {/* 1. Transaction Details */}
                         <div className="bg-white p-5 rounded-2xl border border-[#ccd5ae]/50 text-xs space-y-2.5 shadow-xs">
-                          <h5 className="font-bold text-[#01472e] text-xs uppercase tracking-wider mb-2 pb-1.5 border-b border-[#ccd5ae]/30">Transaction Metadata</h5>
+                          <h5 className="font-bold text-[#01472e] text-xs uppercase tracking-wider mb-2 pb-1.5 border-b border-[#ccd5ae]/30">
+                            {t('orders.transactionMetadata', 'Transaction Metadata')}
+                          </h5>
                           <div className="flex justify-between text-slate-600">
-                            <span>Agreement ID:</span>
+                            <span>{t('orders.agreementId', 'Agreement ID')}:</span>
                             <strong className="font-mono text-slate-800 font-semibold">{order.agreementId || 'AGR-DIRECT'}</strong>
                           </div>
                           <div className="flex justify-between text-slate-600">
-                            <span>Quality Grade:</span>
+                            <span>{t('common.grade', 'Quality Grade')}:</span>
                             <strong className="text-[#01472e] font-bold">{order.qualityGrade}</strong>
                           </div>
                           <div className="flex justify-between text-slate-600">
-                            <span>Order Date:</span>
+                            <span>{t('orders.orderDate', 'Order Date')}:</span>
                             <strong className="text-slate-800 font-medium">{order.date}</strong>
                           </div>
                           <div className="flex justify-between text-slate-600">
-                            <span>Batch QR:</span>
+                            <span>{t('orders.batchQr', 'Batch QR')}:</span>
                             <button
                               onClick={() => openPassportModal(order.batchId)}
                               className="text-emerald-700 font-medium hover:underline flex items-center gap-1"
@@ -376,51 +394,55 @@ export const OrdersPage: React.FC = () => {
                           </div>
                           {order.transportDetails && (
                             <div className="mt-3 pt-3 border-t border-slate-100 space-y-1">
-                              <span className="font-medium text-slate-800 block">Assigned Transport:</span>
+                              <span className="font-medium text-slate-800 block">{t('orders.assignedTransport', 'Assigned Transport')}:</span>
                               <p className="text-[11px] text-slate-600 font-normal">
                                 {order.transportDetails.carrierName} • {order.transportDetails.vehicleNumber} ({order.transportDetails.vehicleType})
                               </p>
-                              <p className="text-[11px] text-slate-500 font-normal">Driver: {order.transportDetails.driverName}</p>
+                              <p className="text-[11px] text-slate-500 font-normal">{t('orders.driver', 'Driver')}: {order.transportDetails.driverName}</p>
                             </div>
                           )}
                         </div>
 
                         {/* 2. Quality Metrics if checked */}
                         <div className="bg-white p-4 rounded-xl border border-slate-200 text-xs space-y-2">
-                          <h5 className="font-medium text-slate-900 text-xs uppercase tracking-wider mb-2">Quality & Grading Verification</h5>
+                          <h5 className="font-medium text-slate-900 text-xs uppercase tracking-wider mb-2">
+                            {t('orders.qualityVerification', 'Quality & Grading Verification')}
+                          </h5>
                           {order.inspectionMetrics ? (
                             <div className="space-y-1.5 text-slate-600">
                               <div className="flex justify-between">
-                                <span>Sugar Content (Brix):</span>
+                                <span>{t('fpo.sugarBrix', 'Sugar Content (Brix)')}:</span>
                                 <strong className="text-slate-800 font-medium">{order.inspectionMetrics.sugarBrix}° Bx</strong>
                               </div>
                               <div className="flex justify-between">
-                                <span>Firmness:</span>
+                                <span>{t('fpo.firmness', 'Firmness')}:</span>
                                 <strong className="text-slate-800 font-medium">{order.inspectionMetrics.firmnessKgCm} kg/cm²</strong>
                               </div>
                               <div className="flex justify-between">
-                                <span>Moisture:</span>
+                                <span>{t('fpo.moisture', 'Moisture')}:</span>
                                 <strong className="text-slate-800 font-medium">{order.inspectionMetrics.moistureContent}</strong>
                               </div>
                               <div className="flex justify-between">
-                                <span>Pesticide Residue:</span>
+                                <span>{t('fpo.pesticideResidue', 'Pesticide Residue')}:</span>
                                 <strong className="text-emerald-700 font-semibold">{order.inspectionMetrics.pesticideResidueTest}</strong>
                               </div>
                               <div className="mt-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500 font-normal">
-                                Certified by: <strong className="text-slate-700 font-medium">{order.inspectionMetrics.inspectorName}</strong> ({order.inspectionMetrics.hubLocation})
+                                {t('orders.certifiedBy', 'Certified by')}: <strong className="text-slate-700 font-medium">{order.inspectionMetrics.inspectorName}</strong> ({order.inspectionMetrics.hubLocation})
                               </div>
                             </div>
                           ) : (
                             <div className="py-6 text-center text-slate-400">
                               <ShieldCheck className="w-6 h-6 mx-auto mb-1 text-slate-300" />
-                              <p className="text-[11px] font-normal">Quality inspection pending at FPO Aggregation Hub</p>
+                              <p className="text-[11px] font-normal">{t('orders.qualityPending', 'Quality inspection pending at FPO Aggregation Hub')}</p>
                             </div>
                           )}
                         </div>
 
                         {/* 3. Real-Time Workflow Timeline */}
                         <div className="bg-white p-4 rounded-xl border border-slate-200 text-xs">
-                          <h5 className="font-medium text-slate-900 text-xs uppercase tracking-wider mb-3">Workflow Lifecycle Events</h5>
+                          <h5 className="font-medium text-slate-900 text-xs uppercase tracking-wider mb-3">
+                            {t('orders.lifecycleEvents', 'Workflow Lifecycle Events')}
+                          </h5>
                           <div className="space-y-3 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
                             {order.timeline.map((event, idx) => (
                               <div key={idx} className="flex items-start gap-3 relative">
@@ -441,7 +463,7 @@ export const OrdersPage: React.FC = () => {
                                     {event.location} • <span className="font-mono">{event.timestamp}</span>
                                   </p>
                                   {event.operator && (
-                                    <p className="text-[10px] text-slate-400 font-normal">By: {event.operator}</p>
+                                    <p className="text-[10px] text-slate-400 font-normal">{t('common.by', 'By')}: {event.operator}</p>
                                   )}
                                 </div>
                               </div>
@@ -469,10 +491,10 @@ export const OrdersPage: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-[#01472e] tracking-tight">
-                    Dockside Produce Inspection & Receiving Handover
+                    {t('orders.docksideTitle', 'Dockside Produce Inspection & Receiving Handover')}
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Order <span className="font-mono font-bold text-slate-800">{verifyOrder.id}</span> • Batch <span className="font-mono font-bold text-slate-800">{verifyOrder.batchId}</span>
+                    {t('orders.orderId', 'Order')} <span className="font-mono font-bold text-slate-800">{verifyOrder.id}</span> • {t('traceability.batchId', 'Batch')} <span className="font-mono font-bold text-slate-800">{verifyOrder.batchId}</span>
                   </p>
                 </div>
               </div>
@@ -487,26 +509,26 @@ export const OrdersPage: React.FC = () => {
             {/* Shipment Summary */}
             <div className="p-4 sm:p-5 bg-[#faf9f5] rounded-3xl border border-[#ccd5ae]/50 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs shadow-xs">
               <div>
-                <span className="text-[10px] text-slate-400 font-semibold uppercase block">Produce</span>
+                <span className="text-[10px] text-slate-400 font-semibold uppercase block">{t('farmer.cropName', 'Produce')}</span>
                 <strong className="text-slate-800 text-sm font-bold">{verifyOrder.crop}</strong>
                 <span className="text-[10px] text-slate-500 block font-medium">({verifyOrder.variety})</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 font-semibold uppercase block">Delivered Volume</span>
+                <span className="text-[10px] text-slate-400 font-semibold uppercase block">{t('orders.deliveredVolume', 'Delivered Volume')}</span>
                 <strong className="text-[#01472e] text-sm font-mono font-bold">
                   {(verifyOrder.packedQuantityKg || verifyOrder.quantityKg).toLocaleString()} kg
                 </strong>
                 <span className="text-[10px] text-slate-500 block font-medium">
-                  {verifyOrder.crateCount || Math.ceil((verifyOrder.packedQuantityKg || verifyOrder.quantityKg) / 25)} Crates
+                  {verifyOrder.crateCount || Math.ceil((verifyOrder.packedQuantityKg || verifyOrder.quantityKg) / 25)} {t('orders.crates', 'Crates')}
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 font-semibold uppercase block">Contract Rate</span>
+                <span className="text-[10px] text-slate-400 font-semibold uppercase block">{t('orders.contractRate', 'Contract Rate')}</span>
                 <strong className="text-slate-800 text-sm font-bold">₹{verifyOrder.pricePerKg}/kg</strong>
-                <span className="text-[10px] text-slate-500 block font-medium">Grade {verifyOrder.qualityGrade || 'A'}</span>
+                <span className="text-[10px] text-slate-500 block font-medium">{t('common.grade', 'Grade')} {verifyOrder.qualityGrade || 'A'}</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 font-semibold uppercase block">Inbound Carrier</span>
+                <span className="text-[10px] text-slate-400 font-semibold uppercase block">{t('orders.inboundCarrier', 'Inbound Carrier')}</span>
                 <strong className="text-slate-800 text-xs truncate block font-bold">
                   {verifyOrder.transportDetails?.carrierName || 'Cold-Chain Express'}
                 </strong>
@@ -520,7 +542,7 @@ export const OrdersPage: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="font-semibold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
-                    Gross Received (kg)
+                    {t('orders.grossReceived', 'Gross Received (kg)')}
                   </label>
                   <input
                     type="number"
@@ -537,7 +559,7 @@ export const OrdersPage: React.FC = () => {
 
                 <div>
                   <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1 text-[10px]">
-                    Accepted Volume (kg)
+                    {t('orders.acceptedVolume', 'Accepted Volume (kg)')}
                   </label>
                   <input
                     type="number"
@@ -557,7 +579,7 @@ export const OrdersPage: React.FC = () => {
 
                 <div>
                   <label className="font-semibold text-rose-700 uppercase tracking-wider block mb-1 text-[10px]">
-                    Rejected (kg)
+                    {t('orders.rejectedVolume', 'Rejected (kg)')}
                   </label>
                   <input
                     type="number"
@@ -577,13 +599,13 @@ export const OrdersPage: React.FC = () => {
 
               <div>
                 <label className="font-semibold text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">
-                  Quality Gate Signoff Decision
+                  {t('orders.qualityDecision', 'Quality Gate Signoff Decision')}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {[
-                    { id: 'ACCEPTED_FULL', label: 'Full Acceptance (100%)', desc: 'Conforms to Grade A standard' },
-                    { id: 'ACCEPTED_PARTIAL', label: 'Partial Acceptance', desc: 'Deduct defective volume' },
-                    { id: 'REJECTED', label: 'Consignment Rejected', desc: 'Quality failure or damage' }
+                    { id: 'ACCEPTED_FULL', label: t('orders.fullAcceptance', 'Full Acceptance (100%)'), desc: t('orders.fullAcceptanceDesc', 'Conforms to Grade A standard') },
+                    { id: 'ACCEPTED_PARTIAL', label: t('orders.partialAcceptance', 'Partial Acceptance'), desc: t('orders.partialAcceptanceDesc', 'Deduct defective volume') },
+                    { id: 'REJECTED', label: t('orders.consignmentRejected', 'Consignment Rejected'), desc: t('orders.rejectedDesc', 'Quality failure or damage') }
                   ].map((opt) => (
                     <button
                       key={opt.id}
@@ -618,21 +640,21 @@ export const OrdersPage: React.FC = () => {
 
               <div>
                 <label className="font-semibold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
-                  Receiving Inspection Remarks & Cold-Chain Observations
+                  {t('orders.receivingRemarks', 'Receiving Inspection Remarks & Cold-Chain Observations')}
                 </label>
                 <textarea
                   value={issuesReported}
                   onChange={(e) => setIssuesReported(e.target.value)}
                   rows={2}
                   className="input-modern w-full rounded-2xl p-3 text-slate-800 text-xs"
-                  placeholder="Record cold-chain temp log, crate condition, or defect notes..."
+                  placeholder={t('orders.receivingRemarksPlaceholder', 'Record cold-chain temp log, crate condition, or defect notes...')}
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-semibold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
-                    Receiving Officer Name
+                    {t('orders.receiverName', 'Receiving Officer Name')}
                   </label>
                   <input
                     type="text"
@@ -645,7 +667,7 @@ export const OrdersPage: React.FC = () => {
 
                 <div>
                   <label className="font-semibold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
-                    Officer Designation
+                    {t('orders.receiverRole', 'Officer Designation')}
                   </label>
                   <input
                     type="text"
@@ -660,11 +682,10 @@ export const OrdersPage: React.FC = () => {
               <div className="p-4 bg-[#eaf4ec] rounded-2xl border border-[#a3b18a]/50 text-xs text-[#01472e] space-y-1 shadow-xs">
                 <div className="flex items-center gap-2 font-bold text-[#01472e]">
                   <ShieldCheck className="w-4 h-4 text-[#01472e]" />
-                  <span>Transparent Escrow Payout Impact</span>
+                  <span>{t('orders.escrowImpact', 'Transparent Escrow Payout Impact')}</span>
                 </div>
                 <p className="text-[11px] leading-relaxed text-[#01472e]/80">
-                  Signing locks accepted volume at <strong className="font-bold text-[#01472e]">{acceptedKg.toLocaleString()} kg</strong> (₹{(acceptedKg * verifyOrder.pricePerKg).toLocaleString()}).
-                  Escrow automatically releases 89% to member farmers / FPO and 8% to cold-chain logistics.
+                  {t('orders.escrowImpactDesc', 'Signing locks accepted volume at')} <strong className="font-bold text-[#01472e]">{acceptedKg.toLocaleString()} kg</strong> (₹{(acceptedKg * verifyOrder.pricePerKg).toLocaleString()}). {t('orders.escrowSplitDesc', 'Escrow automatically releases 89% to member farmers / FPO and 8% to cold-chain logistics.')}
                 </p>
               </div>
 
@@ -674,14 +695,14 @@ export const OrdersPage: React.FC = () => {
                   onClick={() => setVerifyOrder(null)}
                   className="btn-secondary px-4 py-2.5 rounded-xl font-semibold uppercase tracking-wider transition cursor-pointer text-xs"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="btn-primary px-5 py-2.5 rounded-xl shadow-soft font-semibold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer text-xs"
                 >
                   <FileCheck2 className="w-4 h-4" />
-                  <span>Confirm Receipt & Release Escrow</span>
+                  <span>{t('orders.confirmReleaseEscrow', 'Confirm Receipt & Release Escrow')}</span>
                 </button>
               </div>
             </form>

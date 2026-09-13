@@ -22,6 +22,7 @@ import {
   QrCode
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useLanguage } from '../context/LanguageContext';
 
 export const SettlementPage: React.FC = () => {
   const {
@@ -34,6 +35,8 @@ export const SettlementPage: React.FC = () => {
     openPassportModal,
     setActiveTab
   } = useApp();
+
+  const { t } = useLanguage();
 
   const [filterStatus, setFilterStatus] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED'>('ALL');
   const [selectedSettlementId, setSelectedSettlementId] = useState<string | null>(
@@ -147,13 +150,13 @@ export const SettlementPage: React.FC = () => {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 bg-[#fefae0]/15 border border-[#fefae0]/25 px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-[#fefae0]">
               <CreditCard className="w-3.5 h-3.5 text-[#fefae0]" />
-              <span>Automated Escrow Disbursement & Direct Realization</span>
+              <span>{t('settlement.escrowDisbursement', 'Automated Escrow Disbursement & Direct Realization')}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-              Settlement & Net Realization
+              {t('settlement.title', 'Settlement & Net Realization')}
             </h1>
             <p className="text-sm text-emerald-100/80 max-w-2xl leading-relaxed font-normal">
-              Transparent automated escrow disbursement triggered upon buyer dockside delivery signoff. 89% direct farmer realization, zero middlemen commissions, zero 90-day credit lag.
+              {t('settlement.subtitle', 'Transparent automated escrow disbursement triggered upon buyer dockside delivery signoff. 89% direct farmer realization, zero middlemen commissions, zero 90-day credit lag.')}
             </p>
           </div>
 
@@ -163,7 +166,7 @@ export const SettlementPage: React.FC = () => {
               className="flex items-center gap-2 bg-[#fefae0] hover:bg-white text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-soft hover:shadow-md transition-all cursor-pointer"
             >
               <Download className="w-4 h-4 text-[#01472e]" />
-              <span>{downloading ? 'Exporting PDF...' : 'Download Tax Invoice'}</span>
+              <span>{downloading ? t('settlement.exportingPdf', 'Exporting PDF...') : t('settlement.downloadInvoice', 'Download Tax Invoice')}</span>
             </button>
           </div>
         </div>
@@ -176,12 +179,10 @@ export const SettlementPage: React.FC = () => {
         </div>
         <div className="space-y-1">
           <strong className="text-sm font-bold text-[#01472e] block">
-            Verifiable Escrow Architecture & Operational Scope
+            {t('settlement.architectureTitle', 'Verifiable Escrow Architecture & Operational Scope')}
           </strong>
           <p className="leading-relaxed text-xs text-slate-600 font-normal">
-            This module provides a connected, prototype-safe simulation of the <strong>RBI UPI e-RUPI programmable escrow ledger</strong>.
-            All simulated UTR numbers, settlement splits (89% farmer / 8% logistics / 3% platform),
-            and multi-farmer contributions reflect actual application orders and verifiable accounting rules.
+            {t('settlement.architectureDesc', 'This module provides a connected, prototype-safe simulation of the RBI UPI e-RUPI programmable escrow ledger. All simulated UTR numbers, settlement splits (89% farmer / 8% logistics / 3% platform), and multi-farmer contributions reflect actual application orders and verifiable accounting rules.')}
           </p>
         </div>
       </div>
@@ -190,37 +191,37 @@ export const SettlementPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <div className="agri-card bg-white rounded-3xl border border-[#ccd5ae]/40 p-6 shadow-soft hover:border-[#a3b18a] transition">
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
-            Total Settled Payouts
+            {t('settlement.totalSettledPayouts', 'Total Settled Payouts')}
           </span>
           <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-[#01472e]">
             ₹{totalSettledAmount.toLocaleString()}
           </p>
           <span className="text-xs text-slate-500 font-medium mt-1.5 block">
-            {settlements.filter((s) => isCompletedStatus(s.status)).length} Transactions Completed
+            {settlements.filter((s) => isCompletedStatus(s.status)).length} {t('settlement.transactionsCompleted', 'Transactions Completed')}
           </span>
         </div>
 
         <div className="agri-card bg-white rounded-3xl border border-[#ccd5ae]/40 p-6 shadow-soft hover:border-[#a3b18a] transition">
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
-            Locked in Escrow (Awaiting Payout)
+            {t('settlement.pendingEscrow', 'Locked in Escrow (Awaiting Payout)')}
           </span>
           <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-amber-700">
             ₹{totalPendingAmount.toLocaleString()}
           </p>
           <span className="text-xs text-amber-700 font-medium mt-1.5 block">
-            {settlements.filter((s) => !isCompletedStatus(s.status)).length} Orders in Settlement Pipeline
+            {settlements.filter((s) => !isCompletedStatus(s.status)).length} {t('settlement.ordersInPipeline', 'Orders in Settlement Pipeline')}
           </span>
         </div>
 
         <div className="agri-card bg-white rounded-3xl border border-[#ccd5ae]/40 p-6 shadow-soft hover:border-[#a3b18a] transition">
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
-            Average Farmer Net Realization
+            {t('settlement.avgRealization', 'Average Farmer Net Realization')}
           </span>
           <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-[#01472e]">
             88.9%
           </p>
           <span className="text-xs text-slate-500 font-medium mt-1.5 block">
-            vs. 45-55% Traditional Mandi APMC Realization
+            {t('settlement.mandiComparison', 'vs. 45-55% Traditional Mandi APMC Realization')}
           </span>
         </div>
       </div>
@@ -229,7 +230,7 @@ export const SettlementPage: React.FC = () => {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#01472e]">Filter:</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#01472e]">{t('common.filter', 'Filter')}:</span>
             <div className="inline-flex bg-white p-1 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
               {(['ALL', 'IN_PROGRESS', 'COMPLETED'] as const).map((st) => (
                 <button
@@ -241,13 +242,17 @@ export const SettlementPage: React.FC = () => {
                       : 'text-slate-600 hover:text-[#01472e]'
                   }`}
                 >
-                  {st === 'IN_PROGRESS' ? 'In Settlement' : st === 'ALL' ? 'All Settlements' : 'Completed'}
+                  {st === 'IN_PROGRESS'
+                    ? t('settlement.inSettlement', 'In Settlement')
+                    : st === 'ALL'
+                    ? t('settlement.allSettlements', 'All Settlements')
+                    : t('common.completed', 'Completed')}
                 </button>
               ))}
             </div>
           </div>
           <span className="text-xs text-slate-500 font-medium font-mono">
-            Showing {filteredSettlements.length} of {settlements.length} Escrow Records
+            {t('settlement.showingRecords', 'Showing {count} of {total} Escrow Records', { count: filteredSettlements.length, total: settlements.length })}
           </span>
         </div>
 
@@ -279,23 +284,23 @@ export const SettlementPage: React.FC = () => {
                           : 'bg-amber-50 text-amber-800 border-amber-200'
                       }`}
                     >
-                      {s.status}
+                      {t('orderStatus.' + s.status, s.status)}
                     </span>
                   </div>
                   <h4 className="font-bold text-lg text-slate-900 tracking-tight">
                     {s.crop} • <span className="font-mono text-[#01472e]">{s.quantityKg.toLocaleString()} kg</span>
                   </h4>
                   <p className="text-xs text-slate-600 mt-1 font-medium">
-                    Beneficiary: <strong className="text-slate-900 font-bold">{s.farmerOrFpoName}</strong>
+                    {t('settlement.beneficiary', 'Beneficiary')}: <strong className="text-slate-900 font-bold">{s.farmerOrFpoName}</strong>
                   </p>
                   <p className="text-[11px] text-slate-400 mt-0.5 font-medium">
-                    {farmerCount} Participating Member Farmer{farmerCount > 1 ? 's' : ''}
+                    {farmerCount} {t('settlement.participatingFarmers', 'Participating Member Farmers')}
                   </p>
                 </div>
 
                 <div className="mt-4 pt-3.5 border-t border-[#ccd5ae]/30 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block">Net Payout</span>
+                    <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block">{t('settlement.netPayout', 'Net Payout')}</span>
                     <span className="text-base font-bold font-mono text-[#01472e]">₹{s.farmerAmount.toLocaleString()}</span>
                   </div>
 
@@ -308,12 +313,12 @@ export const SettlementPage: React.FC = () => {
                       disabled={processingStage === 'instant'}
                       className="btn-primary px-3.5 py-1.5 text-xs font-semibold rounded-xl shadow-xs transition cursor-pointer"
                     >
-                      {processingStage === 'instant' ? 'Processing...' : 'Disburse'}
+                      {processingStage === 'instant' ? t('common.processing', 'Processing...') : t('settlement.disburse', 'Disburse')}
                     </button>
                   ) : (
                     <span className="text-xs font-mono text-[#01472e] font-bold flex items-center gap-1">
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e]" />
-                      <span>Settled</span>
+                      <span>{t('common.completed', 'Settled')}</span>
                     </span>
                   )}
                 </div>
@@ -330,7 +335,7 @@ export const SettlementPage: React.FC = () => {
             <div>
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="font-mono text-xs text-slate-500 font-bold uppercase tracking-wider bg-[#faf9f5] px-2.5 py-0.5 rounded border border-[#ccd5ae]/40">
-                  Order ID: {activeSettlement.orderId}
+                  {t('orders.orderId', 'Order ID')}: {activeSettlement.orderId}
                 </span>
                 <span className="text-slate-300">•</span>
                 <span
@@ -340,27 +345,27 @@ export const SettlementPage: React.FC = () => {
                       : 'bg-amber-50 text-amber-800 border-amber-200 animate-pulse'
                   }`}
                 >
-                  ESCROW: {activeSettlement.status}
+                  {t('settlement.escrow', 'ESCROW')}: {t('orderStatus.' + activeSettlement.status, activeSettlement.status)}
                 </span>
               </div>
               <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mt-2">
                 {activeSettlement.crop} • <span className="font-mono text-[#01472e]">{activeSettlement.quantityKg.toLocaleString()} kg</span>
               </h3>
               <p className="text-xs sm:text-sm font-medium text-slate-500 mt-1">
-                Buyer: <strong className="text-slate-800">{activeSettlement.buyerName}</strong> ➔ Beneficiary: <strong className="text-slate-800">{activeSettlement.farmerOrFpoName}</strong>
+                {t('orders.buyer', 'Buyer')}: <strong className="text-slate-800">{activeSettlement.buyerName}</strong> ➔ {t('settlement.beneficiary', 'Beneficiary')}: <strong className="text-slate-800">{activeSettlement.farmerOrFpoName}</strong>
               </p>
             </div>
 
             <div className="text-right flex flex-col md:items-end gap-1.5">
               <div>
                 <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block mb-0.5">
-                  Total Landed Order Value
+                  {t('settlement.totalLandedValue', 'Total Landed Order Value')}
                 </span>
                 <span className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-[#01472e]">
                   ₹{activeSettlement.totalOrderValue.toLocaleString()}
                 </span>
                 <span className="text-xs text-slate-500 block font-medium font-mono mt-0.5">
-                  @ ₹{(activeSettlement.totalOrderValue / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg Landed
+                  @ ₹{(activeSettlement.totalOrderValue / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg {t('settlement.landed', 'Landed')}
                 </span>
               </div>
 
@@ -373,8 +378,8 @@ export const SettlementPage: React.FC = () => {
                   <Sparkles className="w-3.5 h-3.5 text-[#fefae0]" />
                   <span>
                     {processingStage === 'instant'
-                      ? 'Executing Automated Payout...'
-                      : `Instant 1-Click Payout (₹${activeSettlement.farmerAmount.toLocaleString()})`}
+                      ? t('settlement.executingPayout', 'Executing Automated Payout...')
+                      : `${t('settlement.instantPayout', 'Instant 1-Click Payout')} (₹${activeSettlement.farmerAmount.toLocaleString()})`}
                   </span>
                 </button>
               )}
@@ -385,10 +390,10 @@ export const SettlementPage: React.FC = () => {
           <div className="bg-[#faf9f5] rounded-3xl border border-[#ccd5ae]/50 p-6 space-y-4 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#01472e] uppercase tracking-wider">
-                Connected Escrow Execution Pipeline
+                {t('settlement.pipelineTitle', 'Connected Escrow Execution Pipeline')}
               </span>
               <span className="text-xs font-bold text-[#01472e] font-mono">
-                Stage {Math.min(5, currentStageNum)} of 5
+                {t('settlement.stageOf', 'Stage {stage} of 5', { stage: Math.min(5, currentStageNum) })}
               </span>
             </div>
 
@@ -396,36 +401,36 @@ export const SettlementPage: React.FC = () => {
               {[
                 {
                   stage: 1,
-                  title: 'Buyer Delivery Verified',
-                  subtitle: 'Dockside inspection signoff',
+                  title: t('settlement.stage1Title', 'Buyer Delivery Verified'),
+                  subtitle: t('settlement.stage1Desc', 'Dockside inspection signoff'),
                   isDone: true,
                   isActive: false
                 },
                 {
                   stage: 2,
-                  title: 'Buyer Payment Recorded',
-                  subtitle: activeSettlement.buyerPaymentReference || 'Escrow deposit funding',
+                  title: t('settlement.stage2Title', 'Buyer Payment Recorded'),
+                  subtitle: activeSettlement.buyerPaymentReference || t('settlement.stage2Desc', 'Escrow deposit funding'),
                   isDone: currentStageNum >= 2,
                   isActive: currentStageNum === 1
                 },
                 {
                   stage: 3,
-                  title: 'FPO & Transport Share',
-                  subtitle: '8% Cold-chain allocation',
+                  title: t('settlement.stage3Title', 'FPO & Transport Share'),
+                  subtitle: t('settlement.stage3Desc', '8% Cold-chain allocation'),
                   isDone: currentStageNum >= 3,
                   isActive: currentStageNum === 2
                 },
                 {
                   stage: 4,
-                  title: 'Farmer Net Direct Payout',
-                  subtitle: '89% direct NEFT / e-RUPI',
+                  title: t('settlement.stage4Title', 'Farmer Net Direct Payout'),
+                  subtitle: t('settlement.stage4Desc', '89% direct NEFT / e-RUPI'),
                   isDone: currentStageNum >= 5,
                   isActive: currentStageNum === 3 || currentStageNum === 4
                 },
                 {
                   stage: 5,
-                  title: 'Transaction Completed',
-                  subtitle: 'Escrow closed with audit UTR',
+                  title: t('settlement.stage5Title', 'Transaction Completed'),
+                  subtitle: t('settlement.stage5Desc', 'Escrow closed with audit UTR'),
                   isDone: currentStageNum >= 6,
                   isActive: currentStageNum === 5
                 }
@@ -441,7 +446,7 @@ export const SettlementPage: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold font-mono">STEP {st.stage}</span>
+                    <span className="text-[10px] font-bold font-mono">{t('common.step', 'STEP')} {st.stage}</span>
                     {st.isDone && <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e]" />}
                   </div>
                   <p className="font-bold text-xs leading-tight text-slate-900">{st.title}</p>
@@ -453,12 +458,12 @@ export const SettlementPage: React.FC = () => {
             {/* Stage Action Controls */}
             <div className="pt-3 border-t border-[#ccd5ae]/30 flex flex-wrap items-center justify-between gap-3">
               <span className="text-xs text-slate-600 font-medium">
-                {currentStageNum === 1 && 'Action required: Record buyer payment / escrow deposit.'}
-                {currentStageNum === 2 && 'Action required: Process 8% FPO and cold-chain logistics allocation.'}
-                {currentStageNum === 3 && 'Action required: Initiate direct NEFT batch payouts to member farmers.'}
-                {currentStageNum === 4 && 'Action required: Finalize remaining farmer payouts.'}
-                {currentStageNum === 5 && 'Action required: Finalize and close the escrow transaction ledger.'}
-                {currentStageNum >= 6 && '✓ All funds disbursed. Transaction completed and verified.'}
+                {currentStageNum === 1 && t('settlement.actionStage1', 'Action required: Record buyer payment / escrow deposit.')}
+                {currentStageNum === 2 && t('settlement.actionStage2', 'Action required: Process 8% FPO and cold-chain logistics allocation.')}
+                {currentStageNum === 3 && t('settlement.actionStage3', 'Action required: Initiate direct NEFT batch payouts to member farmers.')}
+                {currentStageNum === 4 && t('settlement.actionStage4', 'Action required: Finalize remaining farmer payouts.')}
+                {currentStageNum === 5 && t('settlement.actionStage5', 'Action required: Finalize and close the escrow transaction ledger.')}
+                {currentStageNum >= 6 && t('settlement.actionCompleted', '✓ All funds disbursed. Transaction completed and verified.')}
               </span>
 
               <div className="flex items-center gap-2">
@@ -468,7 +473,7 @@ export const SettlementPage: React.FC = () => {
                     disabled={processingStage === 'buyer-pay'}
                     className="btn-primary text-xs py-2 px-4 rounded-xl shadow-soft font-semibold"
                   >
-                    {processingStage === 'buyer-pay' ? 'Recording...' : 'Record Buyer Payment →'}
+                    {processingStage === 'buyer-pay' ? t('common.processing', 'Recording...') : t('settlement.recordBuyerPayment', 'Record Buyer Payment →')}
                   </button>
                 )}
 
@@ -478,7 +483,7 @@ export const SettlementPage: React.FC = () => {
                     disabled={processingStage === 'fpo-process'}
                     className="btn-primary text-xs py-2 px-4 rounded-xl shadow-soft font-semibold"
                   >
-                    {processingStage === 'fpo-process' ? 'Processing...' : 'Process FPO & Logistics (8%) →'}
+                    {processingStage === 'fpo-process' ? t('common.processing', 'Processing...') : t('settlement.processFpoLogistics', 'Process FPO & Logistics (8%) →')}
                   </button>
                 )}
 
@@ -488,7 +493,7 @@ export const SettlementPage: React.FC = () => {
                     disabled={Boolean(processingStage)}
                     className="btn-primary text-xs py-2 px-4 rounded-xl shadow-soft font-semibold"
                   >
-                    {processingStage === 'farmer-all' ? 'Disbursing...' : 'Disburse All Farmers (89%) →'}
+                    {processingStage === 'farmer-all' ? t('settlement.disbursing', 'Disbursing...') : t('settlement.disburseAllFarmers', 'Disburse All Farmers (89%) →')}
                   </button>
                 )}
 
@@ -498,7 +503,7 @@ export const SettlementPage: React.FC = () => {
                     disabled={processingStage === 'complete'}
                     className="btn-primary text-xs py-2 px-4 rounded-xl shadow-soft font-semibold"
                   >
-                    {processingStage === 'complete' ? 'Closing...' : 'Close & Finalize Transaction'}
+                    {processingStage === 'complete' ? t('settlement.closing', 'Closing...') : t('settlement.closeFinalize', 'Close & Finalize Transaction')}
                   </button>
                 )}
               </div>
@@ -512,17 +517,17 @@ export const SettlementPage: React.FC = () => {
                 <div>
                   <div className="flex items-center gap-2 text-[#01472e] text-xs font-bold uppercase tracking-wider mb-1">
                     <Users className="w-3.5 h-3.5 text-[#01472e]" />
-                    <span>Member Farm Granular Accounting</span>
+                    <span>{t('settlement.memberAccounting', 'Member Farm Granular Accounting')}</span>
                   </div>
                   <h4 className="text-lg font-bold text-slate-900 tracking-tight">
-                    Multi-Farmer Settlement Ledger
+                    {t('settlement.multiFarmerLedger', 'Multi-Farmer Settlement Ledger')}
                   </h4>
                   <p className="text-xs text-slate-500 font-normal">
-                    Farmer-level contribution accounting with preserved source provenance and direct bank NEFT credits
+                    {t('settlement.multiFarmerDesc', 'Farmer-level contribution accounting with preserved source provenance and direct bank NEFT credits')}
                   </p>
                 </div>
                 <span className="text-xs font-bold text-[#01472e] bg-white px-3.5 py-1 rounded-xl border border-[#ccd5ae]/50 font-mono">
-                  {activeSettlement.farmerBreakdown.length} Participating Farmer{activeSettlement.farmerBreakdown.length > 1 ? 's' : ''}
+                  {activeSettlement.farmerBreakdown.length} {t('settlement.participatingFarmers', 'Participating Farmers')}
                 </span>
               </div>
 
@@ -530,14 +535,14 @@ export const SettlementPage: React.FC = () => {
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="bg-white/80 border-b border-[#ccd5ae]/40 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                      <th className="p-3">Farmer & Location</th>
-                      <th className="p-3">Volume</th>
-                      <th className="p-3">Agreed Rate</th>
-                      <th className="p-3">Gross Value</th>
-                      <th className="p-3">Net Realization (89%)</th>
-                      <th className="p-3">Status</th>
-                      <th className="p-3">Bank UTR</th>
-                      <th className="p-3 text-right">Action</th>
+                      <th className="p-3">{t('settlement.colFarmerLocation', 'Farmer & Location')}</th>
+                      <th className="p-3">{t('common.quantity', 'Volume')}</th>
+                      <th className="p-3">{t('settlement.colAgreedRate', 'Agreed Rate')}</th>
+                      <th className="p-3">{t('settlement.colGrossValue', 'Gross Value')}</th>
+                      <th className="p-3">{t('settlement.colNetRealization', 'Net Realization (89%)')}</th>
+                      <th className="p-3">{t('common.status', 'Status')}</th>
+                      <th className="p-3">{t('settlement.colBankUtr', 'Bank UTR')}</th>
+                      <th className="p-3 text-right">{t('common.actions', 'Action')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#ccd5ae]/30 bg-white">
@@ -560,7 +565,7 @@ export const SettlementPage: React.FC = () => {
                           <span className="font-bold text-sm text-[#01472e] block font-mono">
                             ₹{farmer.netFarmerAmount.toLocaleString()}
                           </span>
-                          <span className="text-[10px] text-slate-400 font-mono">{farmer.bankAccountMasked || 'Direct NEFT Account'}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">{farmer.bankAccountMasked || t('settlement.directNeftAccount', 'Direct NEFT Account')}</span>
                         </td>
                         <td className="p-3">
                           <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
@@ -568,11 +573,11 @@ export const SettlementPage: React.FC = () => {
                               ? 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/40'
                               : 'bg-amber-50 text-amber-800 border-amber-200'
                           }`}>
-                            {farmer.status}
+                            {t('orderStatus.' + farmer.status, farmer.status)}
                           </span>
                         </td>
                         <td className="p-3 font-mono text-[11px] text-slate-500">
-                          {farmer.utrNumber || 'Awaiting Batch NEFT'}
+                          {farmer.utrNumber || t('settlement.awaitingBatchNeft', 'Awaiting Batch NEFT')}
                         </td>
                         <td className="p-3 text-right">
                           {farmer.status !== 'COMPLETED' ? (
@@ -581,12 +586,12 @@ export const SettlementPage: React.FC = () => {
                               disabled={Boolean(processingStage)}
                               className="btn-primary px-3 py-1 text-[11px] font-semibold rounded-lg shadow-xs cursor-pointer"
                             >
-                              Disburse
+                              {t('settlement.disburse', 'Disburse')}
                             </button>
                           ) : (
                             <span className="text-xs font-bold text-[#01472e] flex items-center justify-end gap-1">
                               <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e]" />
-                              <span>Paid</span>
+                              <span>{t('settlement.paid', 'Paid')}</span>
                             </span>
                           )}
                         </td>
@@ -601,7 +606,7 @@ export const SettlementPage: React.FC = () => {
           {/* 3-Way Transparent Value Split Breakdown */}
           <div>
             <h4 className="text-xs font-bold text-[#01472e] uppercase tracking-wider mb-4">
-              Transparent Disbursement Split
+              {t('settlement.disbursementSplit', 'Transparent Disbursement Split')}
             </h4>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -610,7 +615,7 @@ export const SettlementPage: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs font-bold text-[#fefae0] uppercase tracking-wider">
-                      Farmer Net Realization
+                      {t('settlement.farmerNetRealization', 'Farmer Net Realization')}
                     </span>
                     <span className="text-xs font-bold bg-[#fefae0]/15 text-[#fefae0] border border-[#fefae0]/25 px-2.5 py-0.5 rounded-full">
                       {activeSettlement.farmerRealizationPercentage}%
@@ -620,7 +625,7 @@ export const SettlementPage: React.FC = () => {
                     ₹{activeSettlement.farmerAmount.toLocaleString()}
                   </p>
                   <p className="text-xs text-emerald-100/80 mt-2 font-mono font-medium">
-                    ₹{(activeSettlement.farmerAmount / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg credited to farmer bank
+                    ₹{(activeSettlement.farmerAmount / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg {t('settlement.creditedToFarmerBank', 'credited to farmer bank')}
                   </p>
                 </div>
 
@@ -628,8 +633,8 @@ export const SettlementPage: React.FC = () => {
                   <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
                   <span>
                     {isCompletedStatus(activeSettlement.status)
-                      ? 'Disbursed via Instant Bank Escrow'
-                      : 'Locked in Escrow — Disbursing in Pipeline'}
+                      ? t('settlement.disbursedViaEscrow', 'Disbursed via Instant Bank Escrow')
+                      : t('settlement.lockedInEscrowPipeline', 'Locked in Escrow — Disbursing in Pipeline')}
                   </span>
                 </div>
               </div>
@@ -639,7 +644,7 @@ export const SettlementPage: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Logistics & Pre-cooling
+                      {t('settlement.logisticsShare', 'Logistics & Pre-cooling')}
                     </span>
                     <span className="text-xs font-bold text-slate-700 bg-white px-2.5 py-0.5 rounded-full border border-[#ccd5ae]/40">
                       {((activeSettlement.logisticsAmount / (activeSettlement.totalOrderValue || 1)) * 100).toFixed(1)}%
@@ -649,13 +654,13 @@ export const SettlementPage: React.FC = () => {
                     ₹{activeSettlement.logisticsAmount.toLocaleString()}
                   </p>
                   <p className="text-xs text-slate-500 mt-2 font-medium">
-                    ₹{(activeSettlement.logisticsAmount / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg (Reefer + Micro-hub)
+                    ₹{(activeSettlement.logisticsAmount / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg ({t('settlement.reeferMicroHub', 'Reefer + Micro-hub')})
                   </p>
                 </div>
 
                 <div className="pt-4 mt-6 border-t border-[#ccd5ae]/30 text-xs font-semibold text-slate-600 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#01472e] shrink-0" />
-                  <span>GreenTransit Cold Fleet & Micro-Hub</span>
+                  <span>{t('settlement.greenTransitFleet', 'GreenTransit Cold Fleet & Micro-Hub')}</span>
                 </div>
               </div>
 
@@ -664,7 +669,7 @@ export const SettlementPage: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Platform Fee
+                      {t('settlement.platformFee', 'Platform Fee')}
                     </span>
                     <span className="text-xs font-bold text-slate-700 bg-white px-2.5 py-0.5 rounded-full border border-[#ccd5ae]/40">
                       {((activeSettlement.platformAmount / (activeSettlement.totalOrderValue || 1)) * 100).toFixed(1)}%
@@ -674,13 +679,13 @@ export const SettlementPage: React.FC = () => {
                     ₹{activeSettlement.platformAmount.toLocaleString()}
                   </p>
                   <p className="text-xs text-slate-500 mt-2 font-medium">
-                    ₹{(activeSettlement.platformAmount / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg (AI forecast, match & QR)
+                    ₹{(activeSettlement.platformAmount / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg ({t('settlement.aiEngineMatch', 'AI forecast, match & QR')})
                   </p>
                 </div>
 
                 <div className="pt-4 mt-6 border-t border-[#ccd5ae]/30 text-xs font-semibold text-slate-600 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#01472e] shrink-0" />
-                  <span>Covers AI Engine & Blockchain Ledger</span>
+                  <span>{t('settlement.coversAiEngine', 'Covers AI Engine & Blockchain Ledger')}</span>
                 </div>
               </div>
             </div>
@@ -691,17 +696,17 @@ export const SettlementPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
               <h5 className="text-xs font-bold uppercase tracking-wider text-[#01472e] flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#01472e]" />
-                <span>Measurable Economic Gain for Smallholder Farmers</span>
+                <span>{t('settlement.economicGainTitle', 'Measurable Economic Gain for Smallholder Farmers')}</span>
               </h5>
               <span className="text-xs font-bold text-[#01472e] bg-white border border-[#a3b18a]/40 px-3.5 py-1 rounded-full shadow-2xs">
-                +{activeSettlement.earningsGainPercentage}% Extra Net Realization
+                +{activeSettlement.earningsGainPercentage}% {t('settlement.extraNetRealization', 'Extra Net Realization')}
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
                 <span className="text-slate-400 text-[11px] font-bold uppercase tracking-wider block">
-                  Traditional 5-Tier Mandi Intermediary Outcome:
+                  {t('settlement.traditionalMandiOutcome', 'Traditional 5-Tier Mandi Intermediary Outcome')}:
                 </span>
                 <p className="text-xl sm:text-2xl font-bold font-mono text-slate-700 tracking-tight mt-1">
                   ₹{activeSettlement.traditionalFarmerEarnings.toLocaleString()}{' '}
@@ -710,13 +715,13 @@ export const SettlementPage: React.FC = () => {
                   </span>
                 </p>
                 <p className="text-xs text-slate-500 mt-1.5 leading-relaxed font-normal">
-                  Farmer receives less than half due to multi-tier commissions, local aggregators, and 22% spoilage cuts.
+                  {t('settlement.traditionalMandiOutcomeDesc', 'Farmer receives less than half due to multi-tier commissions, local aggregators, and 22% spoilage cuts.')}
                 </p>
               </div>
 
               <div className="bg-white p-5 sm:p-6 rounded-2xl border-2 border-[#01472e] shadow-soft">
                 <span className="text-[#01472e] font-bold text-[11px] uppercase tracking-wider block">
-                  Uzhavan Connect Direct Realization:
+                  {t('settlement.uzhavanDirectRealization', 'Uzhavan Connect Direct Realization')}:
                 </span>
                 <p className="text-2xl sm:text-3xl font-bold font-mono text-[#01472e] tracking-tight mt-1">
                   ₹{activeSettlement.farmerAmount.toLocaleString()}{' '}
@@ -725,7 +730,7 @@ export const SettlementPage: React.FC = () => {
                   </span>
                 </p>
                 <p className="text-xs text-slate-700 mt-1.5 leading-relaxed font-semibold">
-                  Farmer receives +₹{(activeSettlement.farmerAmount - activeSettlement.traditionalFarmerEarnings).toLocaleString()} additional direct cash for this harvest!
+                  {t('settlement.directCashBonus', 'Farmer receives +₹{extra} additional direct cash for this harvest!', { extra: (activeSettlement.farmerAmount - activeSettlement.traditionalFarmerEarnings).toLocaleString() })}
                 </p>
               </div>
             </div>
@@ -734,19 +739,19 @@ export const SettlementPage: React.FC = () => {
           {/* Banking Audit Trail */}
           <div className="bg-[#faf9f5] border border-[#ccd5ae]/50 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 text-xs font-medium text-slate-600 shadow-xs">
             <div>
-              <span className="text-slate-400 uppercase text-[10px] font-bold tracking-wider block mb-0.5">Bank UTR Reference</span>
+              <span className="text-slate-400 uppercase text-[10px] font-bold tracking-wider block mb-0.5">{t('settlement.bankUtrReference', 'Bank UTR Reference')}</span>
               <strong className="text-slate-900 bg-white px-3 py-1 rounded-xl border border-[#ccd5ae]/40 font-mono text-xs">
                 {activeSettlement.utrNumber}
               </strong>
             </div>
             <div>
-              <span className="text-slate-400 uppercase text-[10px] font-bold tracking-wider block mb-0.5">Settlement Status</span>
+              <span className="text-slate-400 uppercase text-[10px] font-bold tracking-wider block mb-0.5">{t('settlement.settlementStatus', 'Settlement Status')}</span>
               <strong className="text-[#01472e] bg-white px-3 py-1 rounded-xl border border-[#ccd5ae]/40 font-mono text-xs font-bold">
-                {activeSettlement.status}
+                {t('orderStatus.' + activeSettlement.status, activeSettlement.status)}
               </strong>
             </div>
             <div>
-              <span className="text-slate-400 uppercase text-[10px] font-bold tracking-wider block mb-0.5">Batch Provenance</span>
+              <span className="text-slate-400 uppercase text-[10px] font-bold tracking-wider block mb-0.5">{t('traceability.batchProvenance', 'Batch Provenance')}</span>
               <button
                 onClick={() => openPassportModal(activeSettlement.batchId)}
                 className="text-[#01472e] bg-[#eaf4ec] px-3 py-1 rounded-xl border border-[#a3b18a]/50 font-mono text-xs hover:bg-white transition flex items-center gap-1.5 cursor-pointer font-bold shadow-2xs"

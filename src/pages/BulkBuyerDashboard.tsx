@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   DemandRequest,
   WorkflowOrder,
@@ -59,6 +60,7 @@ const LIFECYCLE_STAGES: Array<{ id: ShipmentLifecycleStage; label: string; desc:
 ];
 
 export const BulkBuyerDashboard: React.FC = () => {
+  const { t } = useLanguage();
   const {
     currentUser,
     demandRequests,
@@ -240,13 +242,13 @@ export const BulkBuyerDashboard: React.FC = () => {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-[#fefae0] backdrop-blur-sm border border-white/20">
               <Building2 className="w-3.5 h-3.5 text-[#ccd5ae]" />
-              <span>SIH2026 Problem Statement SIH26033: Elimination of Intermediaries</span>
+              <span>{t('bulkBuyer.sihGoal', 'SIH2026 Problem Statement SIH26033: Elimination of Intermediaries')}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
-              Bulk Buyer Procurement & Logistics Control
+              {t('bulkBuyer.procurementTitle', 'Bulk Buyer Procurement & Logistics Control')}
             </h1>
             <p className="text-white/80 text-xs sm:text-sm max-w-2xl font-normal leading-relaxed">
-              Institutional multi-supplier procurement portal for food processors, retail chains, and wholesale buyers. Aggregate smallholder farmer quotas, track 14-stage cold chain transport, and trigger automated instant settlement.
+              {t('bulkBuyer.procurementSubtitle', 'Institutional multi-supplier procurement portal for food processors, retail chains, and wholesale buyers. Aggregate smallholder farmer quotas, track 14-stage cold chain transport, and trigger automated instant settlement.')}
             </p>
           </div>
 
@@ -256,14 +258,14 @@ export const BulkBuyerDashboard: React.FC = () => {
               className="px-5 py-3 bg-[#e9edc9] hover:bg-[#fefae0] text-[#01472e] font-semibold rounded-2xl shadow-sm transition flex items-center gap-2 text-xs tracking-wide cursor-pointer"
             >
               <Plus className="w-4 h-4 text-[#01472e]" />
-              <span>Create Bulk Demand</span>
+              <span>{t('bulkBuyer.createBulkDemand', 'Create Bulk Demand')}</span>
             </button>
             <button
               onClick={() => setActivePortalTab('AGGREGATION')}
               className="px-5 py-3 bg-white/10 hover:bg-white/15 text-white font-medium rounded-2xl border border-white/20 transition flex items-center gap-2 text-xs tracking-wide cursor-pointer backdrop-blur-sm"
             >
               <Users className="w-4 h-4 text-[#ccd5ae]" />
-              <span>Supplier Aggregation</span>
+              <span>{t('bulkBuyer.supplierAggregation', 'Supplier Aggregation')}</span>
             </button>
           </div>
         </div>
@@ -271,10 +273,10 @@ export const BulkBuyerDashboard: React.FC = () => {
         {/* Portal Internal Sub-Navigation Tabs */}
         <div className="mt-8 pt-5 border-t border-white/15 flex items-center gap-2 overflow-x-auto text-xs">
           {[
-            { id: 'OVERVIEW', label: 'Procurement Overview', icon: ShoppingBag },
-            { id: 'AGGREGATION', label: 'Multi-Supplier Aggregation', icon: Users },
-            { id: 'TRACKING', label: 'OpenStreetMap Tracking & Telemetry', icon: Truck },
-            { id: 'ORDERS', label: 'Consolidated Bulk Orders', icon: PackageCheck }
+            { id: 'OVERVIEW', label: t('bulkBuyer.tabOverview', 'Procurement Overview'), icon: ShoppingBag },
+            { id: 'AGGREGATION', label: t('bulkBuyer.tabAggregation', 'Multi-Supplier Aggregation'), icon: Users },
+            { id: 'TRACKING', label: t('bulkBuyer.tabTracking', 'OpenStreetMap Tracking & Telemetry'), icon: Truck },
+            { id: 'ORDERS', label: t('bulkBuyer.tabOrders', 'Consolidated Bulk Orders'), icon: PackageCheck }
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activePortalTab === tab.id;
@@ -300,44 +302,44 @@ export const BulkBuyerDashboard: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
         {[
           {
-            label: 'Active Bulk Demands',
+            label: t('bulkBuyer.activeBulkDemands', 'Active Bulk Demands'),
             value: `${activeDemandCount} Demands`,
-            sub: 'Open for matching',
+            sub: t('bulkBuyer.openForMatching', 'Open for matching'),
             icon: Sparkles,
             color: 'text-[#01472e] bg-[#eaf4ec] border-[#a3b18a]/40'
           },
           {
-            label: 'Total Required Qty',
+            label: t('bulkBuyer.totalRequiredQty', 'Total Required Qty'),
             value: `${(totalRequiredQuantityKg / 1000).toFixed(1)} MT`,
             sub: `${totalRequiredQuantityKg.toLocaleString()} kg net`,
             icon: Scale,
             color: 'text-[#01472e] bg-[#e9edc9]/50 border-[#ccd5ae]/50'
           },
           {
-            label: 'Confirmed Supply',
+            label: t('bulkBuyer.confirmedSupply', 'Confirmed Supply'),
             value: `${(confirmedSupplyKg / 1000).toFixed(1)} MT`,
-            sub: '85.3% aggregated',
+            sub: t('bulkBuyer.percentAggregated', '85.3% aggregated'),
             icon: CheckCircle2,
             color: 'text-[#01472e] bg-[#eaf4ec] border-[#a3b18a]/40'
           },
           {
-            label: 'Orders in Transit',
+            label: t('bulkBuyer.ordersInTransit', 'Orders in Transit'),
             value: `${inTransitCount} Reefer EV`,
-            sub: 'Real-time telemetry',
+            sub: t('bulkBuyer.realTimeTelemetry', 'Real-time telemetry'),
             icon: Truck,
             color: 'text-amber-800 bg-amber-50 border-amber-200'
           },
           {
-            label: 'Deliveries Completed',
+            label: t('bulkBuyer.deliveriesCompleted', 'Deliveries Completed'),
             value: `${completedDeliveriesCount} Orders`,
-            sub: '100% verified',
+            sub: t('bulkBuyer.verified100', '100% verified'),
             icon: Award,
             color: 'text-[#01472e] bg-[#eaf4ec] border-[#a3b18a]/40'
           },
           {
-            label: 'Active Suppliers',
+            label: t('bulkBuyer.activeSuppliers', 'Active Suppliers'),
             value: `${activeSuppliersCount} Nodes`,
-            sub: '3 Farmers + 1 FPO',
+            sub: t('bulkBuyer.suppliersBreakdown', '3 Farmers + 1 FPO'),
             icon: Users,
             color: 'text-[#01472e] bg-[#e9edc9]/50 border-[#ccd5ae]/50'
           }
@@ -376,17 +378,17 @@ export const BulkBuyerDashboard: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-[#01472e] bg-[#eaf4ec] px-3 py-1 rounded-full border border-[#a3b18a]/40">
-                    Live Lifecycle Architecture
+                    {t('bulkBuyer.liveLifecycle', 'Live Lifecycle Architecture')}
                   </span>
                   <span className="text-xs text-[#01472e]/60 font-mono">
-                    Order: {activeShipment.id}
+                    {t('common.order', 'Order')}: {activeShipment.id}
                   </span>
                 </div>
                 <h3 className="text-lg font-semibold text-[#01472e] mt-1.5">
-                  14-Stage Procurement & Goods Tracking Lifecycle
+                  {t('bulkBuyer.fourteenStageLifecycle', '14-Stage Procurement & Goods Tracking Lifecycle')}
                 </h3>
                 <p className="text-xs text-[#01472e]/70">
-                  Continuous operational traceability from farmer gate harvest to receiving dock settlement.
+                  {t('bulkBuyer.lifecycleSubtitle', 'Continuous operational traceability from farmer gate harvest to receiving dock settlement.')}
                 </p>
               </div>
 
@@ -396,7 +398,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                   className="btn-secondary text-xs flex items-center gap-1.5 py-2.5 px-4 rounded-2xl"
                 >
                   <QrCode className="w-3.5 h-3.5 text-[#01472e]" />
-                  <span>Inspect Produce Passport</span>
+                  <span>{t('bulkBuyer.inspectPassport', 'Inspect Produce Passport')}</span>
                 </button>
               </div>
             </div>
@@ -437,10 +439,10 @@ export const BulkBuyerDashboard: React.FC = () => {
                       <p className={`text-[11px] font-semibold mt-2.5 leading-tight ${
                         isActive ? 'text-[#01472e] font-bold' : isCompleted ? 'text-[#01472e]' : 'text-[#01472e]/40'
                       }`}>
-                        {st.label.split('. ')[1]}
+                        {t(`bulkBuyer.stage.${st.id}.label`, st.label.split('. ')[1])}
                       </p>
                       <p className="text-[9px] text-[#01472e]/60 mt-0.5 leading-snug line-clamp-2">
-                        {st.desc}
+                        {t(`bulkBuyer.stage.${st.id}.desc`, st.desc)}
                       </p>
                     </div>
                   );
@@ -454,17 +456,17 @@ export const BulkBuyerDashboard: React.FC = () => {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold text-[#01472e]">
-                  Active Goods Movement Corridor (OpenStreetMap)
+                  {t('bulkBuyer.activeCorridor', 'Active Goods Movement Corridor (OpenStreetMap)')}
                 </h3>
                 <p className="text-xs text-[#01472e]/70">
-                  Geospatial tracking of consolidated bulk cargo with cold-chain sensor telemetry.
+                  {t('bulkBuyer.activeCorridorSubtitle', 'Geospatial tracking of consolidated bulk cargo with cold-chain sensor telemetry.')}
                 </p>
               </div>
               <button
                 onClick={() => setActivePortalTab('TRACKING')}
                 className="text-xs font-semibold text-[#01472e] hover:text-[#025a3b] flex items-center gap-1"
               >
-                <span>Full Screen Telematics View</span>
+                <span>{t('bulkBuyer.fullScreenTelematics', 'Full Screen Telematics View')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -477,13 +479,13 @@ export const BulkBuyerDashboard: React.FC = () => {
             <div className="lg:col-span-5 agri-card rounded-[32px] p-6 sm:p-7 border border-[#ccd5ae]/40 shadow-soft space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-semibold text-[#01472e]">Open Bulk Demands</h4>
-                  <p className="text-xs text-[#01472e]/70">Demands requiring multi-supplier pooling</p>
+                  <h4 className="text-sm font-semibold text-[#01472e]">{t('bulkBuyer.openBulkDemands', 'Open Bulk Demands')}</h4>
+                  <p className="text-xs text-[#01472e]/70">{t('bulkBuyer.demandsRequiringPooling', 'Demands requiring multi-supplier pooling')}</p>
                 </div>
                 <button
                   onClick={() => setIsCreateModalOpen(true)}
                   className="p-2 rounded-xl bg-[#eaf4ec] text-[#01472e] hover:bg-[#e9edc9] transition"
-                  title="Add new bulk demand"
+                  title={t('bulkBuyer.createBulkDemand', 'Add new bulk demand')}
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -521,11 +523,11 @@ export const BulkBuyerDashboard: React.FC = () => {
             <div className="lg:col-span-7 agri-card rounded-[32px] p-6 sm:p-7 border border-[#ccd5ae]/40 shadow-soft space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-semibold text-[#01472e]">Inbound Consolidated Suppliers</h4>
-                  <p className="text-xs text-[#01472e]/70">Farmers & FPOs contributing to Order {activeShipment.id}</p>
+                  <h4 className="text-sm font-semibold text-[#01472e]">{t('bulkBuyer.inboundSuppliers', 'Inbound Consolidated Suppliers')}</h4>
+                  <p className="text-xs text-[#01472e]/70">{t('bulkBuyer.contributingSuppliersSubtitle', 'Farmers & FPOs contributing to Order {id}', { id: activeShipment.id })}</p>
                 </div>
                 <span className="text-xs font-semibold text-[#01472e] bg-[#eaf4ec] px-3 py-1 rounded-full border border-[#a3b18a]/40">
-                  4 Active Suppliers
+                  {t('bulkBuyer.activeSuppliersCount', '{count} Active Suppliers', { count: 4 })}
                 </span>
               </div>
 
@@ -568,20 +570,20 @@ export const BulkBuyerDashboard: React.FC = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-[#01472e] bg-[#eaf4ec] px-3.5 py-1 rounded-full border border-[#a3b18a]/40">
-                  Demand-to-Supply Aggregation Matrix
+                  {t('bulkBuyer.demandSupplyMatrix', 'Demand-to-Supply Aggregation Matrix')}
                 </span>
                 <h2 className="text-xl font-semibold text-[#01472e] mt-2">
-                  Multi-Supplier Allocation Engine
+                  {t('bulkBuyer.allocationEngine', 'Multi-Supplier Allocation Engine')}
                 </h2>
                 <p className="text-xs text-[#01472e]/70 mt-0.5">
-                  Allocate required bulk procurement volume among multiple smallholder farmers and FPO collectives.
+                  {t('bulkBuyer.allocationSubtitle', 'Allocate required bulk procurement volume among multiple smallholder farmers and FPO collectives.')}
                 </p>
               </div>
 
               {/* Progress Summary Pill */}
               <div className="bg-[#faf9f5] border border-[#ccd5ae]/40 rounded-2xl p-4 min-w-[260px]">
                 <div className="flex items-center justify-between text-xs mb-1.5">
-                  <span className="text-[#01472e]/70 font-medium">Aggregated Quota:</span>
+                  <span className="text-[#01472e]/70 font-medium">{t('bulkBuyer.aggregatedQuota', 'Aggregated Quota:')}</span>
                   <span className="font-bold text-[#01472e] font-mono">
                     {currentTotalAllocated.toLocaleString()} / {targetRequired.toLocaleString()} kg
                   </span>
@@ -595,7 +597,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                   />
                 </div>
                 <p className="text-[10px] text-[#01472e]/60 text-right mt-1 font-medium">
-                  {allocationPercent}% of Bulk Demand Fulfilled
+                  {t('bulkBuyer.demandFulfilled', '{percent}% of Bulk Demand Fulfilled', { percent: allocationPercent })}
                 </p>
               </div>
             </div>
@@ -611,11 +613,11 @@ export const BulkBuyerDashboard: React.FC = () => {
             {/* Allocation Table / Cards */}
             <div className="border border-[#ccd5ae]/40 rounded-2xl overflow-hidden">
               <div className="bg-[#fefae0]/50 px-4 py-3 border-b border-[#ccd5ae]/30 grid grid-cols-12 text-xs font-semibold text-[#01472e]/70 uppercase tracking-wider">
-                <div className="col-span-4">Supplier Node (Farmer / FPO)</div>
-                <div className="col-span-2 text-center">Available Capacity</div>
-                <div className="col-span-2 text-center">Offered Price</div>
-                <div className="col-span-2 text-center">Distance & Quality</div>
-                <div className="col-span-2 text-right">Allocated Quota (kg)</div>
+                <div className="col-span-4">{t('bulkBuyer.supplierNode', 'Supplier Node (Farmer / FPO)')}</div>
+                <div className="col-span-2 text-center">{t('bulkBuyer.availableCapacity', 'Available Capacity')}</div>
+                <div className="col-span-2 text-center">{t('bulkBuyer.offeredPrice', 'Offered Price')}</div>
+                <div className="col-span-2 text-center">{t('bulkBuyer.distanceQuality', 'Distance & Quality')}</div>
+                <div className="col-span-2 text-right">{t('bulkBuyer.allocatedQuota', 'Allocated Quota (kg)')}</div>
               </div>
 
               <div className="divide-y divide-[#ccd5ae]/20 text-xs">
@@ -717,8 +719,7 @@ export const BulkBuyerDashboard: React.FC = () => {
             <div className="flex items-center justify-between pt-2">
               <div className="text-xs text-[#01472e]/80">
                 <p>
-                  Bulk Requirement: <b>5,000 kg Tomato</b> | Currently Allocated:{' '}
-                  <b className="text-[#01472e]">{currentTotalAllocated.toLocaleString()} kg</b>
+                  {t('bulkBuyer.bulkRequirementSummary', 'Bulk Requirement: 5,000 kg Tomato | Currently Allocated: {allocated}', { allocated: `${currentTotalAllocated.toLocaleString()} kg` })}
                 </p>
               </div>
 
@@ -728,7 +729,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                 className="btn-primary text-xs flex items-center gap-2 py-3 px-6 rounded-2xl shadow-sm cursor-pointer"
               >
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Confirm Multi-Supplier Aggregation Quota</span>
+                <span>{t('bulkBuyer.confirmQuotaBtn', 'Confirm Multi-Supplier Aggregation Quota')}</span>
               </button>
             </div>
           </div>
@@ -744,38 +745,38 @@ export const BulkBuyerDashboard: React.FC = () => {
           <div className="agri-card rounded-[32px] p-6 sm:p-8 border border-[#ccd5ae]/40 shadow-soft grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
               <span className="text-[10px] font-semibold text-[#01472e]/60 uppercase tracking-wider">
-                Consignment Identity
+                {t('bulkBuyer.consignmentIdentity', 'Consignment Identity')}
               </span>
               <h4 className="text-base font-semibold text-[#01472e]">{activeShipment.crop} Bulk Batch</h4>
               <div className="text-xs text-[#01472e]/80 space-y-1">
-                <p><b>Shipment ID:</b> {activeShipment.id}</p>
-                <p><b>Produce Passport:</b> {activeShipment.batchId}</p>
-                <p><b>Total Weight:</b> {activeShipment.quantityKg.toLocaleString()} kg (200 Crates)</p>
-                <p><b>Quality Certification:</b> NABL Certified Grade A</p>
+                <p><b>{t('buyer.shipmentId', 'Shipment ID')}:</b> {activeShipment.id}</p>
+                <p><b>{t('buyer.producePassport', 'Produce Passport')}:</b> {activeShipment.batchId}</p>
+                <p><b>{t('bulkBuyer.totalWeight', 'Total Weight')}:</b> {activeShipment.quantityKg.toLocaleString()} kg (200 Crates)</p>
+                <p><b>{t('bulkBuyer.qualityCert', 'Quality Certification')}:</b> NABL Certified Grade A</p>
               </div>
             </div>
 
             <div className="space-y-2">
               <span className="text-[10px] font-semibold text-[#01472e]/60 uppercase tracking-wider">
-                Cold Chain Telematics
+                {t('bulkBuyer.coldChainTelematics', 'Cold Chain Telematics')}
               </span>
               <h4 className="text-base font-semibold text-[#01472e]">Heavy Reefer EV 5.5T</h4>
               <div className="text-xs text-[#01472e]/80 space-y-1">
-                <p><b>Vehicle Reg:</b> TN-09-BK-9182</p>
-                <p><b>Driver / Captain:</b> Karthik S. (+91 98410 44021)</p>
-                <p><b>Internal Reefer Temperature:</b> +4.2°C Continuous</p>
-                <p><b>Corridor Speed:</b> 54 km/h (NH-48 Corridor)</p>
+                <p><b>{t('logistics.vehicleReg', 'Vehicle Reg')}:</b> TN-09-BK-9182</p>
+                <p><b>{t('logistics.driverCaptain', 'Driver / Captain')}:</b> Karthik S. (+91 98410 44021)</p>
+                <p><b>{t('bulkBuyer.internalReeferTemp', 'Internal Reefer Temperature')}:</b> +4.2°C Continuous</p>
+                <p><b>{t('bulkBuyer.corridorSpeed', 'Corridor Speed')}:</b> 54 km/h (NH-48 Corridor)</p>
               </div>
             </div>
 
             <div className="space-y-2 flex flex-col justify-between">
               <div>
                 <span className="text-[10px] font-semibold text-[#01472e]/60 uppercase tracking-wider">
-                  Receiving Bay Destination
+                  {t('bulkBuyer.receivingDestination', 'Receiving Bay Destination')}
                 </span>
                 <h4 className="text-base font-semibold text-[#01472e]">Ambattur Processing Dock</h4>
                 <p className="text-xs text-[#01472e]/70 mt-1">
-                  Estimated Dock Handover: <b>Today, 06:45 AM</b>
+                  {t('bulkBuyer.estimatedDockHandover', 'Estimated Dock Handover: Today, 06:45 AM')}
                 </p>
               </div>
 
@@ -785,7 +786,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                   className="btn-primary text-xs flex items-center gap-1.5 w-full justify-center py-3 rounded-2xl"
                 >
                   <FileCheck2 className="w-4 h-4" />
-                  <span>Verify & Confirm Delivery</span>
+                  <span>{t('buyer.inspectConfirm', 'Verify & Confirm Delivery')}</span>
                 </button>
               </div>
             </div>
@@ -799,13 +800,13 @@ export const BulkBuyerDashboard: React.FC = () => {
           <div className="agri-card rounded-[32px] p-6 sm:p-8 border border-[#ccd5ae]/40 shadow-soft space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-[#01472e]">Institutional Procurement Orders</h3>
+                <h3 className="text-lg font-semibold text-[#01472e]">{t('bulkBuyer.institutionalProcurementOrders', 'Institutional Procurement Orders')}</h3>
                 <p className="text-xs text-[#01472e]/70">
-                  Track deliveries, inspect quality certificates, and verify weight receipts.
+                  {t('bulkBuyer.ordersSubtitle', 'Track deliveries, inspect quality certificates, and verify weight receipts.')}
                 </p>
               </div>
               <span className="text-xs font-semibold text-[#01472e] bg-[#e9edc9]/50 border border-[#ccd5ae]/50 px-3.5 py-1 rounded-xl">
-                {bulkOrders.length} Recorded Orders
+                {t('bulkBuyer.recordedOrders', '{count} Recorded Orders', { count: bulkOrders.length })}
               </span>
             </div>
 
@@ -838,7 +839,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                       className="btn-secondary text-xs flex items-center gap-1 py-2 px-3.5 rounded-xl"
                     >
                       <QrCode className="w-3.5 h-3.5 text-[#01472e]" />
-                      <span>Passport</span>
+                      <span>{t('common.passport', 'Passport')}</span>
                     </button>
                     {o.status === 'In Transit' && (
                       <button
@@ -846,7 +847,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                         className="btn-primary text-xs flex items-center gap-1 py-2 px-4 rounded-xl"
                       >
                         <FileCheck2 className="w-3.5 h-3.5" />
-                        <span>Accept Delivery</span>
+                        <span>{t('bulkBuyer.acceptDelivery', 'Accept Delivery')}</span>
                       </button>
                     )}
                   </div>
@@ -867,8 +868,8 @@ export const BulkBuyerDashboard: React.FC = () => {
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-[#01472e]">Create Bulk Procurement Demand</h3>
-                  <p className="text-xs text-[#01472e]/70">Post requirement to smallholder farmer and FPO network</p>
+                  <h3 className="text-lg font-semibold text-[#01472e]">{t('bulkBuyer.createDemandTitle', 'Create Bulk Procurement Demand')}</h3>
+                  <p className="text-xs text-[#01472e]/70">{t('bulkBuyer.createDemandSubtitle', 'Post requirement to smallholder farmer and FPO network')}</p>
                 </div>
               </div>
               <button
@@ -882,28 +883,28 @@ export const BulkBuyerDashboard: React.FC = () => {
             <form onSubmit={handleCreateBulkDemand} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-[#01472e] block mb-1">Crop / Commodity</label>
+                  <label className="font-semibold text-[#01472e] block mb-1">{t('bulkBuyer.commodity', 'Crop / Commodity')}</label>
                   <select
                     value={crop}
                     onChange={(e) => setCrop(e.target.value)}
                     className="input-modern"
                   >
-                    <option value="Tomato">Tomato</option>
-                    <option value="Onion">Onion</option>
-                    <option value="Potato">Potato</option>
-                    <option value="Green Chilli">Green Chilli</option>
-                    <option value="Capsicum">Capsicum</option>
-                    <option value="Carrot">Carrot</option>
+                    <option value="Tomato">{t('crops.Tomato', 'Tomato')}</option>
+                    <option value="Onion">{t('crops.Onion', 'Onion')}</option>
+                    <option value="Potato">{t('crops.Potato', 'Potato')}</option>
+                    <option value="Green Chilli">{t('crops.Green Chilli', 'Green Chilli')}</option>
+                    <option value="Capsicum">{t('crops.Capsicum', 'Capsicum')}</option>
+                    <option value="Carrot">{t('crops.Carrot', 'Carrot')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="font-semibold text-[#01472e] block mb-1">Variety / Specification</label>
+                  <label className="font-semibold text-[#01472e] block mb-1">{t('bulkBuyer.varietySpec', 'Variety / Specification')}</label>
                   <input
                     type="text"
                     value={variety}
                     onChange={(e) => setVariety(e.target.value)}
-                    placeholder="e.g. Sivam Hybrid (Firm Processing)"
+                    placeholder={t('bulkBuyer.varietyPlaceholder', 'e.g. Sivam Hybrid (Firm Processing)')}
                     required
                     className="input-modern"
                   />
@@ -912,7 +913,7 @@ export const BulkBuyerDashboard: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-[#01472e] block mb-1">Required Quantity</label>
+                  <label className="font-semibold text-[#01472e] block mb-1">{t('bulkBuyer.requiredQty', 'Required Quantity')}</label>
                   <div className="flex gap-2">
                     <input
                       type="number"
@@ -927,33 +928,33 @@ export const BulkBuyerDashboard: React.FC = () => {
                       onChange={(e) => setUnit(e.target.value as any)}
                       className="bg-[#faf9f5] border border-[#ccd5ae]/50 rounded-2xl px-3 text-xs font-semibold text-[#01472e]"
                     >
-                      <option value="kg">kg</option>
-                      <option value="Quintal">Quintal</option>
-                      <option value="Ton">Ton</option>
-                      <option value="Crates">Crates</option>
+                      <option value="kg">{t('units.kg', 'kg')}</option>
+                      <option value="Quintal">{t('units.Quintal', 'Quintal')}</option>
+                      <option value="Ton">{t('units.Ton', 'Ton')}</option>
+                      <option value="Crates">{t('units.Crates', 'Crates')}</option>
                     </select>
                   </div>
-                  <p className="text-[10px] text-[#01472e]/60 mt-1">Calculated: {totalDemandKg.toLocaleString()} kg net</p>
+                  <p className="text-[10px] text-[#01472e]/60 mt-1">{t('bulkBuyer.calculatedNet', 'Calculated: {qty} kg net', { qty: totalDemandKg.toLocaleString() })}</p>
                 </div>
 
                 <div>
-                  <label className="font-semibold text-[#01472e] block mb-1">Quality Grade</label>
+                  <label className="font-semibold text-[#01472e] block mb-1">{t('bulkBuyer.qualityGrade', 'Quality Grade')}</label>
                   <select
                     value={quality}
                     onChange={(e) => setQuality(e.target.value as any)}
                     className="input-modern"
                   >
-                    <option value="Grade A">Grade A (Premium Retail & Processing)</option>
-                    <option value="Grade B">Grade B (Standard Commercial)</option>
-                    <option value="Standard">Standard Agro Spec</option>
-                    <option value="Premium">Export Premium Grade</option>
+                    <option value="Grade A">{t('bulkBuyer.gradeAOption', 'Grade A (Premium Retail & Processing)')}</option>
+                    <option value="Grade B">{t('bulkBuyer.gradeBOption', 'Grade B (Standard Commercial)')}</option>
+                    <option value="Standard">{t('bulkBuyer.standardAgroOption', 'Standard Agro Spec')}</option>
+                    <option value="Premium">{t('bulkBuyer.exportPremiumOption', 'Export Premium Grade')}</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-[#01472e] block mb-1">Target Max Price (₹/kg)</label>
+                  <label className="font-semibold text-[#01472e] block mb-1">{t('bulkBuyer.targetMaxPrice', 'Target Max Price (₹/kg)')}</label>
                   <input
                     type="number"
                     step="0.5"
@@ -966,7 +967,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-semibold text-[#01472e] block mb-1">Required Delivery Date</label>
+                  <label className="font-semibold text-[#01472e] block mb-1">{t('bulkBuyer.requiredDeliveryDate', 'Required Delivery Date')}</label>
                   <input
                     type="date"
                     value={deliveryDate}
@@ -978,12 +979,12 @@ export const BulkBuyerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-semibold text-[#01472e] block mb-1">Delivery Destination Facility</label>
+                <label className="font-semibold text-[#01472e] block mb-1">{t('bulkBuyer.deliveryDestinationFacility', 'Delivery Destination Facility')}</label>
                 <input
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="e.g. Ambattur Processing Terminal, Chennai"
+                  placeholder={t('bulkBuyer.destinationPlaceholder', 'e.g. Ambattur Processing Terminal, Chennai')}
                   required
                   className="input-modern"
                 />
@@ -995,14 +996,14 @@ export const BulkBuyerDashboard: React.FC = () => {
                   onClick={() => setIsCreateModalOpen(false)}
                   className="px-5 py-2.5 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-2xl font-semibold transition"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="btn-primary text-xs py-3 px-6 rounded-2xl flex items-center gap-1.5 cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Publish Bulk Requirement</span>
+                  <span>{t('bulkBuyer.publishRequirement', 'Publish Bulk Requirement')}</span>
                 </button>
               </div>
             </form>
@@ -1020,8 +1021,8 @@ export const BulkBuyerDashboard: React.FC = () => {
                   <FileCheck2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-[#01472e]">Goods Receiving & Verification</h3>
-                  <p className="text-xs text-[#01472e]/70">Order #{selectedOrderForDelivery.id} • {selectedOrderForDelivery.crop}</p>
+                  <h3 className="text-lg font-semibold text-[#01472e]">{t('bulkBuyer.goodsReceivingTitle', 'Goods Receiving & Verification')}</h3>
+                  <p className="text-xs text-[#01472e]/70">{t('bulkBuyer.orderSubtitle', 'Order #{id} • {crop}', { id: selectedOrderForDelivery.id, crop: selectedOrderForDelivery.crop })}</p>
                 </div>
               </div>
               <button
@@ -1035,22 +1036,22 @@ export const BulkBuyerDashboard: React.FC = () => {
             <form onSubmit={handleConfirmDeliveryReceipt} className="space-y-4 text-xs">
               <div className="grid grid-cols-3 gap-2 p-3.5 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 text-center">
                 <div>
-                  <span className="text-[10px] text-[#01472e]/60 block uppercase font-semibold">Manifest Qty</span>
+                  <span className="text-[10px] text-[#01472e]/60 block uppercase font-semibold">{t('bulkBuyer.manifestQty', 'Manifest Qty')}</span>
                   <span className="text-sm font-bold text-[#01472e]">{selectedOrderForDelivery.quantityKg.toLocaleString()} kg</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-[#01472e]/60 block uppercase font-semibold">Reefer Temp</span>
+                  <span className="text-[10px] text-[#01472e]/60 block uppercase font-semibold">{t('bulkBuyer.reeferTemp', 'Reefer Temp')}</span>
                   <span className="text-sm font-bold text-[#01472e]">+4.2°C</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-[#01472e]/60 block uppercase font-semibold">Grade Checked</span>
-                  <span className="text-sm font-bold text-[#01472e]">Grade A</span>
+                  <span className="text-[10px] text-[#01472e]/60 block uppercase font-semibold">{t('bulkBuyer.gradeChecked', 'Grade Checked')}</span>
+                  <span className="text-sm font-bold text-[#01472e]">{t('grades.Grade A', 'Grade A')}</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-[#01472e] block mb-1">Accepted Weight (kg)</label>
+                  <label className="font-semibold text-[#01472e] block mb-1">{t('bulkBuyer.acceptedWeight', 'Accepted Weight (kg)')}</label>
                   <input
                     type="number"
                     value={acceptedKg}
@@ -1067,7 +1068,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-semibold text-[#01472e] block mb-1">Rejected Weight (kg)</label>
+                  <label className="font-semibold text-[#01472e] block mb-1">{t('bulkBuyer.rejectedWeight', 'Rejected Weight (kg)')}</label>
                   <input
                     type="number"
                     value={rejectedKg}
@@ -1078,20 +1079,20 @@ export const BulkBuyerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-semibold text-[#01472e] block mb-1">Delivery Handover Status</label>
+                <label className="font-semibold text-[#01472e] block mb-1">{t('bulkBuyer.deliveryHandoverStatus', 'Delivery Handover Status')}</label>
                 <select
                   value={deliveryStatus}
                   onChange={(e) => setDeliveryStatus(e.target.value as any)}
                   className="input-modern"
                 >
-                  <option value="ACCEPTED_FULL">Accepted Full Consignment (Zero Defects)</option>
-                  <option value="ACCEPTED_PARTIAL">Accepted Partial Consignment (Minor Deduction)</option>
-                  <option value="REJECTED">Rejected Consignment</option>
+                  <option value="ACCEPTED_FULL">{t('bulkBuyer.statusAcceptedFull', 'Accepted Full Consignment (Zero Defects)')}</option>
+                  <option value="ACCEPTED_PARTIAL">{t('bulkBuyer.statusAcceptedPartial', 'Accepted Partial Consignment (Minor Deduction)')}</option>
+                  <option value="REJECTED">{t('bulkBuyer.statusRejected', 'Rejected Consignment')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="font-semibold text-[#01472e] block mb-1">Quality Inspection Remarks</label>
+                <label className="font-semibold text-[#01472e] block mb-1">{t('bulkBuyer.inspectionRemarks', 'Quality Inspection Remarks')}</label>
                 <textarea
                   value={inspectorRemarks}
                   onChange={(e) => setInspectorRemarks(e.target.value)}
@@ -1103,7 +1104,7 @@ export const BulkBuyerDashboard: React.FC = () => {
               <div className="p-3.5 bg-[#eaf4ec] border border-[#a3b18a]/40 rounded-2xl flex items-center gap-2.5 text-[11px] text-[#01472e]">
                 <ShieldCheck className="w-4 h-4 text-[#01472e] shrink-0" />
                 <span>
-                  Confirming delivery immediately activates automated escrow release to the 4 smallholder farmers and FPOs.
+                  {t('bulkBuyer.escrowNotice', 'Confirming delivery immediately activates automated escrow release to the 4 smallholder farmers and FPOs.')}
                 </span>
               </div>
 
@@ -1113,14 +1114,14 @@ export const BulkBuyerDashboard: React.FC = () => {
                   onClick={() => setSelectedOrderForDelivery(null)}
                   className="px-5 py-2.5 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-2xl font-semibold transition"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="btn-primary text-xs py-3 px-6 rounded-2xl flex items-center gap-1.5 cursor-pointer"
                 >
                   <Check className="w-4 h-4" />
-                  <span>Verify Weight & Authorize Settlement</span>
+                  <span>{t('bulkBuyer.verifyAuthorizeSettlement', 'Verify Weight & Authorize Settlement')}</span>
                 </button>
               </div>
             </form>

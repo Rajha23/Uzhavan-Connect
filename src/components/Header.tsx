@@ -80,11 +80,38 @@ export const Header: React.FC = () => {
   const displayRole = ROLE_DISPLAY_LABELS[currentRole] || currentRole;
   const badgeStyle = ROLE_BADGE_STYLES[currentRole] || ROLE_BADGE_STYLES.FARMER;
 
-  const pageTitle = PAGE_TITLES[activeTab] || 'Dashboard';
+  const getLocalizedTitle = (tab: string): string => {
+    switch (tab) {
+      case 'dashboard': return t('nav.dashboard', undefined, 'Dashboard');
+      case 'my-crops': return t('nav.myCrops', undefined, 'My Crops');
+      case 'demand-forecast':
+      case 'demand-intel': return t('nav.demandForecast', undefined, 'Demand Forecast');
+      case 'find-buyers': return t('nav.findBuyers', undefined, 'Find Direct Buyers');
+      case 'orders': return t('nav.orders', undefined, 'My Orders');
+      case 'logistics': return t('nav.logistics', undefined, 'Logistics');
+      case 'traceability':
+      case 'tracking': return t('nav.traceability', undefined, 'Traceability');
+      case 'settlement': return t('nav.settlement', undefined, 'Settlement & Payouts');
+      case 'profile': return t('nav.profile', undefined, 'My Profile');
+      case 'notifications': return t('nav.alerts', undefined, 'Notifications & Alerts');
+      case 'create-demand': return t('nav.createDemand', undefined, 'Create Demand');
+      case 'demand-pool': return t('nav.demandPool', undefined, 'Demand Pool');
+      case 'smart-matching': return t('nav.smartMatching', undefined, 'Smart Matching');
+      case 'reverse-auction': return t('nav.reverseAuction', undefined, 'Reverse Auction');
+      case 'bulk-demand': return t('nav.bulkAggregation', undefined, 'Bulk Demand');
+      case 'shipments': return t('nav.shipments', undefined, 'Shipments');
+      case 'route-optimization': return t('nav.routeOptimization', undefined, 'Route Optimization');
+      case 'reports':
+      case 'impact-kpis': return t('nav.reports', undefined, 'Reports & KPIs');
+      default: return PAGE_TITLES[tab] || t('nav.dashboard', undefined, 'Dashboard');
+    }
+  };
+
+  const pageTitle = getLocalizedTitle(activeTab);
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-[#faf9f5]/90 backdrop-blur-md border-b border-[#ccd5ae]/40 flex items-center px-4 sm:px-6 gap-3 shadow-soft">
-      {/* Hamburger — mobile only */}
+      {/* Mobile hamburger */}
       <button
         onClick={toggleSidebar}
         className="lg:hidden p-2 rounded-2xl text-[#5c7065] hover:text-[#01472e] hover:bg-[#ccd5ae]/20 transition cursor-pointer"
@@ -106,7 +133,7 @@ export const Header: React.FC = () => {
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Search produce, orders, demands..."
+            placeholder={t('common.search', undefined, 'Search produce, orders, demands...')}
             className="w-full pl-10 pr-4 py-2 text-xs bg-white/80 border border-[#ccd5ae]/60 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#01472e]/20 focus:border-[#01472e] focus:bg-white transition placeholder:text-[#788c80] text-[#01472e] shadow-2xs"
           />
         </div>
@@ -222,7 +249,7 @@ export const Header: React.FC = () => {
                 className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-[#01472e] hover:bg-[#eef2e1]/50 transition text-left cursor-pointer"
               >
                 <User className="w-4 h-4 text-[#788c80]" />
-                {t('profile.title')}
+                {t('nav.profile', undefined, 'My Profile')}
               </button>
 
               <button
@@ -231,11 +258,11 @@ export const Header: React.FC = () => {
               >
                 <div className="flex items-center gap-2.5">
                   <Bell className="w-4 h-4 text-[#788c80]" />
-                  <span>Notifications & Alerts</span>
+                  <span>{t('nav.alerts', undefined, 'Notifications & Alerts')}</span>
                 </div>
                 {unreadNotificationsCount > 0 && (
                   <span className="text-[10px] font-bold text-[#fefae0] bg-[#01472e] px-2 py-0.5 rounded-full">
-                    {unreadNotificationsCount} new
+                    {unreadNotificationsCount} {t('common.pending', undefined, 'new')}
                   </span>
                 )}
               </button>
@@ -247,7 +274,7 @@ export const Header: React.FC = () => {
               >
                 <div className="flex items-center gap-2.5">
                   <Globe2 className="w-4 h-4 text-[#788c80]" />
-                  <span>Language / மொழி</span>
+                  <span>{t('nav.language', undefined, 'Language')}</span>
                 </div>
                 <span className="text-[10px] font-bold text-[#01472e] bg-[#eaf4ec] border border-[#a3b18a]/40 px-2 py-0.5 rounded-md">
                   {currentLanguageDef.nativeName}
@@ -260,7 +287,7 @@ export const Header: React.FC = () => {
                   className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-[#01472e] font-medium bg-[#eaf4ec] hover:bg-[#d5ebd9] transition text-left cursor-pointer"
                 >
                   <Download className="w-4 h-4 text-[#01472e]" />
-                  Install App (PWA)
+                  {t('common.download', undefined, 'Install App (PWA)')}
                 </button>
               )}
               <div className="border-t border-[#ccd5ae]/30 mt-1">
@@ -269,7 +296,7 @@ export const Header: React.FC = () => {
                   className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-rose-700 hover:bg-rose-50 transition text-left cursor-pointer font-medium"
                 >
                   <LogOut className="w-4 h-4" />
-                  Sign Out
+                  {t('common.logout', undefined, 'Sign Out')}
                 </button>
               </div>
             </div>

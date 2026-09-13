@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import { CHENNAI_TOMATO_FORECAST } from '../data/mockData';
 import { ProduceListing, WorkflowOrder, WorkflowAgreement } from '../types';
 import {
@@ -161,6 +162,7 @@ const getFarmerProduceLifecycle = (
 };
 
 export const FarmerDashboard: React.FC = () => {
+  const { t } = useLanguage();
   const {
     currentUser,
     setActiveTab,
@@ -266,10 +268,10 @@ export const FarmerDashboard: React.FC = () => {
             </div>
             <div>
               <h1 className="text-3xl sm:text-4xl font-medium tracking-tight text-white">
-                Better Markets. Better Prices. Better Futures.
+                {t('farmer.heroTitle', 'Better Markets. Better Prices. Better Futures.')}
               </h1>
               <p className="text-sm text-[#fefae0]/80 mt-2 font-normal leading-relaxed">
-                Welcome back, {(currentUser.name || 'Farmer').split(' ')[0]} 👨‍🌾 • Connect your harvest directly with institutional buyers, secure transparent farm-gate pricing, and bypass multiple intermediary commissions.
+                {t('farmer.heroSubtitle', 'Welcome back, {name} 👨‍🌾 • Connect your harvest directly with institutional buyers, secure transparent farm-gate pricing, and bypass multiple intermediary commissions.', { name: (currentUser.name || 'Farmer').split(' ')[0] })}
               </p>
             </div>
           </div>
@@ -279,7 +281,7 @@ export const FarmerDashboard: React.FC = () => {
               onClick={() => setActiveTab('find-buyers')}
               className="inline-flex items-center gap-2 bg-[#ccd5ae] hover:bg-[#b9c595] text-[#01472e] text-xs font-medium px-5 py-3 rounded-2xl shadow-soft transition cursor-pointer"
             >
-              <span>Find Buyers</span>
+              <span>{t('farmer.findBuyers', 'Find Buyers')}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
@@ -288,7 +290,7 @@ export const FarmerDashboard: React.FC = () => {
               className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/20 text-white text-xs font-medium px-4 py-3 rounded-2xl border border-white/20 transition cursor-pointer"
             >
               <Sparkles className="w-4 h-4 text-[#ccd5ae]" />
-              <span>Smart Match</span>
+              <span>{t('farmer.smartMatch', 'Smart Match')}</span>
             </button>
 
             <button
@@ -296,7 +298,7 @@ export const FarmerDashboard: React.FC = () => {
               className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/20 text-white text-xs font-medium px-4 py-3 rounded-2xl border border-white/20 transition cursor-pointer"
             >
               <QrCode className="w-4 h-4 text-[#ccd5ae]" />
-              <span>Batch QR</span>
+              <span>{t('farmer.batchQr', 'Batch QR')}</span>
             </button>
           </div>
         </div>
@@ -305,16 +307,16 @@ export const FarmerDashboard: React.FC = () => {
       {/* 2. Quick Actions Mini-Cards */}
       <div className="space-y-2.5">
         <span className="text-[11px] font-medium uppercase tracking-wider text-[#5c7065] px-1">
-          Quick Operations
+          {t('farmer.quickOps', 'Quick Operations')}
         </span>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
           {[
-            { id: 'add-crop', label: 'Add Crop', icon: Plus, action: () => setIsAddingListing(true), badge: 'List' },
-            { id: 'find-buyers', label: 'Find Buyers', icon: ArrowRight, action: () => setActiveTab('find-buyers'), badge: 'Direct' },
-            { id: 'smart-match', label: 'Match Pool', icon: Sparkles, action: () => setActiveTab('smart-matching'), badge: 'AI' },
-            { id: 'orders', label: 'My Orders', icon: Package, action: () => setActiveTab('orders'), badge: 'Track' },
-            { id: 'middleman', label: 'Cost Sim', icon: Scale, action: () => setActiveTab('cost-simulator'), badge: 'Compare' },
-            { id: 'passport', label: 'QR Passport', icon: QrCode, action: () => openPassportModal(), badge: 'Verify' },
+            { id: 'add-crop', label: t('farmer.addCrop', 'Add Crop'), icon: Plus, action: () => setIsAddingListing(true), badge: t('farmer.listBadge', 'List') },
+            { id: 'find-buyers', label: t('farmer.findBuyers', 'Find Buyers'), icon: ArrowRight, action: () => setActiveTab('find-buyers'), badge: t('farmer.directBadge', 'Direct') },
+            { id: 'smart-match', label: t('farmer.matchPool', 'Match Pool'), icon: Sparkles, action: () => setActiveTab('smart-matching'), badge: t('farmer.aiBadge', 'AI') },
+            { id: 'orders', label: t('farmer.myOrders', 'My Orders'), icon: Package, action: () => setActiveTab('orders'), badge: t('farmer.trackBadge', 'Track') },
+            { id: 'middleman', label: t('farmer.costSim', 'Cost Sim'), icon: Scale, action: () => setActiveTab('cost-simulator'), badge: t('farmer.compareBadge', 'Compare') },
+            { id: 'passport', label: t('farmer.qrPassport', 'QR Passport'), icon: QrCode, action: () => openPassportModal(), badge: t('farmer.verifyBadge', 'Verify') },
           ].map((act) => (
             <button
               key={act.id}
@@ -342,13 +344,13 @@ export const FarmerDashboard: React.FC = () => {
           </div>
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-white text-[#01472e] border border-[#a3b18a]/40 mb-1.5 shadow-2xs">
-              <span>✦ AI Farmer Mentor</span>
+              <span>{t('farmer.aiMentor', '✦ AI Farmer Mentor')}</span>
             </div>
             <h3 className="text-lg font-medium text-[#01472e] tracking-tight">
-              Get personalized insights for better decisions
+              {t('farmer.aiMentorDesc', 'Get personalized insights for better decisions')}
             </h3>
             <p className="text-xs text-[#5c7065] leading-relaxed max-w-2xl mt-1">
-              "Koyambedu wholesale terminal demand for hybrid tomato is projected +18% higher next week. Recommended harvest window: Sep 14-17 for Grade A institutional premiums."
+              {t('farmer.aiMentorTip', '"Koyambedu wholesale terminal demand for hybrid tomato is projected +18% higher next week. Recommended harvest window: Sep 14-17 for Grade A institutional premiums."')}
             </p>
           </div>
         </div>
@@ -357,49 +359,57 @@ export const FarmerDashboard: React.FC = () => {
           onClick={() => setActiveTab('demand-forecast')}
           className="btn-primary self-start md:self-center shrink-0 text-xs px-5 py-2.5 shadow-soft"
         >
-          <span>Ask Mentor →</span>
+          <span>{t('farmer.askMentor', 'Ask Mentor →')}</span>
         </button>
       </div>
 
       {/* 4. Key Metric Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         <div className="metric-card">
-          <span className="text-[11px] font-medium text-[#5c7065] uppercase tracking-wider block">Total Listed Volume</span>
+          <span className="text-[11px] font-medium text-[#5c7065] uppercase tracking-wider block">
+            {t('farmer.totalListedVolume', 'Total Listed Volume')}
+          </span>
           <p className="text-2xl sm:text-3xl font-medium tracking-tight text-[#01472e] mt-1.5">
             {listings.reduce((sum, l) => sum + (l.quantityKg || 0), 0).toLocaleString()} <span className="text-sm font-normal text-[#5c7065]">kg</span>
           </p>
           <span className="text-[11px] text-[#01472e] font-medium mt-2 inline-flex items-center gap-1.5">
-            <TrendingUp className="w-3.5 h-3.5 text-[#01472e]" /> Across {listings.length} produce lots
+            <TrendingUp className="w-3.5 h-3.5 text-[#01472e]" /> {t('farmer.acrossLots', 'Across {count} produce lots', { count: listings.length })}
           </span>
         </div>
 
         <div className="metric-card">
-          <span className="text-[11px] font-medium text-[#5c7065] uppercase tracking-wider block">Active Buyer Demand</span>
+          <span className="text-[11px] font-medium text-[#5c7065] uppercase tracking-wider block">
+            {t('farmer.activeBuyerDemand', 'Active Buyer Demand')}
+          </span>
           <p className="text-2xl sm:text-3xl font-medium tracking-tight text-[#01472e] mt-1.5">
             1,000 <span className="text-sm font-normal text-[#5c7065]">kg</span>
           </p>
           <span className="text-[11px] text-blue-800 font-medium mt-2 inline-flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" /> Koyambedu Terminal Match
+            <Sparkles className="w-3.5 h-3.5 text-blue-600" /> {t('farmer.terminalMatch', 'Koyambedu Terminal Match')}
           </span>
         </div>
 
         <div className="metric-card">
-          <span className="text-[11px] font-medium text-[#5c7065] uppercase tracking-wider block">Direct Payout Share</span>
+          <span className="text-[11px] font-medium text-[#5c7065] uppercase tracking-wider block">
+            {t('farmer.directPayoutShare', 'Direct Payout Share')}
+          </span>
           <p className="text-2xl sm:text-3xl font-medium tracking-tight text-[#01472e] mt-1.5">
             89.0% <span className="text-sm font-normal text-[#5c7065]">net</span>
           </p>
           <span className="text-[11px] text-[#01472e] font-medium mt-2 inline-flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e]" /> +61.8% vs. Traditional Mandi
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e]" /> {t('farmer.vsMandi', '+61.8% vs. Traditional Mandi')}
           </span>
         </div>
 
         <div className="metric-card">
-          <span className="text-[11px] font-medium text-[#5c7065] uppercase tracking-wider block">Assigned Cold-Chain</span>
+          <span className="text-[11px] font-medium text-[#5c7065] uppercase tracking-wider block">
+            {t('farmer.assignedColdChain', 'Assigned Cold-Chain')}
+          </span>
           <p className="text-2xl sm:text-3xl font-medium tracking-tight text-[#01472e] mt-1.5">
             Reefer 4.0°C
           </p>
           <span className="text-[11px] text-purple-800 font-medium mt-2 inline-flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-purple-600" /> Sensor Monitored Fleet
+            <ShieldCheck className="w-3.5 h-3.5 text-purple-600" /> {t('farmer.sensorFleet', 'Sensor Monitored Fleet')}
           </span>
         </div>
       </div>
@@ -417,14 +427,14 @@ export const FarmerDashboard: React.FC = () => {
           <div>
             <div className="flex items-center gap-2.5">
               <h3 className="text-xl font-medium tracking-tight text-[#01472e]">
-                My Crops & Produce Inventory ({listings.length})
+                {t('farmer.inventoryTitle', 'My Crops & Produce Inventory ({count})', { count: listings.length })}
               </h3>
               <span className="ai-badge">
-                Connected Workflow
+                {t('farmer.connectedWorkflow', 'Connected Workflow')}
               </span>
             </div>
             <p className="text-xs text-[#5c7065] mt-1 font-normal">
-              Live lifecycle state tracked across 10 stages from farm-gate harvest to direct escrow payout
+              {t('farmer.inventorySubtitle', 'Live lifecycle state tracked across 10 stages from farm-gate harvest to direct escrow payout')}
             </p>
           </div>
 
@@ -440,7 +450,7 @@ export const FarmerDashboard: React.FC = () => {
                       : 'text-[#5c7065] hover:text-[#01472e]'
                   }`}
                 >
-                  {filter}
+                  {filter === 'ALL' ? t('common.all', 'ALL') : filter === 'ACTIVE' ? t('common.active', 'ACTIVE') : t('common.completed', 'COMPLETED')}
                 </button>
               ))}
             </div>
@@ -450,7 +460,7 @@ export const FarmerDashboard: React.FC = () => {
               className="btn-primary text-xs"
             >
               <Plus className="w-4 h-4" />
-              <span>{isAddingListing ? 'Close Form' : 'Add Crop'}</span>
+              <span>{isAddingListing ? t('common.close', 'Close Form') : t('farmer.addCrop', 'Add Crop')}</span>
             </button>
           </div>
         </div>
@@ -460,7 +470,7 @@ export const FarmerDashboard: React.FC = () => {
           <form onSubmit={handleAddCrop} className="p-6 sm:p-7 bg-[#faf9f5]/80 border-b border-[#ccd5ae]/40 space-y-4 text-xs">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
               <div>
-                <label className="font-medium text-[#01472e] block mb-1 text-xs">Crop Name</label>
+                <label className="font-medium text-[#01472e] block mb-1 text-xs">{t('farmer.cropName', 'Crop Name')}</label>
                 <select
                   value={crop}
                   onChange={(e) => setCrop(e.target.value)}
@@ -479,7 +489,7 @@ export const FarmerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-medium text-[#01472e] block mb-1 text-xs">Variety</label>
+                <label className="font-medium text-[#01472e] block mb-1 text-xs">{t('farmer.variety', 'Variety')}</label>
                 <input
                   type="text"
                   value={variety}
@@ -491,7 +501,7 @@ export const FarmerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-medium text-[#01472e] block mb-1 text-xs">Quantity</label>
+                <label className="font-medium text-[#01472e] block mb-1 text-xs">{t('farmer.quantity', 'Quantity')}</label>
                 <div className="flex gap-2">
                   <input
                     type="number"
@@ -516,7 +526,7 @@ export const FarmerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-medium text-[#01472e] block mb-1 text-xs">Expected Price (₹/kg)</label>
+                <label className="font-medium text-[#01472e] block mb-1 text-xs">{t('farmer.expectedPrice', 'Expected Price (₹/kg)')}</label>
                 <input
                   type="number"
                   value={price}
@@ -528,7 +538,7 @@ export const FarmerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-medium text-[#01472e] block mb-1 text-xs">Quality Grade</label>
+                <label className="font-medium text-[#01472e] block mb-1 text-xs">{t('farmer.qualityGrade', 'Quality Grade')}</label>
                 <select
                   value={quality}
                   onChange={(e) => setQuality(e.target.value as any)}
@@ -542,7 +552,7 @@ export const FarmerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-medium text-[#01472e] block mb-1 text-xs">Location / Mandi Hub</label>
+                <label className="font-medium text-[#01472e] block mb-1 text-xs">{t('farmer.locationHub', 'Location / Mandi Hub')}</label>
                 <input
                   type="text"
                   value={location}
@@ -554,7 +564,7 @@ export const FarmerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-medium text-[#01472e] block mb-1 text-xs">Harvest Date</label>
+                <label className="font-medium text-[#01472e] block mb-1 text-xs">{t('farmer.harvestDate', 'Harvest Date')}</label>
                 <input
                   type="date"
                   value={harvestDate}
@@ -565,7 +575,7 @@ export const FarmerDashboard: React.FC = () => {
               </div>
 
               <div className="lg:col-span-2">
-                <label className="font-medium text-[#01472e] block mb-1 text-xs">FPO Association</label>
+                <label className="font-medium text-[#01472e] block mb-1 text-xs">{t('farmer.fpoAssociation', 'FPO Association')}</label>
                 <input
                   type="text"
                   value={fpoName}
@@ -580,7 +590,7 @@ export const FarmerDashboard: React.FC = () => {
                   type="submit"
                   className="w-full btn-primary py-2.5 text-xs shadow-soft"
                 >
-                  Publish to Matching Pool
+                  {t('farmer.publishMatchingPool', 'Publish to Matching Pool')}
                 </button>
               </div>
             </div>
@@ -592,15 +602,15 @@ export const FarmerDashboard: React.FC = () => {
           {filteredListings.length === 0 ? (
             <div className="p-14 text-center text-[#5c7065] bg-[#faf9f5]/60 rounded-3xl border border-[#ccd5ae]/40">
               <Sprout className="w-12 h-12 mx-auto mb-3 text-[#a3b18a]" />
-              <p className="font-medium text-[#01472e] text-base">No produce listings found matching filter.</p>
+              <p className="font-medium text-[#01472e] text-base">{t('farmer.noListings', 'No produce listings found matching filter.')}</p>
               <p className="text-xs text-[#5c7065] mt-1 max-w-sm mx-auto">
-                Start by adding your first harvest lot to discover real institutional buyer demand and bypass intermediary cuts.
+                {t('farmer.startAdding', 'Start by adding your first harvest lot to discover real institutional buyer demand and bypass intermediary cuts.')}
               </p>
               <button
                 onClick={() => setIsAddingListing(true)}
                 className="mt-4 btn-primary text-xs"
               >
-                Add Your First Crop
+                {t('farmer.addYourFirstCrop', 'Add Your First Crop')}
               </button>
             </div>
           ) : (
@@ -632,26 +642,28 @@ export const FarmerDashboard: React.FC = () => {
                         {item.syncStatus === 'PENDING_SYNC' && (
                           <span className="text-[10px] bg-amber-50 text-amber-800 font-medium px-2 py-0.5 rounded-full border border-amber-200 flex items-center gap-1">
                             <CloudOff className="w-3 h-3 text-amber-600" />
-                            <span>Offline Saved</span>
+                            <span>{t('farmer.offlineSaved', 'Offline Saved')}</span>
                           </span>
                         )}
                       </div>
                       <p className="text-xs text-[#5c7065] font-normal">
-                        Listing ID: <strong className="font-mono text-[#01472e] font-medium">{item.id}</strong> • FPO Cluster: <strong className="text-[#01472e] font-medium">{item.fpoName || 'GreenHarvest FPO'}</strong>
+                        {t('farmer.listingId', 'Listing ID')}: <strong className="font-mono text-[#01472e] font-medium">{item.id}</strong> • {t('farmer.fpoCluster', 'FPO Cluster')}: <strong className="text-[#01472e] font-medium">{item.fpoName || 'GreenHarvest FPO'}</strong>
                       </p>
                     </div>
 
                     <div className="flex items-center gap-3 self-start sm:self-auto">
                       <div className="text-right">
-                        <span className="text-[10px] uppercase tracking-wider font-medium text-[#788c80] block">Lifecycle Stage</span>
+                        <span className="text-[10px] uppercase tracking-wider font-medium text-[#788c80] block">
+                          {t('farmer.lifecycleStage', 'Lifecycle Stage')}
+                        </span>
                         <span className={`text-[11px] font-medium px-3.5 py-1 rounded-full border inline-block mt-0.5 ${lifecycle.badgeColor}`}>
-                          {lifecycle.stage}
+                          {t(`stages.${lifecycle.stage}.label`, lifecycle.stage)}
                         </span>
                       </div>
                       <button
                         onClick={() => handleRemove(item.id)}
                         className="p-2 text-[#788c80] hover:text-rose-700 hover:bg-rose-50 rounded-2xl transition cursor-pointer"
-                        title="Delete Listing"
+                        title={t('common.delete', 'Delete Listing')}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -664,10 +676,10 @@ export const FarmerDashboard: React.FC = () => {
                     <div className="bg-[#faf9f5] border border-[#ccd5ae]/50 rounded-2xl p-4 sm:p-5 space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-[11px] font-medium uppercase tracking-wider text-[#5c7065]">
-                          Inventory Allocation
+                          {t('farmer.inventoryAllocation', 'Inventory Allocation')}
                         </span>
                         <span className="text-[11px] font-medium text-[#01472e]">
-                          {allocatedPct}% Committed
+                          {allocatedPct}% {t('farmer.committed', 'Committed')}
                         </span>
                       </div>
 
@@ -680,15 +692,15 @@ export const FarmerDashboard: React.FC = () => {
 
                       <div className="grid grid-cols-3 gap-2 pt-1 text-center font-mono">
                         <div className="bg-white p-2.5 rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
-                          <span className="text-[9px] uppercase font-medium text-[#788c80] block">Available</span>
+                          <span className="text-[9px] uppercase font-medium text-[#788c80] block">{t('farmer.available', 'Available')}</span>
                           <strong className="text-[#01472e] text-sm font-semibold">{available.toLocaleString()} kg</strong>
                         </div>
                         <div className="bg-white p-2.5 rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
-                          <span className="text-[9px] uppercase font-medium text-[#788c80] block">Allocated</span>
+                          <span className="text-[9px] uppercase font-medium text-[#788c80] block">{t('farmer.allocated', 'Allocated')}</span>
                           <strong className="text-amber-700 text-sm font-semibold">{allocated.toLocaleString()} kg</strong>
                         </div>
                         <div className="bg-white p-2.5 rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
-                          <span className="text-[9px] uppercase font-medium text-[#788c80] block">Total</span>
+                          <span className="text-[9px] uppercase font-medium text-[#788c80] block">{t('farmer.total', 'Total')}</span>
                           <strong className="text-[#01472e] text-sm font-semibold">{totalListed.toLocaleString()} kg</strong>
                         </div>
                       </div>
@@ -697,19 +709,19 @@ export const FarmerDashboard: React.FC = () => {
                     {/* Listing Parameters Box */}
                     <div className="bg-[#faf9f5] border border-[#ccd5ae]/50 rounded-2xl p-4 sm:p-5 grid grid-cols-2 gap-3 text-xs">
                       <div>
-                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block">Expected Price</span>
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block">{t('farmer.expectedPriceLabel', 'Expected Price')}</span>
                         <strong className="text-[#01472e] text-base sm:text-lg font-semibold tracking-tight">₹{item.expectedPricePerKg}/kg</strong>
                       </div>
                       <div>
-                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block">Quality Grade</span>
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block">{t('farmer.gradeLabel', 'Quality Grade')}</span>
                         <strong className="text-[#01472e] font-medium">{item.grade}</strong>
                       </div>
                       <div>
-                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block">Location Hub</span>
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block">{t('farmer.locationLabel', 'Location Hub')}</span>
                         <span className="text-[#01472e] font-medium truncate block">{item.location}</span>
                       </div>
                       <div>
-                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block">Harvest Date</span>
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block">{t('farmer.harvestDateLabel', 'Harvest Date')}</span>
                         <span className="text-[#01472e] font-medium">{item.harvestDate}</span>
                       </div>
                     </div>
@@ -718,12 +730,12 @@ export const FarmerDashboard: React.FC = () => {
                     <div className="bg-[#faf9f5] border border-[#ccd5ae]/50 rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-3">
                       <div>
                         <span className="text-[10px] font-medium uppercase tracking-wider text-[#5c7065] block mb-1">
-                          Connected Buyer Matching
+                          {t('farmer.connectedBuyerMatching', 'Connected Buyer Matching')}
                         </span>
                         <p className="text-xs text-[#5c7065] font-normal leading-relaxed">
                           {available > 0
-                            ? `✓ ${available.toLocaleString()} kg available for smart institutional matching.`
-                            : 'Produce fully matched and allocated to active buyer orders.'}
+                            ? t('farmer.availableForMatching', '✓ {available} kg available for smart institutional matching.', { available: available.toLocaleString() })
+                            : t('farmer.fullyMatched', 'Produce fully matched and allocated to active buyer orders.')}
                         </p>
                       </div>
 
@@ -734,14 +746,14 @@ export const FarmerDashboard: React.FC = () => {
                             className="flex-1 btn-primary py-2.5 text-xs shadow-soft"
                           >
                             <Sparkles className="w-3.5 h-3.5" />
-                            <span>Match ({available.toLocaleString()} kg)</span>
+                            <span>{t('farmer.matchWithQty', 'Match ({count} kg)', { count: available.toLocaleString() })}</span>
                           </button>
                         ) : (
                           <button
                             onClick={() => setActiveTab('orders')}
                             className="flex-1 btn-outline py-2.5 text-xs"
                           >
-                            <span>View In Orders</span>
+                            <span>{t('farmer.viewInOrders', 'View In Orders')}</span>
                             <ArrowRight className="w-3.5 h-3.5" />
                           </button>
                         )}
@@ -750,7 +762,7 @@ export const FarmerDashboard: React.FC = () => {
                           onClick={() => setExpandedCardId(isExpanded ? null : item.id)}
                           className="px-3.5 py-2.5 bg-[#eaf4ec] hover:bg-[#d5ebd9] text-[#01472e] text-xs font-medium rounded-2xl border border-[#a3b18a]/40 transition flex items-center gap-1.5 cursor-pointer"
                         >
-                          <span>{isExpanded ? 'Hide' : 'Lifecycle'}</span>
+                          <span>{isExpanded ? t('common.hide', 'Hide') : t('farmer.lifecycle', 'Lifecycle')}</span>
                           {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                         </button>
                       </div>
@@ -762,10 +774,10 @@ export const FarmerDashboard: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-medium uppercase tracking-wider text-[#5c7065] flex items-center gap-1.5">
                         <Layers className="w-3.5 h-3.5 text-[#01472e]" />
-                        <span>Supply Chain Lifecycle • Stage {lifecycle.stageIndex + 1} of 10</span>
+                        <span>{t('farmer.supplyChainStage', 'Supply Chain Lifecycle • Stage {stage} of 10', { stage: lifecycle.stageIndex + 1 })}</span>
                       </span>
                       <span className="text-[11px] font-medium text-[#01472e] font-mono">
-                        {lifecycle.activeOrder ? `Order #${lifecycle.activeOrder.id}` : 'Smart Supply Pool'}
+                        {lifecycle.activeOrder ? t('farmer.orderNum', 'Order #{id}', { id: lifecycle.activeOrder.id }) : t('farmer.smartSupplyPool', 'Smart Supply Pool')}
                       </span>
                     </div>
 
@@ -785,7 +797,7 @@ export const FarmerDashboard: React.FC = () => {
                                 ? 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/40 font-medium'
                                 : 'bg-white text-[#788c80] border-[#ccd5ae]/40'
                             }`}
-                            title={st.desc}
+                            title={t(`stages.${st.key}.desc`, st.desc)}
                           >
                             <div className="w-4 h-4 rounded-full flex items-center justify-center mb-1 text-[10px] font-medium">
                               {isPast ? (
@@ -795,7 +807,7 @@ export const FarmerDashboard: React.FC = () => {
                               )}
                             </div>
                             <span className="text-[9px] font-medium uppercase tracking-tight truncate w-full block">
-                              {st.label}
+                              {t(`stages.${st.key}.label`, st.label)}
                             </span>
                           </div>
                         );
@@ -809,7 +821,7 @@ export const FarmerDashboard: React.FC = () => {
                       <div className="flex items-center justify-between border-b border-[#ccd5ae]/30 pb-3">
                         <div className="flex items-center gap-2 text-[#01472e] font-medium text-sm">
                           <ShieldCheck className="w-4 h-4 text-[#01472e]" />
-                          <span>Order & Quality Verification Audit Trail</span>
+                          <span>{t('farmer.auditTrail', 'Order & Quality Verification Audit Trail')}</span>
                         </div>
                         {lifecycle.activeOrder && (
                           <button
@@ -817,7 +829,7 @@ export const FarmerDashboard: React.FC = () => {
                             className="flex items-center gap-1.5 text-xs font-medium text-[#01472e] bg-[#eaf4ec] px-3.5 py-1.5 rounded-xl border border-[#a3b18a]/40 hover:bg-[#d5ebd9] transition cursor-pointer"
                           >
                             <QrCode className="w-3.5 h-3.5" />
-                            <span>Digital Produce Passport ({lifecycle.activeOrder.batchId})</span>
+                            <span>{t('farmer.passportWithBatch', 'Digital Produce Passport ({batchId})', { batchId: lifecycle.activeOrder.batchId })}</span>
                           </button>
                         )}
                       </div>
@@ -825,43 +837,43 @@ export const FarmerDashboard: React.FC = () => {
                       {lifecycle.activeOrder ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                           <div className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
-                            <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block mb-0.5">Order & Buyer</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block mb-0.5">{t('farmer.orderBuyer', 'Order & Buyer')}</span>
                             <strong className="text-[#01472e] block font-medium">{lifecycle.activeOrder.id}</strong>
                             <span className="text-[#5c7065] truncate block">{lifecycle.activeOrder.buyerName}</span>
                           </div>
 
                           <div className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
-                            <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block mb-0.5">Agreed Terms</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block mb-0.5">{t('farmer.agreedTerms', 'Agreed Terms')}</span>
                             <strong className="text-[#01472e] block font-medium">{lifecycle.activeOrder.quantityKg.toLocaleString()} kg @ ₹{lifecycle.activeOrder.pricePerKg}/kg</strong>
-                            <span className="text-[#01472e] font-semibold">Total: ₹{lifecycle.activeOrder.totalValue.toLocaleString()}</span>
+                            <span className="text-[#01472e] font-semibold">{t('common.total', 'Total')}: ₹{lifecycle.activeOrder.totalValue.toLocaleString()}</span>
                           </div>
 
                           <div className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
-                            <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block mb-0.5">Lab Quality Metrics</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block mb-0.5">{t('farmer.labMetrics', 'Lab Quality Metrics')}</span>
                             {lifecycle.activeOrder.inspectionMetrics ? (
                               <span className="text-[#01472e] font-medium block">
                                 Brix: {lifecycle.activeOrder.inspectionMetrics.sugarBrix}° • {lifecycle.activeOrder.inspectionMetrics.verifiedGrade}
                               </span>
                             ) : (
-                              <span className="text-amber-700 font-medium block">Pending FPO Hub Assay</span>
+                              <span className="text-amber-700 font-medium block">{t('farmer.pendingAssay', 'Pending FPO Hub Assay')}</span>
                             )}
                           </div>
 
                           <div className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
-                            <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block mb-0.5">Logistics / Reefer</span>
+                            <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block mb-0.5">{t('farmer.logisticsReefer', 'Logistics / Reefer')}</span>
                             {lifecycle.activeOrder.transportDetails ? (
                               <span className="text-[#01472e] font-medium block">
                                 {lifecycle.activeOrder.transportDetails.vehicleNumber} ({lifecycle.activeOrder.transportDetails.driverName})
                               </span>
                             ) : (
-                              <span className="text-[#788c80] font-medium block">Awaiting Carrier Dispatch</span>
+                              <span className="text-[#788c80] font-medium block">{t('farmer.awaitingDispatch', 'Awaiting Carrier Dispatch')}</span>
                             )}
                           </div>
                         </div>
                       ) : (
                         <div className="p-4 bg-white rounded-xl border border-[#ccd5ae]/40 text-[#5c7065]">
                           <p>
-                            This produce is published and currently active in the Smart Matching Pool. When an institutional buyer creates or confirms demand, an agreement and order will automatically bind here.
+                            {t('farmer.publishedInPoolDesc', 'This produce is published and currently active in the Smart Matching Pool. When an institutional buyer creates or confirms demand, an agreement and order will automatically bind here.')}
                           </p>
                         </div>
                       )}

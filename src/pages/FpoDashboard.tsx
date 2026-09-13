@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   Users,
   Package,
@@ -27,6 +28,7 @@ import confetti from 'canvas-confetti';
 import { QualityInspectionData, WorkflowOrder, FarmerContribution } from '../types';
 
 export const FpoDashboard: React.FC = () => {
+  const { t } = useLanguage();
   const {
     currentUser,
     produceListings,
@@ -221,25 +223,25 @@ export const FpoDashboard: React.FC = () => {
         <div className="relative z-10">
           <div className="flex items-center gap-2 text-[#ccd5ae] text-xs font-semibold uppercase tracking-wider mb-2">
             <Users className="w-4 h-4" />
-            <span>FPO Aggregator & Micro-Hub Facility</span>
+            <span>{t('fpo.hubFacility', 'FPO Aggregator & Micro-Hub Facility')}</span>
             <span className="bg-[#e9edc9]/20 text-[#fefae0] text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-[#e9edc9]/30">
-              Live Hub Node
+              {t('fpo.liveHubNode', 'Live Hub Node')}
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
             {currentUser.organization || 'GreenHarvest FPO Hub'}
           </h1>
           <p className="text-sm text-white/80 mt-2 font-normal">
-            Aggregator Operations: Farm Gate Collection, Multi-Farmer Traceability, Quality Grading, Crating & Transport Readiness.
+            {t('fpo.hubSubtitle', 'Aggregator Operations: Farm Gate Collection, Multi-Farmer Traceability, Quality Grading, Crating & Transport Readiness.')}
           </p>
         </div>
 
         <div className="relative z-10 flex flex-wrap items-center gap-3">
           <button
             onClick={() => setActiveTab('orders')}
-            className="flex items-center gap-2 bg-[#e9edc9] hover:bg-[#fefae0] text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-sm transition tracking-wide"
+            className="flex items-center gap-2 bg-[#e9edc9] hover:bg-[#fefae0] text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-sm transition tracking-wide cursor-pointer"
           >
-            <span>All Orders ({orders.length})</span>
+            <span>{t('fpo.allOrdersCount', 'All Orders ({count})', { count: orders.length })}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -258,25 +260,25 @@ export const FpoDashboard: React.FC = () => {
       {/* Operational Stage Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-3.5">
         {[
-          { label: 'Member Supply', count: produceListings.length, desc: 'Active Farm Supply', stage: 'MEMBER_SUPPLY' as const, color: 'text-[#01472e]' },
-          { label: 'Collection Queue', count: pendingCollectionOrders.length, desc: 'Awaiting Farm Pickup', stage: 'COLLECTION' as const, color: 'text-amber-800' },
-          { label: 'Awaiting QA', count: collectedAwaitingGrading.length, desc: 'At Micro-Hub Station', stage: 'GRADING' as const, color: 'text-[#01472e]' },
-          { label: 'Awaiting Packing', count: gradedAwaitingPacking.length, desc: 'Ready for Crates & QR', stage: 'PACKING' as const, color: 'text-[#01472e]' },
-          { label: 'Bulk Pools', count: bulkConsolidatedOrders.length, desc: 'Multi-Farmer Batches', stage: 'CONSOLIDATION' as const, color: 'text-[#01472e]' },
-          { label: 'Dispatch Ready', count: packedReadyForLogistics.length, desc: 'Transport Ready Gate', stage: 'ALL' as const, color: 'text-[#01472e]' },
+          { labelKey: 'fpo.kpi.memberSupply', defaultLabel: 'Member Supply', count: produceListings.length, descKey: 'fpo.kpi.activeFarmSupply', defaultDesc: 'Active Farm Supply', stage: 'MEMBER_SUPPLY' as const, color: 'text-[#01472e]' },
+          { labelKey: 'fpo.kpi.collectionQueue', defaultLabel: 'Collection Queue', count: pendingCollectionOrders.length, descKey: 'fpo.kpi.awaitingPickup', defaultDesc: 'Awaiting Farm Pickup', stage: 'COLLECTION' as const, color: 'text-amber-800' },
+          { labelKey: 'fpo.kpi.awaitingQA', defaultLabel: 'Awaiting QA', count: collectedAwaitingGrading.length, descKey: 'fpo.kpi.atMicroHub', defaultDesc: 'At Micro-Hub Station', stage: 'GRADING' as const, color: 'text-[#01472e]' },
+          { labelKey: 'fpo.kpi.awaitingPacking', defaultLabel: 'Awaiting Packing', count: gradedAwaitingPacking.length, descKey: 'fpo.kpi.readyForCrates', defaultDesc: 'Ready for Crates & QR', stage: 'PACKING' as const, color: 'text-[#01472e]' },
+          { labelKey: 'fpo.kpi.bulkPools', defaultLabel: 'Bulk Pools', count: bulkConsolidatedOrders.length, descKey: 'fpo.kpi.multiFarmerBatches', defaultDesc: 'Multi-Farmer Batches', stage: 'CONSOLIDATION' as const, color: 'text-[#01472e]' },
+          { labelKey: 'fpo.kpi.dispatchReady', defaultLabel: 'Dispatch Ready', count: packedReadyForLogistics.length, descKey: 'fpo.kpi.transportReadyGate', defaultDesc: 'Transport Ready Gate', stage: 'ALL' as const, color: 'text-[#01472e]' },
         ].map((item) => (
           <button
-            key={item.label}
+            key={item.labelKey}
             onClick={() => setActiveTabSection(item.stage)}
-            className={`agri-card p-4.5 rounded-[24px] border text-left transition shadow-soft ${
+            className={`agri-card p-4.5 rounded-[24px] border text-left transition shadow-soft cursor-pointer ${
               activeTabSection === item.stage
                 ? 'bg-[#eaf4ec] border-[#01472e] ring-2 ring-[#01472e]/20 shadow-forest/10'
                 : 'border-[#ccd5ae]/40 hover:border-[#a3b18a]/60 hover:shadow-forest/5'
             }`}
           >
-            <p className="text-[11px] text-[#01472e]/60 font-semibold uppercase tracking-wider truncate">{item.label}</p>
+            <p className="text-[11px] text-[#01472e]/60 font-semibold uppercase tracking-wider truncate">{t(item.labelKey, item.defaultLabel)}</p>
             <p className={`text-2xl font-semibold font-mono mt-0.5 ${item.color}`}>{item.count}</p>
-            <p className="text-[10px] text-[#01472e]/60 mt-0.5 truncate">{item.desc}</p>
+            <p className="text-[10px] text-[#01472e]/60 mt-0.5 truncate">{t(item.descKey, item.defaultDesc)}</p>
           </button>
         ))}
       </div>
@@ -284,12 +286,12 @@ export const FpoDashboard: React.FC = () => {
       {/* Stage Tabs Navigation */}
       <div className="flex gap-2.5 border-b border-[#ccd5ae]/30 pb-3.5 overflow-x-auto">
         {[
-          { key: 'MEMBER_SUPPLY', label: `Member Supply (${produceListings.length})` },
-          { key: 'COLLECTION', label: `1. Farm Gate Collection (${pendingCollectionOrders.length})` },
-          { key: 'GRADING', label: `2. Quality Check & Grading (${collectedAwaitingGrading.length})` },
-          { key: 'PACKING', label: `3. Packing & Batch QR (${gradedAwaitingPacking.length})` },
-          { key: 'CONSOLIDATION', label: `4. Bulk Consolidation (${bulkConsolidatedOrders.length})` },
-          { key: 'ALL', label: `5. All Collective Orders (${orders.length})` }
+          { key: 'MEMBER_SUPPLY', label: t('fpo.tab.memberSupply', 'Member Supply ({count})', { count: produceListings.length }) },
+          { key: 'COLLECTION', label: t('fpo.tab.collection', '1. Farm Gate Collection ({count})', { count: pendingCollectionOrders.length }) },
+          { key: 'GRADING', label: t('fpo.tab.grading', '2. Quality Check & Grading ({count})', { count: collectedAwaitingGrading.length }) },
+          { key: 'PACKING', label: t('fpo.tab.packing', '3. Packing & Batch QR ({count})', { count: gradedAwaitingPacking.length }) },
+          { key: 'CONSOLIDATION', label: t('fpo.tab.consolidation', '4. Bulk Consolidation ({count})', { count: bulkConsolidatedOrders.length }) },
+          { key: 'ALL', label: t('fpo.tab.all', '5. All Collective Orders ({count})', { count: orders.length }) }
         ].map((tab) => (
           <button
             key={tab.key}
@@ -312,22 +314,22 @@ export const FpoDashboard: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <Sprout className="w-5 h-5 text-[#01472e]" />
-                <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">Member Farm Produce Supply Pool</h3>
+                <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">{t('fpo.supplyPoolTitle', 'Member Farm Produce Supply Pool')}</h3>
               </div>
               <p className="text-xs text-[#01472e]/70 mt-0.5">
-                Active crop listings submitted by member farmers. Aggregated and available for Smart Matching with institutional buyers.
+                {t('fpo.supplyPoolSubtitle', 'Active crop listings submitted by member farmers. Aggregated and available for Smart Matching with institutional buyers.')}
               </p>
             </div>
             <div className="flex items-center gap-2.5">
               <span className="text-xs font-semibold text-[#01472e] bg-[#eaf4ec] px-3.5 py-1 rounded-full border border-[#a3b18a]/40">
-                {produceListings.length} Active Listings
+                {t('fpo.activeListingsCount', '{count} Active Listings', { count: produceListings.length })}
               </span>
               <button
                 onClick={() => setActiveTab('smart-matching')}
-                className="btn-primary text-xs py-2.5 px-4 rounded-2xl flex items-center gap-1.5 shadow-sm"
+                className="btn-primary text-xs py-2.5 px-4 rounded-2xl flex items-center gap-1.5 shadow-sm cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#ccd5ae]" />
-                <span>Open Smart Matching Engine</span>
+                <span>{t('fpo.openSmartMatching', 'Open Smart Matching Engine')}</span>
               </button>
             </div>
           </div>
@@ -349,18 +351,18 @@ export const FpoDashboard: React.FC = () => {
                           ? 'bg-slate-100 text-slate-600 border-slate-300'
                           : 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/40'
                       }`}>
-                        {remaining <= 0 ? 'Fully Allocated' : listing.status}
+                        {remaining <= 0 ? t('fpo.fullyAllocated', 'Fully Allocated') : (t(`listingStatus.${listing.status}`, listing.status))}
                       </span>
                     </div>
 
                     <div>
                       <h4 className="font-semibold text-[#01472e] text-sm">
-                        {listing.crop}
+                        {t(`crops.${listing.crop}`, listing.crop)}
                         {listing.variety && <span className="text-[#01472e]/60 font-normal ml-1">({listing.variety})</span>}
                       </h4>
                       <p className="text-xs text-[#01472e]/70 mt-0.5 flex items-center gap-1">
                         <Users className="w-3.5 h-3.5 text-[#a3b18a]" />
-                        <span>Farmer: <strong className="text-[#01472e]">{listing.farmerName}</strong></span>
+                        <span>{t('fpo.farmerLabel', 'Farmer:')} <strong className="text-[#01472e]">{listing.farmerName}</strong></span>
                       </p>
                       <p className="text-xs text-[#01472e]/70 flex items-center gap-1">
                         <MapPin className="w-3.5 h-3.5 text-[#a3b18a]" />
@@ -370,9 +372,9 @@ export const FpoDashboard: React.FC = () => {
 
                     <div className="bg-white/80 p-3 rounded-xl border border-[#ccd5ae]/30 space-y-1.5">
                       <div className="flex justify-between text-xs">
-                        <span className="text-[#01472e]/70 font-medium">Available Supply:</span>
+                        <span className="text-[#01472e]/70 font-medium">{t('fpo.availableSupply', 'Available Supply:')}</span>
                         <span className="font-semibold text-[#01472e] font-mono">
-                          {remaining.toLocaleString()} {listing.unit || 'kg'}
+                          {remaining.toLocaleString()} {listing.unit ? t(`units.${listing.unit}`, listing.unit) : t('units.kg', 'kg')}
                         </span>
                       </div>
                       <div className="w-full bg-[#e9edc9]/50 h-2 rounded-full overflow-hidden">
@@ -382,22 +384,22 @@ export const FpoDashboard: React.FC = () => {
                         />
                       </div>
                       <div className="flex justify-between text-[10px] text-[#01472e]/60 font-mono">
-                        <span>Total: {totalListed.toLocaleString()} {listing.unit || 'kg'}</span>
-                        <span>Allocated: {allocated.toLocaleString()} ({percentAllocated}%)</span>
+                        <span>{t('fpo.totalWithUnit', 'Total: {total} {unit}', { total: totalListed.toLocaleString(), unit: listing.unit ? t(`units.${listing.unit}`, listing.unit) : t('units.kg', 'kg') })}</span>
+                        <span>{t('fpo.allocatedWithPercent', 'Allocated: {allocated} ({percent}%)', { allocated: allocated.toLocaleString(), percent: percentAllocated })}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="pt-3 border-t border-[#ccd5ae]/30 flex items-center justify-between">
                     <span className="text-xs font-semibold text-[#01472e] font-mono">
-                      ₹{listing.expectedPricePerKg}/kg • {listing.grade}
+                      ₹{listing.expectedPricePerKg}/kg • {t(`grades.${listing.grade}`, listing.grade)}
                     </span>
                     <button
                       onClick={() => setActiveTab('smart-matching')}
-                      className="px-3 py-1.5 bg-[#e9edc9]/60 hover:bg-[#e9edc9] text-[#01472e] text-xs font-semibold rounded-xl transition flex items-center gap-1"
+                      className="px-3 py-1.5 bg-[#e9edc9]/60 hover:bg-[#e9edc9] text-[#01472e] text-xs font-semibold rounded-xl transition flex items-center gap-1 cursor-pointer"
                     >
                       <Sparkles className="w-3 h-3 text-[#01472e]" />
-                      <span>Match</span>
+                      <span>{t('fpo.matchBtn', 'Match')}</span>
                     </button>
                   </div>
                 </div>
@@ -412,21 +414,21 @@ export const FpoDashboard: React.FC = () => {
         <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">Farm Gate Produce Collection Queue</h3>
+              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">{t('fpo.collectionQueueTitle', 'Farm Gate Produce Collection Queue')}</h3>
               <p className="text-xs text-[#01472e]/70 mt-0.5">
-                Collect harvested produce from member farms. Multi-farmer contributions and partial pickups are tracked without losing source provenance.
+                {t('fpo.collectionQueueSubtitle', 'Collect harvested produce from member farms. Multi-farmer contributions and partial pickups are tracked without losing source provenance.')}
               </p>
             </div>
             <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-3.5 py-1 rounded-full border border-amber-200">
-              {pendingCollectionOrders.length} Orders Awaiting Pickup
+              {t('fpo.awaitingPickupCount', '{count} Orders Awaiting Pickup', { count: pendingCollectionOrders.length })}
             </span>
           </div>
 
           {pendingCollectionOrders.length === 0 ? (
             <div className="py-12 text-center text-[#01472e]/40">
               <CheckCircle2 className="w-10 h-10 mx-auto text-[#01472e] mb-2 opacity-40" />
-              <p className="text-sm font-semibold text-[#01472e]">All member farm produce collected!</p>
-              <p className="text-xs text-[#01472e]/60 mt-0.5">New confirmed orders matched via Smart Matching will enter this queue.</p>
+              <p className="text-sm font-semibold text-[#01472e]">{t('fpo.allProduceCollected', 'All member farm produce collected!')}</p>
+              <p className="text-xs text-[#01472e]/60 mt-0.5">{t('fpo.newOrdersEnterQueue', 'New confirmed orders matched via Smart Matching will enter this queue.')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -460,21 +462,21 @@ export const FpoDashboard: React.FC = () => {
                           ? 'bg-amber-100 text-amber-900 border-amber-300'
                           : 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/40'
                       }`}>
-                        {order.status === 'Partially Collected' ? 'Partially Collected' : 'Collection Pending'}
+                        {order.status === 'Partially Collected' ? t('fpo.partiallyCollected', 'Partially Collected') : t('fpo.collectionPending', 'Collection Pending')}
                       </span>
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-[#01472e] text-sm">{order.crop} ({order.variety || 'Hybrid'})</h4>
+                      <h4 className="font-semibold text-[#01472e] text-sm">{t(`crops.${order.crop}`, order.crop)} ({order.variety || 'Hybrid'})</h4>
                       <p className="text-xs text-[#01472e]/70 mt-0.5">
-                        Buyer: <strong className="text-[#01472e]">{order.buyerName}</strong> ({order.deliveryLocation})
+                        {t('fpo.buyerLabel', 'Buyer:')} <strong className="text-[#01472e]">{order.buyerName}</strong> ({order.deliveryLocation})
                       </p>
                     </div>
 
                     {/* Collection Progress Bar */}
                     <div className="bg-white/80 p-3.5 rounded-xl border border-[#ccd5ae]/30 space-y-1.5">
                       <div className="flex justify-between text-xs">
-                        <span className="text-[#01472e]/70 font-medium">Collection Progress:</span>
+                        <span className="text-[#01472e]/70 font-medium">{t('fpo.collectionProgress', 'Collection Progress:')}</span>
                         <span className="font-semibold text-[#01472e] font-mono">
                           {collectedKg.toLocaleString()} / {requiredKg.toLocaleString()} kg ({percentCollected}%)
                         </span>
@@ -486,8 +488,8 @@ export const FpoDashboard: React.FC = () => {
                         />
                       </div>
                       <div className="flex justify-between text-[11px] text-[#01472e]/70 font-mono pt-0.5">
-                        <span className="text-[#01472e] font-semibold">Collected: {collectedKg.toLocaleString()} kg</span>
-                        <span className="text-amber-800 font-medium">Remaining: {remainingKg.toLocaleString()} kg</span>
+                        <span className="text-[#01472e] font-semibold">{t('fpo.collectedKg', 'Collected: {collected} kg', { collected: collectedKg.toLocaleString() })}</span>
+                        <span className="text-amber-800 font-medium">{t('fpo.remainingKg', 'Remaining: {remaining} kg', { remaining: remainingKg.toLocaleString() })}</span>
                       </div>
                     </div>
 
@@ -495,7 +497,7 @@ export const FpoDashboard: React.FC = () => {
                     <div className="space-y-2">
                       <p className="text-[11px] font-semibold uppercase tracking-wider text-[#01472e]/70 flex items-center gap-1.5">
                         <Users className="w-3.5 h-3.5 text-[#a3b18a]" />
-                        <span>Contributing Farmer Sources ({contributions.length})</span>
+                        <span>{t('fpo.contributingFarmersCount', 'Contributing Farmer Sources ({count})', { count: contributions.length })}</span>
                       </p>
 
                       <div className="space-y-1.5">
@@ -522,7 +524,7 @@ export const FpoDashboard: React.FC = () => {
                                     ? 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/40'
                                     : (c.collectionStatus === 'PARTIALLY_COLLECTED' ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-[#faf9f5] text-[#01472e]/70 border-[#ccd5ae]/40')
                                 }`}>
-                                  {c.collectionStatus === 'FULLY_COLLECTED' ? 'Collected' : `${farmerRemaining} kg open`}
+                                  {c.collectionStatus === 'FULLY_COLLECTED' ? t('common.collected', 'Collected') : `${farmerRemaining} kg open`}
                                 </span>
                               </div>
                             </div>
@@ -533,14 +535,14 @@ export const FpoDashboard: React.FC = () => {
 
                     <div className="pt-3 border-t border-[#ccd5ae]/30 flex items-center justify-between">
                       <span className="text-[11px] text-[#01472e]/70 font-mono">
-                        Target Value: ₹{order.totalValue.toLocaleString()}
+                        {t('fpo.targetValue', 'Target Value:')} ₹{order.totalValue.toLocaleString()}
                       </span>
                       <button
                         onClick={() => handleOpenCollectionModal(order)}
-                        className="btn-primary text-xs py-2 px-4 rounded-xl shadow-xs flex items-center gap-1.5"
+                        className="btn-primary text-xs py-2 px-4 rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
                       >
                         <Check className="w-3.5 h-3.5" />
-                        <span>Record Produce Collection</span>
+                        <span>{t('fpo.recordCollectionBtn', 'Record Produce Collection')}</span>
                       </button>
                     </div>
                   </div>
@@ -556,21 +558,21 @@ export const FpoDashboard: React.FC = () => {
         <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">Hub Quality Inspection & Grading Station</h3>
+              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">{t('fpo.gradingStationTitle', 'Hub Quality Inspection & Grading Station')}</h3>
               <p className="text-xs text-[#01472e]/70 mt-0.5">
-                Perform laboratory checks (Sugar Brix, firmness, moisture, pesticide assay) and record accepted vs rejected volumes.
+                {t('fpo.gradingStationSubtitle', 'Perform laboratory checks (Sugar Brix, firmness, moisture, pesticide assay) and record accepted vs rejected volumes.')}
               </p>
             </div>
             <span className="text-xs font-semibold text-[#01472e] bg-[#eaf4ec] px-3.5 py-1 rounded-full border border-[#a3b18a]/40">
-              {collectedAwaitingGrading.length} Batches Ready for QA
+              {t('fpo.batchesReadyQACount', '{count} Batches Ready for QA', { count: collectedAwaitingGrading.length })}
             </span>
           </div>
 
           {collectedAwaitingGrading.length === 0 ? (
             <div className="py-12 text-center text-[#01472e]/40">
               <ShieldCheck className="w-10 h-10 mx-auto text-[#01472e] mb-2 opacity-40" />
-              <p className="text-sm font-semibold text-[#01472e]">No batches currently awaiting quality check</p>
-              <p className="text-xs text-[#01472e]/60 mt-0.5">Collect produce from Stage 1 to queue batches for quality inspection.</p>
+              <p className="text-sm font-semibold text-[#01472e]">{t('fpo.noBatchesAwaitingQA', 'No batches currently awaiting quality check')}</p>
+              <p className="text-xs text-[#01472e]/60 mt-0.5">{t('fpo.collectFromStage1Notice', 'Collect produce from Stage 1 to queue batches for quality inspection.')}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -587,19 +589,19 @@ export const FpoDashboard: React.FC = () => {
                           <span className="text-[#ccd5ae]">•</span>
                           <span className="font-mono text-xs text-[#01472e]/70 font-semibold">{order.batchId}</span>
                           <span className="text-[10px] font-semibold uppercase tracking-wider bg-[#eaf4ec] text-[#01472e] px-2.5 py-0.5 rounded-full border border-[#a3b18a]/40">
-                            Collected ({totalCollected.toLocaleString()} kg)
+                            {t('fpo.collectedWithQty', 'Collected ({qty} kg)', { qty: totalCollected.toLocaleString() })}
                           </span>
                         </div>
                         <h4 className="text-sm font-semibold text-[#01472e] mt-1">
-                          {order.crop} ({order.variety || 'Hybrid'}) — {totalCollected.toLocaleString()} kg from {order.farmerName}
+                          {t(`crops.${order.crop}`, order.crop)} ({order.variety || 'Hybrid'}) — {totalCollected.toLocaleString()} kg from {order.farmerName}
                         </h4>
                       </div>
 
                       <button
                         onClick={() => isInspecting ? setSelectedOrderForInspection(null) : handleStartInspection(order)}
-                        className="btn-primary text-xs py-2 px-4 rounded-xl shadow-xs self-start sm:self-auto"
+                        className="btn-primary text-xs py-2 px-4 rounded-xl shadow-xs self-start sm:self-auto cursor-pointer"
                       >
-                        {isInspecting ? 'Cancel QA Form' : 'Open Inspection Form →'}
+                        {isInspecting ? t('fpo.cancelQAForm', 'Cancel QA Form') : t('fpo.openInspectionForm', 'Open Inspection Form →')}
                       </button>
                     </div>
 
@@ -609,16 +611,16 @@ export const FpoDashboard: React.FC = () => {
                         <div className="flex items-center justify-between pb-2 border-b border-[#ccd5ae]/30">
                           <h5 className="font-semibold text-[#01472e] text-xs uppercase tracking-wider flex items-center gap-2">
                             <ShieldCheck className="w-4 h-4 text-[#01472e]" />
-                            <span>Quality Certification & Acceptance Entry — Batch: {order.batchId}</span>
+                            <span>{t('fpo.qaCertBatchTitle', 'Quality Certification & Acceptance Entry — Batch: {batchId}', { batchId: order.batchId })}</span>
                           </h5>
-                          <span className="text-xs font-mono font-semibold text-[#01472e]">Total Collected: {totalCollected} kg</span>
+                          <span className="text-xs font-mono font-semibold text-[#01472e]">{t('fpo.totalCollectedKg', 'Total Collected: {total} kg', { total: totalCollected })}</span>
                         </div>
 
                         {/* Acceptance & Rejection Breakdown */}
                         <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                           <div>
                             <label className="block text-[#01472e] font-semibold mb-1">
-                              Accepted Quantity (kg) <span className="text-[#01472e]/70 font-mono">(Moves to Packing)</span>
+                              {t('fpo.acceptedQty', 'Accepted Quantity (kg)')} <span className="text-[#01472e]/70 font-mono">{t('fpo.movesToPacking', '(Moves to Packing)')}</span>
                             </label>
                             <input
                               type="number"
@@ -636,7 +638,7 @@ export const FpoDashboard: React.FC = () => {
 
                           <div>
                             <label className="block text-rose-800 font-semibold mb-1">
-                              Rejected Quantity (kg) <span className="text-rose-600 font-mono">(Defects/Shortage)</span>
+                              {t('fpo.rejectedQty', 'Rejected Quantity (kg)')} <span className="text-rose-600 font-mono">{t('fpo.defectsShortage', '(Defects/Shortage)')}</span>
                             </label>
                             <input
                               type="number"
@@ -654,7 +656,7 @@ export const FpoDashboard: React.FC = () => {
 
                           {rejectedKg > 0 && (
                             <div className="sm:col-span-2">
-                              <label className="block text-[#01472e] font-semibold mb-1">Rejection Reason / Defect Notes</label>
+                              <label className="block text-[#01472e] font-semibold mb-1">{t('fpo.rejectionReasonLabel', 'Rejection Reason / Defect Notes')}</label>
                               <input
                                 type="text"
                                 value={rejectionReason}
@@ -669,7 +671,7 @@ export const FpoDashboard: React.FC = () => {
                         {/* Lab Metrics */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                           <div>
-                            <label className="block text-[#01472e]/80 font-semibold mb-1">Sugar Content (°Brix)</label>
+                            <label className="block text-[#01472e]/80 font-semibold mb-1">{t('fpo.sugarBrix', 'Sugar Content (°Brix)')}</label>
                             <input
                               type="number"
                               step="0.1"
@@ -680,7 +682,7 @@ export const FpoDashboard: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-[#01472e]/80 font-semibold mb-1">Firmness (kg/cm²)</label>
+                            <label className="block text-[#01472e]/80 font-semibold mb-1">{t('fpo.firmness', 'Firmness (kg/cm²)')}</label>
                             <input
                               type="number"
                               step="0.1"
@@ -691,7 +693,7 @@ export const FpoDashboard: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-[#01472e]/80 font-semibold mb-1">Moisture Content</label>
+                            <label className="block text-[#01472e]/80 font-semibold mb-1">{t('fpo.moistureContent', 'Moisture Content')}</label>
                             <input
                               type="text"
                               value={moisture}
@@ -701,7 +703,7 @@ export const FpoDashboard: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-[#01472e]/80 font-semibold mb-1">Pesticide Residue Test</label>
+                            <label className="block text-[#01472e]/80 font-semibold mb-1">{t('fpo.pesticideTest', 'Pesticide Residue Test')}</label>
                             <select
                               value={pesticideTest}
                               onChange={(e) => setPesticideTest(e.target.value as any)}
@@ -713,7 +715,7 @@ export const FpoDashboard: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-[#01472e]/80 font-semibold mb-1">Certified Grade</label>
+                            <label className="block text-[#01472e]/80 font-semibold mb-1">{t('fpo.certifiedGrade', 'Certified Grade')}</label>
                             <select
                               value={grade}
                               onChange={(e) => setGrade(e.target.value as any)}
@@ -727,7 +729,7 @@ export const FpoDashboard: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-[#01472e]/80 font-semibold mb-1">QA Assessor Name</label>
+                            <label className="block text-[#01472e]/80 font-semibold mb-1">{t('fpo.qaAssessorName', 'QA Assessor Name')}</label>
                             <input
                               type="text"
                               value={inspectorName}
@@ -740,16 +742,16 @@ export const FpoDashboard: React.FC = () => {
                         <div className="flex justify-end gap-3 pt-3 border-t border-[#ccd5ae]/30">
                           <button
                             onClick={() => setSelectedOrderForInspection(null)}
-                            className="px-4 py-2 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-xl text-xs font-semibold transition"
+                            className="px-4 py-2 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-xl text-xs font-semibold transition cursor-pointer"
                           >
-                            Cancel
+                            {t('common.cancel', 'Cancel')}
                           </button>
                           <button
                             onClick={() => handleSaveInspection(order.id)}
-                            className="btn-primary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-1.5 shadow-sm"
+                            className="btn-primary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-1.5 shadow-sm cursor-pointer"
                           >
                             <ShieldCheck className="w-4 h-4" />
-                            <span>Certify Quality & Record Accepted Volume</span>
+                            <span>{t('fpo.certifyQualityBtn', 'Certify Quality & Record Accepted Volume')}</span>
                           </button>
                         </div>
                       </div>
@@ -767,21 +769,21 @@ export const FpoDashboard: React.FC = () => {
         <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">Packaging, Crating & QR Sealing</h3>
+              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">{t('fpo.packingTitle', 'Packaging, Crating & QR Sealing')}</h3>
               <p className="text-xs text-[#01472e]/70 mt-0.5">
-                Pack quality-accepted produce into standardized agro-crates, assign batch tamper seal, and unlock Transport Readiness.
+                {t('fpo.packingSubtitle', 'Pack quality-accepted produce into standardized agro-crates, assign batch tamper seal, and unlock Transport Readiness.')}
               </p>
             </div>
             <span className="text-xs font-semibold text-[#01472e] bg-[#eaf4ec] px-3.5 py-1 rounded-full border border-[#a3b18a]/40">
-              {gradedAwaitingPacking.length} Batches Ready for Crating
+              {t('fpo.batchesReadyCratingCount', '{count} Batches Ready for Crating', { count: gradedAwaitingPacking.length })}
             </span>
           </div>
 
           {gradedAwaitingPacking.length === 0 ? (
             <div className="py-12 text-center text-[#01472e]/40">
               <Package className="w-10 h-10 mx-auto text-[#01472e] mb-2 opacity-40" />
-              <p className="text-sm font-semibold text-[#01472e]">No batches currently awaiting packing</p>
-              <p className="text-xs text-[#01472e]/60 mt-0.5">Complete Quality Grading in Stage 2 to advance batches here.</p>
+              <p className="text-sm font-semibold text-[#01472e]">{t('fpo.noBatchesAwaitingPacking', 'No batches currently awaiting packing')}</p>
+              <p className="text-xs text-[#01472e]/60 mt-0.5">{t('fpo.completeStage2Notice', 'Complete Quality Grading in Stage 2 to advance batches here.')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -799,30 +801,30 @@ export const FpoDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-[#01472e] text-sm">{order.crop} ({order.variety || 'Hybrid'})</h4>
+                      <h4 className="font-semibold text-[#01472e] text-sm">{t(`crops.${order.crop}`, order.crop)} ({order.variety || 'Hybrid'})</h4>
                       <p className="text-xs text-[#01472e]/80 mt-1">
-                        Accepted Volume: <strong className="font-mono text-[#01472e]">{acceptedVolume.toLocaleString()} kg</strong> (~{estimatedCrates} crates)
+                        {t('fpo.acceptedVolumeLabel', 'Accepted Volume:')} <strong className="font-mono text-[#01472e]">{acceptedVolume.toLocaleString()} kg</strong> (~{estimatedCrates} crates)
                       </p>
                       <p className="text-xs text-[#01472e]/70 mt-0.5">
-                        Destination: <strong className="text-[#01472e]">{order.buyerName}</strong> ({order.deliveryLocation})
+                        {t('fpo.destinationLabel', 'Destination:')} <strong className="text-[#01472e]">{order.buyerName}</strong> ({order.deliveryLocation})
                       </p>
                     </div>
 
                     <div className="pt-3 border-t border-[#ccd5ae]/30 flex items-center justify-between">
                       <button
                         onClick={() => openPassportModal(order.batchId)}
-                        className="text-[#01472e] hover:text-[#025a3b] text-xs font-semibold flex items-center gap-1 transition"
+                        className="text-[#01472e] hover:text-[#025a3b] text-xs font-semibold flex items-center gap-1 transition cursor-pointer"
                       >
                         <QrCode className="w-3.5 h-3.5 text-[#01472e]" />
-                        <span>Preview Passport</span>
+                        <span>{t('fpo.previewPassport', 'Preview Passport')}</span>
                       </button>
 
                       <button
                         onClick={() => handleOpenPackingModal(order)}
-                        className="btn-primary text-xs py-2 px-4 rounded-xl shadow-xs flex items-center gap-1.5"
+                        className="btn-primary text-xs py-2 px-4 rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
                       >
                         <Package className="w-3.5 h-3.5" />
-                        <span>Pack & Unlock Transport →</span>
+                        <span>{t('fpo.packUnlockTransport', 'Pack & Unlock Transport →')}</span>
                       </button>
                     </div>
                   </div>
@@ -838,13 +840,13 @@ export const FpoDashboard: React.FC = () => {
         <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">Bulk Order Consolidation & Provenance Hub</h3>
+              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">{t('fpo.consolidationTitle', 'Bulk Order Consolidation & Provenance Hub')}</h3>
               <p className="text-xs text-[#01472e]/70 mt-0.5">
-                Consolidated institutional volume orders maintaining 100% individual farmer source and buyer demand links.
+                {t('fpo.consolidationSubtitle', 'Consolidated institutional volume orders maintaining 100% individual farmer source and buyer demand links.')}
               </p>
             </div>
             <span className="text-xs font-semibold text-[#01472e] bg-[#eaf4ec] px-3.5 py-1 rounded-full border border-[#a3b18a]/40">
-              {bulkConsolidatedOrders.length} Consolidated Batches
+              {t('fpo.consolidatedBatchesCount', '{count} Consolidated Batches', { count: bulkConsolidatedOrders.length })}
             </span>
           </div>
 
@@ -874,30 +876,30 @@ export const FpoDashboard: React.FC = () => {
                       <span className="font-mono text-xs text-[#01472e]/70 font-semibold">{order.batchId}</span>
                       {order.aggregatedGroupId && (
                         <span className="text-[10px] font-semibold bg-[#e9edc9] text-[#01472e] border border-[#ccd5ae] px-2.5 py-0.5 rounded-full">
-                          Pooled: {order.aggregatedGroupId}
+                          {t('fpo.pooledBatch', 'Pooled: {id}', { id: order.aggregatedGroupId })}
                         </span>
                       )}
                     </div>
                     <span className="text-xs font-semibold px-3 py-1 rounded-full border border-[#ccd5ae]/50 bg-white text-[#01472e]">
-                      Status: {order.status}
+                      {t('common.status', 'Status:')} {t(`orderStatus.${order.status}`, order.status)}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-white p-4 rounded-xl border border-[#ccd5ae]/30 text-xs">
                     <div>
-                      <span className="text-[#01472e]/60 block font-semibold uppercase text-[10px]">Total Buyer Quantity</span>
+                      <span className="text-[#01472e]/60 block font-semibold uppercase text-[10px]">{t('fpo.totalBuyerQty', 'Total Buyer Quantity')}</span>
                       <strong className="text-sm font-semibold font-mono text-[#01472e]">{requiredKg.toLocaleString()} kg</strong>
                     </div>
                     <div>
-                      <span className="text-[#01472e]/60 block font-semibold uppercase text-[10px]">Total Collected</span>
+                      <span className="text-[#01472e]/60 block font-semibold uppercase text-[10px]">{t('fpo.totalCollected', 'Total Collected')}</span>
                       <strong className="text-sm font-semibold font-mono text-[#01472e]">{collectedKg.toLocaleString()} kg</strong>
                     </div>
                     <div>
-                      <span className="text-[#01472e]/60 block font-semibold uppercase text-[10px]">Remaining Collection</span>
+                      <span className="text-[#01472e]/60 block font-semibold uppercase text-[10px]">{t('fpo.remainingCollection', 'Remaining Collection')}</span>
                       <strong className="text-sm font-semibold font-mono text-amber-800">{remainingKg.toLocaleString()} kg</strong>
                     </div>
                     <div>
-                      <span className="text-[#01472e]/60 block font-semibold uppercase text-[10px]">Transaction Value</span>
+                      <span className="text-[#01472e]/60 block font-semibold uppercase text-[10px]">{t('fpo.transactionValue', 'Transaction Value')}</span>
                       <strong className="text-sm font-semibold font-mono text-[#01472e]">₹{order.totalValue.toLocaleString()}</strong>
                     </div>
                   </div>
@@ -906,7 +908,7 @@ export const FpoDashboard: React.FC = () => {
                   <div className="space-y-2">
                     <h5 className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider flex items-center gap-1.5">
                       <Users className="w-3.5 h-3.5 text-[#a3b18a]" />
-                      <span>Farmer Provenance & Source Allotments ({contributions.length} Producers)</span>
+                      <span>{t('fpo.farmerProvenanceTitle', 'Farmer Provenance & Source Allotments ({count} Producers)', { count: contributions.length })}</span>
                     </h5>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
@@ -921,8 +923,8 @@ export const FpoDashboard: React.FC = () => {
                             <span>{c.farmerLocation}</span>
                           </p>
                           <div className="flex justify-between text-[10px] text-[#01472e]/60 pt-1.5 border-t border-[#ccd5ae]/20">
-                            <span>Listing: <strong className="font-mono">{c.produceListingId}</strong></span>
-                            <span className="text-[#01472e] font-semibold">Collected: {c.collectedQuantityKg || 0} kg</span>
+                            <span>{t('fpo.listingLabel', 'Listing:')} <strong className="font-mono">{c.produceListingId}</strong></span>
+                            <span className="text-[#01472e] font-semibold">{t('fpo.collectedKg', 'Collected: {collected} kg', { collected: (c.collectedQuantityKg || 0).toLocaleString() })}</span>
                           </div>
                         </div>
                       ))}
@@ -931,14 +933,14 @@ export const FpoDashboard: React.FC = () => {
 
                   <div className="pt-2 border-t border-[#ccd5ae]/30 flex items-center justify-between text-xs">
                     <span className="text-[#01472e]/70">
-                      Buyer: <strong className="text-[#01472e]">{order.buyerName}</strong> (Demand: {order.demandRequestId})
+                      {t('fpo.buyerLabel', 'Buyer:')} <strong className="text-[#01472e]">{order.buyerName}</strong> {t('fpo.demandLabel', '(Demand: {demand})', { demand: order.demandRequestId })}
                     </span>
                     <button
                       onClick={() => openPassportModal(order.batchId)}
-                      className="text-[#01472e] hover:text-[#025a3b] font-semibold flex items-center gap-1 transition"
+                      className="text-[#01472e] hover:text-[#025a3b] font-semibold flex items-center gap-1 transition cursor-pointer"
                     >
                       <QrCode className="w-3.5 h-3.5" />
-                      <span>View Provenance Passport</span>
+                      <span>{t('fpo.viewProvenancePassport', 'View Provenance Passport')}</span>
                     </button>
                   </div>
                 </div>
@@ -953,11 +955,11 @@ export const FpoDashboard: React.FC = () => {
         <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">All Collective FPO Batches</h3>
-              <p className="text-xs text-[#01472e]/70 mt-0.5">Comprehensive lifecycle status across collection, quality, crating and transport</p>
+              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">{t('fpo.allCollectiveBatches', 'All Collective FPO Batches')}</h3>
+              <p className="text-xs text-[#01472e]/70 mt-0.5">{t('fpo.allBatchesSubtitle', 'Comprehensive lifecycle status across collection, quality, crating and transport')}</p>
             </div>
             <span className="text-xs font-semibold text-[#01472e] bg-[#e9edc9]/50 border border-[#ccd5ae]/50 px-3.5 py-1 rounded-xl">
-              {orders.length} Total Batches
+              {t('fpo.totalBatchesCount', '{count} Total Batches', { count: orders.length })}
             </span>
           </div>
 
@@ -974,19 +976,19 @@ export const FpoDashboard: React.FC = () => {
                       <span className="text-[#ccd5ae]">•</span>
                       <span className="font-mono text-xs text-[#01472e]/70">{order.batchId}</span>
                       <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-[#ccd5ae]/40 bg-[#faf9f5] text-[#01472e]">
-                        {order.status}
+                        {t(`orderStatus.${order.status}`, order.status)}
                       </span>
                       {order.isReadyForTransport && (
                         <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40">
-                          Ready for Transport
+                          {t('fpo.readyForTransport', 'Ready for Transport')}
                         </span>
                       )}
                     </div>
                     <p className="text-xs font-semibold text-[#01472e] mt-1">
-                      {order.crop} — {order.quantityKg.toLocaleString()} kg @ ₹{order.pricePerKg}/kg (Total: ₹{order.totalValue.toLocaleString()})
+                      {t(`crops.${order.crop}`, order.crop)} — {order.quantityKg.toLocaleString()} kg @ ₹{order.pricePerKg}/kg ({t('common.total', 'Total')}: ₹{order.totalValue.toLocaleString()})
                     </p>
                     <p className="text-[11px] text-[#01472e]/70">
-                      Farmer: {order.farmerName} ➔ Buyer: {order.buyerName}
+                      {t('fpo.farmerLabel', 'Farmer:')} {order.farmerName} ➔ {t('fpo.buyerLabel', 'Buyer:')} {order.buyerName}
                     </p>
                   </div>
                 </div>
@@ -994,16 +996,16 @@ export const FpoDashboard: React.FC = () => {
                 <div className="flex items-center gap-2 self-end sm:self-auto">
                   <button
                     onClick={() => openPassportModal(order.batchId)}
-                    className="btn-secondary text-xs py-2 px-3.5 rounded-xl flex items-center gap-1"
+                    className="btn-secondary text-xs py-2 px-3.5 rounded-xl flex items-center gap-1 cursor-pointer"
                   >
                     <QrCode className="w-3.5 h-3.5 text-[#01472e]" />
-                    <span>Passport</span>
+                    <span>{t('fpo.passportBtn', 'Passport')}</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('orders')}
-                    className="btn-primary text-xs py-2 px-4 rounded-xl"
+                    className="btn-primary text-xs py-2 px-4 rounded-xl cursor-pointer"
                   >
-                    Order Details
+                    {t('fpo.orderDetailsBtn', 'Order Details')}
                   </button>
                 </div>
               </div>
@@ -1022,12 +1024,12 @@ export const FpoDashboard: React.FC = () => {
                   <Check className="w-5 h-5 text-[#01472e]" />
                 </div>
                 <h4 className="font-semibold text-[#01472e] text-base tracking-tight">
-                  Record Farm Gate Collection
+                  {t('fpo.recordCollectionModalTitle', 'Record Farm Gate Collection')}
                 </h4>
               </div>
               <button
                 onClick={() => setCollectionModalOrder(null)}
-                className="text-[#01472e]/50 hover:text-[#01472e] font-semibold p-1"
+                className="text-[#01472e]/50 hover:text-[#01472e] font-semibold p-1 cursor-pointer"
               >
                 ✕
               </button>
@@ -1035,17 +1037,17 @@ export const FpoDashboard: React.FC = () => {
 
             <form onSubmit={handleRecordCollectionSubmit} className="space-y-4 text-xs">
               <div className="p-3.5 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 space-y-1">
-                <span className="font-mono text-[11px] text-[#01472e]/70 font-semibold">Order: {collectionModalOrder.id}</span>
-                <p className="font-semibold text-[#01472e] text-sm">{collectionModalOrder.crop} ({collectionModalOrder.variety || 'Hybrid'})</p>
+                <span className="font-mono text-[11px] text-[#01472e]/70 font-semibold">{t('orders.order', 'Order')}: {collectionModalOrder.id}</span>
+                <p className="font-semibold text-[#01472e] text-sm">{t(`crops.${collectionModalOrder.crop}`, collectionModalOrder.crop)} ({collectionModalOrder.variety || 'Hybrid'})</p>
                 <div className="flex justify-between text-[#01472e]/70 pt-1">
-                  <span>Total Required: <strong>{collectionModalOrder.quantityKg.toLocaleString()} kg</strong></span>
-                  <span>Collected: <strong className="text-[#01472e] font-semibold">{collectionModalOrder.collectedQuantityKg || 0} kg</strong></span>
+                  <span>{t('fpo.totalRequired', 'Total Required:')} <strong>{collectionModalOrder.quantityKg.toLocaleString()} kg</strong></span>
+                  <span>{t('fpo.collected', 'Collected:')} <strong className="text-[#01472e] font-semibold">{collectionModalOrder.collectedQuantityKg || 0} kg</strong></span>
                 </div>
               </div>
 
               {/* Select Contributing Farmer */}
               <div>
-                <label className="block text-[#01472e] font-semibold mb-1">Select Producer Farm Gate</label>
+                <label className="block text-[#01472e] font-semibold mb-1">{t('fpo.selectProducerFarmGate', 'Select Producer Farm Gate')}</label>
                 <select
                   value={selectedFarmerId}
                   onChange={(e) => {
@@ -1070,7 +1072,7 @@ export const FpoDashboard: React.FC = () => {
                     }
                   ]).map((c) => (
                     <option key={c.farmerId} value={c.farmerId}>
-                      {c.farmerName} — {c.contributedQuantityKg - (c.collectedQuantityKg || 0)} kg remaining of {c.contributedQuantityKg} kg
+                      {c.farmerName} — {t('fpo.farmerRemainingSummary', '{remaining} kg remaining of {total} kg', { remaining: c.contributedQuantityKg - (c.collectedQuantityKg || 0), total: c.contributedQuantityKg })}
                     </option>
                   ))}
                 </select>
@@ -1079,8 +1081,8 @@ export const FpoDashboard: React.FC = () => {
               {/* Collection Quantity Input */}
               <div>
                 <div className="flex justify-between mb-1">
-                  <label className="text-[#01472e] font-semibold">Quantity to Collect (kg)</label>
-                  <span className="text-[#01472e]/50">Max open balance</span>
+                  <label className="text-[#01472e] font-semibold">{t('fpo.qtyToCollect', 'Quantity to Collect (kg)')}</label>
+                  <span className="text-[#01472e]/50">{t('fpo.maxOpenBalance', 'Max open balance')}</span>
                 </div>
                 <input
                   type="number"
@@ -1095,7 +1097,7 @@ export const FpoDashboard: React.FC = () => {
 
               {/* Collection Notes */}
               <div>
-                <label className="block text-[#01472e] font-semibold mb-1">Field Logistics Notes</label>
+                <label className="block text-[#01472e] font-semibold mb-1">{t('fpo.fieldLogisticsNotes', 'Field Logistics Notes')}</label>
                 <input
                   type="text"
                   value={collectionNotes}
@@ -1108,16 +1110,16 @@ export const FpoDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setCollectionModalOrder(null)}
-                  className="px-5 py-2.5 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-2xl text-xs font-semibold transition"
+                  className="px-5 py-2.5 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-2xl text-xs font-semibold transition cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="btn-primary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-1.5 shadow-sm"
+                  className="btn-primary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-1.5 shadow-sm cursor-pointer"
                 >
                   <Check className="w-4 h-4" />
-                  <span>Confirm Farm Gate Pickup</span>
+                  <span>{t('fpo.confirmPickupBtn', 'Confirm Farm Gate Pickup')}</span>
                 </button>
               </div>
             </form>
@@ -1135,12 +1137,12 @@ export const FpoDashboard: React.FC = () => {
                   <Package className="w-5 h-5 text-[#01472e]" />
                 </div>
                 <h4 className="font-semibold text-[#01472e] text-base tracking-tight">
-                  Crating, Batch QR & Transport Readiness
+                  {t('fpo.cratingModalTitle', 'Crating, Batch QR & Transport Readiness')}
                 </h4>
               </div>
               <button
                 onClick={() => setPackingModalOrder(null)}
-                className="text-[#01472e]/50 hover:text-[#01472e] font-semibold p-1"
+                className="text-[#01472e]/50 hover:text-[#01472e] font-semibold p-1 cursor-pointer"
               >
                 ✕
               </button>
@@ -1148,16 +1150,16 @@ export const FpoDashboard: React.FC = () => {
 
             <form onSubmit={handleRecordPackingSubmit} className="space-y-4 text-xs">
               <div className="p-3.5 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 space-y-1">
-                <span className="font-mono text-[11px] text-[#01472e]/70 font-semibold">Order: {packingModalOrder.id} • Batch: {packingModalOrder.batchId}</span>
-                <p className="font-semibold text-[#01472e] text-sm">{packingModalOrder.crop} ({packingModalOrder.variety || 'Hybrid'})</p>
+                <span className="font-mono text-[11px] text-[#01472e]/70 font-semibold">{t('orders.order', 'Order')}: {packingModalOrder.id} • Batch: {packingModalOrder.batchId}</span>
+                <p className="font-semibold text-[#01472e] text-sm">{t(`crops.${packingModalOrder.crop}`, packingModalOrder.crop)} ({packingModalOrder.variety || 'Hybrid'})</p>
                 <div className="flex justify-between text-[#01472e]/70 pt-1">
-                  <span>Quality Grade: <strong className="text-[#01472e]">{packingModalOrder.qualityGrade}</strong></span>
-                  <span>Accepted Quantity: <strong className="text-[#01472e] font-mono">{packingModalOrder.acceptedQuantityKg || packingModalOrder.quantityKg} kg</strong></span>
+                  <span>{t('fpo.qualityGradeLabel', 'Quality Grade:')} <strong className="text-[#01472e]">{packingModalOrder.qualityGrade}</strong></span>
+                  <span>{t('fpo.acceptedQuantityLabel', 'Accepted Quantity:')} <strong className="text-[#01472e] font-mono">{packingModalOrder.acceptedQuantityKg || packingModalOrder.quantityKg} kg</strong></span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[#01472e] font-semibold mb-1">Packed Quantity (kg)</label>
+                <label className="block text-[#01472e] font-semibold mb-1">{t('fpo.packedQty', 'Packed Quantity (kg)')}</label>
                 <input
                   type="number"
                   min="1"
@@ -1168,25 +1170,25 @@ export const FpoDashboard: React.FC = () => {
                   required
                 />
                 <p className="text-[11px] text-[#01472e]/60 mt-1 font-mono">
-                  Equivalent to ~{Math.ceil(packQuantityKg / 25)} crates (standard 25 kg unit payload)
+                  {t('fpo.equivalentCrates', 'Equivalent to ~{crates} crates (standard 25 kg unit payload)', { crates: Math.ceil(packQuantityKg / 25) })}
                 </p>
               </div>
 
               <div>
-                <label className="block text-[#01472e] font-semibold mb-1">Packaging Specification</label>
+                <label className="block text-[#01472e] font-semibold mb-1">{t('fpo.packagingSpec', 'Packaging Specification')}</label>
                 <select
                   value={crateType}
                   onChange={(e) => setCrateType(e.target.value)}
                   className="input-modern"
                 >
-                  <option value="Ventilated 25kg Food-Grade Agro-Crates">Ventilated 25kg Food-Grade Agro-Crates</option>
-                  <option value="Corrugated High-Strength Export Cartons">Corrugated High-Strength Export Cartons (20kg)</option>
-                  <option value="Perforated Pre-Cooling Bins">Perforated Pre-Cooling Bins (50kg)</option>
+                  <option value="Ventilated 25kg Food-Grade Agro-Crates">{t('fpo.crateVentilated', 'Ventilated 25kg Food-Grade Agro-Crates')}</option>
+                  <option value="Corrugated High-Strength Export Cartons">{t('fpo.crateCorrugated', 'Corrugated High-Strength Export Cartons (20kg)')}</option>
+                  <option value="Perforated Pre-Cooling Bins">{t('fpo.cratePerforated', 'Perforated Pre-Cooling Bins (50kg)')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-[#01472e] font-semibold mb-1">Tamper-Proof Batch Barcode Note</label>
+                <label className="block text-[#01472e] font-semibold mb-1">{t('fpo.tamperProofNote', 'Tamper-Proof Batch Barcode Note')}</label>
                 <input
                   type="text"
                   value={packNotes}
@@ -1199,16 +1201,16 @@ export const FpoDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setPackingModalOrder(null)}
-                  className="px-5 py-2.5 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-2xl text-xs font-semibold transition"
+                  className="px-5 py-2.5 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-2xl text-xs font-semibold transition cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="btn-primary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-1.5 shadow-sm"
+                  className="btn-primary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-1.5 shadow-sm cursor-pointer"
                 >
                   <Package className="w-4 h-4" />
-                  <span>Crate & Seal (Ready for Transport)</span>
+                  <span>{t('fpo.crateAndSealBtn', 'Crate & Seal (Ready for Transport)')}</span>
                 </button>
               </div>
             </form>

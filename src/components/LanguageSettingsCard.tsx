@@ -18,13 +18,13 @@ export const LanguageSettingsCard: React.FC = () => {
           </div>
           <div>
             <h3 className="text-base font-bold text-[#01472e] flex items-center gap-2">
-              <span>{t('profile.languageSettings')}</span>
+              <span>{t('profile.languageSettings', 'Language & Script Preferences')}</span>
               <span className="text-[10px] font-semibold text-[#01472e] bg-[#e9edc9] px-2.5 py-0.5 rounded-full border border-[#ccd5ae]/80">
-                22 Constitutional Languages
+                {t('profile.constitutionalLanguages', '22 Constitutional Languages')}
               </span>
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              Constitution of India (Eighth Schedule) certified multilingual accessibility
+              {t('profile.eighthSchedule', 'Constitution of India (Eighth Schedule) certified multilingual accessibility')}
             </p>
           </div>
         </div>
@@ -35,7 +35,7 @@ export const LanguageSettingsCard: React.FC = () => {
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-[#01472e] hover:bg-[#025a3b] text-white text-xs font-semibold shadow-sm transition hover:scale-[1.02] cursor-pointer"
         >
           <Globe2 className="w-4 h-4 text-[#fefae0]" />
-          <span>{t('profile.changeLanguage')}</span>
+          <span>{t('profile.changeLanguage', 'Change Language')}</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -44,7 +44,7 @@ export const LanguageSettingsCard: React.FC = () => {
       <div className="p-5 rounded-2xl bg-gradient-to-br from-[#faf9f5] to-[#f4f7f4] border border-[#ccd5ae]/60 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-1">
           <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">
-            {t('profile.currentActiveLanguage')}
+            {t('profile.currentActiveLanguage', 'Current Active Language')}
           </span>
           <div className="flex items-baseline gap-2">
             <span className="text-xl font-extrabold text-[#01472e]">
@@ -56,13 +56,13 @@ export const LanguageSettingsCard: React.FC = () => {
           </div>
           <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-medium pt-1">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Active & Persistent across sessions</span>
+            <span>{t('profile.activePersistent', 'Active & Persistent across sessions')}</span>
           </div>
         </div>
 
         <div className="space-y-1">
           <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">
-            Script & Linguistic Profile
+            {t('profile.scriptProfile', 'Script & Linguistic Profile')}
           </span>
           <p className="text-xs font-semibold text-slate-800">
             {currentLanguageDef.script} Script
@@ -77,7 +77,7 @@ export const LanguageSettingsCard: React.FC = () => {
 
         <div className="space-y-1">
           <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">
-            Primary Agrarian Regions
+            {t('profile.primaryRegions', 'Primary Agrarian Regions')}
           </span>
           <div className="flex flex-wrap gap-1 pt-0.5">
             {currentLanguageDef.regions.map((region) => (
@@ -97,14 +97,14 @@ export const LanguageSettingsCard: React.FC = () => {
         <div className="flex items-center justify-between text-xs">
           <span className="font-semibold text-slate-700 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-            Quick Switch Popular Agrarian Languages
+            {t('profile.quickSwitch', 'Quick Switch Popular Agrarian Languages')}
           </span>
           <button
             type="button"
             onClick={openLanguageSelector}
             className="text-xs font-bold text-[#01472e] hover:underline cursor-pointer"
           >
-            View all 22 languages →
+            {t('profile.viewAll22', 'View all 22 languages →')}
           </button>
         </div>
 

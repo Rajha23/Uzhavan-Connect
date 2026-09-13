@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import { SIH_EVALUATION_KPIS } from '../data/mockData';
 import {
   ShieldCheck,
@@ -14,6 +15,8 @@ import {
 } from 'lucide-react';
 
 export const ImpactKPIPage: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
@@ -21,13 +24,13 @@ export const ImpactKPIPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
             <Award className="w-4 h-4 text-emerald-400" />
-            <span>Evaluation Benchmark Matrix</span>
+            <span>{t('impactKpi.title', 'Evaluation Benchmark Matrix')}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
-            Impact & Measured Outcomes
+            {t('impactKpi.title', 'Impact & Measured Outcomes')}
           </h1>
           <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed font-normal">
-            "The platform is judged by measurable outcomes: higher farmer net realization, competitive landed prices, lower unnecessary transport distance, better fulfillment, and reduced post-harvest wastage."
+            {t('impactKpi.subtitle', '"The platform is judged by measurable outcomes: higher farmer net realization, competitive landed prices, lower unnecessary transport distance, better fulfillment, and reduced post-harvest wastage."')}
           </p>
         </div>
       </div>
@@ -37,10 +40,10 @@ export const ImpactKPIPage: React.FC = () => {
         <div className="p-6 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h3 className="text-2xl font-semibold text-slate-900 tracking-tight">
-              10 Core Quantitative Performance Indicators
+              {t('impactKpi.matrixHeading', '10 Core Quantitative Performance Indicators')}
             </h3>
             <p className="text-sm font-normal text-slate-600 mt-1">
-              Empirical comparison: Traditional Multi-Tier Mandi Flow vs. Uzhavan Connect Digitally Coordinated Network
+              {t('impactKpi.matrixSubheading', 'Empirical comparison: Traditional Multi-Tier Mandi Flow vs. Uzhavan Connect Digitally Coordinated Network')}
             </p>
           </div>
         </div>
@@ -49,10 +52,10 @@ export const ImpactKPIPage: React.FC = () => {
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-medium uppercase tracking-wider text-[11px]">
-                <th className="p-5 w-1/3">Evaluation KPI Metric</th>
-                <th className="p-5 w-1/5 text-slate-500">Traditional Supply Chain</th>
-                <th className="p-5 w-1/5 text-slate-900">Uzhavan Connect Coordinated Flow</th>
-                <th className="p-5 text-right">Measured Impact Delta</th>
+                <th className="p-5 w-1/3">{t('impactKpi.kpiMetric', 'Evaluation KPI Metric')}</th>
+                <th className="p-5 w-1/5 text-slate-500">{t('impactKpi.traditionalFlow', 'Traditional Supply Chain')}</th>
+                <th className="p-5 w-1/5 text-slate-900">{t('impactKpi.uzhavanFlow', 'Uzhavan Connect Coordinated Flow')}</th>
+                <th className="p-5 text-right">{t('impactKpi.impactDelta', 'Measured Impact Delta')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -88,9 +91,9 @@ export const ImpactKPIPage: React.FC = () => {
             <span>Primary Farmer Impact</span>
             <span className="text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-full font-medium">+152% Gain</span>
           </div>
-          <h4 className="text-lg font-medium text-slate-900 tracking-tight">Farmer Net Realization</h4>
+          <h4 className="text-lg font-medium text-slate-900 tracking-tight">{t('impactKpi.netRealizationTitle', 'Farmer Net Realization')}</h4>
           <p className="text-sm text-slate-600 font-normal leading-relaxed">
-            By eliminating speculative trader margins and commission agent cuts, farmers receive ₹27.50/kg vs ₹16.00/kg under traditional mandis, with zero payment delays.
+            {t('impactKpi.netRealizationDesc', 'By eliminating speculative trader margins and commission agent cuts, farmers receive ₹27.50/kg vs ₹16.00/kg under traditional mandis, with zero payment delays.')}
           </p>
         </div>
 
@@ -99,9 +102,9 @@ export const ImpactKPIPage: React.FC = () => {
             <span>Consumer & Buyer Benefit</span>
             <span className="text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-full font-medium">-15.8% Landed</span>
           </div>
-          <h4 className="text-lg font-medium text-slate-900 tracking-tight">Downstream Affordability</h4>
+          <h4 className="text-lg font-medium text-slate-900 tracking-tight">{t('impactKpi.affordabilityTitle', 'Downstream Affordability')}</h4>
           <p className="text-sm text-slate-600 font-normal leading-relaxed">
-            Bulk institutional buyers and consumers pay ₹32.00/kg landed instead of ₹38.00/kg retail mandi prices, lowering food inflation while securing verified Grade A quality.
+            {t('impactKpi.affordabilityDesc', 'Bulk institutional buyers and consumers pay ₹32.00/kg landed instead of ₹38.00/kg retail mandi prices, lowering food inflation while securing verified Grade A quality.')}
           </p>
         </div>
 
@@ -110,9 +113,9 @@ export const ImpactKPIPage: React.FC = () => {
             <span>Logistics & Perishability</span>
             <span className="text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-full font-medium">-83% Wastage</span>
           </div>
-          <h4 className="text-lg font-medium text-slate-900 tracking-tight">Cold-Chain Food Security</h4>
+          <h4 className="text-lg font-medium text-slate-900 tracking-tight">{t('impactKpi.coldChainTitle', 'Cold-Chain Food Security')}</h4>
           <p className="text-sm text-slate-600 font-normal leading-relaxed">
-            Dynamic micro-hub pre-cooling and Google OR-Tools route optimization reduce post-harvest horticultural wastage from 22.4% down to just 3.8%.
+            {t('impactKpi.coldChainDesc', 'Dynamic micro-hub pre-cooling and Google OR-Tools route optimization reduce post-harvest horticultural wastage from 22.4% down to just 3.8%.')}
           </p>
         </div>
       </div>

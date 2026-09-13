@@ -66,7 +66,7 @@ export const Sidebar: React.FC = () => {
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'settlement', label: t('nav.settlement'), icon: Scale, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
-          { id: 'notifications', label: 'Notifications', icon: Bell, section: 'SETTINGS' },
+          { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
@@ -79,19 +79,19 @@ export const Sidebar: React.FC = () => {
           { id: 'reverse-auction', label: t('nav.reverseAuction'), icon: Gavel, section: 'MARKET' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
-          { id: 'notifications', label: 'Notifications', icon: Bell, section: 'SETTINGS' },
+          { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
       case 'BULK_BUYER':
         return [
-          { id: 'dashboard', label: t('nav.bulkProcurement'), icon: LayoutDashboard, section: 'MAIN' },
-          { id: 'bulk-demand', label: t('nav.bulkDemand'), icon: Users, section: 'MAIN' },
-          { id: 'tracking', label: 'Fleet Telematics', icon: Truck, section: 'OPERATIONS' },
+          { id: 'dashboard', label: t('nav.bulkProcurement', 'Bulk Procurement'), icon: LayoutDashboard, section: 'MAIN' },
+          { id: 'bulk-demand', label: t('nav.bulkDemand', 'Bulk Demand'), icon: Users, section: 'MAIN' },
+          { id: 'tracking', label: t('nav.fleetTelematics', 'Fleet Telematics'), icon: Truck, section: 'OPERATIONS' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
           { id: 'settlement', label: t('nav.settlement'), icon: Scale, section: 'OPERATIONS' },
-          { id: 'notifications', label: 'Notifications', icon: Bell, section: 'SETTINGS' },
+          { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
@@ -102,7 +102,7 @@ export const Sidebar: React.FC = () => {
           { id: 'demand-forecast', label: t('nav.demandForecast'), icon: TrendingUp, section: 'MAIN' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
-          { id: 'notifications', label: 'Notifications', icon: Bell, section: 'SETTINGS' },
+          { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
@@ -112,7 +112,7 @@ export const Sidebar: React.FC = () => {
           { id: 'shipments', label: t('nav.shipments'), icon: Truck, section: 'LOGISTICS' },
           { id: 'route-optimization', label: t('nav.routeOptimization'), icon: Navigation, section: 'LOGISTICS' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
-          { id: 'notifications', label: 'Notifications', icon: Bell, section: 'SETTINGS' },
+          { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
@@ -121,12 +121,12 @@ export const Sidebar: React.FC = () => {
           { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, section: 'MAIN' },
           { id: 'demand-intel', label: t('nav.demandIntelligence'), icon: TrendingUp, section: 'MAIN' },
           { id: 'smart-matching', label: t('nav.smartMatching'), icon: Search, section: 'MARKET' },
-          { id: 'hubs', label: 'Hubs', icon: MapPin, section: 'LOGISTICS' },
+          { id: 'hubs', label: t('nav.hubs', 'Hubs'), icon: MapPin, section: 'LOGISTICS' },
           { id: 'route-optimization', label: t('nav.routeOptimization'), icon: Navigation, section: 'LOGISTICS' },
           { id: 'shipments', label: t('nav.shipments'), icon: Truck, section: 'LOGISTICS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
           { id: 'reports', label: t('nav.reports'), icon: FileText, section: 'OPERATIONS' },
-          { id: 'notifications', label: 'Notifications', icon: Bell, section: 'SETTINGS' },
+          { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
 
@@ -182,7 +182,7 @@ export const Sidebar: React.FC = () => {
                   </span>
                 </div>
                 <p className="text-[10px] text-[#5c7065] font-normal tracking-normal -mt-0.5">
-                  Agricultural Intelligence
+                  {t('landing.tagline', 'Agricultural Intelligence')}
                 </p>
               </div>
             </button>
@@ -200,50 +200,59 @@ export const Sidebar: React.FC = () => {
             <div className="flex items-center gap-2 text-xs">
               <span className="w-2 h-2 rounded-full bg-[#01472e] animate-pulse" />
               <span className="font-medium text-[#01472e] uppercase tracking-wider text-[10px]">
-                {ROLE_DISPLAY_LABELS[currentRole] || currentRole.replace('_', ' ')}
+                {t('roles.' + currentRole, ROLE_DISPLAY_LABELS[currentRole] || currentRole.replace('_', ' '))}
               </span>
             </div>
-            <span className="text-[10px] text-[#5c7065] font-mono font-medium">Live Node</span>
+            <span className="text-[10px] text-[#5c7065] font-mono font-medium">{t('common.liveNode', 'Live Node')}</span>
           </div>
 
           {/* Sidebar Menu Groups */}
           <nav className="p-3 space-y-4 max-h-[calc(100vh-215px)] overflow-y-auto">
-            {sections.map((secName) => (
-              <div key={secName} className="space-y-1">
-                <div className="px-3 text-[10px] font-medium uppercase tracking-wider text-[#788c80] mb-1.5 mt-2">
-                  {secName}
+            {sections.map((secName) => {
+              const secLabel =
+                secName === 'MAIN' ? t('nav.sectionMain', 'MAIN') :
+                secName === 'MARKET' ? t('nav.sectionMarket', 'MARKET') :
+                secName === 'OPERATIONS' ? t('nav.sectionOperations', 'OPERATIONS') :
+                secName === 'LOGISTICS' ? t('nav.sectionLogistics', 'LOGISTICS') :
+                secName === 'SETTINGS' ? t('nav.sectionSettings', 'SETTINGS') : secName;
+
+              return (
+                <div key={secName} className="space-y-1">
+                  <div className="px-3 text-[10px] font-medium uppercase tracking-wider text-[#788c80] mb-1.5 mt-2">
+                    {secLabel}
+                  </div>
+                  {menuItems
+                    .filter((item) => item.section === secName)
+                    .map((item) => {
+                      const Icon = item.icon;
+                      const isActive = activeTab === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => handleSelect(item.id)}
+                          className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-medium transition cursor-pointer ${
+                            isActive
+                              ? 'bg-[#01472e] text-[#fefae0] shadow-soft font-medium'
+                              : 'text-[#5c7065] hover:bg-[#ccd5ae]/20 hover:text-[#01472e]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Icon className={`w-4 h-4 ${isActive ? 'text-[#fefae0]' : 'text-[#788c80]'}`} />
+                            <span>{item.label}</span>
+                          </div>
+                          {item.id === 'notifications' && unreadNotificationsCount > 0 && (
+                            <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-full transition-colors ${
+                              isActive ? 'bg-[#fefae0] text-[#01472e]' : 'bg-[#01472e] text-[#fefae0]'
+                            } leading-none`}>
+                              {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                 </div>
-                {menuItems
-                  .filter((item) => item.section === secName)
-                  .map((item) => {
-                    const Icon = item.icon;
-                    const isActive = activeTab === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => handleSelect(item.id)}
-                        className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-medium transition cursor-pointer ${
-                          isActive
-                            ? 'bg-[#01472e] text-[#fefae0] shadow-soft font-medium'
-                            : 'text-[#5c7065] hover:bg-[#ccd5ae]/20 hover:text-[#01472e]'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <Icon className={`w-4 h-4 ${isActive ? 'text-[#fefae0]' : 'text-[#788c80]'}`} />
-                          <span>{item.label}</span>
-                        </div>
-                        {item.id === 'notifications' && unreadNotificationsCount > 0 && (
-                          <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-full transition-colors ${
-                            isActive ? 'bg-[#fefae0] text-[#01472e]' : 'bg-[#01472e] text-[#fefae0]'
-                          } leading-none`}>
-                            {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-              </div>
-            ))}
+              );
+            })}
           </nav>
         </div>
 
@@ -258,7 +267,9 @@ export const Sidebar: React.FC = () => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium text-[#01472e] truncate">{currentUser.name}</p>
-              <p className="text-[10px] text-[#5c7065] truncate uppercase tracking-wider font-normal">{currentUser.role.replace('_', ' ')}</p>
+              <p className="text-[10px] text-[#5c7065] truncate uppercase tracking-wider font-normal">
+                {t('roles.' + currentUser.role, currentUser.role.replace('_', ' '))}
+              </p>
             </div>
           </div>
 
@@ -267,13 +278,13 @@ export const Sidebar: React.FC = () => {
             type="button"
             onClick={openLanguageSelector}
             className="w-full flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-semibold bg-white/70 hover:bg-white text-[#01472e] border border-[#ccd5ae]/60 shadow-2xs hover:border-[#01472e]/50 transition cursor-pointer"
-            title="Change platform language (22 Constitutional Languages)"
+            title={t('nav.changeLanguage', 'Change platform language (22 Constitutional Languages)')}
           >
             <div className="flex items-center gap-2">
               <Globe2 className="w-3.5 h-3.5 text-[#01472e]" />
               <span className="font-bold">{currentLanguageDef.nativeName}</span>
             </div>
-            <span className="text-[10px] text-slate-500 font-normal">22 Langs</span>
+            <span className="text-[10px] text-slate-500 font-normal">22</span>
           </button>
 
           <button
@@ -281,7 +292,7 @@ export const Sidebar: React.FC = () => {
             className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs text-rose-700 hover:text-rose-800 hover:bg-rose-50 rounded-2xl transition cursor-pointer font-medium"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span>Sign Out</span>
+            <span>{t('common.logout', 'Sign Out')}</span>
           </button>
         </div>
       </aside>

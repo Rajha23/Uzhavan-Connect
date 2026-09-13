@@ -1183,25 +1183,37 @@ export const getTranslation = (
   params?: Record<string, string | number>,
   defaultText?: string
 ): string => {
-  const parts = key.split('.');
-  if (parts.length !== 2) {
-    return defaultText || key;
-  }
-
-  const [section, subkey] = parts as [keyof TranslationDictionary, string];
+  if (!key) return defaultText || '';
 
   const targetDict = TRANSLATIONS_REGISTRY[langCode] || TRANSLATIONS_REGISTRY.en;
-  let translated: string | undefined = targetDict?.[section]?.[subkey];
 
-  // Fallback to English dictionary if not found in active locale
-  if (!translated && langCode !== 'en') {
-    translated = enTranslations[section]?.[subkey];
+  const resolve = (dict: any, path: string[]): string | undefined => {
+    let curr = dict;
+    for (const seg of path) {
+      if (!curr || typeof curr !== 'object') return undefined;
+      curr = curr[seg];
+    }
+    return typeof curr === 'string' ? curr : undefined;
+  };
+
+  const parts = key.split('.');
+  let translated: string | undefined;
+
+  if (parts.length >= 2) {
+    translated = resolve(targetDict, parts);
+    if (!translated && langCode !== 'en') {
+      translated = resolve(enTranslations, parts);
+    }
+  } else {
+    // Check common section or root
+    translated = targetDict?.common?.[key] || (targetDict as any)?.[key];
+    if (!translated && langCode !== 'en') {
+      translated = enTranslations?.common?.[key] || (enTranslations as any)?.[key];
+    }
   }
 
-  // Final fallback to default text or raw key
   let result = translated || defaultText || key;
 
-  // Parameter interpolation e.g. {count}, {name}
   if (params) {
     Object.entries(params).forEach(([paramKey, val]) => {
       result = result.replace(new RegExp(`\\{${paramKey}\\}`, 'g'), String(val));
