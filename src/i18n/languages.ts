@@ -18,7 +18,7 @@ export const SUPPORTED_LANGUAGES: LanguageDefinition[] = [
     regions: ['Pan-India', 'National']
   },
 
-  // ── 22 Eighth Schedule Languages ──────────────────────────
+  // ── 22 Languages ──────────────────────────
   {
     code: 'as',
     nameEnglish: 'Assamese',

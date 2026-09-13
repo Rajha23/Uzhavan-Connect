@@ -104,7 +104,7 @@ export const LanguageSettingsCard: React.FC = () => {
             onClick={openLanguageSelector}
             className="text-xs font-bold text-[#01472e] hover:underline cursor-pointer"
           >
-            View all 22 Eighth Schedule languages →
+            View all 22 languages →
           </button>
         </div>
 
@@ -120,11 +120,10 @@ export const LanguageSettingsCard: React.FC = () => {
                 key={code}
                 type="button"
                 onClick={() => setLanguage(code)}
-                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                  isSelected
+                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${isSelected
                     ? 'bg-[#01472e] text-white border-[#01472e] shadow-sm scale-[1.02]'
                     : 'bg-[#faf9f5] hover:bg-white text-slate-800 border-[#ccd5ae]/60 hover:border-[#01472e]/50'
-                }`}
+                  }`}
               >
                 <span className={`block text-xs font-bold ${isSelected ? 'text-white' : 'text-slate-900'}`}>
                   {lang.nativeName}

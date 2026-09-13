@@ -30,7 +30,7 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="space-y-16 sm:space-y-20 pb-20">
       {/* 1. Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-14 sm:pb-18 lg:pt-18 lg:pb-20 bg-gradient-to-b from-[#faf9f5] via-[#eaf4ec]/40 to-[#faf9f5]">
+      <section className="relative overflow-hidden pt-12 sm:pt-16 lg:pt-20 pb-14 sm:pb-16 lg:pb-20 bg-gradient-to-b from-[#faf9f5] via-[#eaf4ec]/40 to-[#faf9f5]">
         {/* Decorative backdrop gradients */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full overflow-hidden pointer-events-none -z-10">
           <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#ccd5ae]/30 blur-3xl" />
@@ -39,18 +39,10 @@ export const LandingPage: React.FC = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto space-y-6">
-
-            {/* Ministry & Problem Statement Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#eaf4ec] border border-[#a3b18a]/50 text-[#01472e] text-xs font-semibold shadow-xs">
-              <Sparkles className="w-3.5 h-3.5 text-[#01472e] animate-pulse" />
-              <span>SIH26033 • Ministry of Consumer Affairs, Food & Public Distribution</span>
-            </div>
-
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#01472e] tracking-tight leading-[1.12]">
               Sell Directly.
             </h1>
-
 
             {/* Subheading */}
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal">
