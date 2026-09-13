@@ -565,5 +565,37 @@ export const apiService = {
       ...DEMO_SETTLEMENT,
       orderId: orderId || DEMO_SETTLEMENT.orderId
     };
+  },
+
+  async adminCreateUser(userData: any) {
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create user');
+      return data;
+    } catch (err: any) {
+      console.error('Admin create user error:', err);
+      throw err;
+    }
+  },
+
+  async adminResetPassword(userId: string, newPassword: string) {
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, newPassword })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to reset password');
+      return data;
+    } catch (err: any) {
+      console.error('Admin reset password error:', err);
+      throw err;
+    }
   }
 };
