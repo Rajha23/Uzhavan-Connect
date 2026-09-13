@@ -37,6 +37,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
   // Login form state
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [loginRole, setLoginRole] = useState<UserRole>('FARMER');
 
   // Register form state
   const [regName, setRegName] = useState('');
@@ -64,7 +65,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
 
     setIsSubmitting(true);
     try {
-      const res = await apiService.login(cleanId, cleanPass);
+      const res = await apiService.login(loginRole, cleanId, cleanPass);
       setIsSubmitting(false);
       // login() internally executes navigateToTab(getAuthorizedDashboardTab(role), false, role)
       // Calling setActiveTab('dashboard') here previously caused a race condition with React state updates
@@ -197,6 +198,24 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
 
               {/* Standard Login Form */}
               <form onSubmit={handleManualLogin} className="space-y-4 text-xs">
+                <div>
+                  <label className="font-semibold text-slate-700 block mb-1">
+                    Select Role
+                  </label>
+                  <select
+                    value={loginRole}
+                    onChange={(e) => setLoginRole(e.target.value as UserRole)}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs font-medium focus:outline-none focus:border-emerald-500"
+                  >
+                    <option value="FARMER">Farmer (Producer)</option>
+                    <option value="RETAIL_BUYER">Retail Buyer</option>
+                    <option value="BULK_BUYER">Bulk Buyer</option>
+                    <option value="FPO_AGGREGATOR">FPO Aggregator</option>
+                    <option value="LOGISTICS">Logistics Carrier</option>
+                    <option value="ADMIN">Administrator</option>
+                  </select>
+                </div>
+
                 <div>
                   <label className="font-semibold text-slate-700 block mb-1">
                     Mobile Number / Email

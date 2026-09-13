@@ -140,6 +140,11 @@ export const apiService = {
           }
 
           const role = normalizeRole(profile.role || roleHint);
+          
+          if (roleHint && role !== normalizeRole(roleHint)) {
+            throw new Error(`Role mismatch. You are registered as a ${role}, not a ${roleHint}. Please check your credentials or create a new account for the ${roleHint} role.`);
+          }
+
           const userProfile: UserProfile = {
             id: profile.id,
             name: profile.name || 'Member',
@@ -174,6 +179,9 @@ export const apiService = {
     // 2. Cryptographic Local Credential Vault (Local development / offline mode)
     try {
       const { user, token } = await authenticateCredentials(rawId, rawPass);
+      if (roleHint && user.role !== normalizeRole(roleHint)) {
+        throw new Error(`Role mismatch. You are registered as a ${user.role}, not a ${roleHint}. Please check your credentials or create a new account for the ${roleHint} role.`);
+      }
       ApiClient.setToken(token);
       return { token, user };
     } catch (vaultErr: any) {
