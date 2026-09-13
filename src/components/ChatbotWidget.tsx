@@ -26,8 +26,8 @@ export const ChatbotWidget: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  const handleSend = async () => {
-    const trimmedInput = input.trim();
+  const submitMessage = async (messageText: string) => {
+    const trimmedInput = messageText.trim();
     if (!trimmedInput) return;
 
     const newMessages: ChatMessage[] = [...messages, { role: 'user', content: trimmedInput }];
@@ -47,6 +47,10 @@ export const ChatbotWidget: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSend = () => {
+    submitMessage(input);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -110,6 +114,28 @@ export const ChatbotWidget: React.FC = () => {
             </div>
           ))}
           
+          {/* FAQ Suggestions when only the greeting is present */}
+          {messages.length === 1 && !isLoading && (
+            <div className="pt-2 flex flex-col gap-2">
+              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider ml-1">Suggested Questions</span>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "How do I list my crops?",
+                  "How does the reverse auction work?",
+                  "Can I trace the origin of a product?"
+                ].map((faq, i) => (
+                  <button
+                    key={i}
+                    onClick={() => submitMessage(faq)}
+                    className="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full transition-colors text-left"
+                  >
+                    {faq}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {isLoading && (
             <div className="flex justify-start">
               <div className="flex gap-2 max-w-[85%] flex-row">
