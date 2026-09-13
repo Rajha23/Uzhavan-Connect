@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { AppProvider } from './context/AppContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { registerServiceWorker } from './services/serviceWorkerRegistration';
 import './index.css';
 
@@ -10,9 +11,12 @@ registerServiceWorker();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <AppProvider>
-      <App />
-    </AppProvider>
+    <LanguageProvider>
+      <AppProvider>
+        <App />
+      </AppProvider>
+    </LanguageProvider>
   </React.StrictMode>,
 );
+
 

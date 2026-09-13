@@ -6,31 +6,31 @@ export const Footer: React.FC = () => {
   const { setActiveTab } = useApp();
 
   return (
-    <footer className="bg-gradient-to-b from-[#1b4332] via-[#16382b] to-[#10291f] text-emerald-100/90 border-t border-emerald-700/30 mt-20">
+    <footer className="bg-gradient-to-b from-[#01472e] via-[#013b26] to-[#002618] text-[#fefae0]/90 border-t border-[#a3b18a]/30 mt-20">
       {/* Top Banner: The Uzhavan Connect Demand Loop */}
-      <div className="border-b border-emerald-800/40 bg-[#16382b]/70 py-6 px-4">
+      <div className="border-b border-[#a3b18a]/20 bg-[#003320]/60 py-6 px-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-emerald-500 text-slate-950 shadow-xs">
+            <div className="p-2.5 rounded-2xl bg-[#ccd5ae] text-[#01472e] shadow-soft">
               <Sprout className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs text-emerald-300 font-medium uppercase tracking-wider">The Demand-First Philosophy</p>
+              <p className="text-xs text-[#ccd5ae] font-medium uppercase tracking-wider">The Demand-First Philosophy</p>
               <p className="text-sm text-white font-medium tracking-wide">"Don't wait for the market. Let the market tell the farmer what to grow."</p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono text-emerald-200/90 bg-emerald-950/60 px-3 py-1.5 rounded-xl border border-emerald-500/20">
+          <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono text-[#fefae0]/90 bg-[#002214]/70 px-3.5 py-2 rounded-2xl border border-[#a3b18a]/30">
             <span className="text-white font-semibold">DEMAND</span> →
-            <span className="text-emerald-300 font-medium">FORECAST</span> →
-            <span className="text-emerald-200 font-medium">POOL</span> →
-            <span className="text-teal-300 font-medium">MATCH</span> →
+            <span className="text-[#ccd5ae] font-medium">FORECAST</span> →
+            <span className="text-[#e9edc9] font-medium">POOL</span> →
+            <span className="text-[#a3b18a] font-medium">MATCH</span> →
             <span className="text-white font-medium">AGGREGATE</span> →
-            <span className="text-emerald-300 font-medium">QUALITY</span> →
-            <span className="text-emerald-200 font-medium">ROUTE</span> →
-            <span className="text-teal-300 font-medium">DELIVER</span> →
+            <span className="text-[#ccd5ae] font-medium">QUALITY</span> →
+            <span className="text-[#e9edc9] font-medium">ROUTE</span> →
+            <span className="text-[#a3b18a] font-medium">DELIVER</span> →
             <span className="text-white font-medium">SETTLE</span> →
-            <span className="text-emerald-300 font-medium">LEARN</span>
+            <span className="text-[#ccd5ae] font-medium">LEARN</span>
           </div>
         </div>
       </div>

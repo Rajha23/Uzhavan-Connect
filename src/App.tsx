@@ -9,8 +9,9 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 
 // Global modals (always mounted regardless of shell)
-
 import { ProducePassportModal } from './components/ProducePassportModal';
+import { LanguageSelectorModal } from './components/LanguageSelectorModal';
+import { LanguageOnboardingModal } from './components/LanguageOnboardingModal';
 
 // Public pages (no sidebar)
 import { LandingPage } from './pages/LandingPage';
@@ -255,16 +256,16 @@ const PageContent: React.FC = () => {
 // ─── Atmospheric Light Greenery Background Illumination ─────────────────────
 const AgriAtmosphericGlow: React.FC = () => (
   <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10" aria-hidden="true">
-    {/* Soft top-left agricultural morning illumination */}
-    <div className="absolute -top-32 -left-32 w-[34rem] h-[34rem] rounded-full bg-gradient-to-br from-emerald-100/40 via-emerald-50/30 to-transparent blur-3xl" />
-    {/* Soft top-right sage/teal ambient illumination */}
-    <div className="absolute top-16 -right-32 w-[30rem] h-[30rem] rounded-full bg-gradient-to-bl from-teal-100/35 via-emerald-50/25 to-transparent blur-3xl" />
-    {/* Subtle central sunlight clearing */}
-    <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[44rem] h-[28rem] rounded-full bg-emerald-50/30 blur-[90px]" />
-    {/* Subtle bottom-right fresh growth glow */}
-    <div className="absolute -bottom-32 right-8 w-[32rem] h-[32rem] rounded-full bg-gradient-to-tl from-emerald-100/35 via-teal-50/25 to-transparent blur-3xl" />
+    {/* Soft top-left sage/cream morning illumination */}
+    <div className="absolute -top-32 -left-32 w-[34rem] h-[34rem] rounded-full bg-gradient-to-br from-[#ccd5ae]/25 via-[#fefae0]/30 to-transparent blur-3xl" />
+    {/* Soft top-right olive/mint ambient illumination */}
+    <div className="absolute top-16 -right-32 w-[30rem] h-[30rem] rounded-full bg-gradient-to-bl from-[#e9edc9]/30 via-[#eaf4ec]/25 to-transparent blur-3xl" />
+    {/* Subtle central clearing */}
+    <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[44rem] h-[28rem] rounded-full bg-[#fefae0]/20 blur-[100px]" />
+    {/* Subtle bottom-right moss glow */}
+    <div className="absolute -bottom-32 right-8 w-[32rem] h-[32rem] rounded-full bg-gradient-to-tl from-[#a3b18a]/20 via-[#eaf4ec]/25 to-transparent blur-3xl" />
     {/* Subtle bottom-left warm earth hint */}
-    <div className="absolute -bottom-16 -left-16 w-[26rem] h-[26rem] rounded-full bg-emerald-50/30 blur-3xl" />
+    <div className="absolute -bottom-16 -left-16 w-[26rem] h-[26rem] rounded-full bg-[#fefae0]/30 blur-3xl" />
   </div>
 );
 
@@ -281,6 +282,8 @@ const PublicShell: React.FC = () => (
     <Footer />
 
     <ProducePassportModal />
+    <LanguageSelectorModal />
+    <LanguageOnboardingModal />
   </div>
 );
 
@@ -304,6 +307,8 @@ const AuthenticatedShell: React.FC = () => {
 
       {/* Global modals */}
       <ProducePassportModal />
+      <LanguageSelectorModal />
+      <LanguageOnboardingModal />
     </div>
   );
 };

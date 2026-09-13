@@ -212,29 +212,32 @@ export const FpoDashboard: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fadeIn">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-600/30">
-        <div>
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
+      <div className="relative overflow-hidden rounded-[32px] p-7 sm:p-10 border border-emerald-500/20 shadow-forest bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#ccd5ae]/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+        <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-[#e9edc9]/10 rounded-full blur-2xl pointer-events-none" />
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 text-[#ccd5ae] text-xs font-semibold uppercase tracking-wider mb-2">
             <Users className="w-4 h-4" />
             <span>FPO Aggregator & Micro-Hub Facility</span>
-            <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-medium px-2 py-0.5 rounded-full border border-emerald-500/30">
+            <span className="bg-[#e9edc9]/20 text-[#fefae0] text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-[#e9edc9]/30">
               Live Hub Node
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
             {currentUser.organization || 'GreenHarvest FPO Hub'}
           </h1>
-          <p className="text-sm text-slate-300 mt-2 font-normal">
+          <p className="text-sm text-white/80 mt-2 font-normal">
             Aggregator Operations: Farm Gate Collection, Multi-Farmer Traceability, Quality Grading, Crating & Transport Readiness.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="relative z-10 flex flex-wrap items-center gap-3">
           <button
             onClick={() => setActiveTab('orders')}
-            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-medium px-5 py-2.5 rounded-xl shadow-sm transition tracking-wide"
+            className="flex items-center gap-2 bg-[#e9edc9] hover:bg-[#fefae0] text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-sm transition tracking-wide"
           >
             <span>All Orders ({orders.length})</span>
             <ArrowRight className="w-4 h-4" />
@@ -244,42 +247,42 @@ export const FpoDashboard: React.FC = () => {
 
       {/* Action Notification Banner */}
       {actionSuccessMessage && (
-        <div className="p-4 bg-emerald-50 border border-emerald-300 rounded-2xl flex items-center gap-3 shadow-xs animate-in fade-in">
-          <div className="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-medium text-sm shrink-0">
+        <div className="p-4 bg-[#eaf4ec] border border-[#a3b18a]/40 rounded-2xl flex items-center gap-3 shadow-xs animate-in fade-in">
+          <div className="w-8 h-8 rounded-xl bg-[#01472e] text-white flex items-center justify-center font-medium text-sm shrink-0">
             ✓
           </div>
-          <p className="text-xs font-medium text-emerald-950">{actionSuccessMessage}</p>
+          <p className="text-xs font-semibold text-[#01472e]">{actionSuccessMessage}</p>
         </div>
       )}
 
       {/* Operational Stage Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-3.5">
         {[
-          { label: 'Member Supply', count: produceListings.length, desc: 'Active Farm Supply', stage: 'MEMBER_SUPPLY' as const, color: 'text-emerald-700' },
-          { label: 'Collection Queue', count: pendingCollectionOrders.length, desc: 'Awaiting Farm Pickup', stage: 'COLLECTION' as const, color: 'text-amber-700' },
-          { label: 'Awaiting QA', count: collectedAwaitingGrading.length, desc: 'At Micro-Hub Station', stage: 'GRADING' as const, color: 'text-purple-700' },
-          { label: 'Awaiting Packing', count: gradedAwaitingPacking.length, desc: 'Ready for Crates & QR', stage: 'PACKING' as const, color: 'text-teal-700' },
-          { label: 'Bulk Pools', count: bulkConsolidatedOrders.length, desc: 'Multi-Farmer Batches', stage: 'CONSOLIDATION' as const, color: 'text-blue-700' },
-          { label: 'Dispatch Ready', count: packedReadyForLogistics.length, desc: 'Transport Ready Gate', stage: 'ALL' as const, color: 'text-slate-800' },
+          { label: 'Member Supply', count: produceListings.length, desc: 'Active Farm Supply', stage: 'MEMBER_SUPPLY' as const, color: 'text-[#01472e]' },
+          { label: 'Collection Queue', count: pendingCollectionOrders.length, desc: 'Awaiting Farm Pickup', stage: 'COLLECTION' as const, color: 'text-amber-800' },
+          { label: 'Awaiting QA', count: collectedAwaitingGrading.length, desc: 'At Micro-Hub Station', stage: 'GRADING' as const, color: 'text-[#01472e]' },
+          { label: 'Awaiting Packing', count: gradedAwaitingPacking.length, desc: 'Ready for Crates & QR', stage: 'PACKING' as const, color: 'text-[#01472e]' },
+          { label: 'Bulk Pools', count: bulkConsolidatedOrders.length, desc: 'Multi-Farmer Batches', stage: 'CONSOLIDATION' as const, color: 'text-[#01472e]' },
+          { label: 'Dispatch Ready', count: packedReadyForLogistics.length, desc: 'Transport Ready Gate', stage: 'ALL' as const, color: 'text-[#01472e]' },
         ].map((item) => (
           <button
             key={item.label}
             onClick={() => setActiveTabSection(item.stage)}
-            className={`p-4 rounded-2xl border text-left transition shadow-xs ${
+            className={`agri-card p-4.5 rounded-[24px] border text-left transition shadow-soft ${
               activeTabSection === item.stage
-                ? 'bg-white border-emerald-600 ring-2 ring-emerald-600/20 shadow-sm'
-                : 'bg-white border-slate-200 hover:border-slate-300'
+                ? 'bg-[#eaf4ec] border-[#01472e] ring-2 ring-[#01472e]/20 shadow-forest/10'
+                : 'border-[#ccd5ae]/40 hover:border-[#a3b18a]/60 hover:shadow-forest/5'
             }`}
           >
-            <p className="text-[11px] text-slate-500 font-medium truncate">{item.label}</p>
+            <p className="text-[11px] text-[#01472e]/60 font-semibold uppercase tracking-wider truncate">{item.label}</p>
             <p className={`text-2xl font-semibold font-mono mt-0.5 ${item.color}`}>{item.count}</p>
-            <p className="text-[10px] text-slate-400 mt-0.5 truncate">{item.desc}</p>
+            <p className="text-[10px] text-[#01472e]/60 mt-0.5 truncate">{item.desc}</p>
           </button>
         ))}
       </div>
 
       {/* Stage Tabs Navigation */}
-      <div className="flex gap-2 border-b border-slate-200 pb-3 overflow-x-auto">
+      <div className="flex gap-2.5 border-b border-[#ccd5ae]/30 pb-3.5 overflow-x-auto">
         {[
           { key: 'MEMBER_SUPPLY', label: `Member Supply (${produceListings.length})` },
           { key: 'COLLECTION', label: `1. Farm Gate Collection (${pendingCollectionOrders.length})` },
@@ -291,10 +294,10 @@ export const FpoDashboard: React.FC = () => {
           <button
             key={tab.key}
             onClick={() => setActiveTabSection(tab.key as any)}
-            className={`px-4 py-2 text-xs font-medium rounded-xl transition whitespace-nowrap ${
+            className={`px-4 py-2.5 text-xs font-semibold rounded-2xl transition whitespace-nowrap cursor-pointer ${
               activeTabSection === tab.key
-                ? 'bg-slate-900 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-[#01472e] text-white shadow-xs'
+                : 'bg-white/80 hover:bg-[#eaf4ec] text-[#01472e]/70 border border-[#ccd5ae]/40'
             }`}
           >
             {tab.label}
@@ -304,26 +307,26 @@ export const FpoDashboard: React.FC = () => {
 
       {/* ── STAGE 0: MEMBER FARM SUPPLY POOL ───────────────────────────────── */}
       {activeTabSection === 'MEMBER_SUPPLY' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+        <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <Sprout className="w-5 h-5 text-emerald-600" />
-                <h3 className="text-lg font-medium text-slate-900 tracking-tight">Member Farm Produce Supply Pool</h3>
+                <Sprout className="w-5 h-5 text-[#01472e]" />
+                <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">Member Farm Produce Supply Pool</h3>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-[#01472e]/70 mt-0.5">
                 Active crop listings submitted by member farmers. Aggregated and available for Smart Matching with institutional buyers.
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
+            <div className="flex items-center gap-2.5">
+              <span className="text-xs font-semibold text-[#01472e] bg-[#eaf4ec] px-3.5 py-1 rounded-full border border-[#a3b18a]/40">
                 {produceListings.length} Active Listings
               </span>
               <button
                 onClick={() => setActiveTab('smart-matching')}
-                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5"
+                className="btn-primary text-xs py-2.5 px-4 rounded-2xl flex items-center gap-1.5 shadow-sm"
               >
-                <Sparkles className="w-3.5 h-3.5" />
+                <Sparkles className="w-3.5 h-3.5 text-[#ccd5ae]" />
                 <span>Open Smart Matching Engine</span>
               </button>
             </div>
@@ -337,63 +340,63 @@ export const FpoDashboard: React.FC = () => {
               const percentAllocated = totalListed > 0 ? Math.round((allocated / totalListed) * 100) : 0;
 
               return (
-                <div key={listing.id} className="p-5 border border-slate-200 hover:border-emerald-300 bg-white rounded-2xl space-y-3 transition shadow-xs flex flex-col justify-between">
+                <div key={listing.id} className="p-5 border border-[#ccd5ae]/40 hover:border-[#a3b18a] bg-[#faf9f5] rounded-2xl space-y-3 transition shadow-xs flex flex-col justify-between">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-medium text-slate-500">{listing.id}</span>
-                      <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded ${
+                      <span className="font-mono text-xs font-semibold text-[#01472e]/70">{listing.id}</span>
+                      <span className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
                         remaining <= 0
-                          ? 'bg-slate-100 text-slate-600 border border-slate-300'
-                          : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          ? 'bg-slate-100 text-slate-600 border-slate-300'
+                          : 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/40'
                       }`}>
                         {remaining <= 0 ? 'Fully Allocated' : listing.status}
                       </span>
                     </div>
 
                     <div>
-                      <h4 className="font-medium text-slate-900 text-sm">
+                      <h4 className="font-semibold text-[#01472e] text-sm">
                         {listing.crop}
-                        {listing.variety && <span className="text-slate-500 font-normal ml-1">({listing.variety})</span>}
+                        {listing.variety && <span className="text-[#01472e]/60 font-normal ml-1">({listing.variety})</span>}
                       </h4>
-                      <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
-                        <Users className="w-3 h-3 text-slate-400" />
-                        <span>Farmer: <strong className="text-slate-700">{listing.farmerName}</strong></span>
+                      <p className="text-xs text-[#01472e]/70 mt-0.5 flex items-center gap-1">
+                        <Users className="w-3.5 h-3.5 text-[#a3b18a]" />
+                        <span>Farmer: <strong className="text-[#01472e]">{listing.farmerName}</strong></span>
                       </p>
-                      <p className="text-xs text-slate-500 flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-slate-400" />
+                      <p className="text-xs text-[#01472e]/70 flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5 text-[#a3b18a]" />
                         <span>{listing.location}</span>
                       </p>
                     </div>
 
-                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 space-y-1.5">
+                    <div className="bg-white/80 p-3 rounded-xl border border-[#ccd5ae]/30 space-y-1.5">
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-500 font-medium">Available Supply:</span>
-                        <span className="font-semibold text-emerald-700 font-mono">
+                        <span className="text-[#01472e]/70 font-medium">Available Supply:</span>
+                        <span className="font-semibold text-[#01472e] font-mono">
                           {remaining.toLocaleString()} {listing.unit || 'kg'}
                         </span>
                       </div>
-                      <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-[#e9edc9]/50 h-2 rounded-full overflow-hidden">
                         <div
-                          className="bg-emerald-600 h-full rounded-full transition-all duration-300"
+                          className="bg-[#01472e] h-full rounded-full transition-all duration-300"
                           style={{ width: `${Math.min(100, 100 - percentAllocated)}%` }}
                         />
                       </div>
-                      <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                      <div className="flex justify-between text-[10px] text-[#01472e]/60 font-mono">
                         <span>Total: {totalListed.toLocaleString()} {listing.unit || 'kg'}</span>
                         <span>Allocated: {allocated.toLocaleString()} ({percentAllocated}%)</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-xs font-medium text-slate-700 font-mono">
+                  <div className="pt-3 border-t border-[#ccd5ae]/30 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-[#01472e] font-mono">
                       ₹{listing.expectedPricePerKg}/kg • {listing.grade}
                     </span>
                     <button
                       onClick={() => setActiveTab('smart-matching')}
-                      className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-medium rounded-xl transition flex items-center gap-1"
+                      className="px-3 py-1.5 bg-[#e9edc9]/60 hover:bg-[#e9edc9] text-[#01472e] text-xs font-semibold rounded-xl transition flex items-center gap-1"
                     >
-                      <Sparkles className="w-3 h-3" />
+                      <Sparkles className="w-3 h-3 text-[#01472e]" />
                       <span>Match</span>
                     </button>
                   </div>
@@ -406,24 +409,24 @@ export const FpoDashboard: React.FC = () => {
 
       {/* ── STAGE 1: PRODUCE COLLECTION WITH MULTI-FARMER TRACEABILITY ─────── */}
       {activeTabSection === 'COLLECTION' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+        <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Farm Gate Produce Collection Queue</h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">Farm Gate Produce Collection Queue</h3>
+              <p className="text-xs text-[#01472e]/70 mt-0.5">
                 Collect harvested produce from member farms. Multi-farmer contributions and partial pickups are tracked without losing source provenance.
               </p>
             </div>
-            <span className="text-xs font-medium text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-300">
+            <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-3.5 py-1 rounded-full border border-amber-200">
               {pendingCollectionOrders.length} Orders Awaiting Pickup
             </span>
           </div>
 
           {pendingCollectionOrders.length === 0 ? (
-            <div className="py-12 text-center text-slate-400">
-              <CheckCircle2 className="w-10 h-10 mx-auto text-emerald-400 mb-2" />
-              <p className="text-sm font-semibold text-slate-700">All member farm produce collected!</p>
-              <p className="text-xs text-slate-400 mt-0.5">New confirmed orders matched via Smart Matching will enter this queue.</p>
+            <div className="py-12 text-center text-[#01472e]/40">
+              <CheckCircle2 className="w-10 h-10 mx-auto text-[#01472e] mb-2 opacity-40" />
+              <p className="text-sm font-semibold text-[#01472e]">All member farm produce collected!</p>
+              <p className="text-xs text-[#01472e]/60 mt-0.5">New confirmed orders matched via Smart Matching will enter this queue.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -445,53 +448,53 @@ export const FpoDashboard: React.FC = () => {
                 ];
 
                 return (
-                  <div key={order.id} className="p-5 border border-amber-200 bg-amber-50/30 rounded-2xl space-y-4 shadow-xs">
+                  <div key={order.id} className="p-5 border border-[#ccd5ae]/40 bg-[#faf9f5] rounded-2xl space-y-4 shadow-xs">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
-                        <span className="text-slate-300">•</span>
-                        <span className="font-mono text-[11px] text-amber-900 font-semibold">{order.batchId}</span>
+                        <span className="font-mono text-xs font-semibold text-[#01472e]">{order.id}</span>
+                        <span className="text-[#ccd5ae]">•</span>
+                        <span className="font-mono text-[11px] text-[#01472e]/70 font-semibold">{order.batchId}</span>
                       </div>
-                      <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded border ${
+                      <span className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
                         order.status === 'Partially Collected'
-                          ? 'bg-amber-200 text-amber-900 border-amber-300'
-                          : 'bg-amber-100 text-amber-800 border-amber-200'
+                          ? 'bg-amber-100 text-amber-900 border-amber-300'
+                          : 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/40'
                       }`}>
                         {order.status === 'Partially Collected' ? 'Partially Collected' : 'Collection Pending'}
                       </span>
                     </div>
 
                     <div>
-                      <h4 className="font-medium text-slate-900 text-sm">{order.crop} ({order.variety || 'Hybrid'})</h4>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        Buyer: <strong className="text-slate-800">{order.buyerName}</strong> ({order.deliveryLocation})
+                      <h4 className="font-semibold text-[#01472e] text-sm">{order.crop} ({order.variety || 'Hybrid'})</h4>
+                      <p className="text-xs text-[#01472e]/70 mt-0.5">
+                        Buyer: <strong className="text-[#01472e]">{order.buyerName}</strong> ({order.deliveryLocation})
                       </p>
                     </div>
 
                     {/* Collection Progress Bar */}
-                    <div className="bg-white p-3 rounded-xl border border-amber-100 space-y-1.5">
+                    <div className="bg-white/80 p-3.5 rounded-xl border border-[#ccd5ae]/30 space-y-1.5">
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-600 font-medium">Collection Progress:</span>
-                        <span className="font-medium text-slate-900 font-mono">
+                        <span className="text-[#01472e]/70 font-medium">Collection Progress:</span>
+                        <span className="font-semibold text-[#01472e] font-mono">
                           {collectedKg.toLocaleString()} / {requiredKg.toLocaleString()} kg ({percentCollected}%)
                         </span>
                       </div>
-                      <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                      <div className="w-full bg-[#e9edc9]/50 h-2 rounded-full overflow-hidden">
                         <div
-                          className="bg-amber-500 h-full rounded-full transition-all duration-300"
+                          className="bg-[#01472e] h-full rounded-full transition-all duration-300"
                           style={{ width: `${percentCollected}%` }}
                         />
                       </div>
-                      <div className="flex justify-between text-[11px] text-slate-500 font-mono pt-0.5">
-                        <span className="text-emerald-700 font-semibold">Collected: {collectedKg.toLocaleString()} kg</span>
+                      <div className="flex justify-between text-[11px] text-[#01472e]/70 font-mono pt-0.5">
+                        <span className="text-[#01472e] font-semibold">Collected: {collectedKg.toLocaleString()} kg</span>
                         <span className="text-amber-800 font-medium">Remaining: {remainingKg.toLocaleString()} kg</span>
                       </div>
                     </div>
 
                     {/* Multi-Farmer Traceability Breakdown */}
                     <div className="space-y-2">
-                      <p className="text-[11px] font-medium uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
-                        <Users className="w-3.5 h-3.5 text-amber-700" />
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-[#01472e]/70 flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5 text-[#a3b18a]" />
                         <span>Contributing Farmer Sources ({contributions.length})</span>
                       </p>
 
@@ -501,23 +504,23 @@ export const FpoDashboard: React.FC = () => {
                           return (
                             <div
                               key={c.farmerId || idx}
-                              className="p-2.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between text-xs"
+                              className="p-3 bg-white border border-[#ccd5ae]/30 rounded-xl flex items-center justify-between text-xs"
                             >
                               <div>
-                                <p className="font-medium text-slate-900">{c.farmerName}</p>
-                                <p className="text-[11px] text-slate-500 flex items-center gap-1">
-                                  <MapPin className="w-3 h-3 text-slate-400" />
+                                <p className="font-semibold text-[#01472e]">{c.farmerName}</p>
+                                <p className="text-[11px] text-[#01472e]/60 flex items-center gap-1">
+                                  <MapPin className="w-3 h-3 text-[#a3b18a]" />
                                   <span>{c.farmerLocation}</span>
                                 </p>
                               </div>
                               <div className="text-right">
-                                <span className="font-mono font-medium text-slate-800 block">
+                                <span className="font-mono font-semibold text-[#01472e] block">
                                   {c.collectedQuantityKg || 0} / {c.contributedQuantityKg} kg
                                 </span>
-                                <span className={`text-[9px] font-medium uppercase px-1.5 py-0.5 rounded ${
+                                <span className={`text-[9px] font-semibold uppercase px-2 py-0.5 rounded-full border ${
                                   c.collectionStatus === 'FULLY_COLLECTED'
-                                    ? 'bg-emerald-100 text-emerald-800'
-                                    : (c.collectionStatus === 'PARTIALLY_COLLECTED' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600')
+                                    ? 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/40'
+                                    : (c.collectionStatus === 'PARTIALLY_COLLECTED' ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-[#faf9f5] text-[#01472e]/70 border-[#ccd5ae]/40')
                                 }`}>
                                   {c.collectionStatus === 'FULLY_COLLECTED' ? 'Collected' : `${farmerRemaining} kg open`}
                                 </span>
@@ -528,13 +531,13 @@ export const FpoDashboard: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-amber-200/60 flex items-center justify-between">
-                      <span className="text-[11px] text-slate-500 font-mono">
+                    <div className="pt-3 border-t border-[#ccd5ae]/30 flex items-center justify-between">
+                      <span className="text-[11px] text-[#01472e]/70 font-mono">
                         Target Value: ₹{order.totalValue.toLocaleString()}
                       </span>
                       <button
                         onClick={() => handleOpenCollectionModal(order)}
-                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5"
+                        className="btn-primary text-xs py-2 px-4 rounded-xl shadow-xs flex items-center gap-1.5"
                       >
                         <Check className="w-3.5 h-3.5" />
                         <span>Record Produce Collection</span>
@@ -550,24 +553,24 @@ export const FpoDashboard: React.FC = () => {
 
       {/* ── STAGE 2: QUALITY CHECK & GRADING WITH ACCEPTED/REJECTED TRACKING ─ */}
       {activeTabSection === 'GRADING' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+        <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Hub Quality Inspection & Grading Station</h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">Hub Quality Inspection & Grading Station</h3>
+              <p className="text-xs text-[#01472e]/70 mt-0.5">
                 Perform laboratory checks (Sugar Brix, firmness, moisture, pesticide assay) and record accepted vs rejected volumes.
               </p>
             </div>
-            <span className="text-xs font-medium text-purple-800 bg-purple-100 px-3 py-1 rounded-full border border-purple-300">
+            <span className="text-xs font-semibold text-[#01472e] bg-[#eaf4ec] px-3.5 py-1 rounded-full border border-[#a3b18a]/40">
               {collectedAwaitingGrading.length} Batches Ready for QA
             </span>
           </div>
 
           {collectedAwaitingGrading.length === 0 ? (
-            <div className="py-12 text-center text-slate-400">
-              <ShieldCheck className="w-10 h-10 mx-auto text-purple-400 mb-2" />
-              <p className="text-sm font-semibold text-slate-700">No batches currently awaiting quality check</p>
-              <p className="text-xs text-slate-400 mt-0.5">Collect produce from Stage 1 to queue batches for quality inspection.</p>
+            <div className="py-12 text-center text-[#01472e]/40">
+              <ShieldCheck className="w-10 h-10 mx-auto text-[#01472e] mb-2 opacity-40" />
+              <p className="text-sm font-semibold text-[#01472e]">No batches currently awaiting quality check</p>
+              <p className="text-xs text-[#01472e]/60 mt-0.5">Collect produce from Stage 1 to queue batches for quality inspection.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -576,25 +579,25 @@ export const FpoDashboard: React.FC = () => {
                 const totalCollected = order.collectedQuantityKg || order.quantityKg;
 
                 return (
-                  <div key={order.id} className="p-5 border border-purple-200 bg-purple-50/30 rounded-2xl space-y-4">
+                  <div key={order.id} className="p-5 border border-[#ccd5ae]/40 bg-[#faf9f5] rounded-2xl space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
-                          <span className="text-slate-300">•</span>
-                          <span className="font-mono text-xs text-purple-900 font-semibold">{order.batchId}</span>
-                          <span className="text-[10px] font-medium uppercase tracking-wider bg-purple-200 text-purple-900 px-2 py-0.5 rounded">
+                          <span className="font-mono text-xs font-semibold text-[#01472e]">{order.id}</span>
+                          <span className="text-[#ccd5ae]">•</span>
+                          <span className="font-mono text-xs text-[#01472e]/70 font-semibold">{order.batchId}</span>
+                          <span className="text-[10px] font-semibold uppercase tracking-wider bg-[#eaf4ec] text-[#01472e] px-2.5 py-0.5 rounded-full border border-[#a3b18a]/40">
                             Collected ({totalCollected.toLocaleString()} kg)
                           </span>
                         </div>
-                        <h4 className="text-sm font-medium text-slate-900 mt-1">
+                        <h4 className="text-sm font-semibold text-[#01472e] mt-1">
                           {order.crop} ({order.variety || 'Hybrid'}) — {totalCollected.toLocaleString()} kg from {order.farmerName}
                         </h4>
                       </div>
 
                       <button
                         onClick={() => isInspecting ? setSelectedOrderForInspection(null) : handleStartInspection(order)}
-                        className="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-medium rounded-xl transition shadow-xs self-start sm:self-auto"
+                        className="btn-primary text-xs py-2 px-4 rounded-xl shadow-xs self-start sm:self-auto"
                       >
                         {isInspecting ? 'Cancel QA Form' : 'Open Inspection Form →'}
                       </button>
@@ -602,20 +605,20 @@ export const FpoDashboard: React.FC = () => {
 
                     {/* Interactive Quality Form */}
                     {isInspecting && (
-                      <div className="p-5 bg-white border border-purple-200 rounded-xl space-y-4 animate-in fade-in">
-                        <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                          <h5 className="font-medium text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
-                            <ShieldCheck className="w-4 h-4 text-purple-700" />
+                      <div className="p-6 bg-white border border-[#ccd5ae]/50 rounded-2xl space-y-4 animate-in fade-in">
+                        <div className="flex items-center justify-between pb-2 border-b border-[#ccd5ae]/30">
+                          <h5 className="font-semibold text-[#01472e] text-xs uppercase tracking-wider flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4 text-[#01472e]" />
                             <span>Quality Certification & Acceptance Entry — Batch: {order.batchId}</span>
                           </h5>
-                          <span className="text-xs font-mono font-medium text-purple-900">Total Collected: {totalCollected} kg</span>
+                          <span className="text-xs font-mono font-semibold text-[#01472e]">Total Collected: {totalCollected} kg</span>
                         </div>
 
                         {/* Acceptance & Rejection Breakdown */}
-                        <div className="p-3 bg-purple-50/50 rounded-xl border border-purple-100 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                           <div>
-                            <label className="block text-slate-700 font-medium mb-1">
-                              Accepted Quantity (kg) <span className="text-emerald-700 font-mono">(Moves to Packing)</span>
+                            <label className="block text-[#01472e] font-semibold mb-1">
+                              Accepted Quantity (kg) <span className="text-[#01472e]/70 font-mono">(Moves to Packing)</span>
                             </label>
                             <input
                               type="number"
@@ -627,13 +630,13 @@ export const FpoDashboard: React.FC = () => {
                                 setAcceptedKg(val);
                                 setRejectedKg(Math.max(0, totalCollected - val));
                               }}
-                              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-purple-600 font-mono font-medium text-slate-900 bg-white"
+                              className="input-modern font-mono font-semibold text-[#01472e]"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-slate-700 font-medium mb-1">
-                              Rejected Quantity (kg) <span className="text-red-700 font-mono">(Defects/Shortage)</span>
+                            <label className="block text-rose-800 font-semibold mb-1">
+                              Rejected Quantity (kg) <span className="text-rose-600 font-mono">(Defects/Shortage)</span>
                             </label>
                             <input
                               type="number"
@@ -645,19 +648,19 @@ export const FpoDashboard: React.FC = () => {
                                 setRejectedKg(val);
                                 setAcceptedKg(Math.max(0, totalCollected - val));
                               }}
-                              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-purple-600 font-mono font-medium text-slate-900 bg-white"
+                              className="input-modern font-mono font-semibold text-rose-800 border-rose-300 focus:border-rose-500"
                             />
                           </div>
 
                           {rejectedKg > 0 && (
                             <div className="sm:col-span-2">
-                              <label className="block text-slate-700 font-medium mb-1">Rejection Reason / Defect Notes</label>
+                              <label className="block text-[#01472e] font-semibold mb-1">Rejection Reason / Defect Notes</label>
                               <input
                                 type="text"
                                 value={rejectionReason}
                                 onChange={(e) => setRejectionReason(e.target.value)}
                                 placeholder="e.g. Surface bruising 4%, moisture deficit, pest blemish"
-                                className="w-full px-3 py-2 border border-amber-300 bg-amber-50/30 rounded-lg focus:outline-none focus:border-amber-500 font-medium text-slate-800"
+                                className="input-modern"
                               />
                             </div>
                           )}
@@ -666,43 +669,43 @@ export const FpoDashboard: React.FC = () => {
                         {/* Lab Metrics */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                           <div>
-                            <label className="block text-slate-600 font-medium mb-1">Sugar Content (°Brix)</label>
+                            <label className="block text-[#01472e]/80 font-semibold mb-1">Sugar Content (°Brix)</label>
                             <input
                               type="number"
                               step="0.1"
                               value={sugarBrix}
                               onChange={(e) => setSugarBrix(Number(e.target.value))}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-500 font-mono"
+                              className="input-modern font-mono"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-slate-600 font-medium mb-1">Firmness (kg/cm²)</label>
+                            <label className="block text-[#01472e]/80 font-semibold mb-1">Firmness (kg/cm²)</label>
                             <input
                               type="number"
                               step="0.1"
                               value={firmness}
                               onChange={(e) => setFirmness(Number(e.target.value))}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-500 font-mono"
+                              className="input-modern font-mono"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-slate-600 font-medium mb-1">Moisture Content</label>
+                            <label className="block text-[#01472e]/80 font-semibold mb-1">Moisture Content</label>
                             <input
                               type="text"
                               value={moisture}
                               onChange={(e) => setMoisture(e.target.value)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-500 font-mono"
+                              className="input-modern font-mono"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-slate-600 font-medium mb-1">Pesticide Residue Test</label>
+                            <label className="block text-[#01472e]/80 font-semibold mb-1">Pesticide Residue Test</label>
                             <select
                               value={pesticideTest}
                               onChange={(e) => setPesticideTest(e.target.value as any)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-500 font-medium"
+                              className="input-modern"
                             >
                               <option value="PASS - Organic / ND">PASS - Organic / ND (Non-Detectable)</option>
                               <option value="PASS - Standard Compliant">PASS - Standard Compliant</option>
@@ -710,11 +713,11 @@ export const FpoDashboard: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-slate-600 font-medium mb-1">Certified Grade</label>
+                            <label className="block text-[#01472e]/80 font-semibold mb-1">Certified Grade</label>
                             <select
                               value={grade}
                               onChange={(e) => setGrade(e.target.value as any)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-500 font-medium"
+                              className="input-modern"
                             >
                               <option value="Grade A">Grade A (Premium Export Quality)</option>
                               <option value="Grade B">Grade B (Retail High Grade)</option>
@@ -724,26 +727,26 @@ export const FpoDashboard: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-slate-600 font-medium mb-1">QA Assessor Name</label>
+                            <label className="block text-[#01472e]/80 font-semibold mb-1">QA Assessor Name</label>
                             <input
                               type="text"
                               value={inspectorName}
                               onChange={(e) => setInspectorName(e.target.value)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-500 font-medium"
+                              className="input-modern"
                             />
                           </div>
                         </div>
 
-                        <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                        <div className="flex justify-end gap-3 pt-3 border-t border-[#ccd5ae]/30">
                           <button
                             onClick={() => setSelectedOrderForInspection(null)}
-                            className="px-4 py-2 border border-slate-200 text-slate-600 text-xs font-medium rounded-lg hover:bg-slate-50"
+                            className="px-4 py-2 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-xl text-xs font-semibold transition"
                           >
                             Cancel
                           </button>
                           <button
                             onClick={() => handleSaveInspection(order.id)}
-                            className="px-5 py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-medium rounded-lg transition shadow-xs flex items-center gap-1.5"
+                            className="btn-primary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-1.5 shadow-sm"
                           >
                             <ShieldCheck className="w-4 h-4" />
                             <span>Certify Quality & Record Accepted Volume</span>
@@ -761,24 +764,24 @@ export const FpoDashboard: React.FC = () => {
 
       {/* ── STAGE 3: PACKAGING, CRATING & TRANSPORT GATE ───────────────────── */}
       {activeTabSection === 'PACKING' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+        <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Packaging, Crating & QR Sealing</h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">Packaging, Crating & QR Sealing</h3>
+              <p className="text-xs text-[#01472e]/70 mt-0.5">
                 Pack quality-accepted produce into standardized agro-crates, assign batch tamper seal, and unlock Transport Readiness.
               </p>
             </div>
-            <span className="text-xs font-medium text-teal-800 bg-teal-100 px-3 py-1 rounded-full border border-teal-300">
+            <span className="text-xs font-semibold text-[#01472e] bg-[#eaf4ec] px-3.5 py-1 rounded-full border border-[#a3b18a]/40">
               {gradedAwaitingPacking.length} Batches Ready for Crating
             </span>
           </div>
 
           {gradedAwaitingPacking.length === 0 ? (
-            <div className="py-12 text-center text-slate-400">
-              <Package className="w-10 h-10 mx-auto text-teal-400 mb-2" />
-              <p className="text-sm font-semibold text-slate-700">No batches currently awaiting packing</p>
-              <p className="text-xs text-slate-400 mt-0.5">Complete Quality Grading in Stage 2 to advance batches here.</p>
+            <div className="py-12 text-center text-[#01472e]/40">
+              <Package className="w-10 h-10 mx-auto text-[#01472e] mb-2 opacity-40" />
+              <p className="text-sm font-semibold text-[#01472e]">No batches currently awaiting packing</p>
+              <p className="text-xs text-[#01472e]/60 mt-0.5">Complete Quality Grading in Stage 2 to advance batches here.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -787,36 +790,36 @@ export const FpoDashboard: React.FC = () => {
                 const estimatedCrates = Math.ceil(acceptedVolume / 25);
 
                 return (
-                  <div key={order.id} className="p-5 border border-teal-200 bg-teal-50/30 rounded-2xl space-y-4">
+                  <div key={order.id} className="p-5 border border-[#ccd5ae]/40 bg-[#faf9f5] rounded-2xl space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
-                      <span className="text-[10px] font-medium uppercase tracking-wider bg-teal-200 text-teal-900 px-2.5 py-0.5 rounded">
+                      <span className="font-mono text-xs font-semibold text-[#01472e]">{order.id}</span>
+                      <span className="text-[10px] font-semibold uppercase tracking-wider bg-[#eaf4ec] text-[#01472e] px-2.5 py-0.5 rounded-full border border-[#a3b18a]/40">
                         {order.qualityGrade} • {order.qualityStatus || 'Passed'}
                       </span>
                     </div>
 
                     <div>
-                      <h4 className="font-medium text-slate-900 text-sm">{order.crop} ({order.variety || 'Hybrid'})</h4>
-                      <p className="text-xs text-slate-600 mt-1">
-                        Accepted Volume: <strong className="font-mono text-teal-900">{acceptedVolume.toLocaleString()} kg</strong> (~{estimatedCrates} crates)
+                      <h4 className="font-semibold text-[#01472e] text-sm">{order.crop} ({order.variety || 'Hybrid'})</h4>
+                      <p className="text-xs text-[#01472e]/80 mt-1">
+                        Accepted Volume: <strong className="font-mono text-[#01472e]">{acceptedVolume.toLocaleString()} kg</strong> (~{estimatedCrates} crates)
                       </p>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        Destination: <strong className="text-slate-800">{order.buyerName}</strong> ({order.deliveryLocation})
+                      <p className="text-xs text-[#01472e]/70 mt-0.5">
+                        Destination: <strong className="text-[#01472e]">{order.buyerName}</strong> ({order.deliveryLocation})
                       </p>
                     </div>
 
-                    <div className="pt-3 border-t border-teal-200/60 flex items-center justify-between">
+                    <div className="pt-3 border-t border-[#ccd5ae]/30 flex items-center justify-between">
                       <button
                         onClick={() => openPassportModal(order.batchId)}
-                        className="text-teal-700 hover:text-teal-900 text-xs font-medium flex items-center gap-1"
+                        className="text-[#01472e] hover:text-[#025a3b] text-xs font-semibold flex items-center gap-1 transition"
                       >
-                        <QrCode className="w-3.5 h-3.5" />
+                        <QrCode className="w-3.5 h-3.5 text-[#01472e]" />
                         <span>Preview Passport</span>
                       </button>
 
                       <button
                         onClick={() => handleOpenPackingModal(order)}
-                        className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5"
+                        className="btn-primary text-xs py-2 px-4 rounded-xl shadow-xs flex items-center gap-1.5"
                       >
                         <Package className="w-3.5 h-3.5" />
                         <span>Pack & Unlock Transport →</span>
@@ -832,15 +835,15 @@ export const FpoDashboard: React.FC = () => {
 
       {/* ── STAGE 4: BULK CONSOLIDATION & PROVENANCE ─────────────────────────── */}
       {activeTabSection === 'CONSOLIDATION' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+        <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Bulk Order Consolidation & Provenance Hub</h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">Bulk Order Consolidation & Provenance Hub</h3>
+              <p className="text-xs text-[#01472e]/70 mt-0.5">
                 Consolidated institutional volume orders maintaining 100% individual farmer source and buyer demand links.
               </p>
             </div>
-            <span className="text-xs font-medium text-blue-800 bg-blue-100 px-3 py-1 rounded-full border border-blue-300">
+            <span className="text-xs font-semibold text-[#01472e] bg-[#eaf4ec] px-3.5 py-1 rounded-full border border-[#a3b18a]/40">
               {bulkConsolidatedOrders.length} Consolidated Batches
             </span>
           </div>
@@ -863,76 +866,76 @@ export const FpoDashboard: React.FC = () => {
               ];
 
               return (
-                <div key={order.id} className="p-5 border border-blue-200 bg-blue-50/20 rounded-2xl space-y-4">
+                <div key={order.id} className="p-5 border border-[#ccd5ae]/40 bg-[#faf9f5] rounded-2xl space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
-                      <span className="text-slate-300">•</span>
-                      <span className="font-mono text-xs text-blue-900 font-medium">{order.batchId}</span>
+                      <span className="font-mono text-xs font-semibold text-[#01472e]">{order.id}</span>
+                      <span className="text-[#ccd5ae]">•</span>
+                      <span className="font-mono text-xs text-[#01472e]/70 font-semibold">{order.batchId}</span>
                       {order.aggregatedGroupId && (
-                        <span className="text-[10px] font-medium bg-purple-100 text-purple-800 border border-purple-200 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-semibold bg-[#e9edc9] text-[#01472e] border border-[#ccd5ae] px-2.5 py-0.5 rounded-full">
                           Pooled: {order.aggregatedGroupId}
                         </span>
                       )}
                     </div>
-                    <span className="text-xs font-medium px-2.5 py-0.5 rounded-full border border-slate-300 bg-white text-slate-800">
+                    <span className="text-xs font-semibold px-3 py-1 rounded-full border border-[#ccd5ae]/50 bg-white text-[#01472e]">
                       Status: {order.status}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-white p-3.5 rounded-xl border border-blue-100 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-white p-4 rounded-xl border border-[#ccd5ae]/30 text-xs">
                     <div>
-                      <span className="text-slate-500 block">Total Buyer Quantity:</span>
-                      <strong className="text-sm font-semibold font-mono text-slate-900">{requiredKg.toLocaleString()} kg</strong>
+                      <span className="text-[#01472e]/60 block font-semibold uppercase text-[10px]">Total Buyer Quantity</span>
+                      <strong className="text-sm font-semibold font-mono text-[#01472e]">{requiredKg.toLocaleString()} kg</strong>
                     </div>
                     <div>
-                      <span className="text-slate-500 block">Total Collected:</span>
-                      <strong className="text-sm font-semibold font-mono text-emerald-700">{collectedKg.toLocaleString()} kg</strong>
+                      <span className="text-[#01472e]/60 block font-semibold uppercase text-[10px]">Total Collected</span>
+                      <strong className="text-sm font-semibold font-mono text-[#01472e]">{collectedKg.toLocaleString()} kg</strong>
                     </div>
                     <div>
-                      <span className="text-slate-500 block">Remaining Collection:</span>
-                      <strong className="text-sm font-semibold font-mono text-amber-700">{remainingKg.toLocaleString()} kg</strong>
+                      <span className="text-[#01472e]/60 block font-semibold uppercase text-[10px]">Remaining Collection</span>
+                      <strong className="text-sm font-semibold font-mono text-amber-800">{remainingKg.toLocaleString()} kg</strong>
                     </div>
                     <div>
-                      <span className="text-slate-500 block">Total Transaction Value:</span>
-                      <strong className="text-sm font-semibold font-mono text-slate-900">₹{order.totalValue.toLocaleString()}</strong>
+                      <span className="text-[#01472e]/60 block font-semibold uppercase text-[10px]">Transaction Value</span>
+                      <strong className="text-sm font-semibold font-mono text-[#01472e]">₹{order.totalValue.toLocaleString()}</strong>
                     </div>
                   </div>
 
                   {/* Farmer Provenance Trail */}
                   <div className="space-y-2">
-                    <h5 className="text-[11px] font-medium text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                      <Users className="w-3.5 h-3.5 text-blue-700" />
+                    <h5 className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5 text-[#a3b18a]" />
                       <span>Farmer Provenance & Source Allotments ({contributions.length} Producers)</span>
                     </h5>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                       {contributions.map((c, i) => (
-                        <div key={i} className="p-3 bg-white border border-slate-200 rounded-xl space-y-1">
-                          <div className="flex justify-between font-medium text-slate-900">
+                        <div key={i} className="p-3.5 bg-white border border-[#ccd5ae]/30 rounded-xl space-y-1">
+                          <div className="flex justify-between font-semibold text-[#01472e]">
                             <span>{c.farmerName}</span>
-                            <span className="font-mono text-blue-800">{c.contributedQuantityKg.toLocaleString()} kg</span>
+                            <span className="font-mono text-[#01472e]">{c.contributedQuantityKg.toLocaleString()} kg</span>
                           </div>
-                          <p className="text-[11px] text-slate-500 flex items-center gap-1">
-                            <MapPin className="w-3 h-3 text-slate-400" />
+                          <p className="text-[11px] text-[#01472e]/70 flex items-center gap-1">
+                            <MapPin className="w-3 h-3 text-[#a3b18a]" />
                             <span>{c.farmerLocation}</span>
                           </p>
-                          <div className="flex justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+                          <div className="flex justify-between text-[10px] text-[#01472e]/60 pt-1.5 border-t border-[#ccd5ae]/20">
                             <span>Listing: <strong className="font-mono">{c.produceListingId}</strong></span>
-                            <span className="text-emerald-700 font-semibold">Collected: {c.collectedQuantityKg || 0} kg</span>
+                            <span className="text-[#01472e] font-semibold">Collected: {c.collectedQuantityKg || 0} kg</span>
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-blue-100 flex items-center justify-between text-xs">
-                    <span className="text-slate-500">
-                      Buyer: <strong className="text-slate-800">{order.buyerName}</strong> (Demand: {order.demandRequestId})
+                  <div className="pt-2 border-t border-[#ccd5ae]/30 flex items-center justify-between text-xs">
+                    <span className="text-[#01472e]/70">
+                      Buyer: <strong className="text-[#01472e]">{order.buyerName}</strong> (Demand: {order.demandRequestId})
                     </span>
                     <button
                       onClick={() => openPassportModal(order.batchId)}
-                      className="text-blue-700 hover:text-blue-900 font-medium flex items-center gap-1"
+                      className="text-[#01472e] hover:text-[#025a3b] font-semibold flex items-center gap-1 transition"
                     >
                       <QrCode className="w-3.5 h-3.5" />
                       <span>View Provenance Passport</span>
@@ -947,42 +950,42 @@ export const FpoDashboard: React.FC = () => {
 
       {/* ── STAGE 5: ALL FPO BATCHES & PREPARATION STATUS ─────────────────────── */}
       {activeTabSection === 'ALL' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+        <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-medium text-slate-900 tracking-tight">All Collective FPO Batches</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Comprehensive lifecycle status across collection, quality, crating and transport</p>
+              <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">All Collective FPO Batches</h3>
+              <p className="text-xs text-[#01472e]/70 mt-0.5">Comprehensive lifecycle status across collection, quality, crating and transport</p>
             </div>
-            <span className="text-xs font-medium text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+            <span className="text-xs font-semibold text-[#01472e] bg-[#e9edc9]/50 border border-[#ccd5ae]/50 px-3.5 py-1 rounded-xl">
               {orders.length} Total Batches
             </span>
           </div>
 
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-[#ccd5ae]/20">
             {orders.map((order) => (
-              <div key={order.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div key={order.id} className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-medium text-xs shrink-0">
+                  <div className="w-11 h-11 rounded-2xl bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/30 flex items-center justify-center font-medium text-xs shrink-0">
                     <Package className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
-                      <span className="text-slate-300">•</span>
-                      <span className="font-mono text-xs text-slate-500">{order.batchId}</span>
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700">
+                      <span className="font-mono text-xs font-semibold text-[#01472e]">{order.id}</span>
+                      <span className="text-[#ccd5ae]">•</span>
+                      <span className="font-mono text-xs text-[#01472e]/70">{order.batchId}</span>
+                      <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-[#ccd5ae]/40 bg-[#faf9f5] text-[#01472e]">
                         {order.status}
                       </span>
                       {order.isReadyForTransport && (
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40">
                           Ready for Transport
                         </span>
                       )}
                     </div>
-                    <p className="text-xs font-medium text-slate-900 mt-0.5">
+                    <p className="text-xs font-semibold text-[#01472e] mt-1">
                       {order.crop} — {order.quantityKg.toLocaleString()} kg @ ₹{order.pricePerKg}/kg (Total: ₹{order.totalValue.toLocaleString()})
                     </p>
-                    <p className="text-[11px] text-slate-500">
+                    <p className="text-[11px] text-[#01472e]/70">
                       Farmer: {order.farmerName} ➔ Buyer: {order.buyerName}
                     </p>
                   </div>
@@ -991,14 +994,14 @@ export const FpoDashboard: React.FC = () => {
                 <div className="flex items-center gap-2 self-end sm:self-auto">
                   <button
                     onClick={() => openPassportModal(order.batchId)}
-                    className="px-3 py-1.5 border border-slate-200 hover:border-emerald-500 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1"
+                    className="btn-secondary text-xs py-2 px-3.5 rounded-xl flex items-center gap-1"
                   >
-                    <QrCode className="w-3.5 h-3.5" />
+                    <QrCode className="w-3.5 h-3.5 text-[#01472e]" />
                     <span>Passport</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('orders')}
-                    className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl transition"
+                    className="btn-primary text-xs py-2 px-4 rounded-xl"
                   >
                     Order Details
                   </button>
@@ -1011,36 +1014,38 @@ export const FpoDashboard: React.FC = () => {
 
       {/* ── MODAL: RECORD PRODUCE COLLECTION ─────────────────────────────────── */}
       {collectionModalOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-5 border border-slate-200 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white rounded-[32px] p-6 sm:p-8 max-w-lg w-full space-y-5 border border-[#ccd5ae]/50 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-[#ccd5ae]/30">
               <div className="flex items-center gap-2.5">
-                <Check className="w-5 h-5 text-emerald-700" />
-                <h4 className="font-medium text-slate-900 text-base tracking-tight">
+                <div className="p-2 bg-[#eaf4ec] rounded-xl text-[#01472e]">
+                  <Check className="w-5 h-5 text-[#01472e]" />
+                </div>
+                <h4 className="font-semibold text-[#01472e] text-base tracking-tight">
                   Record Farm Gate Collection
                 </h4>
               </div>
               <button
                 onClick={() => setCollectionModalOrder(null)}
-                className="text-slate-400 hover:text-slate-600 font-medium"
+                className="text-[#01472e]/50 hover:text-[#01472e] font-semibold p-1"
               >
                 ✕
               </button>
             </div>
 
             <form onSubmit={handleRecordCollectionSubmit} className="space-y-4 text-xs">
-              <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-200 space-y-1">
-                <span className="font-mono text-[11px] text-amber-900 font-medium">Order: {collectionModalOrder.id}</span>
-                <p className="font-medium text-slate-900 text-sm">{collectionModalOrder.crop} ({collectionModalOrder.variety || 'Hybrid'})</p>
-                <div className="flex justify-between text-slate-600 pt-1">
-                  <span>Total Order Required: <strong>{collectionModalOrder.quantityKg.toLocaleString()} kg</strong></span>
-                  <span>Currently Collected: <strong className="text-emerald-700">{collectionModalOrder.collectedQuantityKg || 0} kg</strong></span>
+              <div className="p-3.5 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 space-y-1">
+                <span className="font-mono text-[11px] text-[#01472e]/70 font-semibold">Order: {collectionModalOrder.id}</span>
+                <p className="font-semibold text-[#01472e] text-sm">{collectionModalOrder.crop} ({collectionModalOrder.variety || 'Hybrid'})</p>
+                <div className="flex justify-between text-[#01472e]/70 pt-1">
+                  <span>Total Required: <strong>{collectionModalOrder.quantityKg.toLocaleString()} kg</strong></span>
+                  <span>Collected: <strong className="text-[#01472e] font-semibold">{collectionModalOrder.collectedQuantityKg || 0} kg</strong></span>
                 </div>
               </div>
 
               {/* Select Contributing Farmer */}
               <div>
-                <label className="block text-slate-700 font-medium mb-1">Select Producer Farm Gate</label>
+                <label className="block text-[#01472e] font-semibold mb-1">Select Producer Farm Gate</label>
                 <select
                   value={selectedFarmerId}
                   onChange={(e) => {
@@ -1051,7 +1056,7 @@ export const FpoDashboard: React.FC = () => {
                       setCollectAmountKg(Math.max(0, contrib.contributedQuantityKg - (contrib.collectedQuantityKg || 0)));
                     }
                   }}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium text-slate-900 focus:outline-none focus:border-emerald-600"
+                  className="input-modern"
                 >
                   {(collectionModalOrder.farmerContributions || [
                     {
@@ -1074,8 +1079,8 @@ export const FpoDashboard: React.FC = () => {
               {/* Collection Quantity Input */}
               <div>
                 <div className="flex justify-between mb-1">
-                  <label className="text-slate-700 font-medium">Quantity to Collect (kg)</label>
-                  <span className="text-slate-400">Max open balance</span>
+                  <label className="text-[#01472e] font-semibold">Quantity to Collect (kg)</label>
+                  <span className="text-[#01472e]/50">Max open balance</span>
                 </div>
                 <input
                   type="number"
@@ -1083,33 +1088,33 @@ export const FpoDashboard: React.FC = () => {
                   max={collectionModalOrder.remainingCollectionKg || collectionModalOrder.quantityKg}
                   value={collectAmountKg}
                   onChange={(e) => setCollectAmountKg(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono font-medium text-slate-900 focus:outline-none focus:border-emerald-600"
+                  className="input-modern font-mono font-semibold"
                   required
                 />
               </div>
 
               {/* Collection Notes */}
               <div>
-                <label className="block text-slate-700 font-medium mb-1">Field Logistics Notes</label>
+                <label className="block text-[#01472e] font-semibold mb-1">Field Logistics Notes</label>
                 <input
                   type="text"
                   value={collectionNotes}
                   onChange={(e) => setCollectionNotes(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-emerald-600"
+                  className="input-modern"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#ccd5ae]/30">
                 <button
                   type="button"
                   onClick={() => setCollectionModalOrder(null)}
-                  className="px-4 py-2 border border-slate-200 text-slate-600 text-xs font-medium rounded-xl hover:bg-slate-50"
+                  className="px-5 py-2.5 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-2xl text-xs font-semibold transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5"
+                  className="btn-primary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-1.5 shadow-sm"
                 >
                   <Check className="w-4 h-4" />
                   <span>Confirm Farm Gate Pickup</span>
@@ -1122,55 +1127,57 @@ export const FpoDashboard: React.FC = () => {
 
       {/* ── MODAL: PACKING & CRATING ─────────────────────────────────────────── */}
       {packingModalOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-5 border border-slate-200 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white rounded-[32px] p-6 sm:p-8 max-w-lg w-full space-y-5 border border-[#ccd5ae]/50 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-[#ccd5ae]/30">
               <div className="flex items-center gap-2.5">
-                <Package className="w-5 h-5 text-teal-700" />
-                <h4 className="font-medium text-slate-900 text-base tracking-tight">
+                <div className="p-2 bg-[#eaf4ec] rounded-xl text-[#01472e]">
+                  <Package className="w-5 h-5 text-[#01472e]" />
+                </div>
+                <h4 className="font-semibold text-[#01472e] text-base tracking-tight">
                   Crating, Batch QR & Transport Readiness
                 </h4>
               </div>
               <button
                 onClick={() => setPackingModalOrder(null)}
-                className="text-slate-400 hover:text-slate-600 font-medium"
+                className="text-[#01472e]/50 hover:text-[#01472e] font-semibold p-1"
               >
                 ✕
               </button>
             </div>
 
             <form onSubmit={handleRecordPackingSubmit} className="space-y-4 text-xs">
-              <div className="p-3 bg-teal-50/60 rounded-xl border border-teal-200 space-y-1">
-                <span className="font-mono text-[11px] text-teal-900 font-medium">Order: {packingModalOrder.id} • Batch: {packingModalOrder.batchId}</span>
-                <p className="font-medium text-slate-900 text-sm">{packingModalOrder.crop} ({packingModalOrder.variety || 'Hybrid'})</p>
-                <div className="flex justify-between text-slate-600 pt-1">
-                  <span>Quality Grade: <strong className="text-purple-800">{packingModalOrder.qualityGrade}</strong></span>
-                  <span>Accepted Quantity: <strong className="text-teal-800 font-mono">{packingModalOrder.acceptedQuantityKg || packingModalOrder.quantityKg} kg</strong></span>
+              <div className="p-3.5 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 space-y-1">
+                <span className="font-mono text-[11px] text-[#01472e]/70 font-semibold">Order: {packingModalOrder.id} • Batch: {packingModalOrder.batchId}</span>
+                <p className="font-semibold text-[#01472e] text-sm">{packingModalOrder.crop} ({packingModalOrder.variety || 'Hybrid'})</p>
+                <div className="flex justify-between text-[#01472e]/70 pt-1">
+                  <span>Quality Grade: <strong className="text-[#01472e]">{packingModalOrder.qualityGrade}</strong></span>
+                  <span>Accepted Quantity: <strong className="text-[#01472e] font-mono">{packingModalOrder.acceptedQuantityKg || packingModalOrder.quantityKg} kg</strong></span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-700 font-medium mb-1">Packed Quantity (kg)</label>
+                <label className="block text-[#01472e] font-semibold mb-1">Packed Quantity (kg)</label>
                 <input
                   type="number"
                   min="1"
                   max={packingModalOrder.acceptedQuantityKg || packingModalOrder.quantityKg}
                   value={packQuantityKg}
                   onChange={(e) => setPackQuantityKg(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono font-medium text-slate-900 focus:outline-none focus:border-teal-600"
+                  className="input-modern font-mono font-semibold"
                   required
                 />
-                <p className="text-[11px] text-slate-400 mt-1 font-mono">
+                <p className="text-[11px] text-[#01472e]/60 mt-1 font-mono">
                   Equivalent to ~{Math.ceil(packQuantityKg / 25)} crates (standard 25 kg unit payload)
                 </p>
               </div>
 
               <div>
-                <label className="block text-slate-700 font-medium mb-1">Packaging Specification</label>
+                <label className="block text-[#01472e] font-semibold mb-1">Packaging Specification</label>
                 <select
                   value={crateType}
                   onChange={(e) => setCrateType(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium text-slate-900 focus:outline-none focus:border-teal-600"
+                  className="input-modern"
                 >
                   <option value="Ventilated 25kg Food-Grade Agro-Crates">Ventilated 25kg Food-Grade Agro-Crates</option>
                   <option value="Corrugated High-Strength Export Cartons">Corrugated High-Strength Export Cartons (20kg)</option>
@@ -1179,26 +1186,26 @@ export const FpoDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-700 font-medium mb-1">Tamper-Proof Batch Barcode Note</label>
+                <label className="block text-[#01472e] font-semibold mb-1">Tamper-Proof Batch Barcode Note</label>
                 <input
                   type="text"
                   value={packNotes}
                   onChange={(e) => setPackNotes(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-teal-600"
+                  className="input-modern"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#ccd5ae]/30">
                 <button
                   type="button"
                   onClick={() => setPackingModalOrder(null)}
-                  className="px-4 py-2 border border-slate-200 text-slate-600 text-xs font-medium rounded-xl hover:bg-slate-50"
+                  className="px-5 py-2.5 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-2xl text-xs font-semibold transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5"
+                  className="btn-primary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-1.5 shadow-sm"
                 >
                   <Package className="w-4 h-4" />
                   <span>Crate & Seal (Ready for Transport)</span>
