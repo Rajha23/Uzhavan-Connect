@@ -102,110 +102,131 @@ export const LogisticsDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-600/30">
-        <div>
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
-            <Truck className="w-4 h-4 text-emerald-400" />
-            <span>Multi-Hub Cold-Chain Logistics Control Tower</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
-            {currentUser.organization || 'Sundar Logistics Control Tower'}
-          </h1>
-          <p className="text-sm text-slate-300 mt-2 font-normal">
-            Vehicle fleet assignment, cold-chain corridor tracking, and destination buyer delivery handover.
-          </p>
-          <div className="mt-3 inline-flex items-center gap-2 bg-white/10 border border-white/15 px-3 py-1 rounded-full text-[11px] text-slate-200">
-            <Info className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Route Solver: <strong>Topological Route Heuristic (Google OR-Tools Architecture Blueprint)</strong></span>
-          </div>
-        </div>
+      <div className="relative overflow-hidden rounded-[32px] p-7 sm:p-10 border border-[#01472e]/20 shadow-forest bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white">
+        <div className="absolute -right-16 -top-16 w-80 h-80 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -left-12 -bottom-12 w-64 h-64 bg-[#e9edc9]/10 rounded-full blur-2xl pointer-events-none" />
 
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={() => setActiveTab('route-optimization')}
-            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-medium px-5 py-2.5 rounded-xl shadow-sm transition uppercase tracking-wider cursor-pointer"
-          >
-            <Navigation className="w-4 h-4" />
-            <span>Route Optimizer Map</span>
-          </button>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 bg-[#fefae0]/15 border border-[#fefae0]/25 px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-[#fefae0]">
+              <Truck className="w-3.5 h-3.5 text-[#fefae0]" />
+              <span>Cold-Chain Fleet Logistics & Telematics Control</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+              {currentUser.organization || 'Sundar Logistics Control Tower'}
+            </h1>
+            <p className="text-sm text-emerald-100/80 font-normal max-w-2xl">
+              Vehicle fleet assignment, cold-chain corridor tracking, and destination buyer dockside delivery handover.
+            </p>
+            <div className="pt-2 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 bg-black/20 backdrop-blur-sm border border-white/15 px-3 py-1 rounded-full text-[11px] text-emerald-200">
+                <Info className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Route Solver: <strong>Topological Heuristic (OR-Tools Architecture)</strong></span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 bg-[#e9edc9]/20 border border-[#e9edc9]/30 px-3 py-1 rounded-full text-[11px] text-[#fefae0]">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Active Reefer Sensor Telemetry: <strong>Connected</strong></span>
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 relative z-10">
+            <button
+              onClick={() => setActiveTab('route-optimization')}
+              className="flex items-center gap-2 bg-[#fefae0] hover:bg-white text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-soft hover:shadow-md transition-all cursor-pointer"
+            >
+              <Navigation className="w-4 h-4 text-[#01472e]" />
+              <span>Route Optimizer Map</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Action Notification */}
       {actionNotice && (
-        <div className="p-4 bg-emerald-50 border border-emerald-300 rounded-2xl flex items-center gap-3 shadow-xs animate-in fade-in">
-          <div className="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-medium text-sm shrink-0">
+        <div className="p-4 bg-[#eaf4ec] border border-[#a3b18a]/50 rounded-2xl flex items-center gap-3 shadow-soft animate-in fade-in">
+          <div className="w-8 h-8 rounded-xl bg-[#01472e] text-[#fefae0] flex items-center justify-center font-bold text-sm shrink-0">
             ✓
           </div>
-          <p className="text-xs font-medium text-emerald-950">{actionNotice}</p>
+          <p className="text-xs font-semibold text-[#01472e]">{actionNotice}</p>
         </div>
       )}
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         {[
-          { label: 'Awaiting Vehicle', count: awaitingTransportOrders.length, desc: 'Packed & QR Sealed', section: 'ASSIGN' as const, color: 'text-teal-700' },
-          { label: 'Assigned on Bay', count: assignedOrders.length, desc: 'Ready for Dispatch', section: 'TRANSIT' as const, color: 'text-indigo-700' },
-          { label: 'En Route in Transit', count: inTransitOrders.length, desc: 'Cold-Chain Telemetry', section: 'TRANSIT' as const, color: 'text-orange-700' },
-          { label: 'Delivered at Buyer Hubs', count: deliveredOrders.length, desc: 'Receipt Verification', section: 'DELIVERED' as const, color: 'text-emerald-700' },
+          { label: 'Awaiting Vehicle', count: awaitingTransportOrders.length, desc: 'Packed & QR Sealed', section: 'ASSIGN' as const, color: 'text-teal-700', bg: 'bg-teal-50' },
+          { label: 'Assigned on Bay', count: assignedOrders.length, desc: 'Ready for Dispatch', section: 'TRANSIT' as const, color: 'text-indigo-700', bg: 'bg-indigo-50' },
+          { label: 'En Route in Transit', count: inTransitOrders.length, desc: 'Cold-Chain Telemetry', section: 'TRANSIT' as const, color: 'text-amber-700', bg: 'bg-amber-50' },
+          { label: 'Delivered at Buyer Hubs', count: deliveredOrders.length, desc: 'Receipt Verification', section: 'DELIVERED' as const, color: 'text-[#01472e]', bg: 'bg-emerald-50' },
         ].map((item) => (
           <button
             key={item.label}
             onClick={() => setActiveSection(item.section)}
-            className={`p-5 rounded-2xl border text-left transition shadow-xs cursor-pointer ${
+            className={`p-5 sm:p-6 rounded-3xl border text-left transition-all duration-200 cursor-pointer shadow-xs ${
               activeSection === item.section
-                ? 'bg-white border-emerald-600 ring-2 ring-emerald-600/20 shadow-sm'
-                : 'bg-white border-slate-200 hover:border-slate-300'
+                ? 'bg-white border-[#01472e] ring-2 ring-[#01472e]/20 shadow-soft -translate-y-0.5'
+                : 'bg-white/90 border-[#ccd5ae]/40 hover:border-[#a3b18a] hover:bg-white'
             }`}
           >
-            <p className="text-xs text-slate-500 font-medium">{item.label}</p>
-            <p className={`text-3xl font-semibold font-mono mt-1 ${item.color}`}>{item.count}</p>
-            <p className="text-[11px] text-slate-400 mt-1">{item.desc}</p>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-slate-500 font-medium">{item.label}</span>
+              <span className={`w-2.5 h-2.5 rounded-full ${item.bg} border border-current opacity-60`} />
+            </div>
+            <p className={`text-3xl sm:text-4xl font-bold font-mono tracking-tight ${item.color}`}>{item.count}</p>
+            <p className="text-[11px] text-slate-400 mt-1.5 font-medium">{item.desc}</p>
           </button>
         ))}
       </div>
 
       {/* Section Filter Pills */}
-      <div className="flex gap-2 border-b border-slate-200 pb-3 overflow-x-auto">
+      <div className="flex gap-2.5 border-b border-[#ccd5ae]/40 pb-4 overflow-x-auto">
         {[
-          { key: 'ASSIGN', label: `1. Vehicle Allocation (${awaitingTransportOrders.length})` },
-          { key: 'TRANSIT', label: `2. Dispatches & Active In-Transit (${assignedOrders.length + inTransitOrders.length})` },
-          { key: 'DELIVERED', label: `3. Delivered Deliveries (${deliveredOrders.length})` }
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveSection(tab.key as any)}
-            className={`px-4 py-2 text-xs font-medium rounded-xl transition whitespace-nowrap cursor-pointer ${
-              activeSection === tab.key
-                ? 'bg-slate-900 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+          { key: 'ASSIGN', label: `1. Vehicle Allocation (${awaitingTransportOrders.length})`, icon: Package },
+          { key: 'TRANSIT', label: `2. Dispatches & In-Transit (${assignedOrders.length + inTransitOrders.length})`, icon: Truck },
+          { key: 'DELIVERED', label: `3. Completed Deliveries (${deliveredOrders.length})`, icon: CheckCircle2 }
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeSection === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setActiveSection(tab.key as any)}
+              className={`flex items-center gap-2 px-5 py-2.5 text-xs font-semibold rounded-2xl transition-all whitespace-nowrap cursor-pointer ${
+                isActive
+                  ? 'bg-[#01472e] text-white shadow-soft'
+                  : 'bg-white border border-[#ccd5ae]/50 text-slate-600 hover:bg-[#faf9f5] hover:text-[#01472e]'
+              }`}
+            >
+              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#fefae0]' : 'text-slate-500'}`} />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* ── 1. VEHICLE ALLOCATION SECTION ───────────────────────────────────── */}
       {activeSection === 'ASSIGN' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
-          <div className="flex items-center justify-between">
+        <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#ccd5ae]/30">
             <div>
-              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Packed Batches Ready for Carrier Assignment</h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h3 className="text-xl font-bold text-[#01472e] tracking-tight">Packed Batches Ready for Carrier Assignment</h3>
+              <p className="text-xs text-slate-500 mt-1">
                 Assign temperature-controlled EV trucks, drivers, and delivery slots. Only orders passing Collection, Quality & Crating appear here.
               </p>
             </div>
-            <span className="text-xs font-medium text-teal-800 bg-teal-100 px-3 py-1 rounded-full border border-teal-300">
-              {awaitingTransportOrders.length} Ready for Pickup
+            <span className="self-start sm:self-auto text-xs font-bold text-[#01472e] bg-[#eaf4ec] px-4 py-1.5 rounded-full border border-[#a3b18a]/50 shadow-xs">
+              {awaitingTransportOrders.length} Ready for Carrier Pickup
             </span>
           </div>
 
           {awaitingTransportOrders.length === 0 ? (
-            <div className="py-12 text-center text-slate-400">
-              <Truck className="w-10 h-10 mx-auto text-teal-400 mb-2" />
-              <p className="text-sm font-medium text-slate-700">No packed batches currently awaiting transport assignment</p>
-              <p className="text-xs text-slate-400 mt-0.5">Complete FPO packaging & QR sealing in FPO Operations to advance batches here.</p>
+            <div className="py-16 text-center text-slate-400 bg-[#faf9f5] rounded-3xl border border-dashed border-[#ccd5ae]/60">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-[#eaf4ec] flex items-center justify-center text-[#01472e] mb-3">
+                <Truck className="w-7 h-7" />
+              </div>
+              <p className="text-sm font-bold text-[#01472e]">No packed batches currently awaiting transport assignment</p>
+              <p className="text-xs text-slate-400 mt-1">Complete FPO packaging & QR sealing in FPO Operations to advance batches here.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -214,29 +235,30 @@ export const LogisticsDashboard: React.FC = () => {
                 const cargoVolume = order.packedQuantityKg || order.acceptedQuantityKg || order.quantityKg;
 
                 return (
-                  <div key={order.id} className="p-5 border border-teal-200 bg-teal-50/30 rounded-2xl space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div key={order.id} className="p-6 border border-[#ccd5ae]/60 bg-[#faf9f5] rounded-3xl space-y-5 hover:border-[#a3b18a] transition shadow-xs">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
-                          <span className="text-slate-300">•</span>
-                          <span className="font-mono text-xs text-teal-900 font-medium">{order.batchId}</span>
-                          <span className="text-[10px] font-medium uppercase tracking-wider bg-teal-200 text-teal-900 px-2 py-0.5 rounded">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-mono text-xs font-bold text-[#01472e] bg-white px-2.5 py-1 rounded-lg border border-[#ccd5ae]/50">{order.id}</span>
+                          <span className="font-mono text-xs text-[#01472e]/70 font-semibold">{order.batchId}</span>
+                          <span className="text-[11px] font-bold uppercase tracking-wider bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/50 px-2.5 py-0.5 rounded-full">
                             Packed ({order.crateCount ? `${order.crateCount} Crates` : 'Crated'})
                           </span>
                         </div>
-                        <h4 className="text-sm font-medium text-slate-900 mt-1">
-                          {order.crop} ({order.variety || 'Hybrid'}) — {cargoVolume.toLocaleString()} kg ({order.qualityGrade})
+                        <h4 className="text-base font-bold text-slate-900 mt-2">
+                          {order.crop} ({order.variety || 'Hybrid'}) — <span className="font-mono text-[#01472e]">{cargoVolume.toLocaleString()} kg</span> ({order.qualityGrade})
                         </h4>
-                        <p className="text-xs text-slate-500 mt-0.5">
-                          Pickup: <strong>{order.farmerLocation}</strong> ➔ Destination: <strong>{order.deliveryLocation}</strong> ({order.buyerName})
+                        <p className="text-xs text-slate-600 mt-1 flex items-center gap-2 flex-wrap">
+                          <span>Pickup: <strong className="text-slate-800">{order.farmerLocation}</strong></span>
+                          <span>➔</span>
+                          <span>Destination: <strong className="text-slate-800">{order.deliveryLocation}</strong> ({order.buyerName})</span>
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-2 self-start sm:self-auto">
+                      <div className="flex items-center gap-2.5 self-start sm:self-auto">
                         <button
                           onClick={() => openPassportModal(order.batchId)}
-                          className="px-3 py-2 border border-slate-200 hover:border-emerald-500 text-slate-700 text-xs font-medium rounded-xl transition flex items-center gap-1 cursor-pointer"
+                          className="btn-outline px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
                         >
                           <QrCode className="w-3.5 h-3.5" />
                           <span>QR Passport</span>
@@ -244,7 +266,7 @@ export const LogisticsDashboard: React.FC = () => {
 
                         <button
                           onClick={() => setSelectedOrderForTransport(isAssigning ? null : order.id)}
-                          className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium rounded-xl transition shadow-xs cursor-pointer"
+                          className="btn-primary px-4 py-2 rounded-xl text-xs font-semibold transition shadow-soft cursor-pointer"
                         >
                           {isAssigning ? 'Cancel Assignment' : 'Assign Vehicle →'}
                         </button>
@@ -253,29 +275,29 @@ export const LogisticsDashboard: React.FC = () => {
 
                     {/* Assignment Modal Form */}
                     {isAssigning && (
-                      <div className="p-5 bg-white border border-teal-300 rounded-xl space-y-4 animate-in fade-in">
-                        <h5 className="font-medium text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
-                          <Zap className="w-3.5 h-3.5 text-teal-600" />
+                      <div className="p-6 bg-white border border-[#a3b18a]/60 rounded-2xl space-y-4 shadow-soft animate-in fade-in">
+                        <h5 className="font-bold text-[#01472e] text-xs uppercase tracking-wider flex items-center gap-2 pb-2 border-b border-[#ccd5ae]/30">
+                          <Zap className="w-4 h-4 text-[#01472e]" />
                           <span>Assign Vehicle & Carrier Fleet — Order: {order.id} ({cargoVolume.toLocaleString()} kg)</span>
                         </h5>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                           <div>
-                            <label className="block text-slate-600 font-medium mb-1">Carrier Provider</label>
+                            <label className="block text-slate-700 font-semibold mb-1.5">Carrier Provider</label>
                             <input
                               type="text"
                               value={carrierName}
                               onChange={(e) => setCarrierName(e.target.value)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-medium"
+                              className="input-modern w-full rounded-xl py-2 px-3 text-xs font-medium"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-slate-600 font-medium mb-1">Vehicle Type</label>
+                            <label className="block text-slate-700 font-semibold mb-1.5">Vehicle Type</label>
                             <select
                               value={vehicleType}
                               onChange={(e) => setVehicleType(e.target.value)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-medium"
+                              className="input-modern w-full rounded-xl py-2 px-3 text-xs font-medium bg-white"
                             >
                               <option value="CoolReefer EV 3.5T">CoolReefer EV 3.5T (Battery Electric, 4°C)</option>
                               <option value="Electric Reefer Van 2T">Electric Reefer Van 2T</option>
@@ -284,56 +306,56 @@ export const LogisticsDashboard: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-slate-600 font-medium mb-1">Vehicle Plate Number</label>
+                            <label className="block text-slate-700 font-semibold mb-1.5">Vehicle Plate Number</label>
                             <input
                               type="text"
                               value={vehicleNumber}
                               onChange={(e) => setVehicleNumber(e.target.value)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-mono font-medium"
+                              className="input-modern w-full rounded-xl py-2 px-3 text-xs font-mono font-medium"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-slate-600 font-medium mb-1">Driver Name</label>
+                            <label className="block text-slate-700 font-semibold mb-1.5">Driver Name</label>
                             <input
                               type="text"
                               value={driverName}
                               onChange={(e) => setDriverName(e.target.value)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-medium"
+                              className="input-modern w-full rounded-xl py-2 px-3 text-xs font-medium"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-slate-600 font-medium mb-1">Driver Phone</label>
+                            <label className="block text-slate-700 font-semibold mb-1.5">Driver Phone</label>
                             <input
                               type="text"
                               value={driverPhone}
                               onChange={(e) => setDriverPhone(e.target.value)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-mono"
+                              className="input-modern w-full rounded-xl py-2 px-3 text-xs font-mono"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-slate-600 font-medium mb-1">Delivery Slot / ETA</label>
+                            <label className="block text-slate-700 font-semibold mb-1.5">Delivery Slot / ETA</label>
                             <input
                               type="text"
                               value={eta}
                               onChange={(e) => setEta(e.target.value)}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-medium"
+                              className="input-modern w-full rounded-xl py-2 px-3 text-xs font-medium"
                             />
                           </div>
                         </div>
 
-                        <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                        <div className="flex justify-end gap-2.5 pt-4 border-t border-[#ccd5ae]/30">
                           <button
                             onClick={() => setSelectedOrderForTransport(null)}
-                            className="px-4 py-2 border border-slate-200 text-slate-600 text-xs font-medium rounded-lg hover:bg-slate-50 cursor-pointer"
+                            className="btn-secondary px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer"
                           >
                             Cancel
                           </button>
                           <button
                             onClick={() => handleAssignTransport(order.id)}
-                            className="px-5 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium rounded-lg transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                            className="btn-primary px-5 py-2 rounded-xl text-xs font-semibold shadow-soft flex items-center gap-1.5 cursor-pointer"
                           >
                             <CheckCircle2 className="w-4 h-4" />
                             <span>Confirm Carrier Assignment</span>
@@ -351,38 +373,40 @@ export const LogisticsDashboard: React.FC = () => {
 
       {/* ── 2. ACTIVE DISPATCHES & IN-TRANSIT ───────────────────────────────── */}
       {activeSection === 'TRANSIT' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+        <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
           {/* Assigned Awaiting Dispatch */}
           {assignedOrders.length > 0 && (
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <span>Vehicles Assigned on Bay (Awaiting Departure Dispatch)</span>
-                <span className="text-[10px] bg-indigo-100 text-indigo-900 px-2 py-0.5 rounded font-medium">{assignedOrders.length}</span>
-              </h4>
+            <div className="space-y-4 pb-6 border-b border-[#ccd5ae]/30">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-bold text-[#01472e] uppercase tracking-wider flex items-center gap-2">
+                  <span>Vehicles Assigned on Bay (Awaiting Departure Dispatch)</span>
+                  <span className="text-[11px] bg-indigo-100 text-indigo-900 border border-indigo-200 px-2.5 py-0.5 rounded-full font-bold">{assignedOrders.length}</span>
+                </h4>
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {assignedOrders.map((order) => (
-                  <div key={order.id} className="p-5 border border-indigo-200 bg-indigo-50/40 rounded-2xl space-y-3">
+                  <div key={order.id} className="p-6 border border-indigo-200/80 bg-indigo-50/30 rounded-3xl space-y-4 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
-                      <span className="text-[10px] font-medium uppercase tracking-wider bg-indigo-200 text-indigo-900 px-2 py-0.5 rounded">
+                      <span className="font-mono text-xs font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-indigo-200">{order.id}</span>
+                      <span className="text-[11px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-900 px-2.5 py-0.5 rounded-full border border-indigo-200">
                         Vehicle Assigned
                       </span>
                     </div>
 
                     <div>
-                      <h5 className="font-medium text-slate-900 text-sm">{order.crop} — {(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg</h5>
-                      <p className="text-xs text-slate-600 mt-1">
+                      <h5 className="font-bold text-slate-900 text-base">{order.crop} — {(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg</h5>
+                      <p className="text-xs text-slate-600 mt-1.5">
                         Vehicle: <strong className="font-mono text-slate-900">{order.transportDetails?.vehicleNumber}</strong> ({order.transportDetails?.vehicleType})
                       </p>
-                      <p className="text-xs text-slate-500">Driver: {order.transportDetails?.driverName} ({order.transportDetails?.driverPhone})</p>
-                      <p className="text-xs text-slate-500">Destination: {order.deliveryLocation} ({order.buyerName})</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Driver: {order.transportDetails?.driverName} ({order.transportDetails?.driverPhone})</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Destination: {order.deliveryLocation} ({order.buyerName})</p>
                     </div>
 
                     <div className="pt-3 border-t border-indigo-200/60 flex items-center justify-between">
                       <button
                         onClick={() => openPassportModal(order.batchId)}
-                        className="text-xs text-indigo-700 hover:text-indigo-900 font-medium flex items-center gap-1 cursor-pointer"
+                        className="text-xs text-indigo-800 hover:text-indigo-950 font-bold flex items-center gap-1 cursor-pointer"
                       >
                         <QrCode className="w-3.5 h-3.5" />
                         <span>Passport</span>
@@ -390,7 +414,7 @@ export const LogisticsDashboard: React.FC = () => {
 
                       <button
                         onClick={() => handleDispatch(order.id, order.transportDetails?.vehicleNumber)}
-                        className="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                        className="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-semibold rounded-xl transition shadow-soft flex items-center gap-1.5 cursor-pointer"
                       >
                         <Truck className="w-3.5 h-3.5" />
                         <span>Dispatch Shipment Now</span>
@@ -403,15 +427,15 @@ export const LogisticsDashboard: React.FC = () => {
           )}
 
           {/* Active In-Transit Shipments */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-medium text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <h4 className="text-sm font-bold text-[#01472e] uppercase tracking-wider flex items-center gap-2">
                 <span>Active In-Transit Cold-Chain Shipments</span>
-                <span className="text-[10px] bg-orange-100 text-orange-900 px-2 py-0.5 rounded font-medium">{inTransitOrders.length}</span>
+                <span className="text-[11px] bg-amber-100 text-amber-900 border border-amber-200 px-2.5 py-0.5 rounded-full font-bold">{inTransitOrders.length}</span>
               </h4>
               <button
                 onClick={() => setActiveTab('route-optimization')}
-                className="text-xs text-emerald-700 font-medium hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-xs text-[#01472e] font-semibold hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <span>Live Route Topology</span>
                 <Navigation className="w-3.5 h-3.5" />
@@ -419,29 +443,31 @@ export const LogisticsDashboard: React.FC = () => {
             </div>
 
             {inTransitOrders.length === 0 ? (
-              <div className="py-12 text-center text-slate-400">
-                <Truck className="w-10 h-10 mx-auto text-orange-300 mb-2" />
-                <p className="text-sm font-medium text-slate-700">No shipments currently en route</p>
-                <p className="text-xs text-slate-400 mt-0.5">Dispatch assigned vehicles above to monitor active transit corridors.</p>
+              <div className="py-14 text-center text-slate-400 bg-[#faf9f5] rounded-3xl border border-dashed border-[#ccd5ae]/60">
+                <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 mb-2">
+                  <Truck className="w-6 h-6" />
+                </div>
+                <p className="text-sm font-bold text-[#01472e]">No shipments currently en route</p>
+                <p className="text-xs text-slate-400 mt-1">Dispatch assigned vehicles above to monitor active transit corridors.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {inTransitOrders.map((order) => (
-                  <div key={order.id} className="p-5 border border-orange-200 bg-orange-50/40 rounded-2xl space-y-3">
+                  <div key={order.id} className="p-6 border border-amber-300/60 bg-amber-50/30 rounded-3xl space-y-4 shadow-xs">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
+                        <span className="font-mono text-xs font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-amber-200">{order.id}</span>
                         <span className="text-slate-300">•</span>
-                        <span className="font-mono text-[11px] text-orange-900 font-medium">{order.batchId}</span>
+                        <span className="font-mono text-[11px] text-amber-900 font-semibold">{order.batchId}</span>
                       </div>
-                      <span className="text-[10px] font-medium uppercase tracking-wider bg-orange-200 text-orange-900 px-2 py-0.5 rounded animate-pulse">
+                      <span className="text-[11px] font-bold uppercase tracking-wider bg-amber-200 text-amber-950 px-2.5 py-0.5 rounded-full animate-pulse border border-amber-300">
                         In Transit
                       </span>
                     </div>
 
                     <div>
-                      <h5 className="font-medium text-slate-900 text-sm">{order.crop} ({(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg)</h5>
-                      <p className="text-xs text-slate-600 mt-1">
+                      <h5 className="font-bold text-slate-900 text-base">{order.crop} ({(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg)</h5>
+                      <p className="text-xs text-slate-700 mt-1.5">
                         Vehicle: <strong className="font-mono text-slate-900">{order.transportDetails?.vehicleNumber || 'Reefer EV'}</strong> • Driver: {order.transportDetails?.driverName || 'Karthik S.'}
                       </p>
                       <p className="text-xs text-slate-500 mt-0.5">
@@ -449,10 +475,10 @@ export const LogisticsDashboard: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="pt-3 border-t border-orange-200/60 flex items-center justify-between">
+                    <div className="pt-3 border-t border-amber-200/60 flex items-center justify-between">
                       <button
                         onClick={() => openPassportModal(order.batchId)}
-                        className="text-xs text-orange-800 hover:text-orange-950 font-medium flex items-center gap-1 cursor-pointer"
+                        className="text-xs text-amber-900 hover:text-amber-950 font-bold flex items-center gap-1 cursor-pointer"
                       >
                         <QrCode className="w-3.5 h-3.5" />
                         <span>Trace QR</span>
@@ -460,7 +486,7 @@ export const LogisticsDashboard: React.FC = () => {
 
                       <button
                         onClick={() => handleMarkDelivered(order.id, order.buyerName)}
-                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                        className="btn-primary px-4 py-2 rounded-xl text-xs font-semibold shadow-soft flex items-center gap-1.5 cursor-pointer"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Arrive & Handover Delivery</span>
@@ -476,62 +502,62 @@ export const LogisticsDashboard: React.FC = () => {
 
       {/* ── 3. DELIVERED DELIVERIES & BUYER CONFIRMATION ─────────────────────── */}
       {activeSection === 'DELIVERED' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
-          <div className="flex items-center justify-between">
+        <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#ccd5ae]/30">
             <div>
-              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Destination Deliveries & Receiving Handover</h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h3 className="text-xl font-bold text-[#01472e] tracking-tight">Destination Deliveries & Receiving Handover</h3>
+              <p className="text-xs text-slate-500 mt-1">
                 Shipments delivered at buyer receiving facilities. Buyer verifies physical produce condition and completes digital confirmation.
               </p>
             </div>
-            <span className="text-xs font-medium text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
+            <span className="self-start sm:self-auto text-xs font-bold text-[#01472e] bg-[#eaf4ec] px-4 py-1.5 rounded-full border border-[#a3b18a]/50 shadow-xs">
               {deliveredOrders.length} Shipments Handed Over
             </span>
           </div>
 
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-[#ccd5ae]/30">
             {deliveredOrders.map((order) => {
               const isConfirmed = order.status === 'Buyer Confirmed' || order.status === 'Payment Pending' || order.status === 'Completed';
 
               return (
-                <div key={order.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-medium text-xs shrink-0">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-700" />
+                <div key={order.id} className="py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-11 h-11 rounded-2xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                      <CheckCircle2 className="w-6 h-6 text-[#01472e]" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-mono text-xs font-bold text-[#01472e] bg-white px-2 py-0.5 rounded border border-[#ccd5ae]/40">{order.id}</span>
                         <span className="text-slate-300">•</span>
                         <span className="font-mono text-xs text-slate-500">{order.batchId}</span>
-                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
+                        <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
                           isConfirmed
-                            ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                            ? 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/50'
                             : 'bg-sky-100 text-sky-900 border-sky-300'
                         }`}>
                           {isConfirmed ? 'Buyer Confirmed' : 'Buyer Confirmation Pending'}
                         </span>
                       </div>
-                      <p className="text-xs font-medium text-slate-900 mt-0.5">
+                      <p className="text-sm font-bold text-slate-900 mt-1">
                         {order.crop} ({(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg) delivered to <strong>{order.buyerName}</strong>
                       </p>
-                      <p className="text-[11px] text-slate-500">
+                      <p className="text-xs text-slate-500 mt-0.5">
                         Facility: {order.deliveryLocation} • Carrier: {order.transportDetails?.carrierName} ({order.transportDetails?.vehicleNumber})
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                  <div className="flex items-center gap-2.5 self-end sm:self-auto">
                     <button
                       onClick={() => openPassportModal(order.batchId)}
-                      className="px-3 py-1.5 border border-slate-200 hover:border-emerald-500 text-slate-700 text-xs font-medium rounded-xl transition flex items-center gap-1 cursor-pointer"
+                      className="btn-outline px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <QrCode className="w-3.5 h-3.5" />
                       <span>Passport</span>
                     </button>
                     <button
                       onClick={() => setActiveTab('orders')}
-                      className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium rounded-xl transition cursor-pointer"
+                      className="btn-primary px-4 py-2 rounded-xl text-xs font-semibold shadow-soft cursor-pointer"
                     >
                       Order Ledger
                     </button>

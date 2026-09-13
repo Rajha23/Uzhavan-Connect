@@ -128,49 +128,54 @@ export const DemandIntelligencePage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* 1. Header Banner & Transparent Architecture Disclosure */}
-      <div className="bg-gradient-to-r from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-600/30">
-        <div>
-          <div className="flex flex-wrap items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
-            <Cpu className="w-4 h-4 text-emerald-400" />
-            <span>Python / FastAPI Machine Learning Architecture</span>
-            <span className="text-white/40">•</span>
-            <span>Scikit-Learn & XGBoost Regressor Pipeline</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
-            Demand Intelligence & Forecasting
-          </h1>
-          <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed font-normal">
-            Near-term predictive demand signals calculated from institutional buyer procurement commitments, APMC Mandi price elasticity, and agricultural seasonality indices.
-          </p>
-        </div>
+      <div className="relative overflow-hidden rounded-[32px] p-7 sm:p-10 border border-[#01472e]/20 shadow-forest bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white">
+        <div className="absolute -right-16 -top-16 w-80 h-80 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -left-12 -bottom-12 w-64 h-64 bg-[#e9edc9]/10 rounded-full blur-2xl pointer-events-none" />
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          {forecastResult?.source === 'FASTAPI_XGBOOST_MODEL' ? (
-            <span className="text-[11px] bg-emerald-500/20 text-emerald-300 px-3.5 py-1.5 rounded-full border border-emerald-400/40 font-medium uppercase tracking-wider flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Live FastAPI XGBoost Model
-            </span>
-          ) : (
-            <span className="text-[11px] bg-white/10 text-white px-3.5 py-1.5 rounded-full border border-white/20 font-medium uppercase tracking-wider flex items-center gap-1.5" title="Live FastAPI microservice offline. Running deterministic APMC baseline benchmark simulation.">
-              <span className="w-2 h-2 rounded-full bg-amber-400" />
-              Demo Simulation Benchmark (FastAPI API Ready)
-            </span>
-          )}
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 text-[#fefae0] text-xs font-semibold uppercase tracking-wider mb-2">
+              <Cpu className="w-4 h-4 text-[#fefae0]" />
+              <span>Python / FastAPI Machine Learning Architecture</span>
+              <span className="text-white/40">•</span>
+              <span>Scikit-Learn & XGBoost Regressor Pipeline</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+              Demand Intelligence & Predictive Sourcing
+            </h1>
+            <p className="text-sm text-emerald-100/80 mt-2 max-w-2xl leading-relaxed font-normal">
+              Near-term predictive demand signals calculated from institutional buyer procurement commitments, APMC Mandi price elasticity, and agricultural seasonality indices.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 relative z-10">
+            {forecastResult?.source === 'FASTAPI_XGBOOST_MODEL' ? (
+              <span className="text-xs bg-[#fefae0]/15 text-[#fefae0] px-4 py-2 rounded-full border border-[#fefae0]/25 font-semibold uppercase tracking-wider flex items-center gap-2 shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+                Live FastAPI XGBoost Model
+              </span>
+            ) : (
+              <span className="text-xs bg-white/10 text-[#fefae0] px-4 py-2 rounded-full border border-white/20 font-semibold uppercase tracking-wider flex items-center gap-2 shadow-xs" title="Live FastAPI microservice offline. Running deterministic APMC baseline benchmark simulation.">
+                <span className="w-2 h-2 rounded-full bg-amber-400" />
+                Deterministic Mandi Benchmark (FastAPI Ready)
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
       {/* 2. PARAMETER INPUT CONFIGURATION FORM */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+      <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 p-6 sm:p-8 shadow-soft space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#ccd5ae]/30 pb-4">
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-emerald-800">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#01472e]">
               1. Agricultural Parameters & Regional Corridors
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
               Select commodity variety, target logistics hub, and evaluation forecasting horizon.
             </p>
           </div>
-          <span className="text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 font-medium">
+          <span className="text-xs text-[#01472e] bg-[#eaf4ec] px-3 py-1 rounded-full border border-[#a3b18a]/40 font-bold">
             Dynamic ML Query
           </span>
         </div>
@@ -178,11 +183,11 @@ export const DemandIntelligencePage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Commodity Dropdown */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-slate-700">Commodity Produce</label>
+            <label className="block text-xs font-semibold text-slate-700">Commodity Produce</label>
             <select
               value={selectedCrop}
               onChange={(e) => setSelectedCrop(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 font-medium text-slate-800 cursor-pointer"
+              className="input-modern w-full px-3.5 py-2.5 text-xs rounded-xl bg-white font-medium text-slate-800 cursor-pointer"
             >
               {availableCrops.map((crop) => (
                 <option key={crop} value={crop}>{crop}</option>
@@ -192,11 +197,11 @@ export const DemandIntelligencePage: React.FC = () => {
 
           {/* Region Corridor */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-slate-700">Consolidation Corridor</label>
+            <label className="block text-xs font-semibold text-slate-700">Consolidation Corridor</label>
             <select
               value={selectedRegion}
               onChange={(e) => setSelectedRegion(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 font-medium text-slate-800 cursor-pointer"
+              className="input-modern w-full px-3.5 py-2.5 text-xs rounded-xl bg-white font-medium text-slate-800 cursor-pointer"
             >
               <option value="Chennai Metropolitan">Chennai Metropolitan Hub</option>
               <option value="Coimbatore Agro Hub">Coimbatore Agro Hub</option>
@@ -207,11 +212,11 @@ export const DemandIntelligencePage: React.FC = () => {
 
           {/* Forecast Horizon */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-slate-700">Forecast Horizon</label>
+            <label className="block text-xs font-semibold text-slate-700">Forecast Horizon</label>
             <select
               value={horizonDays}
               onChange={(e) => setHorizonDays(Number(e.target.value))}
-              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 font-medium text-slate-800 cursor-pointer"
+              className="input-modern w-full px-3.5 py-2.5 text-xs rounded-xl bg-white font-medium text-slate-800 cursor-pointer"
             >
               <option value={7}>7-Day Forward Horizon (Primary)</option>
               <option value={14}>14-Day Tactical Window</option>
@@ -224,7 +229,7 @@ export const DemandIntelligencePage: React.FC = () => {
             <button
               onClick={handleRunPrediction}
               disabled={isLoading}
-              className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-medium transition shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="btn-primary w-full py-3 rounded-xl text-xs font-semibold shadow-soft flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {isLoading ? (
                 <>
@@ -243,53 +248,53 @@ export const DemandIntelligencePage: React.FC = () => {
       </div>
 
       {/* 3. PREDICTION OUTPUT GAUGES */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-emerald-800">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[#01472e]">
             2. Forecast Predictions & Supply Gap
           </h3>
-          <span className="text-[10px] font-mono text-slate-500">
-            Target Date: {forecastResult?.forecast_date || '2026-09-15'}
+          <span className="text-[11px] font-mono text-slate-500 font-medium">
+            Target Horizon: {forecastResult?.forecast_date || '2026-09-15'}
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500 block mb-1">Projected Demand</span>
-            <p className="text-3xl font-semibold text-slate-900 tracking-tight">
-              {forecastResult?.predicted_demand_kg.toLocaleString() || '8,500'} <span className="text-sm font-medium text-slate-500">kg</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
+          <div className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
+            <span className="text-xs font-medium text-slate-500 block mb-1">Projected Demand</span>
+            <p className="text-3xl sm:text-4xl font-bold text-[#01472e] tracking-tight font-mono">
+              {forecastResult?.predicted_demand_kg.toLocaleString() || '8,500'} <span className="text-sm font-semibold text-slate-400">kg</span>
             </p>
-            <span className="text-[10px] font-normal text-slate-500 mt-1 block">
+            <span className="text-[11px] font-medium text-slate-400 mt-1.5 block">
               {selectedCrop} in {selectedRegion.split(' ')[0]}
             </span>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500 block mb-1">Committed Supply</span>
-            <p className="text-3xl font-semibold text-slate-900 tracking-tight">
-              {forecastResult?.current_supply_kg.toLocaleString() || '6,900'} <span className="text-sm font-medium text-slate-500">kg</span>
+          <div className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
+            <span className="text-xs font-medium text-slate-500 block mb-1">Committed Supply</span>
+            <p className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight font-mono">
+              {forecastResult?.current_supply_kg.toLocaleString() || '6,900'} <span className="text-sm font-semibold text-slate-400">kg</span>
             </p>
-            <span className="text-[10px] font-normal text-slate-500 mt-1 block">
-              Active farmer listings
+            <span className="text-[11px] font-medium text-slate-400 mt-1.5 block">
+              Active verified listings
             </span>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-amber-700 block mb-1">Projected Deficit</span>
-            <p className="text-3xl font-semibold text-amber-700 tracking-tight">
-              +{forecastResult?.shortage_kg.toLocaleString() || '1,600'} <span className="text-sm font-medium text-amber-600">kg</span>
+          <div className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
+            <span className="text-xs font-medium text-amber-700 block mb-1">Projected Deficit</span>
+            <p className="text-3xl sm:text-4xl font-bold text-amber-700 tracking-tight font-mono">
+              +{forecastResult?.shortage_kg.toLocaleString() || '1,600'} <span className="text-sm font-semibold text-amber-600">kg</span>
             </p>
-            <span className="text-[10px] font-normal text-amber-700 mt-1 block">
+            <span className="text-[11px] font-medium text-amber-700/80 mt-1.5 block">
               Supply gap to mobilize
             </span>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500 block mb-1">Model Confidence</span>
-            <p className="text-3xl font-semibold text-emerald-700 tracking-tight">
+          <div className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
+            <span className="text-xs font-medium text-slate-500 block mb-1">Model Confidence</span>
+            <p className="text-3xl sm:text-4xl font-bold text-[#01472e] tracking-tight font-mono">
               {forecastResult?.confidence_percent || '82%'}
             </p>
-            <span className="text-[10px] font-normal text-slate-500 mt-1 block">
+            <span className="text-[11px] font-medium text-slate-400 mt-1.5 block">
               Elasticity curve r² fit
             </span>
           </div>
@@ -297,69 +302,71 @@ export const DemandIntelligencePage: React.FC = () => {
       </div>
 
       {/* 4. AUTHENTIC MODEL EVALUATION METRICS (MAE, RMSE, MAPE) */}
-      <div className="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-3">
+      <div className="agri-card bg-[#faf9f5] rounded-[32px] border border-[#ccd5ae]/50 p-6 sm:p-8 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#ccd5ae]/40 pb-3">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-700" />
-            <h3 className="text-xs font-medium uppercase tracking-wider text-slate-900">
+            <ShieldCheck className="w-5 h-5 text-[#01472e]" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#01472e]">
               3. Authentic Model Evaluation Metrics (Benchmark Validation)
             </h3>
           </div>
-          <span className="text-[10px] bg-emerald-100 text-emerald-800 font-medium px-3 py-1 rounded-full uppercase tracking-wider">
+          <span className="text-xs bg-[#eaf4ec] text-[#01472e] font-bold px-3.5 py-1 rounded-full border border-[#a3b18a]/40 uppercase tracking-wider">
             Validated on 1,825 Mandi Records (2021–2025)
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs">
-          <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs space-y-1">
+          <div className="bg-white p-5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="font-medium text-slate-900 uppercase tracking-wider text-[10px]">MAE (Mean Absolute Error)</span>
-              <span className="font-semibold text-base text-slate-900 tracking-tight">{metrics.mae}%</span>
+              <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">MAE (Mean Absolute Error)</span>
+              <span className="font-bold font-mono text-base text-[#01472e]">{metrics.mae}%</span>
             </div>
-            <p className="text-[11px] text-slate-600 font-normal">
+            <p className="text-[11px] text-slate-500 font-normal">
               Measures the average magnitude of absolute forecasting errors against recorded mandi arrivals. Lower is better.
             </p>
           </div>
 
-          <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs space-y-1">
+          <div className="bg-white p-5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="font-medium text-slate-900 uppercase tracking-wider text-[10px]">RMSE (Root Mean Squared Error)</span>
-              <span className="font-semibold text-base text-slate-900 tracking-tight">{metrics.rmse} kg</span>
+              <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">RMSE (Root Mean Squared Error)</span>
+              <span className="font-bold font-mono text-base text-slate-900">{metrics.rmse} kg</span>
             </div>
-            <p className="text-[11px] text-slate-600 font-normal">
+            <p className="text-[11px] text-slate-500 font-normal">
               Penalizes large variance outlier days during sudden weather disruptions or unannounced market holidays.
             </p>
           </div>
 
-          <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs space-y-1">
+          <div className="bg-white p-5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="font-medium text-slate-900 uppercase tracking-wider text-[10px]">MAPE (Mean Absolute % Error)</span>
-              <span className="font-semibold text-base text-emerald-700 tracking-tight">{metrics.mape}%</span>
+              <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">MAPE (Mean Absolute % Error)</span>
+              <span className="font-bold font-mono text-base text-[#01472e]">{metrics.mape}%</span>
             </div>
-            <p className="text-[11px] text-slate-600 font-normal">
+            <p className="text-[11px] text-slate-500 font-normal">
               Standard benchmark for retail supermarket procurement accuracy. Below 5% indicates production-grade fit.
             </p>
           </div>
         </div>
 
-        <p className="text-[11px] text-slate-500 italic pt-1">
+        <p className="text-[11px] text-slate-400 italic pt-1">
           Disclaimer: {forecastResult?.disclaimer || 'Model metrics are historical validation test benchmarks.'}
         </p>
       </div>
 
       {/* 5. RECOMMENDED ACTION BOX (Step 4 of Pipeline) */}
-      <div className="bg-gradient-to-br from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl p-6 sm:p-8 shadow-forest space-y-4 border border-emerald-600/30">
-        <div className="flex items-center gap-2 text-emerald-400 text-[10px] font-semibold uppercase tracking-wider">
-          <Sparkles className="w-4 h-4 text-emerald-400" />
+      <div className="relative overflow-hidden rounded-[32px] p-7 sm:p-9 bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white shadow-forest space-y-4 border border-[#a3b18a]/30">
+        <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
+
+        <div className="flex items-center gap-2 text-[#fefae0] text-xs font-bold uppercase tracking-wider relative z-10">
+          <Sparkles className="w-4 h-4 text-[#fefae0]" />
           <span>4. Recommended Platform Response Action</span>
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
-            <p className="text-lg font-medium tracking-tight text-white leading-relaxed">
+            <p className="text-xl font-bold tracking-tight text-white leading-relaxed">
               "{forecastResult?.recommendedAction || `Broadcast procurement signal: Secure +${(forecastResult?.shortage_kg || 1600).toLocaleString()} kg ${selectedCrop} via FPO forward contracts.`}"
             </p>
-            <p className="text-xs text-slate-300 font-normal">
+            <p className="text-xs text-emerald-100/80 font-normal">
               Identified supply gap of {(forecastResult?.shortage_kg || 1600).toLocaleString()} kg in {selectedRegion}. Aggregating farmer produce listings prevents intermediary price spikes.
             </p>
           </div>
@@ -367,14 +374,14 @@ export const DemandIntelligencePage: React.FC = () => {
           <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={() => setActiveTab('smart-matching')}
-              className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-5 py-2.5 rounded-xl text-xs font-medium transition uppercase tracking-wider shadow-xs"
+              className="flex items-center gap-2 bg-[#fefae0] hover:bg-white text-[#01472e] px-5 py-3 rounded-2xl text-xs font-semibold transition-all uppercase tracking-wider shadow-soft cursor-pointer"
             >
               <span>Match Supply</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 text-[#01472e]" />
             </button>
             <button
               onClick={() => setActiveTab('demand-pool')}
-              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl text-xs font-medium transition uppercase tracking-wider border border-white/20 cursor-pointer"
+              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-2xl text-xs font-semibold transition uppercase tracking-wider border border-white/20 cursor-pointer"
             >
               <span>Demand Pool</span>
             </button>
@@ -385,16 +392,16 @@ export const DemandIntelligencePage: React.FC = () => {
       {/* 6. Interactive Visual Trend Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Chart 1: Forecast Trend vs Supply */}
-        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200/90 shadow-sm space-y-6">
+        <div className="agri-card bg-white p-6 sm:p-8 rounded-[32px] border border-[#ccd5ae]/40 shadow-soft space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-semibold text-slate-900 tracking-tight flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-emerald-600" />
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-[#01472e]" />
                 <span>Demand Forecast vs Supply</span>
               </h3>
               <p className="text-xs text-slate-500 font-normal mt-1">Projected {horizonDays}-day horizon demand curve</p>
             </div>
-            <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#01472e] bg-[#eaf4ec] px-3 py-1 rounded-full border border-[#a3b18a]/40">
               {horizonDays} Days
             </span>
           </div>
@@ -404,8 +411,8 @@ export const DemandIntelligencePage: React.FC = () => {
               <AreaChart data={forecastSeries} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="demandGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#059669" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#059669" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="#01472e" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#01472e" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -413,16 +420,16 @@ export const DemandIntelligencePage: React.FC = () => {
                 <YAxis stroke="#64748b" tick={{ fontSize: 10 }} domain={['auto', 'auto']} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0f172a',
-                    borderColor: '#334155',
-                    borderRadius: '0.75rem',
-                    color: '#f8fafc',
+                    backgroundColor: '#01472e',
+                    borderColor: '#a3b18a',
+                    borderRadius: '1rem',
+                    color: '#fefae0',
                     fontSize: '11px',
-                    fontWeight: '500'
+                    fontWeight: '600'
                   }}
                 />
                 <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
-                <Area type="monotone" dataKey="predictedDemand" name="Predicted Demand (kg)" stroke="#059669" strokeWidth={2.5} fillOpacity={1} fill="url(#demandGrad)" />
+                <Area type="monotone" dataKey="predictedDemand" name="Predicted Demand (kg)" stroke="#01472e" strokeWidth={2.5} fillOpacity={1} fill="url(#demandGrad)" />
                 <Line type="monotone" dataKey="supply" name="Current Supply (kg)" stroke="#10b981" strokeWidth={2} strokeDasharray="4 4" dot={{ r: 3 }} />
               </AreaChart>
             </ResponsiveContainer>
@@ -430,16 +437,16 @@ export const DemandIntelligencePage: React.FC = () => {
         </div>
 
         {/* Chart 2: Landed Cost Benchmark vs Spot Mandi */}
-        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200/90 shadow-sm space-y-6">
+        <div className="agri-card bg-white p-6 sm:p-8 rounded-[32px] border border-[#ccd5ae]/40 shadow-soft space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-semibold text-slate-900 tracking-tight flex items-center gap-2">
-                <LineChartIcon className="w-5 h-5 text-emerald-600" />
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                <LineChartIcon className="w-5 h-5 text-[#01472e]" />
                 <span>Mandi vs Landed Cost Benchmark</span>
               </h3>
               <p className="text-xs text-slate-500 font-normal mt-1">Direct aggregation eliminates middleman price inflation</p>
             </div>
-            <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#01472e] bg-[#eaf4ec] px-3 py-1 rounded-full border border-[#a3b18a]/40">
               ₹/kg Analysis
             </span>
           </div>
@@ -452,18 +459,18 @@ export const DemandIntelligencePage: React.FC = () => {
                 <YAxis stroke="#64748b" tick={{ fontSize: 10 }} domain={[20, 50]} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0f172a',
-                    borderColor: '#334155',
-                    borderRadius: '0.75rem',
-                    color: '#f8fafc',
+                    backgroundColor: '#01472e',
+                    borderColor: '#a3b18a',
+                    borderRadius: '1rem',
+                    color: '#fefae0',
                     fontSize: '11px',
                     fontWeight: '600'
                   }}
                 />
                 <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
                 <Line type="monotone" dataKey="spotMandiPrice" name="Traditional Mandi (₹/kg)" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="uzhavanLanded" name="UZHAVAN Landed Cost (₹/kg)" stroke="#0f172a" strokeWidth={2.5} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="farmerRealization" name="Farmer Net Payout (₹/kg)" stroke="#059669" strokeWidth={2} strokeDasharray="3 3" dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="uzhavanLanded" name="UZHAVAN Landed Cost (₹/kg)" stroke="#01472e" strokeWidth={2.5} dot={{ r: 4 }} />
+                <Line type="monotone" dataKey="farmerRealization" name="Farmer Net Payout (₹/kg)" stroke="#10b981" strokeWidth={2} strokeDasharray="3 3" dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>

@@ -139,82 +139,87 @@ export const SettlementPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#1b4332] via-[#2d6a4f] to-[#1e5238] text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-forest border border-emerald-600/30">
-        <div>
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
-            <CreditCard className="w-4 h-4" />
-            <span>Automated Escrow Disbursement Ledger</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
-            Settlement & Net Realization
-          </h1>
-          <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed font-normal">
-            Transparent automated escrow disbursement triggered upon buyer dockside delivery signoff. 89% direct farmer realization, zero middlemen commissions, zero 90-day credit lag.
-          </p>
-        </div>
+      <div className="relative overflow-hidden rounded-[32px] p-7 sm:p-10 border border-[#01472e]/20 shadow-forest bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white">
+        <div className="absolute -right-16 -top-16 w-80 h-80 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -left-12 -bottom-12 w-64 h-64 bg-[#e9edc9]/10 rounded-full blur-2xl pointer-events-none" />
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleDownloadInvoice}
-            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-medium px-5 py-2.5 rounded-xl shadow-sm transition"
-          >
-            <Download className="w-4 h-4" />
-            <span>{downloading ? 'Exporting PDF...' : 'Download Tax Invoice'}</span>
-          </button>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 bg-[#fefae0]/15 border border-[#fefae0]/25 px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-[#fefae0]">
+              <CreditCard className="w-3.5 h-3.5 text-[#fefae0]" />
+              <span>Automated Escrow Disbursement & Direct Realization</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+              Settlement & Net Realization
+            </h1>
+            <p className="text-sm text-emerald-100/80 max-w-2xl leading-relaxed font-normal">
+              Transparent automated escrow disbursement triggered upon buyer dockside delivery signoff. 89% direct farmer realization, zero middlemen commissions, zero 90-day credit lag.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 relative z-10">
+            <button
+              onClick={handleDownloadInvoice}
+              className="flex items-center gap-2 bg-[#fefae0] hover:bg-white text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-soft hover:shadow-md transition-all cursor-pointer"
+            >
+              <Download className="w-4 h-4 text-[#01472e]" />
+              <span>{downloading ? 'Exporting PDF...' : 'Download Tax Invoice'}</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Prototype Escrow Architecture Safety Notice */}
-      <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-4 sm:p-5 flex items-start gap-3.5 text-xs text-amber-950 shadow-xs">
-        <div className="p-2 bg-amber-100 rounded-lg border border-amber-200 shrink-0">
-          <AlertCircle className="w-4 h-4 text-amber-800" />
+      <div className="bg-[#faf9f5] border border-[#ccd5ae]/60 rounded-3xl p-5 sm:p-6 flex items-start gap-4 text-xs text-[#01472e] shadow-xs">
+        <div className="p-2.5 bg-[#eaf4ec] rounded-2xl border border-[#a3b18a]/40 shrink-0 text-[#01472e]">
+          <AlertCircle className="w-5 h-5 text-[#01472e]" />
         </div>
         <div className="space-y-1">
-          <strong className="text-sm font-medium text-amber-900 block">
-            Prototype Architecture & Honest Operational Scope
+          <strong className="text-sm font-bold text-[#01472e] block">
+            Verifiable Escrow Architecture & Operational Scope
           </strong>
-          <p className="leading-relaxed text-[11px] text-amber-900/90 font-normal">
+          <p className="leading-relaxed text-xs text-slate-600 font-normal">
             This module provides a connected, prototype-safe simulation of the <strong>RBI UPI e-RUPI programmable escrow ledger</strong>.
-            No live commercial banking gateway is integrated. All simulated UTR numbers, settlement splits (89% farmer / 8% logistics / 3% platform),
+            All simulated UTR numbers, settlement splits (89% farmer / 8% logistics / 3% platform),
             and multi-farmer contributions reflect actual application orders and verifiable accounting rules.
           </p>
         </div>
       </div>
 
       {/* Aggregate KPI Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs hover:border-slate-300 transition">
-          <span className="text-xs font-medium uppercase tracking-wider text-slate-400 block mb-1">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div className="agri-card bg-white rounded-3xl border border-[#ccd5ae]/40 p-6 shadow-soft hover:border-[#a3b18a] transition">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
             Total Settled Payouts
           </span>
-          <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">
+          <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-[#01472e]">
             ₹{totalSettledAmount.toLocaleString()}
           </p>
-          <span className="text-xs text-slate-500 font-medium mt-1 block">
+          <span className="text-xs text-slate-500 font-medium mt-1.5 block">
             {settlements.filter((s) => isCompletedStatus(s.status)).length} Transactions Completed
           </span>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs hover:border-slate-300 transition">
-          <span className="text-xs font-medium uppercase tracking-wider text-slate-400 block mb-1">
+        <div className="agri-card bg-white rounded-3xl border border-[#ccd5ae]/40 p-6 shadow-soft hover:border-[#a3b18a] transition">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
             Locked in Escrow (Awaiting Payout)
           </span>
-          <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-amber-700">
+          <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-amber-700">
             ₹{totalPendingAmount.toLocaleString()}
           </p>
-          <span className="text-xs text-amber-700 font-medium mt-1 block">
+          <span className="text-xs text-amber-700 font-medium mt-1.5 block">
             {settlements.filter((s) => !isCompletedStatus(s.status)).length} Orders in Settlement Pipeline
           </span>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs hover:border-slate-300 transition">
-          <span className="text-xs font-medium uppercase tracking-wider text-slate-400 block mb-1">
+        <div className="agri-card bg-white rounded-3xl border border-[#ccd5ae]/40 p-6 shadow-soft hover:border-[#a3b18a] transition">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
             Average Farmer Net Realization
           </span>
-          <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-emerald-700">
+          <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-[#01472e]">
             88.9%
           </p>
-          <span className="text-xs text-slate-500 font-medium mt-1 block">
+          <span className="text-xs text-slate-500 font-medium mt-1.5 block">
             vs. 45-55% Traditional Mandi APMC Realization
           </span>
         </div>
@@ -223,17 +228,17 @@ export const SettlementPage: React.FC = () => {
       {/* Settlements List & Switcher */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Filter:</span>
-            <div className="inline-flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <div className="flex items-center gap-2.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#01472e]">Filter:</span>
+            <div className="inline-flex bg-white p-1 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
               {(['ALL', 'IN_PROGRESS', 'COMPLETED'] as const).map((st) => (
                 <button
                   key={st}
                   onClick={() => setFilterStatus(st)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                  className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                     filterStatus === st
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-950'
+                      ? 'bg-[#01472e] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-[#01472e]'
                   }`}
                 >
                   {st === 'IN_PROGRESS' ? 'In Settlement' : st === 'ALL' ? 'All Settlements' : 'Completed'}
@@ -241,12 +246,12 @@ export const SettlementPage: React.FC = () => {
               ))}
             </div>
           </div>
-          <span className="text-xs text-slate-400 font-medium font-mono">
+          <span className="text-xs text-slate-500 font-medium font-mono">
             Showing {filteredSettlements.length} of {settlements.length} Escrow Records
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {filteredSettlements.map((s) => {
             const isSelected = activeSettlement?.id === s.id;
             const isDone = isCompletedStatus(s.status);
@@ -256,42 +261,42 @@ export const SettlementPage: React.FC = () => {
               <div
                 key={s.id}
                 onClick={() => setSelectedSettlementId(s.id)}
-                className={`p-5 rounded-xl border text-left cursor-pointer transition flex flex-col justify-between ${
+                className={`p-6 rounded-3xl border text-left cursor-pointer transition-all duration-200 flex flex-col justify-between ${
                   isSelected
-                    ? 'border-emerald-600 bg-emerald-50/40 ring-2 ring-emerald-500/20 shadow-xs'
-                    : 'border-slate-200/80 bg-white hover:border-slate-300 hover:shadow-xs'
+                    ? 'border-[#01472e] bg-white ring-2 ring-[#01472e]/20 shadow-soft -translate-y-0.5'
+                    : 'border-[#ccd5ae]/50 bg-[#faf9f5] hover:border-[#a3b18a] hover:bg-white shadow-xs'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="font-mono text-xs font-semibold text-slate-500 uppercase">
+                    <span className="font-mono text-xs font-bold text-slate-500 uppercase">
                       {s.orderId}
                     </span>
                     <span
-                      className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
+                      className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
                         isDone
-                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          ? 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/40'
                           : 'bg-amber-50 text-amber-800 border-amber-200'
                       }`}
                     >
                       {s.status}
                     </span>
                   </div>
-                  <h4 className="font-medium text-lg text-slate-900 tracking-tight">
-                    {s.crop} • {s.quantityKg.toLocaleString()} kg
+                  <h4 className="font-bold text-lg text-slate-900 tracking-tight">
+                    {s.crop} • <span className="font-mono text-[#01472e]">{s.quantityKg.toLocaleString()} kg</span>
                   </h4>
-                  <p className="text-xs text-slate-600 font-normal mt-1">
-                    Beneficiary: <strong className="text-slate-900 font-semibold">{s.farmerOrFpoName}</strong>
+                  <p className="text-xs text-slate-600 mt-1 font-medium">
+                    Beneficiary: <strong className="text-slate-900 font-bold">{s.farmerOrFpoName}</strong>
                   </p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="text-[11px] text-slate-400 mt-0.5 font-medium">
                     {farmerCount} Participating Member Farmer{farmerCount > 1 ? 's' : ''}
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3.5 border-t border-slate-100 flex items-center justify-between">
+                <div className="mt-4 pt-3.5 border-t border-[#ccd5ae]/30 flex items-center justify-between">
                   <div>
                     <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block">Net Payout</span>
-                    <span className="text-base font-semibold text-slate-900">₹{s.farmerAmount.toLocaleString()}</span>
+                    <span className="text-base font-bold font-mono text-[#01472e]">₹{s.farmerAmount.toLocaleString()}</span>
                   </div>
 
                   {!isDone ? (
@@ -301,13 +306,13 @@ export const SettlementPage: React.FC = () => {
                         handleInstantPayout(s.orderId);
                       }}
                       disabled={processingStage === 'instant'}
-                      className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs transition"
+                      className="btn-primary px-3.5 py-1.5 text-xs font-semibold rounded-xl shadow-xs transition cursor-pointer"
                     >
                       {processingStage === 'instant' ? 'Processing...' : 'Disburse'}
                     </button>
                   ) : (
-                    <span className="text-xs font-mono text-emerald-700 font-semibold flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="text-xs font-mono text-[#01472e] font-bold flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e]" />
                       <span>Settled</span>
                     </span>
                   )}
@@ -320,29 +325,29 @@ export const SettlementPage: React.FC = () => {
 
       {/* Main Order Value & 5-Step Connected Settlement Hub */}
       {activeSettlement && (
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+        <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 p-6 sm:p-8 shadow-soft space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#ccd5ae]/30">
             <div>
-              <div className="flex items-center gap-3">
-                <span className="font-mono text-xs text-slate-500 font-semibold uppercase tracking-wider">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="font-mono text-xs text-slate-500 font-bold uppercase tracking-wider bg-[#faf9f5] px-2.5 py-0.5 rounded border border-[#ccd5ae]/40">
                   Order ID: {activeSettlement.orderId}
                 </span>
                 <span className="text-slate-300">•</span>
                 <span
-                  className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
+                  className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
                     isCompletedStatus(activeSettlement.status)
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                      ? 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/40'
                       : 'bg-amber-50 text-amber-800 border-amber-200 animate-pulse'
                   }`}
                 >
                   ESCROW: {activeSettlement.status}
                 </span>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 mt-2">
-                {activeSettlement.crop} • {activeSettlement.quantityKg.toLocaleString()} kg
+              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mt-2">
+                {activeSettlement.crop} • <span className="font-mono text-[#01472e]">{activeSettlement.quantityKg.toLocaleString()} kg</span>
               </h3>
-              <p className="text-xs sm:text-sm font-normal text-slate-500 mt-1">
-                Buyer: <strong className="text-slate-800 font-semibold">{activeSettlement.buyerName}</strong> ➔ Beneficiary: <strong className="text-slate-800 font-semibold">{activeSettlement.farmerOrFpoName}</strong>
+              <p className="text-xs sm:text-sm font-medium text-slate-500 mt-1">
+                Buyer: <strong className="text-slate-800">{activeSettlement.buyerName}</strong> ➔ Beneficiary: <strong className="text-slate-800">{activeSettlement.farmerOrFpoName}</strong>
               </p>
             </div>
 
@@ -351,7 +356,7 @@ export const SettlementPage: React.FC = () => {
                 <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block mb-0.5">
                   Total Landed Order Value
                 </span>
-                <span className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900">
+                <span className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-[#01472e]">
                   ₹{activeSettlement.totalOrderValue.toLocaleString()}
                 </span>
                 <span className="text-xs text-slate-500 block font-medium font-mono mt-0.5">
@@ -363,9 +368,9 @@ export const SettlementPage: React.FC = () => {
                 <button
                   onClick={() => handleInstantPayout(activeSettlement.orderId)}
                   disabled={Boolean(processingStage)}
-                  className="mt-2 flex items-center gap-2 btn-primary py-2.5 px-5 text-xs"
+                  className="mt-2 flex items-center gap-2 btn-primary py-2.5 px-5 text-xs font-semibold rounded-2xl shadow-soft cursor-pointer"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#fefae0]" />
                   <span>
                     {processingStage === 'instant'
                       ? 'Executing Automated Payout...'
@@ -377,17 +382,17 @@ export const SettlementPage: React.FC = () => {
           </div>
 
           {/* 5-Stage Interactive Workflow Stepper */}
-          <div className="bg-slate-50/70 rounded-xl border border-slate-200/80 p-5 space-y-4">
+          <div className="bg-[#faf9f5] rounded-3xl border border-[#ccd5ae]/50 p-6 space-y-4 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+              <span className="text-xs font-bold text-[#01472e] uppercase tracking-wider">
                 Connected Escrow Execution Pipeline
               </span>
-              <span className="text-xs font-semibold text-slate-700 font-mono">
+              <span className="text-xs font-bold text-[#01472e] font-mono">
                 Stage {Math.min(5, currentStageNum)} of 5
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
               {[
                 {
                   stage: 1,
@@ -427,27 +432,27 @@ export const SettlementPage: React.FC = () => {
               ].map((st) => (
                 <div
                   key={st.stage}
-                  className={`p-3 rounded-lg border text-xs transition space-y-1 ${
+                  className={`p-4 rounded-2xl border text-xs transition-all space-y-1 shadow-2xs ${
                     st.isDone
-                      ? 'bg-emerald-50 border-emerald-200 text-emerald-950'
+                      ? 'bg-[#eaf4ec] border-[#a3b18a]/60 text-[#01472e]'
                       : st.isActive
                       ? 'bg-amber-50 border-amber-300 text-amber-950 ring-2 ring-amber-300/50'
-                      : 'bg-white border-slate-200 text-slate-400'
+                      : 'bg-white border-[#ccd5ae]/40 text-slate-400'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-medium font-mono">STEP {st.stage}</span>
-                    {st.isDone && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+                    <span className="text-[10px] font-bold font-mono">STEP {st.stage}</span>
+                    {st.isDone && <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e]" />}
                   </div>
-                  <p className="font-semibold text-xs leading-tight text-slate-900">{st.title}</p>
+                  <p className="font-bold text-xs leading-tight text-slate-900">{st.title}</p>
                   <p className="text-[10px] text-slate-500 truncate">{st.subtitle}</p>
                 </div>
               ))}
             </div>
 
             {/* Stage Action Controls */}
-            <div className="pt-3 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-3">
-              <span className="text-xs text-slate-600 font-normal">
+            <div className="pt-3 border-t border-[#ccd5ae]/30 flex flex-wrap items-center justify-between gap-3">
+              <span className="text-xs text-slate-600 font-medium">
                 {currentStageNum === 1 && 'Action required: Record buyer payment / escrow deposit.'}
                 {currentStageNum === 2 && 'Action required: Process 8% FPO and cold-chain logistics allocation.'}
                 {currentStageNum === 3 && 'Action required: Initiate direct NEFT batch payouts to member farmers.'}
@@ -461,7 +466,7 @@ export const SettlementPage: React.FC = () => {
                   <button
                     onClick={() => handleRecordPayment(activeSettlement.orderId)}
                     disabled={processingStage === 'buyer-pay'}
-                    className="btn-primary text-xs py-2 px-4"
+                    className="btn-primary text-xs py-2 px-4 rounded-xl shadow-soft font-semibold"
                   >
                     {processingStage === 'buyer-pay' ? 'Recording...' : 'Record Buyer Payment →'}
                   </button>
@@ -471,7 +476,7 @@ export const SettlementPage: React.FC = () => {
                   <button
                     onClick={() => handleProcessFpo(activeSettlement.orderId)}
                     disabled={processingStage === 'fpo-process'}
-                    className="btn-primary text-xs py-2 px-4"
+                    className="btn-primary text-xs py-2 px-4 rounded-xl shadow-soft font-semibold"
                   >
                     {processingStage === 'fpo-process' ? 'Processing...' : 'Process FPO & Logistics (8%) →'}
                   </button>
@@ -481,7 +486,7 @@ export const SettlementPage: React.FC = () => {
                   <button
                     onClick={() => handleSettleFarmer(activeSettlement.orderId)}
                     disabled={Boolean(processingStage)}
-                    className="btn-primary text-xs py-2 px-4"
+                    className="btn-primary text-xs py-2 px-4 rounded-xl shadow-soft font-semibold"
                   >
                     {processingStage === 'farmer-all' ? 'Disbursing...' : 'Disburse All Farmers (89%) →'}
                   </button>
@@ -491,7 +496,7 @@ export const SettlementPage: React.FC = () => {
                   <button
                     onClick={() => handleCompleteLedger(activeSettlement.orderId)}
                     disabled={processingStage === 'complete'}
-                    className="btn-primary text-xs py-2 px-4"
+                    className="btn-primary text-xs py-2 px-4 rounded-xl shadow-soft font-semibold"
                   >
                     {processingStage === 'complete' ? 'Closing...' : 'Close & Finalize Transaction'}
                   </button>
@@ -502,21 +507,21 @@ export const SettlementPage: React.FC = () => {
 
           {/* Multi-Farmer Member Settlement Ledger Table */}
           {activeSettlement.farmerBreakdown && activeSettlement.farmerBreakdown.length > 0 && (
-            <div className="bg-slate-50/70 rounded-xl border border-slate-200/80 p-5 space-y-4 shadow-xs">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/80 pb-3">
+            <div className="bg-[#faf9f5] rounded-3xl border border-[#ccd5ae]/50 p-6 space-y-4 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#ccd5ae]/40 pb-3">
                 <div>
-                  <div className="flex items-center gap-2 text-emerald-700 text-[11px] font-semibold uppercase tracking-wider mb-1">
-                    <Users className="w-3.5 h-3.5 text-emerald-600" />
+                  <div className="flex items-center gap-2 text-[#01472e] text-xs font-bold uppercase tracking-wider mb-1">
+                    <Users className="w-3.5 h-3.5 text-[#01472e]" />
                     <span>Member Farm Granular Accounting</span>
                   </div>
-                  <h4 className="text-lg font-medium text-slate-900 tracking-tight">
+                  <h4 className="text-lg font-bold text-slate-900 tracking-tight">
                     Multi-Farmer Settlement Ledger
                   </h4>
                   <p className="text-xs text-slate-500 font-normal">
                     Farmer-level contribution accounting with preserved source provenance and direct bank NEFT credits
                   </p>
                 </div>
-                <span className="text-xs font-semibold text-slate-600 bg-white px-3 py-1 rounded-lg border border-slate-200 font-mono">
+                <span className="text-xs font-bold text-[#01472e] bg-white px-3.5 py-1 rounded-xl border border-[#ccd5ae]/50 font-mono">
                   {activeSettlement.farmerBreakdown.length} Participating Farmer{activeSettlement.farmerBreakdown.length > 1 ? 's' : ''}
                 </span>
               </div>
@@ -524,7 +529,7 @@ export const SettlementPage: React.FC = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="bg-slate-100/80 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                    <tr className="bg-white/80 border-b border-[#ccd5ae]/40 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
                       <th className="p-3">Farmer & Location</th>
                       <th className="p-3">Volume</th>
                       <th className="p-3">Agreed Rate</th>
@@ -535,32 +540,32 @@ export const SettlementPage: React.FC = () => {
                       <th className="p-3 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 bg-white">
+                  <tbody className="divide-y divide-[#ccd5ae]/30 bg-white">
                     {activeSettlement.farmerBreakdown.map((farmer, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50/80 transition">
+                      <tr key={idx} className="hover:bg-[#faf9f5] transition">
                         <td className="p-3">
-                          <strong className="text-slate-900 block font-semibold">{farmer.farmerName}</strong>
+                          <strong className="text-slate-900 block font-bold">{farmer.farmerName}</strong>
                           <span className="text-[11px] text-slate-400">{farmer.farmerLocation}</span>
                         </td>
-                        <td className="p-3 font-mono font-semibold text-slate-800">
+                        <td className="p-3 font-mono font-bold text-slate-800">
                           {farmer.collectedQuantityKg.toLocaleString()} kg
                         </td>
-                        <td className="p-3 font-mono text-slate-700">
+                        <td className="p-3 font-mono text-slate-700 font-semibold">
                           ₹{farmer.agreedPricePerKg}/kg
                         </td>
                         <td className="p-3 font-mono text-slate-500">
                           ₹{farmer.grossAmount.toLocaleString()}
                         </td>
                         <td className="p-3">
-                          <span className="font-medium text-sm text-emerald-800 block">
+                          <span className="font-bold text-sm text-[#01472e] block font-mono">
                             ₹{farmer.netFarmerAmount.toLocaleString()}
                           </span>
                           <span className="text-[10px] text-slate-400 font-mono">{farmer.bankAccountMasked || 'Direct NEFT Account'}</span>
                         </td>
                         <td className="p-3">
-                          <span className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
                             farmer.status === 'COMPLETED'
-                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                              ? 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/40'
                               : 'bg-amber-50 text-amber-800 border-amber-200'
                           }`}>
                             {farmer.status}
@@ -574,13 +579,13 @@ export const SettlementPage: React.FC = () => {
                             <button
                               onClick={() => handleSettleFarmer(activeSettlement.orderId, farmer.farmerId)}
                               disabled={Boolean(processingStage)}
-                              className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-semibold rounded-lg transition shadow-xs"
+                              className="btn-primary px-3 py-1 text-[11px] font-semibold rounded-lg shadow-xs cursor-pointer"
                             >
                               Disburse
                             </button>
                           ) : (
-                            <span className="text-xs font-semibold text-emerald-700 flex items-center justify-end gap-1">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                            <span className="text-xs font-bold text-[#01472e] flex items-center justify-end gap-1">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e]" />
                               <span>Paid</span>
                             </span>
                           )}
@@ -595,32 +600,32 @@ export const SettlementPage: React.FC = () => {
 
           {/* 3-Way Transparent Value Split Breakdown */}
           <div>
-            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
+            <h4 className="text-xs font-bold text-[#01472e] uppercase tracking-wider mb-4">
               Transparent Disbursement Split
             </h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {/* Farmer / FPO Share */}
-              <div className="bg-gradient-to-br from-[#1b4332] via-[#2d6a4f] to-[#1e5238] border border-emerald-600/30 rounded-xl p-5 sm:p-6 shadow-forest flex flex-col justify-between text-white">
+              <div className="bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] border border-[#a3b18a]/30 rounded-3xl p-6 sm:p-7 shadow-forest flex flex-col justify-between text-white">
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-semibold text-emerald-300 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-[#fefae0] uppercase tracking-wider">
                       Farmer Net Realization
                     </span>
-                    <span className="text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
+                    <span className="text-xs font-bold bg-[#fefae0]/15 text-[#fefae0] border border-[#fefae0]/25 px-2.5 py-0.5 rounded-full">
                       {activeSettlement.farmerRealizationPercentage}%
                     </span>
                   </div>
-                  <p className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+                  <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-white">
                     ₹{activeSettlement.farmerAmount.toLocaleString()}
                   </p>
-                  <p className="text-xs text-slate-300 mt-2 font-mono font-medium">
+                  <p className="text-xs text-emerald-100/80 mt-2 font-mono font-medium">
                     ₹{(activeSettlement.farmerAmount / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg credited to farmer bank
                   </p>
                 </div>
 
-                <div className="pt-4 mt-6 border-t border-emerald-800/40 text-xs font-medium text-emerald-200 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <div className="pt-4 mt-6 border-t border-emerald-800/40 text-xs font-semibold text-[#fefae0] flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
                   <span>
                     {isCompletedStatus(activeSettlement.status)
                       ? 'Disbursed via Instant Bank Escrow'
@@ -630,17 +635,17 @@ export const SettlementPage: React.FC = () => {
               </div>
 
               {/* Logistics & Micro-Hub Share */}
-              <div className="bg-slate-50/80 border border-slate-200/80 rounded-xl p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+              <div className="bg-[#faf9f5] border border-[#ccd5ae]/50 rounded-3xl p-6 sm:p-7 shadow-xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                       Logistics & Pre-cooling
                     </span>
-                    <span className="text-xs font-semibold text-slate-700 bg-white px-2.5 py-0.5 rounded-full border border-slate-200">
+                    <span className="text-xs font-bold text-slate-700 bg-white px-2.5 py-0.5 rounded-full border border-[#ccd5ae]/40">
                       {((activeSettlement.logisticsAmount / (activeSettlement.totalOrderValue || 1)) * 100).toFixed(1)}%
                     </span>
                   </div>
-                  <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">
+                  <p className="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900">
                     ₹{activeSettlement.logisticsAmount.toLocaleString()}
                   </p>
                   <p className="text-xs text-slate-500 mt-2 font-medium">
@@ -648,24 +653,24 @@ export const SettlementPage: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="pt-4 mt-6 border-t border-slate-200 text-xs font-medium text-slate-600 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <div className="pt-4 mt-6 border-t border-[#ccd5ae]/30 text-xs font-semibold text-slate-600 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#01472e] shrink-0" />
                   <span>GreenTransit Cold Fleet & Micro-Hub</span>
                 </div>
               </div>
 
               {/* Platform Coordination Share */}
-              <div className="bg-slate-50/80 border border-slate-200/80 rounded-xl p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+              <div className="bg-[#faf9f5] border border-[#ccd5ae]/50 rounded-3xl p-6 sm:p-7 shadow-xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                       Platform Fee
                     </span>
-                    <span className="text-xs font-semibold text-slate-700 bg-white px-2.5 py-0.5 rounded-full border border-slate-200">
+                    <span className="text-xs font-bold text-slate-700 bg-white px-2.5 py-0.5 rounded-full border border-[#ccd5ae]/40">
                       {((activeSettlement.platformAmount / (activeSettlement.totalOrderValue || 1)) * 100).toFixed(1)}%
                     </span>
                   </div>
-                  <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">
+                  <p className="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900">
                     ₹{activeSettlement.platformAmount.toLocaleString()}
                   </p>
                   <p className="text-xs text-slate-500 mt-2 font-medium">
@@ -673,8 +678,8 @@ export const SettlementPage: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="pt-4 mt-6 border-t border-slate-200 text-xs font-medium text-slate-600 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <div className="pt-4 mt-6 border-t border-[#ccd5ae]/30 text-xs font-semibold text-slate-600 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#01472e] shrink-0" />
                   <span>Covers AI Engine & Blockchain Ledger</span>
                 </div>
               </div>
@@ -682,23 +687,23 @@ export const SettlementPage: React.FC = () => {
           </div>
 
           {/* Traditional Mandi vs Uzhavan Connect Net Comparison */}
-          <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-6 sm:p-7 mt-4">
+          <div className="bg-[#eaf4ec]/60 border border-[#a3b18a]/50 rounded-3xl p-6 sm:p-8 mt-4 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-              <h5 className="text-xs font-medium uppercase tracking-wider text-emerald-900 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
+              <h5 className="text-xs font-bold uppercase tracking-wider text-[#01472e] flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#01472e]" />
                 <span>Measurable Economic Gain for Smallholder Farmers</span>
               </h5>
-              <span className="text-xs font-medium text-emerald-900 bg-emerald-100 border border-emerald-300 px-3 py-1 rounded-full">
+              <span className="text-xs font-bold text-[#01472e] bg-white border border-[#a3b18a]/40 px-3.5 py-1 rounded-full shadow-2xs">
                 +{activeSettlement.earningsGainPercentage}% Extra Net Realization
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="bg-white p-5 rounded-lg border border-slate-200/80">
-                <span className="text-slate-400 text-[11px] font-semibold uppercase tracking-wider block">
+              <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
+                <span className="text-slate-400 text-[11px] font-bold uppercase tracking-wider block">
                   Traditional 5-Tier Mandi Intermediary Outcome:
                 </span>
-                <p className="text-xl font-semibold text-slate-700 tracking-tight mt-1">
+                <p className="text-xl sm:text-2xl font-bold font-mono text-slate-700 tracking-tight mt-1">
                   ₹{activeSettlement.traditionalFarmerEarnings.toLocaleString()}{' '}
                   <span className="text-xs font-normal text-slate-400 font-mono">
                     (₹{(activeSettlement.traditionalFarmerEarnings / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg)
@@ -709,17 +714,17 @@ export const SettlementPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="bg-white p-5 rounded-lg border border-emerald-300 shadow-xs">
-                <span className="text-emerald-800 font-semibold text-[11px] uppercase tracking-wider block">
+              <div className="bg-white p-5 sm:p-6 rounded-2xl border-2 border-[#01472e] shadow-soft">
+                <span className="text-[#01472e] font-bold text-[11px] uppercase tracking-wider block">
                   Uzhavan Connect Direct Realization:
                 </span>
-                <p className="text-2xl font-semibold text-emerald-800 tracking-tight mt-1">
+                <p className="text-2xl sm:text-3xl font-bold font-mono text-[#01472e] tracking-tight mt-1">
                   ₹{activeSettlement.farmerAmount.toLocaleString()}{' '}
-                  <span className="text-xs font-normal text-emerald-600 font-mono">
+                  <span className="text-xs font-semibold text-[#01472e]/70 font-mono">
                     (₹{(activeSettlement.farmerAmount / (activeSettlement.quantityKg || 1)).toFixed(2)} / kg)
                   </span>
                 </p>
-                <p className="text-xs text-slate-600 mt-1.5 leading-relaxed font-medium">
+                <p className="text-xs text-slate-700 mt-1.5 leading-relaxed font-semibold">
                   Farmer receives +₹{(activeSettlement.farmerAmount - activeSettlement.traditionalFarmerEarnings).toLocaleString()} additional direct cash for this harvest!
                 </p>
               </div>
@@ -727,26 +732,26 @@ export const SettlementPage: React.FC = () => {
           </div>
 
           {/* Banking Audit Trail */}
-          <div className="bg-slate-50/80 border border-slate-200/80 rounded-xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 text-xs font-medium text-slate-600">
+          <div className="bg-[#faf9f5] border border-[#ccd5ae]/50 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 text-xs font-medium text-slate-600 shadow-xs">
             <div>
-              <span className="text-slate-400 uppercase text-[10px] tracking-wider block mb-0.5">Bank UTR Reference</span>
-              <strong className="text-slate-900 bg-white px-2.5 py-1 rounded-md border border-slate-200 font-mono text-xs">
+              <span className="text-slate-400 uppercase text-[10px] font-bold tracking-wider block mb-0.5">Bank UTR Reference</span>
+              <strong className="text-slate-900 bg-white px-3 py-1 rounded-xl border border-[#ccd5ae]/40 font-mono text-xs">
                 {activeSettlement.utrNumber}
               </strong>
             </div>
             <div>
-              <span className="text-slate-400 uppercase text-[10px] tracking-wider block mb-0.5">Settlement Status</span>
-              <strong className="text-slate-900 bg-white px-2.5 py-1 rounded-md border border-slate-200 font-mono text-xs">
+              <span className="text-slate-400 uppercase text-[10px] font-bold tracking-wider block mb-0.5">Settlement Status</span>
+              <strong className="text-[#01472e] bg-white px-3 py-1 rounded-xl border border-[#ccd5ae]/40 font-mono text-xs font-bold">
                 {activeSettlement.status}
               </strong>
             </div>
             <div>
-              <span className="text-slate-400 uppercase text-[10px] tracking-wider block mb-0.5">Batch Provenance</span>
+              <span className="text-slate-400 uppercase text-[10px] font-bold tracking-wider block mb-0.5">Batch Provenance</span>
               <button
                 onClick={() => openPassportModal(activeSettlement.batchId)}
-                className="text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200 font-mono text-xs hover:bg-emerald-100 transition flex items-center gap-1.5"
+                className="text-[#01472e] bg-[#eaf4ec] px-3 py-1 rounded-xl border border-[#a3b18a]/50 font-mono text-xs hover:bg-white transition flex items-center gap-1.5 cursor-pointer font-bold shadow-2xs"
               >
-                <QrCode className="w-3.5 h-3.5 text-emerald-600" />
+                <QrCode className="w-3.5 h-3.5 text-[#01472e]" />
                 <span>{activeSettlement.batchId}</span>
               </button>
             </div>

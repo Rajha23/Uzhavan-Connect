@@ -77,11 +77,11 @@ export const Header: React.FC = () => {
   const pageTitle = PAGE_TITLES[activeTab] || 'Dashboard';
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-emerald-900/10 flex items-center px-4 gap-3 shadow-2xs">
+    <header className="sticky top-0 z-30 h-16 bg-[#faf9f5]/90 backdrop-blur-md border-b border-[#ccd5ae]/40 flex items-center px-4 sm:px-6 gap-3 shadow-soft">
       {/* Hamburger — mobile only */}
       <button
         onClick={toggleSidebar}
-        className="lg:hidden p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition cursor-pointer"
+        className="lg:hidden p-2 rounded-2xl text-[#5c7065] hover:text-[#01472e] hover:bg-[#ccd5ae]/20 transition cursor-pointer"
         aria-label="Toggle sidebar"
       >
         <Menu className="w-5 h-5" />
@@ -89,29 +89,29 @@ export const Header: React.FC = () => {
 
       {/* Page Title */}
       <div className="hidden sm:block min-w-0">
-        <h1 className="text-sm font-medium text-slate-900 truncate tracking-tight">{pageTitle}</h1>
+        <h1 className="text-sm sm:text-base font-medium text-[#01472e] truncate tracking-tight">{pageTitle}</h1>
       </div>
 
       {/* Search Bar — grows to fill space */}
       <div className="flex-1 max-w-sm mx-auto sm:mx-0 sm:ml-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#788c80]" />
           <input
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder="Search produce, orders, demands..."
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50/70 border border-emerald-900/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition placeholder:text-slate-400 text-slate-800"
+            className="w-full pl-10 pr-4 py-2 text-xs bg-white/80 border border-[#ccd5ae]/60 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#01472e]/20 focus:border-[#01472e] focus:bg-white transition placeholder:text-[#788c80] text-[#01472e] shadow-2xs"
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-2 ml-auto">
+      <div className="flex items-center gap-2.5 ml-auto">
         {/* Network Connectivity & Offline Sync Status Pill */}
         {!isOnline ? (
           <button
             onClick={syncOfflineQueue}
-            className="flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 px-3 py-1 rounded-xl text-[11px] font-medium shadow-2xs transition cursor-pointer"
+            className="flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 px-3.5 py-1.5 rounded-2xl text-[11px] font-medium shadow-2xs transition cursor-pointer"
             title="Offline Field Mode: Changes are saved locally on device. Click to retry synchronization."
           >
             <WifiOff className="w-3.5 h-3.5 text-amber-600 shrink-0" />
@@ -124,23 +124,23 @@ export const Header: React.FC = () => {
             )}
           </button>
         ) : syncStatus === 'syncing' ? (
-          <div className="flex items-center gap-1.5 bg-blue-50 text-blue-900 border border-blue-200 px-3 py-1 rounded-xl text-[11px] font-medium animate-pulse">
+          <div className="flex items-center gap-1.5 bg-blue-50 text-blue-900 border border-blue-200 px-3.5 py-1.5 rounded-2xl text-[11px] font-medium animate-pulse">
             <RefreshCw className="w-3.5 h-3.5 text-blue-600 animate-spin shrink-0" />
             <span className="hidden sm:inline">Syncing changes...</span>
             <span className="sm:hidden">Syncing</span>
           </div>
         ) : syncStatus === 'synced' ? (
-          <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-900 border border-emerald-200 px-3 py-1 rounded-xl text-[11px] font-medium">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <div className="flex items-center gap-1.5 bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40 px-3.5 py-1.5 rounded-2xl text-[11px] font-medium shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e] shrink-0" />
             <span className="hidden sm:inline">All changes synced</span>
             <span className="sm:hidden">Synced</span>
           </div>
         ) : (
           <div
-            className="hidden sm:flex items-center gap-1.5 text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl text-[11px] font-medium"
+            className="hidden sm:flex items-center gap-1.5 text-[#01472e] bg-[#eaf4ec] border border-[#a3b18a]/40 px-3 py-1.5 rounded-2xl text-[11px] font-medium shadow-2xs"
             title="Connected to network. Field data synchronized."
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[#01472e] animate-pulse" />
             <span>Online</span>
           </div>
         )}
@@ -149,17 +149,17 @@ export const Header: React.FC = () => {
         {isInstallable && (
           <button
             onClick={promptInstall}
-            className="hidden md:flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-xs cursor-pointer"
+            className="hidden md:flex items-center gap-1.5 bg-[#01472e] hover:bg-[#003b25] text-[#fefae0] px-3.5 py-1.5 rounded-2xl text-xs font-medium transition shadow-soft cursor-pointer"
             title="Install UZHAVAN Connect to your home screen or desktop for fast offline field access"
           >
-            <Download className="w-3.5 h-3.5 text-emerald-400" />
+            <Download className="w-3.5 h-3.5 text-[#ccd5ae]" />
             <span>Install App</span>
           </button>
         )}
 
         {/* Authenticated Role Indicator Badge (Informational, Non-Clickable, No Dropdown) */}
         <div
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold tracking-wider select-none shadow-2xs border ${badgeStyle.bg} ${badgeStyle.border} ${badgeStyle.text}`}
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl text-xs font-medium tracking-wider select-none shadow-2xs border ${badgeStyle.bg} ${badgeStyle.border} ${badgeStyle.text}`}
           title={`Authenticated Account Role: ${displayRole} (Enforced by backend session)`}
           aria-label={`Current Role: ${displayRole}`}
         >
@@ -171,49 +171,49 @@ export const Header: React.FC = () => {
         <div className="relative">
           <button
             onClick={() => { setIsUserMenuOpen(!isUserMenuOpen); }}
-            className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-xl hover:bg-slate-100 transition border border-slate-200/60 cursor-pointer"
+            className="flex items-center gap-2.5 pl-1.5 pr-2.5 py-1 rounded-2xl hover:bg-white/80 transition border border-[#ccd5ae]/50 bg-white/60 shadow-2xs cursor-pointer"
           >
             {/* Avatar */}
-            <div className="w-7 h-7 rounded-lg bg-emerald-700 flex items-center justify-center text-xs font-medium text-white shadow-2xs shrink-0">
+            <div className="w-7 h-7 rounded-xl bg-[#01472e] flex items-center justify-center text-xs font-medium text-[#fefae0] shadow-2xs shrink-0">
               {currentUser.avatar || '👤'}
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-xs font-medium text-slate-800 leading-tight">{(currentUser.name || 'User').split(' ')[0]}</p>
+              <p className="text-xs font-medium text-[#01472e] leading-tight">{(currentUser.name || 'User').split(' ')[0]}</p>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
+            <ChevronDown className="w-3.5 h-3.5 text-[#788c80] hidden sm:block" />
           </button>
 
           {/* User Dropdown */}
           {isUserMenuOpen && (
-            <div className="absolute right-0 top-full mt-1 w-52 bg-white rounded-2xl shadow-lg border border-slate-200/90 z-50 overflow-hidden py-1">
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-[24px] shadow-forest-lg border border-[#ccd5ae]/60 z-50 overflow-hidden py-1.5 animate-in fade-in duration-150">
               {/* User info header */}
-              <div className="px-4 py-3 border-b border-slate-100">
-                <p className="text-xs font-medium text-slate-900">{currentUser.name || 'User'}</p>
-                <p className="text-[10px] text-slate-500 truncate">{currentUser.email || 'user@uzhavanconnect.gov.in'}</p>
-                <span className="mt-1.5 inline-block text-[9px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+              <div className="px-4 py-3 border-b border-[#ccd5ae]/30 bg-[#faf9f5]">
+                <p className="text-xs font-medium text-[#01472e]">{currentUser.name || 'User'}</p>
+                <p className="text-[10px] text-[#5c7065] truncate">{currentUser.email || 'user@uzhavanconnect.gov.in'}</p>
+                <span className="mt-1.5 inline-block text-[9px] font-medium px-2 py-0.5 rounded-full bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40">
                   {ROLE_LABELS[currentRole] || currentRole}
                 </span>
               </div>
               <button
                 onClick={() => { setActiveTab('profile'); setIsUserMenuOpen(false); }}
-                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 transition text-left cursor-pointer"
+                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-[#01472e] hover:bg-[#eef2e1]/50 transition text-left cursor-pointer"
               >
-                <User className="w-4 h-4 text-slate-400" />
+                <User className="w-4 h-4 text-[#788c80]" />
                 My Profile
               </button>
               {isInstallable && (
                 <button
                   onClick={() => { promptInstall(); setIsUserMenuOpen(false); }}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-emerald-800 font-medium bg-emerald-50 hover:bg-emerald-100 transition text-left cursor-pointer"
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-[#01472e] font-medium bg-[#eaf4ec] hover:bg-[#d5ebd9] transition text-left cursor-pointer"
                 >
-                  <Download className="w-4 h-4 text-emerald-700" />
+                  <Download className="w-4 h-4 text-[#01472e]" />
                   Install App (PWA)
                 </button>
               )}
-              <div className="border-t border-slate-100 mt-1">
+              <div className="border-t border-[#ccd5ae]/30 mt-1">
                 <button
                   onClick={logout}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-rose-600 hover:bg-rose-50 transition text-left cursor-pointer font-medium"
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-rose-700 hover:bg-rose-50 transition text-left cursor-pointer font-medium"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out

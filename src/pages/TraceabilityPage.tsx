@@ -122,22 +122,33 @@ export const TraceabilityPage: React.FC = () => {
   const currentStepIdx = selectedBatch ? STATUS_STEPS.indexOf(selectedBatch.status) : -1;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">Produce Traceability & Passports</h1>
-          <p className="text-xs sm:text-sm font-normal text-slate-500 mt-1">
-            End-to-end farm-to-fork cryptographic ledger tracking harvest, grading lab tests, cold transit, and delivery.
-          </p>
+      <div className="relative overflow-hidden rounded-[32px] p-7 sm:p-10 border border-[#01472e]/20 shadow-forest bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white">
+        <div className="absolute -right-16 -top-16 w-80 h-80 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -left-12 -bottom-12 w-64 h-64 bg-[#e9edc9]/10 rounded-full blur-2xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 bg-[#fefae0]/15 border border-[#fefae0]/25 px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-[#fefae0]">
+              <QrCode className="w-3.5 h-3.5 text-[#fefae0]" />
+              <span>Immutable Produce Provenance & Traceability Ledger</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+              Produce Traceability & Passports
+            </h1>
+            <p className="text-sm text-emerald-100/80 mt-1 font-normal max-w-2xl">
+              End-to-end farm-to-fork cryptographic ledger tracking harvest, grading lab tests, cold transit, and buyer delivery.
+            </p>
+          </div>
+          <button
+            onClick={() => openPassportModal(selectedBatch?.batchId || 'AGP-TOM-2026-001')}
+            className="flex items-center gap-2 bg-[#fefae0] hover:bg-white text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-soft hover:shadow-md transition-all cursor-pointer relative z-10 shrink-0"
+          >
+            <QrCode className="w-4 h-4 text-[#01472e]" />
+            <span>Scan QR / View Passport</span>
+          </button>
         </div>
-        <button
-          onClick={() => openPassportModal(selectedBatch?.batchId || 'AGP-TOM-2026-001')}
-          className="btn-primary text-xs py-2.5 px-4 flex items-center gap-2"
-        >
-          <QrCode className="w-4 h-4" />
-          <span>Scan QR / View Passport</span>
-        </button>
       </div>
 
       {/* Search Bar */}
@@ -148,48 +159,48 @@ export const TraceabilityPage: React.FC = () => {
           placeholder="Search by Batch ID, Crop or Farmer..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-xs font-medium text-slate-900 placeholder-slate-400 transition"
+          className="input-modern w-full pl-10 pr-4 py-2.5 text-xs rounded-2xl"
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Batch List */}
-        <div className="lg:col-span-5 space-y-3">
-          <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+        <div className="lg:col-span-5 space-y-3.5">
+          <h3 className="text-xs font-bold text-[#01472e] uppercase tracking-wider">
             Active Tracked Batches ({filtered.length})
           </h3>
           {filtered.map((b) => (
             <button
               key={b.batchId}
               onClick={() => setSelectedBatchId(b.batchId)}
-              className={`w-full text-left p-4 sm:p-5 rounded-xl border transition shadow-xs ${
+              className={`w-full text-left p-5 sm:p-6 rounded-3xl border transition-all duration-200 shadow-xs cursor-pointer ${
                 selectedBatchId === b.batchId
-                  ? 'border-emerald-600 bg-emerald-50/50 ring-2 ring-emerald-500/20'
-                  : 'border-emerald-900/10 bg-white hover:border-emerald-300'
+                  ? 'border-[#01472e] bg-white ring-2 ring-[#01472e]/20 shadow-soft -translate-y-0.5'
+                  : 'border-[#ccd5ae]/50 bg-[#faf9f5] hover:border-[#a3b18a] hover:bg-white'
               }`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-0.5 rounded-full border ${STATUS_COLORS[b.status] || 'bg-slate-50 text-slate-700 border-slate-200'}`}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`text-[10px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full border ${STATUS_COLORS[b.status] || 'bg-slate-50 text-slate-700 border-slate-200'}`}>
                       {b.status}
                     </span>
-                    <span className="text-[10px] bg-slate-900 text-white font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    <span className="text-[10px] bg-[#01472e] text-[#fefae0] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                       {b.qualityGrade || 'Grade A'}
                     </span>
                   </div>
-                  <p className="font-medium text-slate-900 text-base mt-2 tracking-tight">
-                    {b.crop} {b.variety ? `(${b.variety})` : ''} — {b.quantityKg.toLocaleString()} kg
+                  <p className="font-bold text-slate-900 text-base mt-2 tracking-tight">
+                    {b.crop} {b.variety ? `(${b.variety})` : ''} — <span className="font-mono text-[#01472e]">{b.quantityKg.toLocaleString()} kg</span>
                   </p>
-                  <p className="text-xs font-normal text-slate-500 mt-0.5">{b.farmerOrFpo}</p>
+                  <p className="text-xs font-medium text-slate-500 mt-0.5">{b.farmerOrFpo}</p>
                 </div>
-                <QrCode className={`w-5 h-5 shrink-0 mt-1 ${selectedBatchId === b.batchId ? 'text-emerald-700' : 'text-slate-400'}`} />
+                <QrCode className={`w-5 h-5 shrink-0 mt-1 ${selectedBatchId === b.batchId ? 'text-[#01472e]' : 'text-slate-400'}`} />
               </div>
-              <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-4 text-xs text-slate-500">
+              <div className="mt-3 pt-3 border-t border-[#ccd5ae]/30 flex items-center gap-4 text-xs text-slate-500">
                 <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-slate-400" /> {b.harvestDate}</span>
                 <span className="flex items-center gap-1.5 truncate"><MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />{b.destination.split('—')[0].trim()}</span>
               </div>
-              <p className="text-[11px] font-mono font-medium text-slate-400 mt-2">{b.batchId} {b.orderId ? `• Ref: ${b.orderId}` : ''}</p>
+              <p className="text-[11px] font-mono font-bold text-[#01472e]/70 mt-2">{b.batchId} {b.orderId ? `• Ref: ${b.orderId}` : ''}</p>
             </button>
           ))}
         </div>
@@ -197,28 +208,28 @@ export const TraceabilityPage: React.FC = () => {
         {/* Batch Detail / Timeline */}
         <div className="lg:col-span-7">
           {selectedBatch ? (
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 sm:p-8 space-y-6">
+            <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-6 sm:p-8 space-y-6">
               {/* Batch Header */}
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-slate-100 pb-5">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-[#ccd5ae]/30 pb-5">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${STATUS_COLORS[selectedBatch.status] || ''}`}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${STATUS_COLORS[selectedBatch.status] || ''}`}>
                       {selectedBatch.status}
                     </span>
-                    <span className="text-[10px] bg-slate-900 text-white font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                    <span className="text-[10px] bg-[#01472e] text-[#fefae0] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                       {selectedBatch.qualityGrade || 'Certified Grade A'}
                     </span>
                   </div>
-                  <h2 className="text-2xl font-semibold text-slate-900 mt-3 tracking-tight">
+                  <h2 className="text-2xl font-bold text-slate-900 mt-2 tracking-tight">
                     {selectedBatch.crop} Batch
                   </h2>
-                  <p className="text-xs font-mono font-medium text-slate-400 mt-1">
+                  <p className="text-xs font-mono font-semibold text-slate-500 mt-1">
                     {selectedBatch.batchId} {selectedBatch.orderId ? `• Order: ${selectedBatch.orderId}` : ''}
                   </p>
                 </div>
                 <button
                   onClick={() => openPassportModal(selectedBatch.batchId)}
-                  className="btn-secondary text-xs py-2 px-4 flex items-center gap-1.5 shrink-0"
+                  className="btn-primary text-xs py-2 px-4 rounded-xl flex items-center gap-1.5 shrink-0 shadow-soft cursor-pointer font-semibold"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>Full Passport</span>
@@ -233,38 +244,38 @@ export const TraceabilityPage: React.FC = () => {
                   { label: 'Harvest Date', value: selectedBatch.harvestDate, icon: Clock },
                   { label: 'Destination', value: selectedBatch.destination, icon: MapPin },
                 ].map((item) => (
-                  <div key={item.label} className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70 shadow-2xs">
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">{item.label}</span>
-                    <p className="font-medium text-sm text-slate-900 mt-0.5 tracking-tight truncate">{item.value}</p>
+                  <div key={item.label} className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">{item.label}</span>
+                    <p className="font-bold text-sm text-slate-900 mt-0.5 tracking-tight truncate">{item.value}</p>
                   </div>
                 ))}
               </div>
 
               {/* Verified Quality Lab Metrics */}
               {selectedBatch.inspectionMetrics && (
-                <div className="p-5 bg-slate-50/80 border border-slate-200/80 rounded-xl space-y-3">
-                  <div className="flex items-center gap-2 text-slate-900">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-700">
+                <div className="p-5 sm:p-6 bg-[#faf9f5] border border-[#ccd5ae]/50 rounded-3xl space-y-3 shadow-xs">
+                  <div className="flex items-center gap-2 text-[#01472e]">
+                    <ShieldCheck className="w-5 h-5 text-[#01472e]" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#01472e]">
                       Verified Lab Quality Grading Parameters
                     </h4>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-                    <div className="bg-white p-3 rounded-lg border border-slate-200/80">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                    <div className="bg-white p-3.5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
                       <span className="text-[10px] text-slate-400 uppercase font-semibold block">Sugar (Brix)</span>
-                      <strong className="text-sm font-semibold text-slate-900">{selectedBatch.inspectionMetrics.sugarBrix}° Bx</strong>
+                      <strong className="text-sm font-bold font-mono text-slate-900">{selectedBatch.inspectionMetrics.sugarBrix}° Bx</strong>
                     </div>
-                    <div className="bg-white p-3 rounded-lg border border-slate-200/80">
+                    <div className="bg-white p-3.5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
                       <span className="text-[10px] text-slate-400 uppercase font-semibold block">Firmness</span>
-                      <strong className="text-sm font-semibold text-slate-900">{selectedBatch.inspectionMetrics.firmnessKgCm} kg/cm²</strong>
+                      <strong className="text-sm font-bold font-mono text-slate-900">{selectedBatch.inspectionMetrics.firmnessKgCm} kg/cm²</strong>
                     </div>
-                    <div className="bg-white p-3 rounded-lg border border-slate-200/80">
+                    <div className="bg-white p-3.5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
                       <span className="text-[10px] text-slate-400 uppercase font-semibold block">Moisture</span>
-                      <strong className="text-sm font-semibold text-slate-900">{selectedBatch.inspectionMetrics.moistureContent}</strong>
+                      <strong className="text-sm font-bold font-mono text-slate-900">{selectedBatch.inspectionMetrics.moistureContent}</strong>
                     </div>
-                    <div className="bg-white p-3 rounded-lg border border-slate-200/80">
+                    <div className="bg-white p-3.5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
                       <span className="text-[10px] text-slate-400 uppercase font-semibold block">Pesticide Assay</span>
-                      <strong className="text-xs font-semibold text-emerald-700 block truncate">{selectedBatch.inspectionMetrics.pesticideResidueTest}</strong>
+                      <strong className="text-xs font-bold text-[#01472e] block truncate">{selectedBatch.inspectionMetrics.pesticideResidueTest}</strong>
                     </div>
                   </div>
                 </div>
@@ -272,7 +283,7 @@ export const TraceabilityPage: React.FC = () => {
 
               {/* Journey Timeline */}
               <div className="pt-2">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-5">Batch Journey</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#01472e] mb-5">Batch Journey</h3>
                 <div className="relative">
                   {STATUS_STEPS.map((step, idx) => {
                     const isCompleted = idx <= currentStepIdx;
@@ -281,23 +292,23 @@ export const TraceabilityPage: React.FC = () => {
                       <div key={step} className="flex items-start gap-4 pb-6 last:pb-0 relative">
                         {/* Step indicator */}
                         <div className="flex flex-col items-center">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition z-10 relative ${
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all z-10 relative ${
                             isCompleted
-                              ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                              ? 'bg-[#01472e] border-[#01472e] text-[#fefae0] shadow-xs'
                               : isCurrent
-                                ? 'bg-emerald-500 border-emerald-500 text-slate-950 shadow-xs ring-2 ring-emerald-500/20'
-                                : 'bg-white border-slate-200 text-slate-400'
+                                ? 'bg-[#eaf4ec] border-[#01472e] text-[#01472e] shadow-soft ring-2 ring-[#01472e]/20'
+                                : 'bg-white border-[#ccd5ae]/60 text-slate-400'
                           }`}>
-                            {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-xs font-medium">{idx + 1}</span>}
+                            {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-xs font-bold">{idx + 1}</span>}
                           </div>
                           {idx < STATUS_STEPS.length - 1 && (
-                            <div className={`absolute top-8 bottom-0 left-4 w-0.5 -ml-[1px] ${isCompleted ? 'bg-slate-900' : 'bg-slate-200'}`} />
+                            <div className={`absolute top-8 bottom-0 left-4 w-0.5 -ml-[1px] ${isCompleted ? 'bg-[#01472e]' : 'bg-[#ccd5ae]/40'}`} />
                           )}
                         </div>
                         <div className="pt-1.5">
-                          <p className={`text-xs font-semibold ${isCompleted || isCurrent ? 'text-slate-900' : 'text-slate-400'}`}>{step}</p>
+                          <p className={`text-xs font-bold ${isCompleted || isCurrent ? 'text-slate-900' : 'text-slate-400'}`}>{step}</p>
                           {isCurrent && (
-                            <span className="text-[10px] text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block font-semibold mt-1">Current Status</span>
+                            <span className="text-[10px] text-[#01472e] bg-[#eaf4ec] border border-[#a3b18a]/50 px-2.5 py-0.5 rounded-full inline-block font-bold mt-1 shadow-2xs">Current Status</span>
                           )}
                         </div>
                       </div>
@@ -307,15 +318,15 @@ export const TraceabilityPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-12 flex flex-col items-center justify-center text-center">
-              <Truck className="w-12 h-12 text-slate-300 mb-4" />
-              <h3 className="text-lg font-medium text-slate-900 tracking-tight">Select a batch to view details</h3>
+            <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft p-12 flex flex-col items-center justify-center text-center">
+              <Truck className="w-12 h-12 text-[#01472e]/40 mb-4" />
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight">Select a batch to view details</h3>
               <p className="text-xs text-slate-500 mt-1">Click any batch from the list to see the full journey timeline</p>
               <button
                 onClick={() => openPassportModal('AGP-TOM-2026-001')}
-                className="mt-5 btn-secondary text-xs py-2 px-4 flex items-center gap-1.5"
+                className="mt-5 btn-primary text-xs py-2.5 px-4 rounded-xl flex items-center gap-1.5 shadow-soft cursor-pointer font-semibold"
               >
-                <QrCode className="w-4 h-4 text-emerald-600" />
+                <QrCode className="w-4 h-4 text-[#fefae0]" />
                 <span>Open Sample Produce Passport</span>
               </button>
             </div>
@@ -325,4 +336,5 @@ export const TraceabilityPage: React.FC = () => {
     </div>
   );
 };
+
 

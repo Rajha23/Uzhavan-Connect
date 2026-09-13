@@ -31,22 +31,23 @@ export const AiInsightCard: React.FC<AiInsightProps> = ({
   const descText = description || [subtitle, recommendation].filter(Boolean).join(' ');
   if (variant === 'dark') {
     return (
-      <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-950 via-slate-950 to-emerald-900 text-white p-5 border border-emerald-500/20 shadow-sm ${className}`}>
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+      <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white p-6 border border-[#a3b18a]/30 shadow-forest ${className}`}>
+        <div className="absolute -right-12 -top-12 w-48 h-48 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 relative z-10">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#fefae0]/15 text-[#fefae0] border border-[#fefae0]/25">
+              <Sparkles className="w-3.5 h-3.5 text-[#fefae0]" />
               <span>{badgeText}</span>
             </div>
-            <h4 className="text-base font-medium text-white tracking-normal">{title}</h4>
-            {descText && <p className="text-xs text-slate-300 leading-relaxed max-w-2xl font-normal">{descText}</p>}
+            <h4 className="text-base font-bold text-white tracking-tight">{title}</h4>
+            {descText && <p className="text-xs text-emerald-100/85 leading-relaxed max-w-2xl font-normal">{descText}</p>}
 
             {metrics && metrics.length > 0 && (
-              <div className="flex flex-wrap gap-4 pt-2">
+              <div className="flex flex-wrap gap-3 pt-2">
                 {metrics.map((m, idx) => (
-                  <div key={idx} className="bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
-                    <span className="text-[10px] text-slate-300 uppercase tracking-wider block font-normal">{m.label}</span>
-                    <span className="text-sm font-medium text-emerald-300">{m.value}</span>
+                  <div key={idx} className="bg-white/10 px-3.5 py-1.5 rounded-2xl border border-white/15 backdrop-blur-xs">
+                    <span className="text-[10px] text-emerald-200 uppercase tracking-wider block font-semibold">{m.label}</span>
+                    <span className="text-sm font-bold font-mono text-[#fefae0]">{m.value}</span>
                   </div>
                 ))}
               </div>
@@ -56,10 +57,10 @@ export const AiInsightCard: React.FC<AiInsightProps> = ({
           {actionLabel && (
             <button
               onClick={onAction}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition shadow-xs self-start shrink-0 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-semibold bg-[#fefae0] hover:bg-white text-[#01472e] transition-all shadow-soft self-start shrink-0 cursor-pointer"
             >
               <span>{actionLabel}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 text-[#01472e]" />
             </button>
           )}
         </div>
@@ -68,22 +69,22 @@ export const AiInsightCard: React.FC<AiInsightProps> = ({
   }
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/40 p-5 border border-emerald-200/80 shadow-xs hover:border-emerald-300 transition-all ${className}`}>
+    <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#eaf4ec]/70 via-[#faf9f5] to-[#fefae0]/40 p-6 border border-[#ccd5ae]/50 shadow-soft hover:border-[#a3b18a] transition-all ${className}`}>
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-100/70 text-emerald-800 border border-emerald-300/60">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/50">
+            <Sparkles className="w-3.5 h-3.5 text-[#01472e]" />
             <span>{badgeText}</span>
           </div>
-          <h4 className="text-base font-medium text-slate-900 tracking-normal">{title}</h4>
+          <h4 className="text-base font-bold text-[#01472e] tracking-tight">{title}</h4>
           {descText && <p className="text-xs text-slate-600 leading-relaxed max-w-2xl font-normal">{descText}</p>}
 
           {metrics && metrics.length > 0 && (
             <div className="flex flex-wrap gap-3 pt-1.5">
               {metrics.map((m, idx) => (
-                <div key={idx} className="bg-white px-3 py-1.5 rounded-xl border border-emerald-100 shadow-2xs">
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-normal">{m.label}</span>
-                  <span className={`text-sm font-medium ${m.positive !== false ? 'text-emerald-700' : 'text-slate-800'}`}>
+                <div key={idx} className="bg-white px-3.5 py-1.5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">{m.label}</span>
+                  <span className={`text-sm font-bold font-mono ${m.positive !== false ? 'text-[#01472e]' : 'text-slate-800'}`}>
                     {m.value}
                   </span>
                 </div>
@@ -95,10 +96,10 @@ export const AiInsightCard: React.FC<AiInsightProps> = ({
         {actionLabel && (
           <button
             onClick={onAction}
-            className="btn-primary self-start shrink-0 text-xs"
+            className="btn-primary self-start shrink-0 text-xs py-2 px-4 rounded-xl shadow-soft"
           >
             <span>{actionLabel}</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3.5 h-3.5 ml-1" />
           </button>
         )}
       </div>

@@ -21,19 +21,19 @@ import {
 } from 'lucide-react';
 
 const STATUS_STYLES: Record<string, string> = {
-  'Created': 'bg-slate-100 text-slate-800 border-slate-200',
-  'Produce Collection Pending': 'bg-amber-100 text-amber-900 border-amber-300',
-  'Collected': 'bg-blue-100 text-blue-900 border-blue-300',
-  'Quality Checked': 'bg-purple-100 text-purple-900 border-purple-300',
-  'Packed': 'bg-teal-100 text-teal-900 border-teal-300',
-  'Transport Assigned': 'bg-indigo-100 text-indigo-900 border-indigo-300',
-  'In Transit': 'bg-orange-100 text-orange-900 border-orange-300',
-  'Delivered': 'bg-sky-100 text-sky-900 border-sky-300',
-  'Buyer Confirmed': 'bg-emerald-100 text-emerald-900 border-emerald-300',
+  'Created': 'bg-[#faf9f5] text-slate-700 border-[#ccd5ae]/60',
+  'Produce Collection Pending': 'bg-amber-50 text-amber-900 border-amber-300',
+  'Collected': 'bg-sky-50 text-sky-900 border-sky-300',
+  'Quality Checked': 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/60',
+  'Packed': 'bg-teal-50 text-teal-900 border-teal-300',
+  'Transport Assigned': 'bg-indigo-50 text-indigo-900 border-indigo-200',
+  'In Transit': 'bg-amber-100 text-amber-950 border-amber-300',
+  'Delivered': 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/60',
+  'Buyer Confirmed': 'bg-[#eaf4ec] text-[#01472e] border-[#01472e]/30 font-bold',
   'Payment Pending': 'bg-amber-100 text-amber-900 border-amber-300',
-  'Completed': 'bg-emerald-100 text-emerald-900 border-emerald-400',
-  'Pending': 'bg-amber-100 text-amber-900 border-amber-300',
-  'Confirmed': 'bg-blue-100 text-blue-900 border-blue-300',
+  'Completed': 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a] font-bold',
+  'Pending': 'bg-amber-50 text-amber-900 border-amber-300',
+  'Confirmed': 'bg-emerald-50 text-emerald-900 border-emerald-300',
 };
 
 export const OrdersPage: React.FC = () => {
@@ -153,45 +153,56 @@ export const OrdersPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-7">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">Order Fulfillment & Tracking</h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            End-to-end transaction lifecycle from crop reservation to delivery and settlement
-          </p>
-        </div>
+      <div className="relative overflow-hidden rounded-[32px] p-7 sm:p-9 border border-[#01472e]/20 shadow-forest bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white">
+        <div className="absolute -right-16 -top-16 w-72 h-72 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -left-12 -bottom-12 w-64 h-64 bg-[#e9edc9]/10 rounded-full blur-2xl pointer-events-none" />
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              if (currentRole === 'FARMER') setActiveTab('find-buyers');
-              else if (currentRole === 'RETAIL_BUYER') setActiveTab('smart-matching');
-              else if (currentRole === 'LOGISTICS') setActiveTab('shipments');
-              else setActiveTab('smart-matching');
-            }}
-            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition shadow-sm flex items-center gap-1.5 cursor-pointer"
-          >
-            <span>
-              {currentRole === 'FARMER' ? 'Discover Buyer Matches' : currentRole === 'LOGISTICS' ? 'View Shipments' : 'Match More Produce'}
-            </span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 bg-[#fefae0]/15 border border-[#fefae0]/25 px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-[#fefae0]">
+              <Package className="w-3.5 h-3.5 text-[#fefae0]" />
+              <span>Direct Farm-to-Buyer Transaction Ledger</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+              Order Fulfillment & Lifecycle Tracking
+            </h1>
+            <p className="text-xs sm:text-sm text-emerald-100/80 font-normal max-w-2xl">
+              End-to-end audit trail tracking crop collection, hub QA grading, cold-chain transit, dockside verification, and escrow settlement.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 relative z-10">
+            <button
+              onClick={() => {
+                if (currentRole === 'FARMER') setActiveTab('find-buyers');
+                else if (currentRole === 'RETAIL_BUYER') setActiveTab('smart-matching');
+                else if (currentRole === 'LOGISTICS') setActiveTab('shipments');
+                else setActiveTab('smart-matching');
+              }}
+              className="flex items-center gap-2 bg-[#fefae0] hover:bg-white text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-soft hover:shadow-md transition-all cursor-pointer"
+            >
+              <span>
+                {currentRole === 'FARMER' ? 'Discover Buyer Matches' : currentRole === 'LOGISTICS' ? 'View Shipments' : 'Match More Produce'}
+              </span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#01472e]" />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
         {[
-          { label: 'Total Orders', value: orders.length.toString(), color: 'text-slate-900' },
-          { label: 'Delivered / Settled', value: deliveredCount.toString(), color: 'text-emerald-700' },
-          { label: 'In Progress', value: inProgressCount.toString(), color: 'text-orange-700' },
-          { label: 'Total Value', value: `₹${totalRevenue.toLocaleString()}`, color: 'text-slate-900' },
+          { label: 'Total Orders', value: orders.length.toString(), color: 'text-slate-900', bg: 'bg-[#faf9f5]' },
+          { label: 'Delivered / Settled', value: deliveredCount.toString(), color: 'text-[#01472e]', bg: 'bg-[#eaf4ec]' },
+          { label: 'In Progress', value: inProgressCount.toString(), color: 'text-amber-700', bg: 'bg-amber-50' },
+          { label: 'Total Value', value: `₹${totalRevenue.toLocaleString()}`, color: 'text-[#01472e]', bg: 'bg-[#faf9f5]' },
         ].map((card) => (
-          <div key={card.label} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-            <p className="text-xs text-slate-500">{card.label}</p>
-            <p className={`text-xl font-semibold font-mono mt-1 ${card.color}`}>{card.value}</p>
+          <div key={card.label} className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
+            <p className="text-xs text-slate-500 font-medium">{card.label}</p>
+            <p className={`text-2xl sm:text-3xl font-bold font-mono mt-1.5 ${card.color}`}>{card.value}</p>
           </div>
         ))}
       </div>
@@ -205,18 +216,18 @@ export const OrdersPage: React.FC = () => {
             placeholder="Search by Order ID, Batch ID, Crop, Farmer or Buyer..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-400 shadow-xs transition"
+            className="input-modern w-full pl-10 pr-4 py-2.5 text-xs rounded-2xl"
           />
         </div>
-        <div className="flex gap-1.5 flex-wrap items-center">
+        <div className="flex gap-2 flex-wrap items-center">
           {['All', 'Pending', 'Processing', 'In Transit', 'Delivered'].map((s) => (
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`px-3.5 py-2 text-xs font-medium rounded-xl border transition ${
+              className={`px-4 py-2 text-xs font-semibold rounded-2xl border transition-all cursor-pointer ${
                 filter === s
-                  ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
-                  : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300'
+                  ? 'bg-[#01472e] text-white border-[#01472e] shadow-soft'
+                  : 'bg-white text-slate-600 border-[#ccd5ae]/50 hover:bg-[#faf9f5] hover:text-[#01472e]'
               }`}
             >
               {s}
@@ -226,15 +237,17 @@ export const OrdersPage: React.FC = () => {
       </div>
 
       {/* Orders List */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="agri-card bg-white rounded-[32px] border border-[#ccd5ae]/40 shadow-soft overflow-hidden p-0">
         {filtered.length === 0 ? (
           <div className="py-16 text-center">
-            <Package className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-            <p className="text-sm font-medium text-slate-600">No matching orders found</p>
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#faf9f5] flex items-center justify-center text-slate-400 mb-3 border border-dashed border-[#ccd5ae]/60">
+              <Package className="w-7 h-7" />
+            </div>
+            <p className="text-sm font-bold text-[#01472e]">No matching orders found</p>
             <p className="text-xs text-slate-400 mt-1">Try changing search filters or create a new order via Smart Matching</p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-[#ccd5ae]/30">
             {filtered.map((order) => {
               const isExpanded = expandedOrderId === order.id;
               const isDelivered = order.status === 'Delivered';
@@ -242,29 +255,29 @@ export const OrdersPage: React.FC = () => {
               const isCompleted = order.status === 'Completed';
 
               return (
-                <div key={order.id} className="transition hover:bg-slate-50/60">
+                <div key={order.id} className="transition hover:bg-[#faf9f5]/70">
                   {/* Order Row */}
                   <div
                     onClick={() => toggleExpand(order.id)}
-                    className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer"
+                    className="p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0 font-medium">
-                        <Package className="w-5 h-5" />
+                      <div className="w-11 h-11 rounded-2xl bg-[#eaf4ec] border border-[#a3b18a]/40 text-[#01472e] flex items-center justify-center shrink-0 font-bold shadow-xs">
+                        <Package className="w-5 h-5 text-[#01472e]" />
                       </div>
 
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-mono text-xs font-medium text-slate-900">{order.id}</span>
+                          <span className="font-mono text-xs font-bold text-[#01472e] bg-white px-2.5 py-0.5 rounded-lg border border-[#ccd5ae]/50">{order.id}</span>
                           <span className="text-slate-300">•</span>
-                          <span className="font-mono text-[11px] text-slate-500 font-medium">{order.batchId}</span>
-                          <span className={`text-[10px] font-medium px-2.5 py-0.5 rounded-full border ${STATUS_STYLES[order.status] || 'bg-slate-100 text-slate-700'}`}>
+                          <span className="font-mono text-[11px] text-slate-500 font-semibold">{order.batchId}</span>
+                          <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${STATUS_STYLES[order.status] || 'bg-slate-100 text-slate-700'}`}>
                             {order.status}
                           </span>
                         </div>
 
-                        <h4 className="text-sm font-medium text-slate-900 mt-1">
-                          {order.crop} ({order.variety || 'Hybrid'}) • {order.quantityKg.toLocaleString()} kg @ ₹{order.pricePerKg}/kg
+                        <h4 className="text-base font-bold text-slate-900 mt-1.5">
+                          {order.crop} ({order.variety || 'Hybrid'}) • <span className="font-mono text-[#01472e]">{order.quantityKg.toLocaleString()} kg</span> @ ₹{order.pricePerKg}/kg
                         </h4>
 
                         <p className="text-xs text-slate-500 mt-0.5">
@@ -276,8 +289,8 @@ export const OrdersPage: React.FC = () => {
                     {/* Right side Value & Actions */}
                     <div className="flex items-center gap-4 self-end md:self-center">
                       <div className="text-right">
-                        <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Order Value</span>
-                        <span className="text-base font-semibold font-mono text-slate-900">₹{order.totalValue.toLocaleString()}</span>
+                        <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold">Order Value</span>
+                        <span className="text-lg font-bold font-mono text-[#01472e]">₹{order.totalValue.toLocaleString()}</span>
                       </div>
 
                       {/* Interactive Buyer Acceptance Button */}
@@ -287,7 +300,7 @@ export const OrdersPage: React.FC = () => {
                             e.stopPropagation();
                             openVerifyModal(order);
                           }}
-                          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-xl transition shadow-xs flex items-center gap-1.5 animate-pulse"
+                          className="btn-primary px-4 py-2 text-xs font-semibold rounded-xl shadow-soft flex items-center gap-1.5 animate-pulse cursor-pointer"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>Accept & Confirm</span>
@@ -295,8 +308,8 @@ export const OrdersPage: React.FC = () => {
                       )}
 
                       {order.buyerConfirmation && (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-800 bg-emerald-50 border border-emerald-300 px-3 py-1.5 rounded-xl">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#01472e] bg-[#eaf4ec] border border-[#a3b18a]/50 px-3 py-1.5 rounded-xl shadow-xs">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e]" />
                           <span>Receipt Confirmed ({order.buyerConfirmation.acceptedQuantityKg} kg)</span>
                         </span>
                       )}
@@ -308,7 +321,7 @@ export const OrdersPage: React.FC = () => {
                             e.stopPropagation();
                             setActiveTab('settlement');
                           }}
-                          className="btn-primary text-xs flex items-center gap-1.5 py-1.5 px-3"
+                          className="btn-primary text-xs font-semibold flex items-center gap-1.5 py-2 px-3.5 rounded-xl shadow-soft cursor-pointer"
                         >
                           <CreditCard className="w-3.5 h-3.5" />
                           <span>{isCompleted ? 'Receipt' : 'Escrow Payout'}</span>
@@ -320,32 +333,32 @@ export const OrdersPage: React.FC = () => {
                           e.stopPropagation();
                           openPassportModal(order.batchId);
                         }}
-                        className="p-2 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-xl transition"
+                        className="p-2 text-slate-400 hover:text-[#01472e] hover:bg-[#eaf4ec] rounded-xl transition cursor-pointer"
                         title="View Produce Digital Passport"
                       >
                         <QrCode className="w-4 h-4" />
                       </button>
 
                       <div className="text-slate-400">
-                        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        {isExpanded ? <ChevronUp className="w-4 h-4 text-[#01472e]" /> : <ChevronDown className="w-4 h-4" />}
                       </div>
                     </div>
                   </div>
 
                   {/* Expanded Lifecycle Timeline Details */}
                   {isExpanded && (
-                    <div className="px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50">
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="px-5 sm:px-6 pb-6 pt-3 border-t border-[#ccd5ae]/30 bg-[#faf9f5]/50">
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                         {/* 1. Transaction Details */}
-                        <div className="bg-white p-4 rounded-xl border border-slate-200 text-xs space-y-2">
-                          <h5 className="font-medium text-slate-900 text-xs uppercase tracking-wider mb-2">Transaction Metadata</h5>
+                        <div className="bg-white p-5 rounded-2xl border border-[#ccd5ae]/50 text-xs space-y-2.5 shadow-xs">
+                          <h5 className="font-bold text-[#01472e] text-xs uppercase tracking-wider mb-2 pb-1.5 border-b border-[#ccd5ae]/30">Transaction Metadata</h5>
                           <div className="flex justify-between text-slate-600">
                             <span>Agreement ID:</span>
-                            <strong className="font-mono text-slate-800 font-medium">{order.agreementId || 'AGR-DIRECT'}</strong>
+                            <strong className="font-mono text-slate-800 font-semibold">{order.agreementId || 'AGR-DIRECT'}</strong>
                           </div>
                           <div className="flex justify-between text-slate-600">
                             <span>Quality Grade:</span>
-                            <strong className="text-emerald-800 font-medium">{order.qualityGrade}</strong>
+                            <strong className="text-[#01472e] font-bold">{order.qualityGrade}</strong>
                           </div>
                           <div className="flex justify-between text-slate-600">
                             <span>Order Date:</span>
@@ -447,57 +460,57 @@ export const OrdersPage: React.FC = () => {
 
       {/* Dockside Delivery Verification & Receipt Modal */}
       {verifyOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 sm:p-8 max-w-2xl w-full space-y-6 max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-[32px] shadow-2xl border border-[#ccd5ae]/50 p-6 sm:p-8 max-w-2xl w-full space-y-6 max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-[#ccd5ae]/30">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-emerald-100 rounded-2xl border border-emerald-200">
-                  <FileCheck2 className="w-6 h-6 text-emerald-700" />
+                <div className="p-3 bg-[#eaf4ec] rounded-2xl border border-[#a3b18a]/40">
+                  <FileCheck2 className="w-6 h-6 text-[#01472e]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-900 tracking-tight">
+                  <h3 className="text-xl font-bold text-[#01472e] tracking-tight">
                     Dockside Produce Inspection & Receiving Handover
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Order <span className="font-mono font-medium text-slate-800">{verifyOrder.id}</span> • Batch <span className="font-mono font-medium text-slate-800">{verifyOrder.batchId}</span>
+                    Order <span className="font-mono font-bold text-slate-800">{verifyOrder.id}</span> • Batch <span className="font-mono font-bold text-slate-800">{verifyOrder.batchId}</span>
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setVerifyOrder(null)}
-                className="text-slate-400 hover:text-slate-600 text-lg font-medium"
+                className="w-8 h-8 rounded-full bg-[#faf9f5] border border-[#ccd5ae]/50 text-slate-400 hover:text-slate-700 flex items-center justify-center font-bold transition cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             {/* Shipment Summary */}
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="p-4 sm:p-5 bg-[#faf9f5] rounded-3xl border border-[#ccd5ae]/50 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs shadow-xs">
               <div>
-                <span className="text-[10px] text-slate-400 font-medium uppercase block">Produce</span>
-                <strong className="text-slate-800 text-sm font-medium">{verifyOrder.crop}</strong>
-                <span className="text-[10px] text-slate-500 block font-normal">({verifyOrder.variety})</span>
+                <span className="text-[10px] text-slate-400 font-semibold uppercase block">Produce</span>
+                <strong className="text-slate-800 text-sm font-bold">{verifyOrder.crop}</strong>
+                <span className="text-[10px] text-slate-500 block font-medium">({verifyOrder.variety})</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 font-medium uppercase block">Delivered Volume</span>
-                <strong className="text-slate-800 text-sm font-semibold">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase block">Delivered Volume</span>
+                <strong className="text-[#01472e] text-sm font-mono font-bold">
                   {(verifyOrder.packedQuantityKg || verifyOrder.quantityKg).toLocaleString()} kg
                 </strong>
-                <span className="text-[10px] text-slate-500 block font-normal">
+                <span className="text-[10px] text-slate-500 block font-medium">
                   {verifyOrder.crateCount || Math.ceil((verifyOrder.packedQuantityKg || verifyOrder.quantityKg) / 25)} Crates
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 font-medium uppercase block">Contract Rate</span>
-                <strong className="text-slate-800 text-sm font-semibold">₹{verifyOrder.pricePerKg}/kg</strong>
-                <span className="text-[10px] text-slate-500 block font-normal">Grade {verifyOrder.qualityGrade || 'A'}</span>
+                <span className="text-[10px] text-slate-400 font-semibold uppercase block">Contract Rate</span>
+                <strong className="text-slate-800 text-sm font-bold">₹{verifyOrder.pricePerKg}/kg</strong>
+                <span className="text-[10px] text-slate-500 block font-medium">Grade {verifyOrder.qualityGrade || 'A'}</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 font-medium uppercase block">Inbound Carrier</span>
-                <strong className="text-slate-800 text-xs truncate block font-medium">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase block">Inbound Carrier</span>
+                <strong className="text-slate-800 text-xs truncate block font-bold">
                   {verifyOrder.transportDetails?.carrierName || 'Cold-Chain Express'}
                 </strong>
-                <span className="text-[10px] text-slate-500 block font-normal">
+                <span className="text-[10px] text-slate-500 block font-mono">
                   {verifyOrder.transportDetails?.vehicleNumber || 'TN-38-BZ-4419'}
                 </span>
               </div>
@@ -506,7 +519,7 @@ export const OrdersPage: React.FC = () => {
             <form onSubmit={handleConfirmVerification} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
+                  <label className="font-semibold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
                     Gross Received (kg)
                   </label>
                   <input
@@ -517,13 +530,13 @@ export const OrdersPage: React.FC = () => {
                       setReceivedKg(val);
                       setAcceptedKg(Math.max(0, val - rejectedKg));
                     }}
-                    className="w-full bg-white border border-slate-200 rounded-xl p-2.5 font-medium text-base text-slate-900 focus:outline-none focus:border-emerald-500"
+                    className="input-modern w-full rounded-xl p-2.5 font-mono font-bold text-base text-slate-900"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="font-medium text-emerald-800 uppercase tracking-wider block mb-1 text-[10px]">
+                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1 text-[10px]">
                     Accepted Volume (kg)
                   </label>
                   <input
@@ -537,13 +550,13 @@ export const OrdersPage: React.FC = () => {
                       else if (val > 0) setAcceptanceStatus('ACCEPTED_PARTIAL');
                       else setAcceptanceStatus('REJECTED');
                     }}
-                    className="w-full bg-white border border-emerald-400 rounded-xl p-2.5 font-medium text-base text-emerald-800 focus:outline-none focus:border-emerald-600"
+                    className="input-modern w-full rounded-xl p-2.5 font-mono font-bold text-base text-[#01472e]"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="font-medium text-red-700 uppercase tracking-wider block mb-1 text-[10px]">
+                  <label className="font-semibold text-rose-700 uppercase tracking-wider block mb-1 text-[10px]">
                     Rejected (kg)
                   </label>
                   <input
@@ -557,13 +570,13 @@ export const OrdersPage: React.FC = () => {
                       else if (val >= receivedKg) setAcceptanceStatus('REJECTED');
                       else setAcceptanceStatus('ACCEPTED_PARTIAL');
                     }}
-                    className="w-full bg-white border border-red-200 rounded-xl p-2.5 font-medium text-base text-red-700 focus:outline-none focus:border-red-400"
+                    className="input-modern w-full rounded-xl p-2.5 font-mono font-bold text-base text-rose-700"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">
+                <label className="font-semibold text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">
                   Quality Gate Signoff Decision
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -586,17 +599,17 @@ export const OrdersPage: React.FC = () => {
                           setRejectedKg(receivedKg);
                         }
                       }}
-                      className={`p-3 rounded-xl border text-left transition ${
+                      className={`p-3 rounded-2xl border text-left transition cursor-pointer ${
                         acceptanceStatus === opt.id
                           ? opt.id === 'ACCEPTED_FULL'
-                            ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-medium'
+                            ? 'bg-[#eaf4ec] border-[#01472e] text-[#01472e] font-bold shadow-xs'
                             : opt.id === 'ACCEPTED_PARTIAL'
-                            ? 'bg-amber-50 border-amber-500 text-amber-900 font-medium'
-                            : 'bg-red-50 border-red-500 text-red-900 font-medium'
-                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                            ? 'bg-amber-50 border-amber-500 text-amber-950 font-bold shadow-xs'
+                            : 'bg-rose-50 border-rose-500 text-rose-950 font-bold shadow-xs'
+                          : 'bg-white border-[#ccd5ae]/50 text-slate-600 hover:bg-[#faf9f5]'
                       }`}
                     >
-                      <p className="font-medium text-xs">{opt.label}</p>
+                      <p className="font-bold text-xs">{opt.label}</p>
                       <p className="text-[10px] opacity-75 mt-0.5">{opt.desc}</p>
                     </button>
                   ))}
@@ -604,68 +617,68 @@ export const OrdersPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
+                <label className="font-semibold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
                   Receiving Inspection Remarks & Cold-Chain Observations
                 </label>
                 <textarea
                   value={issuesReported}
                   onChange={(e) => setIssuesReported(e.target.value)}
                   rows={2}
-                  className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-800 font-normal focus:outline-none focus:border-emerald-500"
+                  className="input-modern w-full rounded-2xl p-3 text-slate-800 text-xs"
                   placeholder="Record cold-chain temp log, crate condition, or defect notes..."
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
+                  <label className="font-semibold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
                     Receiving Officer Name
                   </label>
                   <input
                     type="text"
                     value={receiverName}
                     onChange={(e) => setReceiverName(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-xl p-2.5 font-medium text-slate-800 focus:outline-none focus:border-emerald-500"
+                    className="input-modern w-full rounded-xl p-2.5 font-medium text-slate-800 text-xs"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
+                  <label className="font-semibold text-slate-700 uppercase tracking-wider block mb-1 text-[10px]">
                     Officer Designation
                   </label>
                   <input
                     type="text"
                     value={receiverRole}
                     onChange={(e) => setReceiverRole(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-xl p-2.5 font-medium text-slate-800 focus:outline-none focus:border-emerald-500"
+                    className="input-modern w-full rounded-xl p-2.5 font-medium text-slate-800 text-xs"
                     required
                   />
                 </div>
               </div>
 
-              <div className="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200 text-xs text-emerald-950 space-y-1">
-                <div className="flex items-center gap-2 font-medium text-emerald-900">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <div className="p-4 bg-[#eaf4ec] rounded-2xl border border-[#a3b18a]/50 text-xs text-[#01472e] space-y-1 shadow-xs">
+                <div className="flex items-center gap-2 font-bold text-[#01472e]">
+                  <ShieldCheck className="w-4 h-4 text-[#01472e]" />
                   <span>Transparent Escrow Payout Impact</span>
                 </div>
-                <p className="text-[11px] leading-relaxed">
-                  Signing locks accepted volume at <strong className="font-medium">{acceptedKg.toLocaleString()} kg</strong> (₹{(acceptedKg * verifyOrder.pricePerKg).toLocaleString()}).
+                <p className="text-[11px] leading-relaxed text-[#01472e]/80">
+                  Signing locks accepted volume at <strong className="font-bold text-[#01472e]">{acceptedKg.toLocaleString()} kg</strong> (₹{(acceptedKg * verifyOrder.pricePerKg).toLocaleString()}).
                   Escrow automatically releases 89% to member farmers / FPO and 8% to cold-chain logistics.
                 </p>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#ccd5ae]/30">
                 <button
                   type="button"
                   onClick={() => setVerifyOrder(null)}
-                  className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl font-medium uppercase tracking-wider transition cursor-pointer"
+                  className="btn-secondary px-4 py-2.5 rounded-xl font-semibold uppercase tracking-wider transition cursor-pointer text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-xl shadow-xs transition uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
+                  className="btn-primary px-5 py-2.5 rounded-xl shadow-soft font-semibold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer text-xs"
                 >
                   <FileCheck2 className="w-4 h-4" />
                   <span>Confirm Receipt & Release Escrow</span>
