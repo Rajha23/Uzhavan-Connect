@@ -1180,11 +1180,11 @@ export const TRANSLATIONS_REGISTRY: Record<string, DeepPartial<TranslationDictio
 export const getTranslation = (
   langCode: string,
   key: string,
-  arg2?: any,
-  arg3?: any
+  arg2?: Record<string, string | number> | string | any,
+  arg3?: Record<string, string | number> | string | any
 ): string => {
-  let defaultText: string | undefined = undefined;
-  let params: Record<string, string | number> | undefined = undefined;
+  let params: Record<string, string | number> | undefined;
+  let defaultText: string | undefined;
 
   // Smart resolution of arguments because of mixed usage in the codebase
   // Some call t(key, defaultText, params)
@@ -1192,10 +1192,14 @@ export const getTranslation = (
   // Some call t(key, undefined, defaultText)
   if (typeof arg2 === 'string') {
     defaultText = arg2;
-    if (typeof arg3 === 'object' && arg3 !== null) params = arg3;
+    if (typeof arg3 === 'object' && arg3 !== null) {
+      params = arg3 as Record<string, string | number>;
+    }
   } else if (typeof arg2 === 'object' && arg2 !== null) {
-    params = arg2;
-    if (typeof arg3 === 'string') defaultText = arg3;
+    params = arg2 as Record<string, string | number>;
+    if (typeof arg3 === 'string') {
+      defaultText = arg3;
+    }
   } else if (typeof arg3 === 'string') {
     defaultText = arg3;
   }

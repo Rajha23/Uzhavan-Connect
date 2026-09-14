@@ -22,7 +22,7 @@ import confetti from 'canvas-confetti';
 import { TransportAssignment } from '../types';
 
 export const LogisticsDashboard: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, formatNumber } = useLanguage();
   const {
     currentUser,
     orders,
@@ -82,21 +82,21 @@ export const LogisticsDashboard: React.FC = () => {
 
     assignTransport(orderId, transport);
     setSelectedOrderForTransport(null);
-    setActionNotice(`Vehicle ${vehicleNumber} assigned to Order ${orderId}. Ready for departure dispatch!`);
+    setActionNotice(t('logistics.vehicleAssignedNotice', { vehicle: vehicleNumber, orderId }, `Vehicle ${vehicleNumber} assigned to Order ${orderId}. Ready for departure dispatch!`));
     confetti({ particleCount: 35, origin: { y: 0.6 } });
     setTimeout(() => setActionNotice(null), 4000);
   };
 
   const handleDispatch = (orderId: string, vehicleNum?: string) => {
     dispatchShipment(orderId);
-    setActionNotice(`Shipment ${orderId} (${vehicleNum || 'EV Reefer'}) dispatched! Live cold-chain telemetry broadcast.`);
+    setActionNotice(t('logistics.shipmentDispatchedNotice', { orderId, vehicle: vehicleNum || 'EV Reefer' }, `Shipment ${orderId} (${vehicleNum || 'EV Reefer'}) dispatched! Live cold-chain telemetry broadcast.`));
     confetti({ particleCount: 40, origin: { y: 0.6 } });
     setTimeout(() => setActionNotice(null), 4000);
   };
 
   const handleMarkDelivered = (orderId: string, buyerName: string) => {
     markDelivered(orderId);
-    setActionNotice(`Order ${orderId} delivered at ${buyerName} Receiving Bay! Awaiting Buyer inspection & digital confirmation.`);
+    setActionNotice(t('logistics.orderDeliveredNotice', { orderId, buyer: buyerName }, `Order ${orderId} delivered at ${buyerName} Receiving Bay! Awaiting Buyer inspection & digital confirmation.`));
     confetti({ particleCount: 50, origin: { y: 0.6 } });
     setTimeout(() => setActionNotice(null), 4000);
   };

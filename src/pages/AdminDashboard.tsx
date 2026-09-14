@@ -20,13 +20,9 @@ import {
   ChevronRight,
   TrendingUp,
   Cpu,
-  Layers,
-  UserPlus,
-  Lock,
-  X
+  Layers
 } from 'lucide-react';
 import { UserRole, Permission } from '../types';
-import { apiService } from '../services/apiService';
 
 export const AdminDashboard: React.FC = () => {
   const { t } = useLanguage();
@@ -48,13 +44,7 @@ export const AdminDashboard: React.FC = () => {
   } = useApp();
 
   const [activeTab, setActiveSection] = useState<'USERS' | 'ESCROW' | 'TRACEABILITY' | 'SYSTEM'>('USERS');
-  
-  // Modals state
-  const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
-  const [resetPasswordUserId, setResetPasswordUserId] = useState<string | null>(null);
-  
-  // Role Tabs in Users Section
-  const [activeRoleTab, setActiveRoleTab] = useState<UserRole | 'ALL'>('ALL');
+  const [roleFilter, setRoleFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Calculations
@@ -64,51 +54,13 @@ export const AdminDashboard: React.FC = () => {
   const verifiedBatchesCount = producePassports.length;
 
   const filteredUsers = systemUsers.filter((user) => {
-    const matchesRole = activeRoleTab === 'ALL' || user.role === activeRoleTab;
+    const matchesRole = roleFilter === 'ALL' || user.role === roleFilter;
     const matchesSearch =
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.location.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesRole && matchesSearch;
   });
-
-  const handleCreateUserSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      name: formData.get('name'),
-      email: formData.get('email'),
-      password: formData.get('password'),
-      role: formData.get('role'),
-      phone: formData.get('phone'),
-      location: formData.get('location')
-    };
-    
-    try {
-      await apiService.adminCreateUser(data);
-      alert('User created successfully!');
-      setIsCreateUserModalOpen(false);
-      window.location.reload(); // Refresh the users list
-    } catch (error: any) {
-      alert(error.message);
-    }
-  };
-
-  const handleResetPasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!resetPasswordUserId) return;
-    
-    const formData = new FormData(e.currentTarget);
-    const newPassword = formData.get('newPassword') as string;
-    
-    try {
-      await apiService.adminResetPassword(resetPasswordUserId, newPassword);
-      alert('Password reset successfully!');
-      setResetPasswordUserId(null);
-    } catch (error: any) {
-      alert(error.message);
-    }
-  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -225,31 +177,20 @@ export const AdminDashboard: React.FC = () => {
                   className="input-modern pl-9 pr-3 py-1.5 text-xs rounded-xl w-48 sm:w-64"
                 />
               </div>
-              <button
-                onClick={() => setIsCreateUserModalOpen(true)}
-                className="btn-primary flex items-center gap-2 px-4 py-2 text-xs rounded-xl shadow-soft"
-              >
-                <UserPlus className="w-4 h-4" />
-                <span>Create User</span>
-              </button>
+
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="input-modern py-1.5 px-3 text-xs rounded-xl bg-white font-medium text-slate-700"
+                <option value="ALL">{t('admin.allRoles', 'All Roles')}</option>
+                <option value="FARMER">{t('roles.farmer', 'Farmers')}</option>
+                <option value="FPO_AGGREGATOR">{t('roles.fpo', 'FPO Aggregators')}</option>
+                <option value="RETAIL_BUYER">{t('roles.buyer', 'Retail Buyers')}</option>
+                <option value="BULK_BUYER">{t('roles.bulk_buyer', 'Bulk Buyers')}</option>
+                <option value="LOGISTICS">{t('roles.logistics', 'Logistics')}</option>
+                <option value="ADMIN">{t('roles.admin', 'Admins')}</option>
+              </select>
             </div>
-          </div>
-          
-          {/* Role Tabs */}
-          <div className="flex gap-2 overflow-x-auto border-b border-[#ccd5ae]/30 pb-2">
-            {['ALL', 'FARMER', 'FPO_AGGREGATOR', 'RETAIL_BUYER', 'BULK_BUYER', 'LOGISTICS', 'ADMIN'].map((role) => (
-              <button
-                key={role}
-                onClick={() => setActiveRoleTab(role as any)}
-                className={`px-4 py-2 text-xs font-semibold whitespace-nowrap border-b-2 transition-colors ${
-                  activeRoleTab === role 
-                    ? 'border-[#01472e] text-[#01472e]' 
-                    : 'border-transparent text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                {role === 'ALL' ? 'All Roles' : role.replace('_', ' ')}
-              </button>
-            ))}
           </div>
 
           <div className="overflow-x-auto">
@@ -315,15 +256,6 @@ export const AdminDashboard: React.FC = () => {
                           </span>
                         )}
                       </div>
-                    </td>
-                    <td className="py-4 px-3 text-right">
-                      <button
-                        onClick={() => setResetPasswordUserId(user.id)}
-                        title="Reset Password"
-                        className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-[#01472e] transition"
-                      >
-                        <Lock className="w-4 h-4" />
-                      </button>
                     </td>
                   </tr>
                 ))}
@@ -478,90 +410,6 @@ export const AdminDashboard: React.FC = () => {
               </div>
               <p className="text-[11px] text-slate-400">{t('admin.criticalRoutesNote', 'Critical routes & map tiles pre-cached for zero-connectivity mandi usage.')}</p>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* CREATE USER MODAL */}
-      {isCreateUserModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-[32px] w-full max-w-md shadow-2xl overflow-hidden border border-[#ccd5ae]/50 animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-[#ccd5ae]/30 flex items-center justify-between bg-[#faf9f5]">
-              <h2 className="text-xl font-bold text-[#01472e]">Create New User</h2>
-              <button onClick={() => setIsCreateUserModalOpen(false)} className="p-2 hover:bg-[#eaf4ec] text-slate-400 hover:text-[#01472e] rounded-full transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <form onSubmit={handleCreateUserSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Full Name</label>
-                <input required type="text" name="name" className="input-modern w-full text-sm" placeholder="e.g. John Doe" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Email Address</label>
-                <input required type="email" name="email" className="input-modern w-full text-sm" placeholder="john@example.com" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Temporary Password</label>
-                <input required type="password" name="password" className="input-modern w-full text-sm" placeholder="Min 6 characters" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Role</label>
-                <select required name="role" className="input-modern w-full text-sm">
-                  <option value="FARMER">Farmer</option>
-                  <option value="FPO_AGGREGATOR">FPO Aggregator</option>
-                  <option value="RETAIL_BUYER">Retail Buyer</option>
-                  <option value="BULK_BUYER">Bulk Buyer</option>
-                  <option value="LOGISTICS">Logistics</option>
-                  <option value="ADMIN">Admin</option>
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Phone Number</label>
-                  <input type="text" name="phone" className="input-modern w-full text-sm" placeholder="+91..." />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Location</label>
-                  <input type="text" name="location" className="input-modern w-full text-sm" placeholder="City, State" />
-                </div>
-              </div>
-              
-              <div className="pt-4 flex gap-3">
-                <button type="button" onClick={() => setIsCreateUserModalOpen(false)} className="btn-outline flex-1">Cancel</button>
-                <button type="submit" className="btn-primary flex-1">Create User</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* RESET PASSWORD MODAL */}
-      {resetPasswordUserId && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-[32px] w-full max-w-sm shadow-2xl overflow-hidden border border-[#ccd5ae]/50 animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-[#ccd5ae]/30 flex items-center justify-between bg-[#faf9f5]">
-              <h2 className="text-lg font-bold text-[#01472e]">Reset Password</h2>
-              <button onClick={() => setResetPasswordUserId(null)} className="p-2 hover:bg-[#eaf4ec] text-slate-400 hover:text-[#01472e] rounded-full transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <form onSubmit={handleResetPasswordSubmit} className="p-6 space-y-4">
-              <p className="text-xs text-slate-500">
-                You are forcing a password reset for user ID <span className="font-mono text-slate-700 font-bold">{resetPasswordUserId}</span>.
-              </p>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">New Password</label>
-                <input required type="text" name="newPassword" minLength={6} className="input-modern w-full text-sm" placeholder="Enter new password" />
-              </div>
-              
-              <div className="pt-4 flex gap-3">
-                <button type="button" onClick={() => setResetPasswordUserId(null)} className="btn-outline flex-1">Cancel</button>
-                <button type="submit" className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded-xl flex-1 transition-colors">Reset Password</button>
-              </div>
-            </form>
           </div>
         </div>
       )}

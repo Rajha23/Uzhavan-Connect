@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import { INITIAL_AUCTION_OFFERS } from '../data/mockData';
 import { ReverseAuctionOffer } from '../types';
 import { SmartMatchingEngine } from '../components/SmartMatchingEngine';
@@ -20,6 +21,7 @@ import {
 import confetti from 'canvas-confetti';
 
 export const ReverseAuctionPage: React.FC = () => {
+  const { t, formatNumber } = useLanguage();
   const { setActiveTab } = useApp();
 
   const [offers, setOffers] = useState<ReverseAuctionOffer[]>(INITIAL_AUCTION_OFFERS);
@@ -73,13 +75,13 @@ export const ReverseAuctionPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
             <Gavel className="w-4 h-4 text-emerald-400" />
-            <span>Demand-Backed Procurement Auction • Live Bidding</span>
+            <span>{t('reverseAuction.demandBackedAuction', undefined, 'Demand-Backed Procurement Auction • Live Bidding')}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
-            Reverse Auction & Smart Allocation
+            {t('reverseAuction.title', undefined, 'Reverse Auction & Smart Allocation')}
           </h1>
           <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed font-normal">
-            Lot: <span className="text-white font-medium">3,000 kg Tomato (Grade A)</span> • Chennai Corridor. FPOs submit competitive transparent bids. Ranks by multi-factor Smart Match Score rather than crude lowest price.
+            {t('reverseAuction.lotSummary', undefined, 'Lot: 3,000 kg Tomato (Grade A) • Chennai Corridor. FPOs submit competitive transparent bids. Ranks by multi-factor Smart Match Score rather than crude lowest price.')}
           </p>
         </div>
 
@@ -89,7 +91,7 @@ export const ReverseAuctionPage: React.FC = () => {
             className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-medium px-5 py-2.5 rounded-xl shadow-sm transition uppercase tracking-wider"
           >
             <Plus className="w-4 h-4" />
-            <span>Submit FPO Bid</span>
+            <span>{t('reverseAuction.submitBid', undefined, 'Submit FPO Bid')}</span>
           </button>
 
           <button
@@ -97,7 +99,7 @@ export const ReverseAuctionPage: React.FC = () => {
             className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/20 transition uppercase tracking-wider"
           >
             <Scale className="w-4 h-4 text-emerald-400" />
-            <span>Inspect Net Realization</span>
+            <span>{t('reverseAuction.inspectRealization', undefined, 'Inspect Net Realization')}</span>
           </button>
         </div>
       </div>
@@ -107,10 +109,10 @@ export const ReverseAuctionPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-200/80">
-              Auction Protocol Workflow
+              {t('reverseAuction.workflowTitle', undefined, 'Auction Protocol Workflow')}
             </span>
             <h3 className="text-xl font-medium tracking-tight text-slate-900 mt-3">
-              End-to-End Reverse Auction Flow
+              {t('reverseAuction.endToEndFlow', undefined, 'End-to-End Reverse Auction Flow')}
             </h3>
           </div>
 
@@ -118,41 +120,41 @@ export const ReverseAuctionPage: React.FC = () => {
           <div className="flex items-center gap-2.5 text-[10px] font-medium uppercase tracking-wider">
             <span className="px-3.5 py-1.5 bg-emerald-50 text-emerald-800 rounded-full border border-emerald-200/80 flex items-center gap-1.5 shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-              OPEN
+              {t('reverseAuction.statusOpen', undefined, 'OPEN')}
             </span>
             <span className="px-3.5 py-1.5 bg-amber-50 text-amber-800 rounded-full border border-amber-200">
-              CLOSING SOON
+              {t('reverseAuction.statusClosingSoon', undefined, 'CLOSING SOON')}
             </span>
             <span className="px-3.5 py-1.5 bg-slate-100 text-slate-500 rounded-full border border-slate-200">
-              CLOSED
+              {t('reverseAuction.statusClosed', undefined, 'CLOSED')}
             </span>
           </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs text-center">
           <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">STEP 1</span>
-            <span className="font-medium text-slate-800">Buyer creates demand</span>
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">{t('reverseAuction.step1', undefined, 'STEP 1')}</span>
+            <span className="font-medium text-slate-800">{t('reverseAuction.step1Desc', undefined, 'Buyer creates demand')}</span>
           </div>
           <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">STEP 2</span>
-            <span className="font-medium text-slate-800">Farmers/FPOs receive</span>
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">{t('reverseAuction.step2', undefined, 'STEP 2')}</span>
+            <span className="font-medium text-slate-800">{t('reverseAuction.step2Desc', undefined, 'Farmers/FPOs receive')}</span>
           </div>
           <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">STEP 3</span>
-            <span className="font-medium text-slate-800">Submit prices</span>
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">{t('reverseAuction.step3', undefined, 'STEP 3')}</span>
+            <span className="font-medium text-slate-800">{t('reverseAuction.step3Desc', undefined, 'Submit prices')}</span>
           </div>
           <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">STEP 4</span>
-            <span className="font-medium text-slate-800">Compare offers</span>
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">{t('reverseAuction.step4', undefined, 'STEP 4')}</span>
+            <span className="font-medium text-slate-800">{t('reverseAuction.step4Desc', undefined, 'Compare offers')}</span>
           </div>
           <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">STEP 5</span>
-            <span className="font-medium text-slate-800">Select suitable offer</span>
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">{t('reverseAuction.step5', undefined, 'STEP 5')}</span>
+            <span className="font-medium text-slate-800">{t('reverseAuction.step5Desc', undefined, 'Select suitable offer')}</span>
           </div>
           <div className="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-300/80 shadow-2xs transform hover:-translate-y-0.5 transition">
-            <span className="text-[9px] text-emerald-800 font-medium uppercase tracking-wider block mb-1.5">STEP 6</span>
-            <span className="font-medium text-emerald-900">Order confirmed</span>
+            <span className="text-[9px] text-emerald-800 font-medium uppercase tracking-wider block mb-1.5">{t('reverseAuction.step6', undefined, 'STEP 6')}</span>
+            <span className="font-medium text-emerald-900">{t('reverseAuction.step6Desc', undefined, 'Order confirmed')}</span>
           </div>
         </div>
       </div>
@@ -163,14 +165,14 @@ export const ReverseAuctionPage: React.FC = () => {
           <div>
             <div className="flex items-center gap-3">
               <span className="text-[10px] bg-slate-900 text-emerald-400 font-medium px-3 py-1 rounded-full uppercase tracking-wider shadow-2xs">
-                OPEN AUCTION
+                {t('reverseAuction.openAuctionBadge', undefined, 'OPEN AUCTION')}
               </span>
               <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">ID: AUC-CH-TOM-3000</span>
             </div>
             <h3 className="text-2xl font-semibold text-slate-900 mt-3 tracking-tight">
-              Tomato • Required: 3,000 kg
+              {t('reverseAuction.tomatoLotTitle', undefined, 'Tomato • Required: 3,000 kg')}
             </h3>
-            <p className="text-sm text-slate-600 font-normal mt-1">Destination: Chennai Distribution Terminal • Max Price: ₹28.00/kg</p>
+            <p className="text-sm text-slate-600 font-normal mt-1">{t('reverseAuction.tomatoLotSubtitle', undefined, 'Destination: Chennai Distribution Terminal • Max Price: ₹28.00/kg')}</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -178,7 +180,7 @@ export const ReverseAuctionPage: React.FC = () => {
               onClick={() => handleAcceptOffer('OFF-001')}
               className="px-5 py-2.5 bg-slate-900 hover:bg-emerald-950 text-white font-medium text-xs rounded-xl shadow-xs transition uppercase tracking-wider"
             >
-              Accept Offer
+              {t('reverseAuction.acceptOffer', undefined, 'Accept Offer')}
             </button>
           </div>
         </div>
@@ -188,15 +190,15 @@ export const ReverseAuctionPage: React.FC = () => {
           <div className="p-5 rounded-xl bg-slate-50/80 border border-slate-200/80 shadow-2xs flex items-center justify-between">
             <div>
               <p className="font-medium text-slate-900 text-xs uppercase tracking-wider">Farmer A (Kanchipuram)</p>
-              <span className="text-[10px] text-slate-500 font-normal uppercase tracking-wider block mt-1">Standard Grade</span>
+              <span className="text-[10px] text-slate-500 font-normal uppercase tracking-wider block mt-1">{t('reverseAuction.standardGrade', undefined, 'Standard Grade')}</span>
             </div>
             <div className="text-right">
-              <span className="text-xl font-semibold text-slate-900 tracking-tight">₹27 <span className="text-xs font-normal text-slate-500">/ kg</span></span>
+              <span className="text-xl font-semibold text-slate-900 tracking-tight">₹27 <span className="text-xs font-normal text-slate-500">/ {t('common.kg', undefined, 'kg')}</span></span>
               <button
                 onClick={() => handleAcceptOffer('OFF-003')}
                 className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mt-1 hover:text-slate-900 transition"
               >
-                Select Offer
+                {t('reverseAuction.selectOffer', undefined, 'Select Offer')}
               </button>
             </div>
           </div>
@@ -204,15 +206,15 @@ export const ReverseAuctionPage: React.FC = () => {
           <div className="p-5 rounded-xl bg-slate-50/80 border border-slate-200/80 shadow-2xs flex items-center justify-between">
             <div>
               <p className="font-medium text-slate-900 text-xs uppercase tracking-wider">Farmer B (Tiruvallur)</p>
-              <span className="text-[10px] text-slate-500 font-normal uppercase tracking-wider block mt-1">Standard Grade</span>
+              <span className="text-[10px] text-slate-500 font-normal uppercase tracking-wider block mt-1">{t('reverseAuction.standardGrade', undefined, 'Standard Grade')}</span>
             </div>
             <div className="text-right">
-              <span className="text-xl font-semibold text-slate-900 tracking-tight">₹26 <span className="text-xs font-normal text-slate-500">/ kg</span></span>
+              <span className="text-xl font-semibold text-slate-900 tracking-tight">₹26 <span className="text-xs font-normal text-slate-500">/ {t('common.kg', undefined, 'kg')}</span></span>
               <button
                 onClick={() => handleAcceptOffer('OFF-002')}
                 className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mt-1 hover:text-slate-900 transition"
               >
-                Select Offer
+                {t('reverseAuction.selectOffer', undefined, 'Select Offer')}
               </button>
             </div>
           </div>
@@ -221,17 +223,17 @@ export const ReverseAuctionPage: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <p className="font-medium text-emerald-950 text-xs uppercase tracking-wider">GreenHarvest FPO</p>
-                <span className="text-[9px] bg-emerald-600 text-white font-medium px-2 py-0.5 rounded-full">BEST</span>
+                <span className="text-[9px] bg-emerald-600 text-white font-medium px-2 py-0.5 rounded-full">{t('reverseAuction.bestBadge', undefined, 'BEST')}</span>
               </div>
-              <span className="text-[10px] text-emerald-700 font-normal uppercase tracking-wider block mt-1">Grade A Certified</span>
+              <span className="text-[10px] text-emerald-700 font-normal uppercase tracking-wider block mt-1">{t('reverseAuction.gradeACertified', undefined, 'Grade A Certified')}</span>
             </div>
             <div className="text-right">
-              <span className="text-xl font-semibold text-emerald-900 tracking-tight">₹25 <span className="text-xs font-normal text-emerald-700">/ kg</span></span>
+              <span className="text-xl font-semibold text-emerald-900 tracking-tight">₹25 <span className="text-xs font-normal text-emerald-700">/ {t('common.kg', undefined, 'kg')}</span></span>
               <button
                 onClick={() => handleAcceptOffer('OFF-001')}
                 className="text-[10px] text-emerald-800 font-medium uppercase tracking-wider block mt-1 hover:opacity-80 transition"
               >
-                View Offers →
+                {t('reverseAuction.viewOffers', undefined, 'View Offers →')}
               </button>
             </div>
           </div>
@@ -246,9 +248,9 @@ export const ReverseAuctionPage: React.FC = () => {
         <div className="p-6 sm:p-7 border-b border-emerald-900/10 flex items-center justify-between">
           <div>
             <h3 className="text-xl font-medium tracking-tight text-slate-900">
-              Submitted FPO Auction Bids ({offers.length})
+              {t('reverseAuction.submittedBidsCount', { count: offers.length }, `Submitted FPO Auction Bids (${offers.length})`)}
             </h3>
-            <p className="text-xs text-slate-500 mt-1 font-normal">Sorted by Smart Match Score combining price, distance, and historical fulfillment</p>
+            <p className="text-xs text-slate-500 mt-1 font-normal">{t('reverseAuction.sortedBySmartMatch', undefined, 'Sorted by Smart Match Score combining price, distance, and historical fulfillment')}</p>
           </div>
         </div>
 
@@ -256,14 +258,14 @@ export const ReverseAuctionPage: React.FC = () => {
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-emerald-50/40 border-b border-emerald-900/10 text-slate-600 font-medium uppercase tracking-wider text-[11px]">
-                <th className="p-4 sm:p-5">FPO / Collective</th>
-                <th className="p-4 sm:p-5">Quantity</th>
-                <th className="p-4 sm:p-5">Price / kg</th>
-                <th className="p-4 sm:p-5">Quality Grade</th>
-                <th className="p-4 sm:p-5">Distance</th>
-                <th className="p-4 sm:p-5">Reliability</th>
-                <th className="p-4 sm:p-5">Smart Match Score</th>
-                <th className="p-4 sm:p-5 text-right">Action</th>
+                <th className="p-4 sm:p-5">{t('reverseAuction.colFpo', undefined, 'FPO / Collective')}</th>
+                <th className="p-4 sm:p-5">{t('reverseAuction.colQuantity', undefined, 'Quantity')}</th>
+                <th className="p-4 sm:p-5">{t('reverseAuction.colPrice', undefined, 'Price / kg')}</th>
+                <th className="p-4 sm:p-5">{t('reverseAuction.colGrade', undefined, 'Quality Grade')}</th>
+                <th className="p-4 sm:p-5">{t('reverseAuction.colDistance', undefined, 'Distance')}</th>
+                <th className="p-4 sm:p-5">{t('reverseAuction.colReliability', undefined, 'Reliability')}</th>
+                <th className="p-4 sm:p-5">{t('reverseAuction.colSmartScore', undefined, 'Smart Match Score')}</th>
+                <th className="p-4 sm:p-5 text-right">{t('reverseAuction.colAction', undefined, 'Action')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -274,10 +276,10 @@ export const ReverseAuctionPage: React.FC = () => {
                   <tr key={offer.id} className="hover:bg-emerald-50/30 transition">
                     <td className="p-5">
                       <span className="font-medium text-slate-900 block">{offer.fpoName}</span>
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-normal mt-1 block">Ready: {offer.readinessDate}</span>
+                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-normal mt-1 block">{t('reverseAuction.readyPrefix', undefined, 'Ready:')} {offer.readinessDate}</span>
                     </td>
                     <td className="p-5 font-medium text-slate-800">
-                      {offer.quantityKg.toLocaleString()} kg
+                      {formatNumber(offer.quantityKg)} {t('common.kg', undefined, 'kg')}
                     </td>
                     <td className="p-5 font-semibold text-slate-900 text-base tracking-tight">
                       ₹{offer.pricePerKg.toFixed(2)}
@@ -311,10 +313,10 @@ export const ReverseAuctionPage: React.FC = () => {
                         {isAccepted ? (
                           <>
                             <CheckCircle2 className="w-3.5 h-3.5" />
-                            <span>Accepted</span>
+                            <span>{t('reverseAuction.accepted', undefined, 'Accepted')}</span>
                           </>
                         ) : (
-                          <span>Accept Offer</span>
+                          <span>{t('reverseAuction.acceptOffer', undefined, 'Accept Offer')}</span>
                         )}
                       </button>
                     </td>
@@ -334,7 +336,7 @@ export const ReverseAuctionPage: React.FC = () => {
               <div className="flex items-center gap-2.5">
                 <Gavel className="w-5 h-5 text-emerald-700" />
                 <h3 className="text-xl font-semibold text-slate-900 tracking-tight">
-                  Submit FPO Reverse Auction Bid
+                  {t('reverseAuction.modalTitle', undefined, 'Submit FPO Reverse Auction Bid')}
                 </h3>
               </div>
               <button
@@ -347,7 +349,7 @@ export const ReverseAuctionPage: React.FC = () => {
 
             <form onSubmit={handleAddOffer} className="space-y-4 text-xs">
               <div>
-                <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">FPO Organization Name</label>
+                <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">{t('reverseAuction.labelOrgName', undefined, 'FPO Organization Name')}</label>
                 <input
                   type="text"
                   value={fpoName}
@@ -359,7 +361,7 @@ export const ReverseAuctionPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">Offered Quantity (kg)</label>
+                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">{t('reverseAuction.labelOfferedQty', undefined, 'Offered Quantity (kg)')}</label>
                   <input
                     type="number"
                     value={quantityKg}
@@ -370,7 +372,7 @@ export const ReverseAuctionPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">Bid Price (₹/kg)</label>
+                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">{t('reverseAuction.labelBidPrice', undefined, 'Bid Price (₹/kg)')}</label>
                   <input
                     type="number"
                     value={pricePerKg}
@@ -384,7 +386,7 @@ export const ReverseAuctionPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">Quality Grade</label>
+                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">{t('reverseAuction.labelGrade', undefined, 'Quality Grade')}</label>
                   <select
                     value={grade}
                     onChange={(e) => setGrade(e.target.value as any)}
@@ -396,7 +398,7 @@ export const ReverseAuctionPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">Distance to Hub (km)</label>
+                  <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">{t('reverseAuction.labelDistance', undefined, 'Distance to Hub (km)')}</label>
                   <input
                     type="number"
                     value={distanceKm}
@@ -413,13 +415,13 @@ export const ReverseAuctionPage: React.FC = () => {
                   onClick={() => setIsSubmitModalOpen(false)}
                   className="btn-ghost text-xs"
                 >
-                  Cancel
+                  {t('common.cancel', undefined, 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="btn-primary text-xs"
                 >
-                  Publish Auction Bid
+                  {t('reverseAuction.publishBid', undefined, 'Publish Auction Bid')}
                 </button>
               </div>
             </form>

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import { INITIAL_DEMAND_POOL } from '../data/mockData';
 import { DemandRequest, ProduceListing } from '../types';
 import {
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 
 export const DemandPoolPage: React.FC = () => {
+  const { t, formatNumber } = useLanguage();
   const { setActiveTab, demandRequests, produceListings, aggregatedDemandGroups } = useApp();
 
   // Selected aggregated group ID (defaults to first group or fallback)
@@ -62,13 +64,13 @@ export const DemandPoolPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium uppercase tracking-wider mb-2">
             <Layers className="w-4 h-4 text-emerald-400" />
-            <span>Demand Aggregation Engine</span>
+            <span>{t('demand.title', 'Demand Aggregation Engine')}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
-            Consolidated Demand Pool
+            {t('demand.title', 'Consolidated Demand Pool')}
           </h1>
           <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed font-normal">
-            Multi-buyer demand pooling without altering individual procurement records. Small buyer commitments group into institutional-scale volume opportunities, unlocking bulk transport rates and fair farmer realization.
+            {t('demand.subtitle', 'Multi-buyer demand pooling without altering individual procurement records. Small buyer commitments group into institutional-scale volume opportunities, unlocking bulk transport rates and fair farmer realization.')}
           </p>
         </div>
 
@@ -78,13 +80,13 @@ export const DemandPoolPage: React.FC = () => {
             className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-medium px-5 py-2.5 rounded-xl shadow-xs transition uppercase tracking-wider cursor-pointer"
           >
             <Sparkles className="w-4 h-4 text-slate-950" />
-            <span>Smart Match This Pool</span>
+            <span>{t('matching.smartMatching', 'Smart Match This Pool')}</span>
           </button>
           <button
             onClick={() => setActiveTab('reverse-auction')}
             className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-medium px-4 py-2.5 rounded-xl border border-white/20 transition uppercase tracking-wider cursor-pointer"
           >
-            <span>Reverse Auction</span>
+            <span>{t('reverseAuction.title', 'Reverse Auction')}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -96,9 +98,8 @@ export const DemandPoolPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium uppercase tracking-wider text-slate-600 flex items-center gap-2">
               <Layers className="w-4 h-4 text-emerald-600" />
-              <span>Active Multi-Commodity Aggregated Pools ({aggregatedDemandGroups.length})</span>
+              <span>{t('demand.activePools', 'Active Multi-Commodity Aggregated Pools')} ({aggregatedDemandGroups.length})</span>
             </span>
-            <span className="text-[11px] text-slate-500 font-normal">Click a pool to inspect aggregation mechanics</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -120,7 +121,7 @@ export const DemandPoolPage: React.FC = () => {
                       <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full uppercase tracking-wider ${
                         isSelected ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-800'
                       }`}>
-                        {grp.buyersCount} {grp.buyersCount === 1 ? 'Buyer' : 'Buyers'}
+                        {grp.buyersCount} {t('roles.RETAIL_BUYER', 'Buyers')}
                       </span>
                     </div>
                     <p className={`text-xs mt-0.5 ${isSelected ? 'text-slate-300' : 'text-slate-500'}`}>
@@ -129,10 +130,10 @@ export const DemandPoolPage: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <span className={`text-xl font-semibold tracking-tight ${isSelected ? 'text-emerald-400' : 'text-slate-900'}`}>
-                      {grp.totalQuantityKg.toLocaleString()} kg
+                      {grp.totalQuantityKg.toLocaleString()} {t('common.kg', 'kg')}
                     </span>
                     <span className={`text-[10px] block font-mono ${isSelected ? 'text-slate-400' : 'text-slate-500'}`}>
-                      max ₹{grp.avgMaxPricePerKg}/kg
+                      max ₹{grp.avgMaxPricePerKg}/{t('common.kg', 'kg')}
                     </span>
                   </div>
                 </div>
@@ -145,45 +146,59 @@ export const DemandPoolPage: React.FC = () => {
       {/* Pool Identity Summary Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 transition">
-          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">COMMODITY</span>
+          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">
+            {t('demand.commodity', undefined, 'COMMODITY')}
+          </span>
           <p className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">{activeCrop}</p>
           <span className="text-[11px] text-slate-500 font-normal">{activeGroup?.variety || 'Commercial Grade'}</span>
         </div>
 
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 transition">
-          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">REGIONAL CORRIDOR</span>
+          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">
+            {t('demand.regionalCorridor', undefined, 'REGIONAL CORRIDOR')}
+          </span>
           <p className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">{activeCorridor.split(' ')[0]}</p>
-          <span className="text-[11px] text-slate-500 font-normal">Logistics Corridor</span>
+          <span className="text-[11px] text-slate-500 font-normal">{t('demand.logisticsCorridor', undefined, 'Logistics Corridor')}</span>
         </div>
 
         <div className="bg-emerald-50/70 p-4 sm:p-5 rounded-2xl border border-emerald-200 shadow-xs">
-          <span className="text-[10px] text-emerald-800 font-medium uppercase tracking-wider block mb-1">POOLED QUANTITY</span>
+          <span className="text-[10px] text-emerald-800 font-medium uppercase tracking-wider block mb-1">
+            {t('demand.pooledQuantity', undefined, 'POOLED QUANTITY')}
+          </span>
           <p className="text-2xl sm:text-3xl font-semibold text-emerald-900 tracking-tight">
-            {totalPooledQty.toLocaleString()} kg
+            {formatNumber(totalPooledQty)} {t('common.kg', undefined, 'kg')}
           </p>
-          <span className="text-[10px] text-emerald-700 font-medium uppercase tracking-wider">Ready for Matching</span>
+          <span className="text-[10px] text-emerald-700 font-medium uppercase tracking-wider">
+            {t('demand.readyForMatching', undefined, 'Ready for Matching')}
+          </span>
         </div>
 
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 transition">
-          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">TARGET DELIVERY</span>
+          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">
+            {t('demand.targetDelivery', undefined, 'TARGET DELIVERY')}
+          </span>
           <p className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">{activeTargetDate}</p>
-          <span className="text-[11px] text-slate-500 font-normal">Morning Window</span>
+          <span className="text-[11px] text-slate-500 font-normal">{t('demand.morningWindow', undefined, 'Morning Window')}</span>
         </div>
 
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 transition">
-          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">BENCHMARK PRICE</span>
+          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">
+            {t('demand.benchmarkPrice', undefined, 'BENCHMARK PRICE')}
+          </span>
           <p className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
             ₹{avgMaxPrice}
           </p>
-          <span className="text-[11px] text-slate-500 font-normal">Max Ceiling / kg</span>
+          <span className="text-[11px] text-slate-500 font-normal">{t('demand.maxCeiling', undefined, 'Max Ceiling / kg')}</span>
         </div>
 
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 transition">
-          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">CONSOLIDATED BUYERS</span>
+          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1">
+            {t('demand.consolidatedBuyers', undefined, 'CONSOLIDATED BUYERS')}
+          </span>
           <p className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
-            {buyersCount} <span className="text-sm font-medium">{buyersCount === 1 ? 'Entity' : 'Entities'}</span>
+            {buyersCount} <span className="text-sm font-medium">{buyersCount === 1 ? t('common.entity', undefined, 'Entity') : t('common.entities', undefined, 'Entities')}</span>
           </p>
-          <span className="text-[11px] text-slate-500 font-normal">Single Dispatch Run</span>
+          <span className="text-[11px] text-slate-500 font-normal">{t('demand.singleDispatchRun', undefined, 'Single Dispatch Run')}</span>
         </div>
       </div>
 
@@ -191,13 +206,13 @@ export const DemandPoolPage: React.FC = () => {
       <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-8">
         <div className="text-center max-w-2xl mx-auto">
           <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-            3-Stage Aggregation Pipeline
+            {t('demand.threeStagePipeline', undefined, '3-Stage Aggregation Pipeline')}
           </span>
           <h3 className="text-2xl sm:text-3xl font-semibold text-slate-900 mt-3 tracking-tight">
-            Individual Demands → Multi-Factor Compatibility → Institutional Pool
+            {t('demand.pipelineTitle', undefined, 'Individual Demands → Multi-Factor Compatibility → Institutional Pool')}
           </h3>
           <p className="text-sm text-slate-600 mt-1.5 font-normal">
-            Preserving full traceability of each contributing buyer demand while delivering bulk freight efficiency and volume pricing power to farmers.
+            {t('demand.pipelineSubtitle', undefined, 'Preserving full traceability of each contributing buyer demand while delivering bulk freight efficiency and volume pricing power to farmers.')}
           </p>
         </div>
 
@@ -207,14 +222,14 @@ export const DemandPoolPage: React.FC = () => {
           <div className="lg:col-span-4 bg-slate-50/70 rounded-2xl p-5 border border-slate-200/80 flex flex-col justify-between space-y-4">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Stage 1</span>
+                <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500">{t('demand.stage1', undefined, 'Stage 1')}</span>
                 <span className="text-[10px] bg-emerald-100 text-emerald-800 font-medium px-2 py-0.5 rounded-full uppercase tracking-wider">
-                  {activeDemands.length} Individual Demands
+                  {t('demand.individualDemandsCount', { count: activeDemands.length }, `${activeDemands.length} Individual Demands`)}
                 </span>
               </div>
-              <h4 className="font-medium text-slate-900 text-sm mb-1">Contributing Buyer Demands</h4>
+              <h4 className="font-medium text-slate-900 text-sm mb-1">{t('demand.contributingDemands', undefined, 'Contributing Buyer Demands')}</h4>
               <p className="text-[11px] text-slate-500 mb-3 font-normal">
-                Each buyer's specific contract requirements are preserved intact.
+                {t('demand.contributingSubtitle', undefined, "Each buyer's specific contract requirements are preserved intact.")}
               </p>
 
               <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
@@ -225,11 +240,11 @@ export const DemandPoolPage: React.FC = () => {
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-slate-900 text-xs">{dem.buyerName}</span>
-                      <span className="font-medium text-xs text-slate-900">{dem.quantityKg.toLocaleString()} kg</span>
+                      <span className="font-medium text-xs text-slate-900">{formatNumber(dem.quantityKg)} {t('common.kg', undefined, 'kg')}</span>
                     </div>
                     <div className="text-[11px] text-slate-600 space-y-0.5">
-                      <p><strong className="text-slate-800 font-medium">Variety:</strong> {dem.variety || 'Hybrid'}</p>
-                      <p><strong className="text-slate-800 font-medium">Grade:</strong> {dem.qualityRequirement} • Max ₹{dem.maxTargetPricePerKg}/kg</p>
+                      <p><strong className="text-slate-800 font-medium">{t('demand.variety', undefined, 'Variety')}:</strong> {dem.variety || 'Hybrid'}</p>
+                      <p><strong className="text-slate-800 font-medium">{t('demand.grade', undefined, 'Grade')}:</strong> {dem.qualityRequirement} • max ₹{dem.maxTargetPricePerKg}/{t('common.kg', undefined, 'kg')}</p>
                       <p className="text-[10px] text-slate-400 truncate"><MapPin className="w-3 h-3 inline mr-1 text-slate-400" />{dem.location}</p>
                     </div>
                   </div>
@@ -238,7 +253,7 @@ export const DemandPoolPage: React.FC = () => {
             </div>
 
             <div className="pt-3 border-t border-slate-200/60 text-[11px] text-slate-600 font-normal">
-              Total Sum: <span className="font-medium text-slate-900 text-xs">{totalPooledQty.toLocaleString()} kg</span> across {buyersCount} buyers
+              {t('demand.totalSum', undefined, 'Total Sum:')} <span className="font-medium text-slate-900 text-xs">{formatNumber(totalPooledQty)} {t('common.kg', undefined, 'kg')}</span> {t('demand.acrossBuyers', { count: buyersCount }, `across ${buyersCount} buyers`)}
             </div>
           </div>
 
@@ -246,14 +261,14 @@ export const DemandPoolPage: React.FC = () => {
           <div className="lg:col-span-4 bg-emerald-50/50 rounded-2xl p-6 border border-emerald-200/70 flex flex-col justify-between space-y-4">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-800">Stage 2</span>
+                <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-800">{t('demand.stage2', undefined, 'Stage 2')}</span>
                 <span className="text-[10px] bg-emerald-100 text-emerald-900 font-medium px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                  Compatibility Verified
+                  {t('demand.compatibilityVerified', undefined, 'Compatibility Verified')}
                 </span>
               </div>
-              <h4 className="font-medium text-slate-900 text-base mb-1">Aggregation Rule Engine</h4>
+              <h4 className="font-medium text-slate-900 text-base mb-1">{t('demand.aggregationRuleEngine', undefined, 'Aggregation Rule Engine')}</h4>
               <p className="text-[11px] text-slate-500 mb-4 font-normal">
-                Demands are grouped only when 4 core agricultural compatibility invariants hold:
+                {t('demand.aggregationRuleDesc', undefined, 'Demands are grouped only when 4 core agricultural compatibility invariants hold:')}
               </p>
 
               <div className="space-y-3">
@@ -271,13 +286,13 @@ export const DemandPoolPage: React.FC = () => {
               </div>
 
               <div className="mt-4 p-3 bg-emerald-50/70 rounded-xl border border-emerald-200/70 text-[11px] text-emerald-950 leading-relaxed font-normal">
-                🛡️ <strong className="text-emerald-950 font-medium">Integrity Invariant:</strong> Individual buyer demands are never modified, merged, or lost. Aggregation acts as a coordinated procurement umbrella.
+                🛡️ <strong className="text-emerald-950 font-medium">{t('demand.integrityInvariant', undefined, 'Integrity Invariant:')}</strong> {t('demand.integrityInvariantDesc', undefined, 'Individual buyer demands are never modified, merged, or lost. Aggregation acts as a coordinated procurement umbrella.')}
               </div>
             </div>
 
             <div className="pt-3 border-t border-emerald-200/60 text-[11px] text-emerald-900 font-medium flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>4 / 4 Compatibility Invariants Passed</span>
+              <span>{t('demand.invariantsPassed', undefined, '4 / 4 Compatibility Invariants Passed')}</span>
             </div>
           </div>
 
@@ -288,12 +303,12 @@ export const DemandPoolPage: React.FC = () => {
                 <span className="text-[10px] font-medium uppercase tracking-wider bg-emerald-500/20 px-3 py-1 rounded-full text-emerald-300 border border-emerald-400/30">
                   {activeGroup?.id || `POOL-${activeCrop.slice(0,3).toUpperCase()}-2026`}
                 </span>
-                <span className="text-[10px] text-emerald-400 font-medium uppercase tracking-wider">Single Dispatch</span>
+                <span className="text-[10px] text-emerald-400 font-medium uppercase tracking-wider">{t('demand.singleDispatch', undefined, 'Single Dispatch')}</span>
               </div>
 
               <div>
-                <span className="text-[10px] text-slate-300 font-medium uppercase tracking-wider block">Combined Procurement Volume</span>
-                <p className="text-4xl sm:text-5xl font-semibold mt-2 tracking-tight text-emerald-400">{totalPooledQty.toLocaleString()} kg</p>
+                <span className="text-[10px] text-slate-300 font-medium uppercase tracking-wider block">{t('demand.combinedProcurementVolume', undefined, 'Combined Procurement Volume')}</span>
+                <p className="text-4xl sm:text-5xl font-semibold mt-2 tracking-tight text-emerald-400">{formatNumber(totalPooledQty)} {t('common.kg', undefined, 'kg')}</p>
                 <p className="text-xs text-slate-300 mt-1 font-normal">
                   {activeCrop} ({activeGroup?.qualityRequirement || 'Grade A'}) for {activeCorridor}
                 </p>
@@ -301,16 +316,16 @@ export const DemandPoolPage: React.FC = () => {
 
               <div className="space-y-2 pt-3 border-t border-white/10 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-300 font-normal text-[11px] uppercase tracking-wider">Benchmarked Target:</span>
-                  <span className="font-semibold text-lg text-emerald-300">₹{avgMaxPrice} / kg</span>
+                  <span className="text-slate-300 font-normal text-[11px] uppercase tracking-wider">{t('demand.benchmarkedTarget', undefined, 'Benchmarked Target:')}</span>
+                  <span className="font-semibold text-lg text-emerald-300">₹{avgMaxPrice} / {t('common.kg', undefined, 'kg')}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-300 font-normal text-[11px] uppercase tracking-wider">Logistics Run:</span>
+                  <span className="text-slate-300 font-normal text-[11px] uppercase tracking-wider">{t('demand.logisticsRun', undefined, 'Logistics Run:')}</span>
                   <span className="text-white font-medium">1 x 3.0T Reefer</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-300 font-normal text-[11px] uppercase tracking-wider">Transport Emissions:</span>
-                  <span className="text-emerald-400 font-medium">-34% Consolidated</span>
+                  <span className="text-slate-300 font-normal text-[11px] uppercase tracking-wider">{t('demand.transportEmissions', undefined, 'Transport Emissions:')}</span>
+                  <span className="text-emerald-400 font-medium">{t('demand.consolidatedReduction', undefined, '-34% Consolidated')}</span>
                 </div>
               </div>
             </div>
@@ -321,13 +336,13 @@ export const DemandPoolPage: React.FC = () => {
                 className="w-full py-3 bg-emerald-500 text-slate-950 font-medium rounded-xl text-xs hover:bg-emerald-400 transition shadow-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Sparkles className="w-4 h-4 text-slate-950" />
-                <span>Smart Match This Group →</span>
+                <span>{t('demand.smartMatchGroup', undefined, 'Smart Match This Group →')}</span>
               </button>
               <button
                 onClick={() => setActiveTab('reverse-auction')}
                 className="w-full py-2.5 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl text-xs transition border border-white/15 uppercase tracking-wider cursor-pointer"
               >
-                Open FPO Reverse Auction
+                {t('demand.openReverseAuction', undefined, 'Open FPO Reverse Auction')}
               </button>
             </div>
           </div>
@@ -339,13 +354,13 @@ export const DemandPoolPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div>
             <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-              Corridor Supply Availability
+              {t('demand.corridorSupplyAvailability', undefined, 'Corridor Supply Availability')}
             </span>
             <h3 className="text-2xl sm:text-3xl font-semibold text-slate-900 mt-3 tracking-tight">
-              Matching Farmer Supply in Corridor
+              {t('demand.matchingFarmerSupply', undefined, 'Matching Farmer Supply in Corridor')}
             </h3>
             <p className="text-sm text-slate-600 mt-1.5 font-normal">
-              Verified farmer listings ready for allocation to this aggregated pool.
+              {t('demand.matchingFarmerSupplySubtitle', undefined, 'Verified farmer listings ready for allocation to this aggregated pool.')}
             </p>
           </div>
 
@@ -353,7 +368,7 @@ export const DemandPoolPage: React.FC = () => {
             onClick={() => setActiveTab('smart-matching')}
             className="flex items-center gap-2 bg-slate-900 hover:bg-emerald-950 text-white text-xs font-medium px-5 py-2.5 rounded-xl shadow-xs transition uppercase tracking-wider cursor-pointer"
           >
-            <span>Proceed to Smart Matching</span>
+            <span>{t('demand.proceedSmartMatching', undefined, 'Proceed to Smart Matching')}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -362,32 +377,32 @@ export const DemandPoolPage: React.FC = () => {
           {/* Active Aggregated Demand Card */}
           <div className="p-6 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Aggregated Demand</span>
+              <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500">{t('demand.aggregatedDemand', undefined, 'Aggregated Demand')}</span>
               <span className="text-[10px] bg-emerald-100 text-emerald-800 font-medium px-3 py-1 rounded-full uppercase tracking-wider">
                 {activeCorridor}
               </span>
             </div>
             <p className="text-4xl font-semibold text-slate-900 tracking-tight">
-              {totalPooledQty.toLocaleString()} kg
+              {formatNumber(totalPooledQty)} {t('common.kg', undefined, 'kg')}
             </p>
             <p className="text-xs text-slate-600 font-normal">
-              Commodity: <strong className="text-slate-800 font-medium">{activeCrop}</strong> ({activeGroup?.qualityRequirement || 'Grade A'}) • Max Target: <strong className="text-slate-800 font-medium">₹{avgMaxPrice}/kg</strong> • {buyersCount} buyers consolidated
+              {t('demand.commodity', undefined, 'Commodity')}: <strong className="text-slate-800 font-medium">{activeCrop}</strong> ({activeGroup?.qualityRequirement || 'Grade A'}) • {t('demand.benchmarkedTarget', undefined, 'Max Target:')} <strong className="text-slate-800 font-medium">₹{avgMaxPrice}/{t('common.kg', undefined, 'kg')}</strong> • {t('demand.acrossBuyers', { count: buyersCount }, `${buyersCount} buyers consolidated`)}
             </p>
           </div>
 
           {/* Available Nearby Farmer Supply Card */}
           <div className="p-6 rounded-2xl bg-emerald-50/50 border border-emerald-200/80 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-900">Available Nearby Farmer Supply</span>
+              <span className="text-[10px] font-medium uppercase tracking-wider text-emerald-900">{t('demand.availableNearbySupply', undefined, 'Available Nearby Farmer Supply')}</span>
               <span className="text-[10px] bg-slate-900 text-emerald-400 font-medium px-3 py-1 rounded-full uppercase tracking-wider">
-                {matchingSupplies.length} Suppliers Active
+                {t('demand.suppliersActive', { count: matchingSupplies.length }, `${matchingSupplies.length} Suppliers Active`)}
               </span>
             </div>
 
             <div className="space-y-2.5 pt-1">
               {matchingSupplies.length === 0 ? (
                 <div className="p-4 bg-white rounded-xl text-center text-xs text-slate-500 font-normal">
-                  No direct farmer listings currently available for {activeCrop}. Reverse auction can solicit regional bids.
+                  {t('demand.noMatchingSupplies', { crop: activeCrop }, `No direct farmer listings currently available for ${activeCrop}. Reverse auction can solicit regional bids.`)}
                 </div>
               ) : (
                 matchingSupplies.slice(0, 4).map((item: ProduceListing) => (
@@ -397,11 +412,11 @@ export const DemandPoolPage: React.FC = () => {
                         {item.farmerName} ({item.location})
                       </span>
                       <span className="text-[10px] text-slate-500 font-normal">
-                        {item.grade} • ₹{item.expectedPricePerKg}/kg • {item.variety || 'Certified'}
+                        {item.grade} • ₹{item.expectedPricePerKg}/{t('common.kg', undefined, 'kg')} • {item.variety || 'Certified'}
                       </span>
                     </div>
                     <span className="font-semibold text-base text-emerald-700 tracking-tight">
-                      +{item.quantityKg.toLocaleString()} kg
+                      +{formatNumber(item.quantityKg)} {t('common.kg', undefined, 'kg')}
                     </span>
                   </div>
                 ))
@@ -409,9 +424,9 @@ export const DemandPoolPage: React.FC = () => {
             </div>
 
             <div className="pt-3 border-t border-emerald-200/60 flex items-center justify-between mt-2">
-              <span className="text-[11px] font-medium uppercase tracking-wider text-emerald-900">Total Matching Supply:</span>
+              <span className="text-[11px] font-medium uppercase tracking-wider text-emerald-900">{t('demand.totalMatchingSupply', undefined, 'Total Matching Supply:')}</span>
               <span className="text-2xl font-semibold text-emerald-900 tracking-tight">
-                {totalAvailableSupply.toLocaleString()} kg
+                {formatNumber(totalAvailableSupply)} {t('common.kg', undefined, 'kg')}
               </span>
             </div>
           </div>

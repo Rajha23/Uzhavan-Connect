@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import { BUYER_DEMAND_OPPORTUNITIES, FARMER_OFFERS_DATA } from '../data/mockData';
 import { BuyerDemandOpportunity, FarmerOfferItem } from '../types';
 import {
@@ -18,6 +19,7 @@ import {
 import confetti from 'canvas-confetti';
 
 export const FindBuyersPage: React.FC = () => {
+  const { t } = useLanguage();
   const { setActiveTab, demandRequests, produceListings, confirmMatchAndCreateOrder } = useApp();
 
   const [offers, setOffers] = useState<FarmerOfferItem[]>(FARMER_OFFERS_DATA);
@@ -48,7 +50,12 @@ export const FindBuyersPage: React.FC = () => {
       confirmMatchAndCreateOrder(matchingListing.id, opp.id, opp.maxPricePerKg, opp.requiredQuantityKg);
     }
     setOfferSuccess(
-      `Agreement reached with ${opp.buyerName}! Confirmed Order created for ${opp.requiredQuantityKg.toLocaleString()} kg of ${opp.crop} at ₹${opp.maxPricePerKg}/kg.`
+      t('findBuyers.agreementReached', 'Agreement reached with {buyer}! Confirmed Order created for {qty} kg of {crop} at ₹{price}/kg.', {
+        buyer: opp.buyerName,
+        qty: opp.requiredQuantityKg.toLocaleString(),
+        crop: opp.crop,
+        price: opp.maxPricePerKg
+      })
     );
     confetti({
       particleCount: 70,
@@ -71,7 +78,12 @@ export const FindBuyersPage: React.FC = () => {
     }
     setOffers(offers.map((o) => (o.id === off.id ? { ...o, status: 'ACCEPTED' } : o)));
     setOfferSuccess(
-      `Offer accepted! Order created for ${off.quantityKg.toLocaleString()} kg of ${off.crop} at ₹${off.offeredPricePerKg}/kg. Track it in Orders pipeline.`
+      t('findBuyers.agreementReached', 'Offer accepted! Order created for {qty} kg of {crop} at ₹{price}/kg. Track it in Orders pipeline.', {
+        buyer: off.buyerName,
+        qty: off.quantityKg.toLocaleString(),
+        crop: off.crop,
+        price: off.offeredPricePerKg
+      })
     );
     confetti({
       particleCount: 60,
@@ -96,13 +108,13 @@ export const FindBuyersPage: React.FC = () => {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 bg-[#fefae0]/15 border border-[#fefae0]/25 px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-[#fefae0]">
               <Search className="w-3.5 h-3.5 text-[#fefae0]" />
-              <span>Direct Buyer Discovery & Smart Match Offers</span>
+              <span>{t('findBuyers.title', 'Direct Buyer Discovery & Demand Opportunities')}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-              Find Buyers & Forward Demands
+              {t('findBuyers.title', 'Find Buyers & Forward Demands')}
             </h1>
             <p className="text-sm text-emerald-100/80 font-normal max-w-2xl">
-              Connect directly with verified institutional retailers, wholesale buyers, and food processors. Eliminate middleman cuts with transparent binding orders.
+              {t('findBuyers.subtitle', 'Connect directly with verified institutional retailers, wholesale buyers, and food processors. Eliminate middleman cuts with transparent binding orders.')}
             </p>
           </div>
 
@@ -110,7 +122,7 @@ export const FindBuyersPage: React.FC = () => {
             onClick={() => setActiveTab('demand-forecast')}
             className="self-start sm:self-auto bg-[#fefae0] hover:bg-white text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-soft hover:shadow-md transition-all cursor-pointer relative z-10"
           >
-            Check Demand Forecast →
+            {t('sidebar.demandIntelligence', 'Check Demand Forecast')} →
           </button>
         </div>
       </div>
@@ -127,7 +139,7 @@ export const FindBuyersPage: React.FC = () => {
             onClick={() => setActiveTab('orders')}
             className="btn-primary text-xs whitespace-nowrap self-start sm:self-auto cursor-pointer shadow-soft py-2 px-4 rounded-xl"
           >
-            Track in Orders Pipeline →
+            {t('orders.trackOrders', 'Track in Orders Pipeline')} →
           </button>
         </div>
       )}
@@ -137,12 +149,12 @@ export const FindBuyersPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#ccd5ae]/30 pb-4">
           <div>
             <h3 className="text-xl font-bold text-[#01472e] tracking-tight">
-              Direct Buyer Bids for Your Listed Produce
+              {t('findBuyers.activeIncomingOffers', 'Direct Buyer Bids for Your Listed Produce')}
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">Verified retailers bidding directly on your farm inventory</p>
+            <p className="text-xs text-slate-500 mt-0.5">{t('findBuyers.subtitle', 'Verified retailers bidding directly on your farm inventory')}</p>
           </div>
           <span className="self-start sm:self-auto text-xs font-bold text-[#01472e] bg-[#eaf4ec] px-3.5 py-1 rounded-full border border-[#a3b18a]/40 uppercase tracking-wider">
-            {offers.filter((o) => o.status === 'PENDING').length} Pending Bids
+            {offers.filter((o) => o.status === 'PENDING').length} {t('common.pending', 'Pending')}
           </span>
         </div>
 
@@ -163,21 +175,21 @@ export const FindBuyersPage: React.FC = () => {
                   <div className="flex items-center gap-2 flex-wrap">
                     <h4 className="font-bold text-lg text-slate-900 tracking-tight">{off.buyerName}</h4>
                     <span className="text-[10px] bg-[#01472e] text-[#fefae0] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                      VERIFIED BUYER
+                      {t('common.verified', 'VERIFIED')}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-600 mt-1 font-medium">{off.crop} • {off.distanceKm} km away</p>
+                  <p className="text-xs text-slate-600 mt-1 font-medium">{off.crop} • {off.distanceKm} km</p>
                 </div>
 
                 <div className="text-right">
-                  <span className="text-2xl font-bold font-mono text-[#01472e] tracking-tight">₹{off.offeredPricePerKg}<span className="text-xs font-normal text-slate-500">/kg</span></span>
-                  <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider block">{off.quantityKg.toLocaleString()} kg</span>
+                  <span className="text-2xl font-bold font-mono text-[#01472e] tracking-tight">₹{off.offeredPricePerKg}<span className="text-xs font-normal text-slate-500">/{t('common.kg', 'kg')}</span></span>
+                  <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider block">{off.quantityKg.toLocaleString()} {t('common.kg', 'kg')}</span>
                 </div>
               </div>
 
               <div className="pt-4 border-t border-[#ccd5ae]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                 <span className="text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
-                  Total Contract: <strong className="text-slate-900 text-sm font-mono font-bold">₹{(off.quantityKg * off.offeredPricePerKg).toLocaleString()}</strong>
+                  {t('common.total', 'Total')}: <strong className="text-slate-900 text-sm font-mono font-bold">₹{(off.quantityKg * off.offeredPricePerKg).toLocaleString()}</strong>
                 </span>
 
                 {off.status === 'PENDING' ? (
@@ -186,13 +198,13 @@ export const FindBuyersPage: React.FC = () => {
                       onClick={() => handleAcceptOffer(off)}
                       className="btn-primary px-4 py-2 rounded-xl text-xs font-semibold shadow-soft cursor-pointer"
                     >
-                      Accept & Contract
+                      {t('findBuyers.acceptOffer', 'Accept & Contract')}
                     </button>
                     <button
                       onClick={() => handleRejectOffer(off.id)}
                       className="btn-secondary px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer"
                     >
-                      Decline
+                      {t('findBuyers.rejectOffer', 'Decline')}
                     </button>
                   </div>
                 ) : (
@@ -203,7 +215,7 @@ export const FindBuyersPage: React.FC = () => {
                         : 'bg-rose-100 text-rose-800 border border-rose-200'
                     }`}
                   >
-                    {off.status}
+                    {t('orderStatus.' + off.status, off.status)}
                   </span>
                 )}
               </div>
@@ -216,9 +228,9 @@ export const FindBuyersPage: React.FC = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-bold text-[#01472e] tracking-tight">
-            Active Forward Procurement Demands
+            {t('findBuyers.liveDemandOpportunities', 'Active Forward Procurement Demands')}
           </h3>
-          <span className="text-xs text-slate-500 font-medium">Matching algorithmic pool ({combinedDemands.length})</span>
+          <span className="text-xs text-slate-500 font-medium">({combinedDemands.length})</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -230,7 +242,7 @@ export const FindBuyersPage: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-[#01472e] bg-[#eaf4ec] px-2.5 py-1 rounded-full border border-[#a3b18a]/40 uppercase tracking-wider">
-                    BUYER DEMAND
+                    {t('demand.title', 'Buyer Demand')}
                   </span>
                   <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                     {opp.quality}
@@ -239,24 +251,24 @@ export const FindBuyersPage: React.FC = () => {
 
                 <div>
                   <h4 className="text-xl font-bold text-slate-900 tracking-tight">{opp.crop}</h4>
-                  <p className="text-xs text-slate-600 mt-1">Buyer: <strong className="text-slate-800">{opp.buyerName}</strong></p>
+                  <p className="text-xs text-slate-600 mt-1">{t('roles.RETAIL_BUYER', 'Buyer')}: <strong className="text-slate-800">{opp.buyerName}</strong></p>
                 </div>
 
                 <div className="space-y-2 text-xs text-slate-700 bg-[#faf9f5] p-4 rounded-2xl border border-[#ccd5ae]/40 font-medium">
                   <div className="flex justify-between items-center border-b border-[#ccd5ae]/30 pb-2">
-                    <span className="uppercase tracking-wider text-[10px] text-slate-500">Required:</span>
-                    <strong className="text-slate-900 text-sm font-mono font-bold">{opp.requiredQuantityKg.toLocaleString()} kg</strong>
+                    <span className="uppercase tracking-wider text-[10px] text-slate-500">{t('common.quantity', 'Required')}:</span>
+                    <strong className="text-slate-900 text-sm font-mono font-bold">{opp.requiredQuantityKg.toLocaleString()} {t('common.kg', 'kg')}</strong>
                   </div>
                   <div className="flex justify-between items-center border-b border-[#ccd5ae]/30 py-2">
-                    <span className="uppercase tracking-wider text-[10px] text-slate-500">Max Target Rate:</span>
-                    <strong className="text-[#01472e] text-sm font-mono font-bold">₹{opp.maxPricePerKg} / kg</strong>
+                    <span className="uppercase tracking-wider text-[10px] text-slate-500">{t('common.price', 'Max Target Rate')}:</span>
+                    <strong className="text-[#01472e] text-sm font-mono font-bold">₹{opp.maxPricePerKg} / {t('common.kg', 'kg')}</strong>
                   </div>
                   <div className="flex justify-between items-center border-b border-[#ccd5ae]/30 py-2">
-                    <span className="uppercase tracking-wider text-[10px] text-slate-500">Location:</span>
+                    <span className="uppercase tracking-wider text-[10px] text-slate-500">{t('common.location', 'Location')}:</span>
                     <span className="text-slate-800 font-semibold">{opp.location}</span>
                   </div>
                   <div className="flex justify-between items-center pt-2">
-                    <span className="uppercase tracking-wider text-[10px] text-slate-500">Delivery Due:</span>
+                    <span className="uppercase tracking-wider text-[10px] text-slate-500">{t('common.date', 'Delivery Due')}:</span>
                     <strong className="text-slate-900 font-semibold">{opp.requiredDate}</strong>
                   </div>
                 </div>
@@ -266,7 +278,7 @@ export const FindBuyersPage: React.FC = () => {
                 onClick={() => handleMakeOffer(opp)}
                 className="btn-primary w-full py-3 rounded-2xl text-xs font-semibold shadow-soft uppercase tracking-wider mt-2 cursor-pointer"
               >
-                1-Click Forward Contract
+                {t('matching.createOrder', '1-Click Forward Contract')}
               </button>
             </div>
           ))}

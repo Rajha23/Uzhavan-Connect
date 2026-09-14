@@ -66,7 +66,11 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   }, [currentLanguage, applyDocumentLocale]);
 
   // Translation helper with parameters and fallback
-  const t = useCallback((key: string, arg2?: any, arg3?: any): string => {
+  const t = useCallback((
+    key: string,
+    arg2?: Record<string, string | number> | string | any,
+    arg3?: Record<string, string | number> | string | any
+  ): string => {
     return getTranslation(currentLanguage.code, key, arg2, arg3);
   }, [currentLanguage.code]);
 
@@ -86,12 +90,13 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   }, []);
 
   // Indian Locale Number Formatter (1,25,000)
-  const formatNumber = useCallback((value: number): string => {
-    if (isNaN(value) || value === null || value === undefined) return '0';
+  const formatNumber = useCallback((value: number | string): string => {
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(num) || num === null || num === undefined) return String(value || '0');
     try {
-      return new Intl.NumberFormat('en-IN').format(value);
+      return new Intl.NumberFormat('en-IN').format(num);
     } catch {
-      return value.toLocaleString();
+      return num.toLocaleString();
     }
   }, []);
 
