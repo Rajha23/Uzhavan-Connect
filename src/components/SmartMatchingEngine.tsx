@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import { ProduceListing, DemandRequest, AggregatedDemandGroup, WorkflowOrder } from '../types';
 import confetti from 'canvas-confetti';
 import { AiInsightCard } from './AiInsightCard';
@@ -60,6 +61,7 @@ export const SmartMatchingEngine: React.FC = () => {
     confirmMatchAndCreateOrder,
     setActiveTab
   } = useApp();
+  const { t, formatNumber } = useLanguage();
 
   // Configurable weights (sum or proportional)
   const [weights, setWeights] = useState({
@@ -251,7 +253,7 @@ export const SmartMatchingEngine: React.FC = () => {
   if (!currentTarget) {
     return (
       <div className="bg-white rounded-2xl p-8 text-center text-slate-500 border border-slate-200">
-        <p className="text-sm font-semibold">No active demands or aggregated pools available for matching.</p>
+        <p className="text-sm font-semibold">{t('matching.noDemands', 'No active demands or aggregated pools available for matching.')}</p>
       </div>
     );
   }
@@ -315,20 +317,20 @@ export const SmartMatchingEngine: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-1 border border-emerald-200/80">
             <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span>AI Dynamic Supply-Demand Matcher</span>
+            <span>{t('matching.badge', 'AI Dynamic Supply-Demand Matcher')}</span>
           </div>
           <h3 className="text-xl font-medium tracking-tight text-slate-900">
-            Smart Matching & Allocation Engine
+            {t('matching.title', 'Smart Matching & Allocation Engine')}
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            Evaluating real-time farmer produce listings against active buyer demands & aggregated groups.
+            {t('matching.subtitle', 'Evaluating real-time farmer produce listings against active buyer demands & aggregated groups.')}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Target Selector: Supports both Aggregated Groups and Individual Demands */}
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Target:</span>
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">{t('matching.targetLabel', 'Target:')}</span>
             <select
               value={selectedTargetKey}
               onChange={(e) => {
@@ -339,7 +341,7 @@ export const SmartMatchingEngine: React.FC = () => {
               className="bg-transparent text-xs font-medium text-slate-800 focus:outline-none cursor-pointer max-w-[280px] truncate"
             >
               {aggregatedDemandGroups.length > 0 && (
-                <optgroup label="📦 Aggregated Demand Pools">
+                <optgroup label={t('matching.aggregatedDemandPools', '📦 Aggregated Demand Pools')}>
                   {aggregatedDemandGroups.map((grp) => (
                     <option key={`group:${grp.id}`} value={`group:${grp.id}`}>
                       [Group] {grp.id}: {grp.crop} - {grp.region} ({grp.totalQuantityKg.toLocaleString()} kg from {grp.buyersCount} buyers)
@@ -348,7 +350,7 @@ export const SmartMatchingEngine: React.FC = () => {
                 </optgroup>
               )}
               {demandRequests.length > 0 && (
-                <optgroup label="🏢 Individual Buyer Demands">
+                <optgroup label={t('matching.individualBuyerDemands', '🏢 Individual Buyer Demands')}>
                   {demandRequests.map((dem) => (
                     <option key={`demand:${dem.id}`} value={`demand:${dem.id}`}>
                       [Individual] {dem.id}: {dem.crop} - {dem.buyerName} ({dem.quantityKg.toLocaleString()} kg @ max ₹{dem.maxTargetPricePerKg})
@@ -372,7 +374,7 @@ export const SmartMatchingEngine: React.FC = () => {
             className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl transition font-medium cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span>Reset Weights</span>
+            <span>{t('matching.resetWeights', 'Reset Weights')}</span>
           </button>
         </div>
       </div>
@@ -380,14 +382,14 @@ export const SmartMatchingEngine: React.FC = () => {
       {/* Contextual AI Recommendation Banner */}
       <div className="px-6 pt-5">
         <AiInsightCard
-          badgeText="✦ AI Allocation Intelligence"
-          title={`Multidimensional Compatibility Evaluation: ${currentTarget.crop} (${currentTarget.isGroup ? 'Aggregated Pool' : 'Buyer Demand'})`}
-          description={`Analyzing active farmer supply listings against ${currentTarget.quantityKg.toLocaleString()} kg target demand in ${currentTarget.location}. Evaluated ${evaluatedCandidates.length} eligible candidates across price equilibrium, distance corridors, quality grade conformance, and fulfillment capacity.`}
+          badgeText={t('matching.aiInsightBadge', '✦ AI Allocation Intelligence')}
+          title={t('matching.aiInsightTitle', { crop: currentTarget.crop, targetType: currentTarget.isGroup ? 'Aggregated Pool' : 'Buyer Demand' }, `Multidimensional Compatibility Evaluation: ${currentTarget.crop} (${currentTarget.isGroup ? 'Aggregated Pool' : 'Buyer Demand'})`)}
+          description={t('matching.aiInsightDesc', { qty: formatNumber(currentTarget.quantityKg), location: currentTarget.location, count: evaluatedCandidates.length }, `Analyzing active farmer supply listings against ${formatNumber(currentTarget.quantityKg)} kg target demand in ${currentTarget.location}. Evaluated ${evaluatedCandidates.length} eligible candidates across price equilibrium, distance corridors, quality grade conformance, and fulfillment capacity.`)}
           metrics={[
-            { label: 'Target Requirement', value: `${currentTarget.quantityKg.toLocaleString()} kg` },
-            { label: 'Max Target Price', value: `₹${currentTarget.maxTargetPricePerKg}/kg` },
-            { label: 'Top Candidate Score', value: `${evaluatedCandidates[0]?.totalMatchScore || 0}%` },
-            { label: 'Eligible Suppliers', value: `${evaluatedCandidates.length}` }
+            { label: t('matching.targetRequirement', 'Target Requirement'), value: `${formatNumber(currentTarget.quantityKg)} kg` },
+            { label: t('matching.maxTargetPrice', 'Max Target Price'), value: `₹${formatNumber(currentTarget.maxTargetPricePerKg)}/kg` },
+            { label: t('matching.topCandidateScore', 'Top Candidate Score'), value: `${evaluatedCandidates[0]?.totalMatchScore || 0}%` },
+            { label: t('matching.eligibleSuppliers', 'Eligible Suppliers'), value: `${evaluatedCandidates.length}` }
           ]}
         />
       </div>
@@ -397,15 +399,15 @@ export const SmartMatchingEngine: React.FC = () => {
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
             <Sliders className="w-3.5 h-3.5 text-emerald-700" />
-            <span>Configurable Factor Weightings (Live Dynamic Recalculation)</span>
+            <span>{t('matching.factorWeightings', 'Configurable Factor Weightings (Live Dynamic Recalculation)')}</span>
           </span>
-          <span className="text-xs font-mono text-slate-500">Sum: {totalWeight}%</span>
+          <span className="text-xs font-mono text-slate-500">{t('matching.sum', { sum: totalWeight }, `Sum: ${totalWeight}%`)}</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
           <div>
             <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1">
-              <span>Price:</span>
+              <span>{t('matching.price', 'Price:')}</span>
               <span className="font-mono text-emerald-700">{weights.price}%</span>
             </div>
             <input
@@ -420,7 +422,7 @@ export const SmartMatchingEngine: React.FC = () => {
 
           <div>
             <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1">
-              <span>Distance:</span>
+              <span>{t('matching.distance', 'Distance:')}</span>
               <span className="font-mono text-blue-700">{weights.distance}%</span>
             </div>
             <input
@@ -435,7 +437,7 @@ export const SmartMatchingEngine: React.FC = () => {
 
           <div>
             <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1">
-              <span>Quality:</span>
+              <span>{t('matching.quality', 'Quality:')}</span>
               <span className="font-mono text-purple-700">{weights.quality}%</span>
             </div>
             <input
@@ -450,7 +452,7 @@ export const SmartMatchingEngine: React.FC = () => {
 
           <div>
             <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1">
-              <span>Reliability:</span>
+              <span>{t('matching.reliability', 'Reliability:')}</span>
               <span className="font-mono text-amber-700">{weights.reliability}%</span>
             </div>
             <input
@@ -465,7 +467,7 @@ export const SmartMatchingEngine: React.FC = () => {
 
           <div>
             <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1">
-              <span>Capacity:</span>
+              <span>{t('matching.capacity', 'Capacity:')}</span>
               <span className="font-mono text-teal-700">{weights.capacity}%</span>
             </div>
             <input
@@ -488,20 +490,20 @@ export const SmartMatchingEngine: React.FC = () => {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="text-xs bg-emerald-400 text-emerald-950 font-medium px-3.5 py-1 rounded-full uppercase tracking-wider">
-                  {activeEvaluation.isEligible ? 'Eligible / Matched' : 'Partial Match'}
+                  {activeEvaluation.isEligible ? t('matching.eligibleMatched', 'Eligible / Matched') : t('matching.partialMatch', 'Partial Match')}
                 </span>
                 <span className="text-xs text-emerald-300 font-medium flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  Live Supply-Demand Evaluation
+                  {t('matching.liveEvaluation', 'Live Supply-Demand Evaluation')}
                 </span>
               </div>
               <p className="text-xs text-emerald-200/80 font-normal pt-1">
-                Evaluating Farmer Supply: <span className="font-mono text-white font-medium">{evaluatedListing.id} ({evaluatedListing.farmerName})</span> against Target: <span className="font-mono text-white font-medium">{currentTarget.id}</span>
+                {t('matching.evaluatingFarmerSupply', 'Evaluating Farmer Supply:')} <span className="font-mono text-white font-medium">{evaluatedListing.id} ({evaluatedListing.farmerName})</span> {t('matching.againstTarget', 'against Target:')} <span className="font-mono text-white font-medium">{currentTarget.id}</span>
               </p>
             </div>
 
             <div className="flex items-baseline gap-2 bg-white/10 px-5 py-2.5 rounded-2xl border border-white/10 self-start sm:self-auto">
-              <span className="text-xs text-emerald-300 font-medium">Match Score:</span>
+              <span className="text-xs text-emerald-300 font-medium">{t('matching.matchScore', 'Match Score:')}</span>
               <span className="text-3xl font-semibold font-mono text-emerald-300">
                 {activeEvaluation.totalMatchScore}%
               </span>
@@ -516,7 +518,7 @@ export const SmartMatchingEngine: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <Sprout className="w-4 h-4 text-emerald-300" />
                   <span className="text-xs font-medium uppercase tracking-wider text-emerald-200">
-                    FARMER SUPPLY DETAILS
+                    {t('matching.farmerSupplyDetails', 'FARMER SUPPLY DETAILS')}
                   </span>
                 </div>
                 <span className="text-[11px] text-emerald-200/80 font-mono font-medium">
@@ -526,43 +528,43 @@ export const SmartMatchingEngine: React.FC = () => {
 
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Crop & Variety:</span>
+                  <span className="text-emerald-200/80">{t('matching.cropAndVariety', 'Crop & Variety:')}</span>
                   <span className="font-medium text-white text-sm">
                     {evaluatedListing.crop} {evaluatedListing.variety ? `(${evaluatedListing.variety})` : ''}
                   </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Available Supply:</span>
+                  <span className="text-emerald-200/80">{t('matching.availableSupply', 'Available Supply:')}</span>
                   <div className="text-right">
                     <span className={`font-semibold text-sm ${evaluatedListing.quantityKg > 0 ? 'text-emerald-300' : 'text-amber-300'}`}>
-                      {evaluatedListing.quantityKg.toLocaleString()} {evaluatedListing.unit || 'kg'}
+                      {formatNumber(evaluatedListing.quantityKg)} {evaluatedListing.unit || 'kg'}
                     </span>
                     {evaluatedListing.allocatedQuantityKg && evaluatedListing.allocatedQuantityKg > 0 ? (
                       <span className="block text-[10px] text-emerald-200/70">
-                        ({evaluatedListing.allocatedQuantityKg.toLocaleString()} {evaluatedListing.unit || 'kg'} allocated)
+                        {t('matching.allocatedInfo', { qty: formatNumber(evaluatedListing.allocatedQuantityKg), unit: evaluatedListing.unit || 'kg' }, `(${formatNumber(evaluatedListing.allocatedQuantityKg)} ${evaluatedListing.unit || 'kg'} allocated)`)}
                       </span>
                     ) : null}
                   </div>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Quality Grade:</span>
+                  <span className="text-emerald-200/80">{t('matching.qualityGrade', 'Quality Grade:')}</span>
                   <span className="font-medium text-white">{evaluatedListing.grade}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Farm Location:</span>
+                  <span className="text-emerald-200/80">{t('matching.farmLocation', 'Farm Location:')}</span>
                   <span className="font-medium text-white">{evaluatedListing.location}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Expected Price:</span>
-                  <span className="font-medium text-emerald-300 text-sm">₹{evaluatedListing.expectedPricePerKg}/kg</span>
+                  <span className="text-emerald-200/80">{t('matching.expectedPrice', 'Expected Price:')}</span>
+                  <span className="font-medium text-emerald-300 text-sm">₹{formatNumber(evaluatedListing.expectedPricePerKg)}/kg</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Harvest / Ready Date:</span>
+                  <span className="text-emerald-200/80">{t('matching.harvestReadyDate', 'Harvest / Ready Date:')}</span>
                   <span className="font-medium text-white">{evaluatedListing.harvestDate || evaluatedListing.availabilityDate}</span>
                 </div>
                 {evaluatedListing.fpoName && (
                   <div className="flex justify-between py-1">
-                    <span className="text-emerald-200/80">Affiliated FPO:</span>
+                    <span className="text-emerald-200/80">{t('matching.affiliatedFpo', 'Affiliated FPO:')}</span>
                     <span className="font-medium text-emerald-200">{evaluatedListing.fpoName}</span>
                   </div>
                 )}
@@ -575,7 +577,7 @@ export const SmartMatchingEngine: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="w-4 h-4 text-emerald-300" />
                   <span className="text-xs font-medium uppercase tracking-wider text-emerald-200">
-                    {currentTarget.isGroup ? 'AGGREGATED POOL DETAILS' : 'BUYER DEMAND DETAILS'}
+                    {currentTarget.isGroup ? t('matching.aggregatedPoolDetails', 'AGGREGATED POOL DETAILS') : t('matching.buyerDemandDetails', 'BUYER DEMAND DETAILS')}
                   </span>
                 </div>
                 <span className="text-[11px] text-emerald-200/80 font-mono font-medium truncate max-w-[180px]">
@@ -585,37 +587,37 @@ export const SmartMatchingEngine: React.FC = () => {
 
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Commodity & Variety:</span>
+                  <span className="text-emerald-200/80">{t('matching.commodityAndVariety', 'Commodity & Variety:')}</span>
                   <span className="font-medium text-white text-sm">
                     {currentTarget.crop} ({currentTarget.variety || 'Commercial Grade'})
                   </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Target Demanded Qty:</span>
+                  <span className="text-emerald-200/80">{t('matching.targetDemandedQty', 'Target Demanded Qty:')}</span>
                   <span className="font-medium text-emerald-300 text-sm">
-                    {currentTarget.quantityKg.toLocaleString()} kg
+                    {formatNumber(currentTarget.quantityKg)} kg
                   </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Required Grade:</span>
+                  <span className="text-emerald-200/80">{t('matching.requiredGrade', 'Required Grade:')}</span>
                   <span className="font-medium text-white">{currentTarget.qualityRequirement}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Delivery Destination / Corridor:</span>
+                  <span className="text-emerald-200/80">{t('matching.deliveryDestination', 'Delivery Destination / Corridor:')}</span>
                   <span className="font-medium text-white">{currentTarget.location}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Ceiling Target Price:</span>
-                  <span className="font-medium text-emerald-300 text-sm">₹{currentTarget.maxTargetPricePerKg}/kg</span>
+                  <span className="text-emerald-200/80">{t('matching.ceilingTargetPrice', 'Ceiling Target Price:')}</span>
+                  <span className="font-medium text-emerald-300 text-sm">₹{formatNumber(currentTarget.maxTargetPricePerKg)}/kg</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-emerald-200/80">Delivery Date & Window:</span>
+                  <span className="text-emerald-200/80">{t('matching.deliveryDateAndWindow', 'Delivery Date & Window:')}</span>
                   <span className="font-medium text-white">{currentTarget.deliveryDate} ({currentTarget.deliveryTimeWindow})</span>
                 </div>
                 {currentTarget.isGroup && (
                   <div className="flex justify-between py-1">
-                    <span className="text-emerald-200/80">Contributing Demands:</span>
-                    <span className="font-medium text-emerald-200">{currentTarget.contributingDemands?.length || 1} buyers pooled</span>
+                    <span className="text-emerald-200/80">{t('matching.contributingDemands', 'Contributing Demands:')}</span>
+                    <span className="font-medium text-emerald-200">{t('matching.buyersPooled', { count: currentTarget.contributingDemands?.length || 1 }, `${currentTarget.contributingDemands?.length || 1} buyers pooled`)}</span>
                   </div>
                 )}
               </div>
@@ -627,10 +629,10 @@ export const SmartMatchingEngine: React.FC = () => {
             <div className="flex justify-between items-center text-xs">
               <span className="font-medium text-emerald-200 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
                 <Scale className="w-3.5 h-3.5 text-emerald-300" />
-                <span>Volume Contribution & Allocation Arithmetic</span>
+                <span>{t('matching.volumeContribution', 'Volume Contribution & Allocation Arithmetic')}</span>
               </span>
               <span className="font-mono font-medium text-emerald-300">
-                {contribKg.toLocaleString()} kg allocated ({contribPct}% of {currentTarget.quantityKg.toLocaleString()} kg)
+                {t('matching.allocatedSummary', { contribKg: formatNumber(contribKg), contribPct, targetKg: formatNumber(currentTarget.quantityKg) }, `${formatNumber(contribKg)} kg allocated (${contribPct}% of ${formatNumber(currentTarget.quantityKg)} kg)`)}
               </span>
             </div>
 
@@ -644,11 +646,11 @@ export const SmartMatchingEngine: React.FC = () => {
             <div className="text-xs text-emerald-100/90 leading-relaxed pt-1">
               {isPartialMatch ? (
                 <p>
-                  ⚡ <strong className="text-amber-300 font-semibold">Partial Match:</strong> Farmer supply offers <strong>{evaluatedListing.quantityKg.toLocaleString()} kg</strong> against the total demand of <strong>{currentTarget.quantityKg.toLocaleString()} kg</strong>. Once agreed, <strong>{contribKg.toLocaleString()} kg</strong> will be allocated; the remaining <strong>{(currentTarget.quantityKg - contribKg).toLocaleString()} kg</strong> will remain open for further supplier allocation.
+                  {t('matching.partialMatchNote', { farmerQty: formatNumber(evaluatedListing.quantityKg), targetQty: formatNumber(currentTarget.quantityKg), contribKg: formatNumber(contribKg), remainingKg: formatNumber(currentTarget.quantityKg - contribKg) }, `⚡ Partial Match: Farmer supply offers ${formatNumber(evaluatedListing.quantityKg)} kg against the total demand of ${formatNumber(currentTarget.quantityKg)} kg. Once agreed, ${formatNumber(contribKg)} kg will be allocated; the remaining ${formatNumber(currentTarget.quantityKg - contribKg)} kg will remain open for further supplier allocation.`)}
                 </p>
               ) : (
                 <p>
-                  ✓ <strong className="text-emerald-300 font-semibold">Full Match:</strong> Farmer listing offers <strong>{evaluatedListing.quantityKg.toLocaleString()} kg</strong> which satisfies 100% of this <strong>{currentTarget.quantityKg.toLocaleString()} kg</strong> demand. The remaining <strong>{(evaluatedListing.quantityKg - contribKg).toLocaleString()} kg</strong> stays available for other buyer requests.
+                  {t('matching.fullMatchNote', { farmerQty: formatNumber(evaluatedListing.quantityKg), targetQty: formatNumber(currentTarget.quantityKg), remainingKg: formatNumber(evaluatedListing.quantityKg - contribKg) }, `✓ Full Match: Farmer listing offers ${formatNumber(evaluatedListing.quantityKg)} kg which satisfies 100% of this ${formatNumber(currentTarget.quantityKg)} kg demand. The remaining ${formatNumber(evaluatedListing.quantityKg - contribKg)} kg stays available for other buyer requests.`)}
                 </p>
               )}
             </div>
@@ -658,35 +660,35 @@ export const SmartMatchingEngine: React.FC = () => {
           <div className="pt-4 border-t border-emerald-800/60 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
               <p className="text-xs font-medium text-emerald-200 uppercase tracking-wider">
-                MATCH EXPLANATION BREAKDOWN
+                {t('matching.matchExplanationBreakdown', 'MATCH EXPLANATION BREAKDOWN')}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-xs text-emerald-100">
                 <span className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Crop matches ({evaluatedListing.crop})</span>
+                  <span>{t('matching.cropMatches', { crop: evaluatedListing.crop }, `Crop matches (${evaluatedListing.crop})`)}</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Quality requirement compatible ({evaluatedListing.grade} satisfies {currentTarget.qualityRequirement})</span>
+                  <span>{t('matching.qualityCompatible', { grade: evaluatedListing.grade, req: currentTarget.qualityRequirement }, `Quality requirement compatible (${evaluatedListing.grade} satisfies ${currentTarget.qualityRequirement})`)}</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Volume contribution ({contribKg.toLocaleString()} kg satisfies {contribPct}% of need)</span>
+                  <span>{t('matching.volumeContributionText', { contribKg: formatNumber(contribKg), contribPct }, `Volume contribution (${formatNumber(contribKg)} kg satisfies ${contribPct}% of need)`)}</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>
-                    Price advantage: ₹{evaluatedListing.expectedPricePerKg}/kg ≤ max ₹{currentTarget.maxTargetPricePerKg}/kg
-                    {priceSavings > 0 ? ` (₹${priceSavings}/kg buyer savings)` : ''}
+                    {t('matching.priceAdvantage', { expectedPrice: formatNumber(evaluatedListing.expectedPricePerKg), maxPrice: formatNumber(currentTarget.maxTargetPricePerKg) }, `Price advantage: ₹${formatNumber(evaluatedListing.expectedPricePerKg)}/kg ≤ max ₹${formatNumber(currentTarget.maxTargetPricePerKg)}/kg`)}
+                    {priceSavings > 0 ? t('matching.buyerSavings', { savings: formatNumber(priceSavings) }, ` (₹${formatNumber(priceSavings)}/kg buyer savings)`) : ''}
                   </span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Regional corridor route: {evaluatedListing.location} → {currentTarget.location} (~{activeEvaluation.distanceKm} km)</span>
+                  <span>{t('matching.regionalCorridor', { from: evaluatedListing.location, to: currentTarget.location, km: activeEvaluation.distanceKm }, `Regional corridor route: ${evaluatedListing.location} → ${currentTarget.location} (~${activeEvaluation.distanceKm} km)`)}</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Delivery aligned for {currentTarget.deliveryDate} ({currentTarget.deliveryTimeWindow})</span>
+                  <span>{t('matching.deliveryAligned', { date: currentTarget.deliveryDate, time: currentTarget.deliveryTimeWindow }, `Delivery aligned for ${currentTarget.deliveryDate} (${currentTarget.deliveryTimeWindow})`)}</span>
                 </span>
               </div>
             </div>
@@ -704,15 +706,15 @@ export const SmartMatchingEngine: React.FC = () => {
               }`}
             >
               {evaluatedListing.quantityKg <= 0 ? (
-                <span>Fully Allocated (0 kg Available)</span>
+                <span>{t('matching.fullyAllocated0Kg', 'Fully Allocated (0 kg Available)')}</span>
               ) : allocatedId === evaluatedListing.id ? (
                 <>
                   <CheckCircle2 className="w-4 h-4 text-emerald-900" />
-                  <span>Allocated to Demand</span>
+                  <span>{t('matching.allocatedToDemand', 'Allocated to Demand')}</span>
                 </>
               ) : (
                 <>
-                  <span>Confirm Match & Agreement →</span>
+                  <span>{t('matching.confirmMatchAndAgreement', 'Confirm Match & Agreement →')}</span>
                 </>
               )}
             </button>
@@ -729,10 +731,10 @@ export const SmartMatchingEngine: React.FC = () => {
             </div>
             <div>
               <p className="text-xs font-medium text-emerald-900">
-                Match Agreement Finalized & Order Created: <span className="font-mono">{createdOrderNotice.id}</span>
+                {t('matching.orderCreatedSuccess', { id: createdOrderNotice.id }, `Match Agreement Finalized & Order Created: ${createdOrderNotice.id}`)}
               </p>
               <p className="text-[11px] text-emerald-700">
-                {createdOrderNotice.qty.toLocaleString()} kg of {createdOrderNotice.crop} @ ₹{createdOrderNotice.price}/kg reserved. Produce collection queued for FPO Aggregator.
+                {t('matching.orderCreatedDesc', { qty: formatNumber(createdOrderNotice.qty), crop: createdOrderNotice.crop, price: formatNumber(createdOrderNotice.price) }, `${formatNumber(createdOrderNotice.qty)} kg of ${createdOrderNotice.crop} @ ₹${formatNumber(createdOrderNotice.price)}/kg reserved. Produce collection queued for FPO Aggregator.`)}
               </p>
             </div>
           </div>
@@ -740,24 +742,25 @@ export const SmartMatchingEngine: React.FC = () => {
             onClick={() => setActiveTab('orders')}
             className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium rounded-xl transition flex items-center gap-1.5 self-start sm:self-auto shrink-0"
           >
-            <span>Track in Orders</span>
+            <span>{t('matching.trackInOrders', 'Track in Orders')}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
+
 
       {/* 4. Ranked Supplier Candidates List */}
       <div className="p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h4 className="text-sm font-medium text-slate-900">
-              Ranked Farmer & FPO Candidates ({evaluatedCandidates.length})
+              {t('matching.rankedCandidatesTitle', { count: evaluatedCandidates.length }, `Ranked Farmer & FPO Candidates (${evaluatedCandidates.length})`)}
             </h4>
             <p className="text-xs text-slate-500">
-              Evaluated against Target Demand: {currentTarget.crop} ({currentTarget.quantityKg.toLocaleString()} kg @ ₹{currentTarget.maxTargetPricePerKg}/kg)
+              {t('matching.evaluatedAgainstTarget', { crop: currentTarget.crop, qty: formatNumber(currentTarget.quantityKg), price: formatNumber(currentTarget.maxTargetPricePerKg) }, `Evaluated against Target Demand: ${currentTarget.crop} (${formatNumber(currentTarget.quantityKg)} kg @ ₹${formatNumber(currentTarget.maxTargetPricePerKg)}/kg)`)}
             </p>
           </div>
-          <span className="text-xs text-slate-500 font-mono">Live multi-factor ranking</span>
+          <span className="text-xs text-slate-500 font-mono">{t('matching.liveMultiFactorRanking', 'Live multi-factor ranking')}</span>
         </div>
 
         <div className="space-y-3">
@@ -799,36 +802,36 @@ export const SmartMatchingEngine: React.FC = () => {
                         </h4>
                         {isTopRanked && candidate.cropMatch && (
                           <span className="text-[10px] bg-emerald-100 text-emerald-800 font-medium px-2 py-0.5 rounded border border-emerald-300 uppercase tracking-wider">
-                            OPTIMAL MATCH
+                            {t('matching.optimalMatch', 'OPTIMAL MATCH')}
                           </span>
                         )}
                         {isSelected && (
                           <span className="text-[10px] bg-slate-900 text-white font-medium px-2 py-0.5 rounded uppercase tracking-wider">
-                            Evaluating
+                            {t('matching.evaluating', 'Evaluating')}
                           </span>
                         )}
                       </div>
 
                       <p className="text-xs text-slate-600 mt-1">
                         <strong className="text-slate-900">{candidate.listing.crop}</strong>
-                        {candidate.listing.variety && <span className="text-slate-500 font-medium"> ({candidate.listing.variety})</span>} • Available:{' '}
+                        {candidate.listing.variety && <span className="text-slate-500 font-medium"> ({candidate.listing.variety})</span>} • {t('matching.availableSupply', 'Available Supply:')}{' '}
                         <strong className={candidate.listing.quantityKg > 0 ? "text-emerald-700" : "text-slate-400 font-mono"}>
-                          {candidate.listing.quantityKg.toLocaleString()} {candidate.listing.unit || 'kg'}
+                          {formatNumber(candidate.listing.quantityKg)} {candidate.listing.unit || 'kg'}
                         </strong>
                         {candidate.listing.quantityKg <= 0 ? (
                           <span className="ml-1 text-[10px] font-medium text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300">
-                            Fully Allocated
+                            {t('matching.fullyAllocated', 'Fully Allocated')}
                           </span>
                         ) : candidate.listing.allocatedQuantityKg && candidate.listing.allocatedQuantityKg > 0 ? (
                           <span className="text-[11px] text-slate-500 ml-1">
-                            ({candidate.listing.allocatedQuantityKg.toLocaleString()} {candidate.listing.unit || 'kg'} allocated)
+                            {t('matching.allocatedInfo', { qty: formatNumber(candidate.listing.allocatedQuantityKg), unit: candidate.listing.unit || 'kg' }, `(${formatNumber(candidate.listing.allocatedQuantityKg)} ${candidate.listing.unit || 'kg'} allocated)`)}
                           </span>
                         ) : null}
-                        {' '}• Quality: <strong className="text-slate-900">{candidate.listing.grade}</strong> • Expected Price:{' '}
-                        <strong className="text-slate-900">₹{candidate.listing.expectedPricePerKg}/kg</strong> • {candidate.listing.location} (~{candidate.distanceKm} km)
+                        {' '}• {t('matching.qualityGrade', 'Quality Grade:')} <strong className="text-slate-900">{candidate.listing.grade}</strong> • {t('matching.expectedPrice', 'Expected Price:')}{' '}
+                        <strong className="text-slate-900">₹{formatNumber(candidate.listing.expectedPricePerKg)}/kg</strong> • {candidate.listing.location} (~{candidate.distanceKm} km)
                         {candidate.listing.fpoName && (
                           <span className="block text-[11px] text-slate-500 mt-0.5">
-                            Affiliated FPO: <strong>{candidate.listing.fpoName}</strong>
+                            {t('matching.affiliatedFpo', 'Affiliated FPO:')} <strong>{candidate.listing.fpoName}</strong>
                           </span>
                         )}
                       </p>
@@ -839,7 +842,7 @@ export const SmartMatchingEngine: React.FC = () => {
                   <div className="flex items-center gap-4 self-end md:self-center">
                     <div className="text-right">
                       <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-medium">
-                        Match Score
+                        {t('matching.matchScore', 'Match Score:')}
                       </span>
                       <span className="text-2xl font-semibold text-emerald-700 font-mono">
                         {candidate.totalMatchScore}
@@ -864,14 +867,14 @@ export const SmartMatchingEngine: React.FC = () => {
                       }`}
                     >
                       {candidate.listing.quantityKg <= 0 ? (
-                        <span>Fully Allocated</span>
+                        <span>{t('matching.fullyAllocated', 'Fully Allocated')}</span>
                       ) : isAllocated ? (
                         <>
                           <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-                          <span>Allocated</span>
+                          <span>{t('matching.allocatedToDemand', 'Allocated')}</span>
                         </>
                       ) : (
-                        <span>Select & Allocate</span>
+                        <span>{t('matching.selectAndAllocate', 'Select & Allocate')}</span>
                       )}
                     </button>
                   </div>
@@ -881,7 +884,7 @@ export const SmartMatchingEngine: React.FC = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-4 pt-4 border-t border-slate-100 text-xs">
                   <div>
                     <div className="flex justify-between text-[11px] text-slate-500 mb-1">
-                      <span>Price (₹{candidate.listing.expectedPricePerKg}/kg):</span>
+                      <span>{t('matching.price', 'Price:')} (₹{formatNumber(candidate.listing.expectedPricePerKg)}/kg):</span>
                       <strong className="text-slate-800 font-mono">{candidate.priceScore}</strong>
                     </div>
                     <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
@@ -894,7 +897,7 @@ export const SmartMatchingEngine: React.FC = () => {
 
                   <div>
                     <div className="flex justify-between text-[11px] text-slate-500 mb-1">
-                      <span>Distance ({candidate.distanceKm} km):</span>
+                      <span>{t('matching.distance', 'Distance:')} ({candidate.distanceKm} km):</span>
                       <strong className="text-slate-800 font-mono">{candidate.distanceScore}</strong>
                     </div>
                     <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
@@ -907,7 +910,7 @@ export const SmartMatchingEngine: React.FC = () => {
 
                   <div>
                     <div className="flex justify-between text-[11px] text-slate-500 mb-1">
-                      <span>Quality ({candidate.listing.grade}):</span>
+                      <span>{t('matching.quality', 'Quality:')} ({candidate.listing.grade}):</span>
                       <strong className="text-slate-800 font-mono">{candidate.qualityScore}</strong>
                     </div>
                     <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
@@ -920,7 +923,7 @@ export const SmartMatchingEngine: React.FC = () => {
 
                   <div>
                     <div className="flex justify-between text-[11px] text-slate-500 mb-1">
-                      <span>Reliability:</span>
+                      <span>{t('matching.reliability', 'Reliability:')}</span>
                       <strong className="text-slate-800 font-mono">{candidate.reliabilityScore}%</strong>
                     </div>
                     <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
@@ -933,7 +936,7 @@ export const SmartMatchingEngine: React.FC = () => {
 
                   <div>
                     <div className="flex justify-between text-[11px] text-slate-500 mb-1">
-                      <span>Capacity ({candidate.listing.quantityKg}kg):</span>
+                      <span>{t('matching.capacity', 'Capacity:')} ({formatNumber(candidate.listing.quantityKg)}kg):</span>
                       <strong className="text-slate-800 font-mono">{candidate.capacityScore}%</strong>
                     </div>
                     <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
@@ -960,18 +963,19 @@ export const SmartMatchingEngine: React.FC = () => {
                 <FileText className="w-6 h-6 text-emerald-700" />
                 <div>
                   <h3 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
-                    {agreementModal.step === 'TERMS' ? 'Digital Match Agreement & Order Initiation' : 'Match Confirmed & Order Created'}
+                    {agreementModal.step === 'TERMS' ? t('matching.modalTitleTerms', 'Digital Match Agreement & Order Initiation') : t('matching.modalTitleConfirmed', 'Match Confirmed & Order Created')}
                   </h3>
                   <p className="text-xs text-slate-500 font-normal mt-0.5">
                     {agreementModal.step === 'TERMS'
-                      ? 'Connected Transaction Lifecycle (Step 3: Matching → Step 4: Agreement → Step 5: Order)'
-                      : 'Produce allocated and scheduled for FPO collection.'}
+                      ? t('matching.modalSubTerms', 'Connected Transaction Lifecycle (Step 3: Matching → Step 4: Agreement → Step 5: Order)')
+                      : t('matching.modalSubConfirmed', 'Produce allocated and scheduled for FPO collection.')}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setAgreementModal((prev) => ({ ...prev, isOpen: false }))}
                 className="text-slate-400 hover:text-slate-700 transition font-medium text-lg cursor-pointer"
+                aria-label={t('modals.close', 'Close Window')}
               >
                 ✕
               </button>
@@ -982,19 +986,19 @@ export const SmartMatchingEngine: React.FC = () => {
                 {/* 5-Step Lifecycle Progress Tracker */}
                 <div className="grid grid-cols-5 gap-2 text-center text-[10px] font-medium uppercase tracking-wider">
                   <div className="p-2 bg-emerald-100 text-emerald-900 rounded-lg border border-emerald-300">
-                    1. Match
+                    {t('matching.stepMatch', '1. Match')}
                   </div>
                   <div className="p-2 bg-emerald-700 text-white rounded-lg font-medium shadow-xs">
-                    2. Agreement
+                    {t('matching.stepAgreement', '2. Agreement')}
                   </div>
                   <div className="p-2 bg-slate-100 text-slate-600 rounded-lg">
-                    3. Quantities
+                    {t('matching.stepQuantities', '3. Quantities')}
                   </div>
                   <div className="p-2 bg-slate-100 text-slate-600 rounded-lg">
-                    4. Price
+                    {t('matching.stepPrice', '4. Price')}
                   </div>
                   <div className="p-2 bg-slate-100 text-slate-600 rounded-lg">
-                    5. Order
+                    {t('matching.stepOrder', '5. Order')}
                   </div>
                 </div>
 
@@ -1002,31 +1006,31 @@ export const SmartMatchingEngine: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Farmer Party */}
                   <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/80 space-y-2 text-xs">
-                    <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider block">Seller (Farmer / FPO)</span>
+                    <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider block">{t('matching.sellerFarmerFpo', 'Seller (Farmer / FPO)')}</span>
                     <p className="font-medium text-slate-900 text-sm">{agreementModal.listing.farmerName}</p>
                     <p className="text-slate-600 font-medium">
                       {agreementModal.listing.crop} ({agreementModal.listing.variety || 'Certified'}) • {agreementModal.listing.grade}
                     </p>
                     <p className="text-[11px] text-slate-500">
-                      Location: {agreementModal.listing.location}
+                      {t('matching.farmLocation', 'Location:')} {agreementModal.listing.location}
                     </p>
                     <p className="text-xs font-semibold text-emerald-800">
-                      Available: {agreementModal.listing.quantityKg.toLocaleString()} kg
+                      {t('matching.availableSupply', 'Available:')} {formatNumber(agreementModal.listing.quantityKg)} kg
                     </p>
                   </div>
 
                   {/* Buyer Party */}
                   <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/70 space-y-2 text-xs">
-                    <span className="text-[10px] font-medium text-emerald-800 uppercase tracking-wider block">Buyer / Procurement Pool</span>
+                    <span className="text-[10px] font-medium text-emerald-800 uppercase tracking-wider block">{t('matching.buyerProcurementPool', 'Buyer / Procurement Pool')}</span>
                     <p className="font-medium text-slate-900 text-sm">{currentTarget.buyerName}</p>
                     <p className="text-slate-600 font-medium">
-                      Destination: {currentTarget.location}
+                      {t('matching.deliveryDestination', 'Destination:')} {currentTarget.location}
                     </p>
                     <p className="text-[11px] text-slate-500">
-                      Required by: {currentTarget.deliveryDate} ({currentTarget.deliveryTimeWindow})
+                      {t('matching.deliveryDateAndWindow', 'Required by:')} {currentTarget.deliveryDate} ({currentTarget.deliveryTimeWindow})
                     </p>
                     <p className="text-xs font-semibold text-emerald-800">
-                      Demanded: {currentTarget.quantityKg.toLocaleString()} kg @ max ₹{currentTarget.maxTargetPricePerKg}/kg
+                      {t('matching.targetDemandedQty', 'Demanded:')} {formatNumber(currentTarget.quantityKg)} kg @ max ₹{formatNumber(currentTarget.maxTargetPricePerKg)}/kg
                     </p>
                   </div>
                 </div>
@@ -1034,13 +1038,13 @@ export const SmartMatchingEngine: React.FC = () => {
                 {/* Agreement Negotiation Inputs */}
                 <div className="bg-white/95 rounded-2xl p-5 border border-emerald-900/10 shadow-2xs space-y-4">
                   <h4 className="text-xs font-medium text-slate-900 uppercase tracking-wider">
-                    Contractual Terms Confirmation
+                    {t('matching.contractualTermsConfirmation', 'Contractual Terms Confirmation')}
                   </h4>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="font-medium text-slate-700 uppercase tracking-wider block mb-1.5 text-[10px]">
-                        Agreed Contract Quantity (kg)
+                        {t('matching.agreedContractQty', 'Agreed Contract Quantity (kg)')}
                       </label>
                       <input
                         type="number"
@@ -1058,13 +1062,13 @@ export const SmartMatchingEngine: React.FC = () => {
                         required
                       />
                       <span className="text-[10px] text-slate-500 mt-1 block">
-                        Max available: {agreementModal.listing.quantityKg.toLocaleString()} kg • Buyer needs: {(currentTarget.quantityKg || agreementModal.listing.quantityKg).toLocaleString()} kg
+                        {t('matching.maxAvailableNote', { avail: formatNumber(agreementModal.listing.quantityKg), needs: formatNumber(currentTarget.quantityKg || agreementModal.listing.quantityKg) }, `Max available: ${formatNumber(agreementModal.listing.quantityKg)} kg • Buyer needs: ${formatNumber(currentTarget.quantityKg || agreementModal.listing.quantityKg)} kg`)}
                       </span>
                     </div>
 
                     {/* Agreed Price */}
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 mb-1">Agreed Contract Price (₹/kg)</label>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">{t('matching.agreedContractPrice', 'Agreed Contract Price (₹/kg)')}</label>
                       <input
                         type="number"
                         data-testid="agreement-price-input"
@@ -1075,7 +1079,7 @@ export const SmartMatchingEngine: React.FC = () => {
                         required
                       />
                       <span className="text-[10px] text-slate-500 mt-1 block">
-                        Farmer expected: ₹{agreementModal.listing.expectedPricePerKg}/kg • Buyer max: ₹{currentTarget.maxTargetPricePerKg}/kg
+                        {t('matching.farmerExpectedNote', { expected: formatNumber(agreementModal.listing.expectedPricePerKg), max: formatNumber(currentTarget.maxTargetPricePerKg) }, `Farmer expected: ₹${formatNumber(agreementModal.listing.expectedPricePerKg)}/kg • Buyer max: ₹${formatNumber(currentTarget.maxTargetPricePerKg)}/kg`)}
                       </span>
                     </div>
                   </div>
@@ -1084,21 +1088,21 @@ export const SmartMatchingEngine: React.FC = () => {
                   <div className="p-4 bg-slate-900 text-white rounded-xl flex items-center justify-between shadow-xs">
                     <div>
                       <span className="text-[10px] uppercase font-medium tracking-wider text-emerald-400 block">
-                        Total Agreed Transaction Value
+                        {t('matching.totalAgreedValue', 'Total Agreed Transaction Value')}
                       </span>
                       <span className="text-2xl font-semibold text-white tracking-tight">
-                        ₹{(agreementModal.agreedQty * agreementModal.agreedPrice).toLocaleString()}
+                        ₹{formatNumber(agreementModal.agreedQty * agreementModal.agreedPrice)}
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="text-[10px] text-emerald-400 font-medium uppercase tracking-wider block">Realization</span>
-                      <span className="text-xs font-medium text-emerald-300">100% Direct to Farmer</span>
+                      <span className="text-[10px] text-emerald-400 font-medium uppercase tracking-wider block">{t('matching.realization', 'Realization')}</span>
+                      <span className="text-xs font-medium text-emerald-300">{t('matching.directToFarmer', '100% Direct to Farmer')}</span>
                     </div>
                   </div>
 
                   {/* Double Allocation & Arithmetic Note */}
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-700 font-normal">
-                    ⚡ <strong className="font-medium">Atomic Inventory Invariant:</strong> Confirming this agreement immediately reserves {agreementModal.agreedQty.toLocaleString()} kg of produce, decrements available farmer inventory, and transitions demand status without double-allocation risk.
+                    {t('matching.atomicInvariant', { qty: formatNumber(agreementModal.agreedQty) }, `⚡ Atomic Inventory Invariant: Confirming this agreement immediately reserves ${formatNumber(agreementModal.agreedQty)} kg of produce, decrements available farmer inventory, and transitions demand status without double-allocation risk.`)}
                   </div>
                 </div>
 
@@ -1109,7 +1113,7 @@ export const SmartMatchingEngine: React.FC = () => {
                     onClick={() => setAgreementModal((prev) => ({ ...prev, isOpen: false }))}
                     className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl font-medium uppercase tracking-wider text-xs transition cursor-pointer"
                   >
-                    Cancel
+                    {t('modals.cancel', 'Cancel')}
                   </button>
                   <button
                     type="button"
@@ -1118,7 +1122,7 @@ export const SmartMatchingEngine: React.FC = () => {
                     className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-medium rounded-xl shadow-xs transition uppercase tracking-wider text-xs flex items-center gap-2 cursor-pointer"
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Confirm Agreement & Issue Order →</span>
+                    <span>{t('matching.confirmAgreementAndIssueOrder', 'Confirm Agreement & Issue Order →')}</span>
                   </button>
                 </div>
               </div>
@@ -1131,34 +1135,34 @@ export const SmartMatchingEngine: React.FC = () => {
 
                 <div>
                   <h4 className="text-xl font-semibold text-slate-900 tracking-tight">
-                    Order Successfully Initialized!
+                    {t('matching.orderSuccessTitle', 'Order Successfully Initialized!')}
                   </h4>
                   <p className="text-xs text-slate-500 mt-1 font-normal">
-                    Agreement confirmed. Produce inventory has been atomically reserved and queued for FPO collection.
+                    {t('matching.orderSuccessDesc', 'Agreement confirmed. Produce inventory has been atomically reserved and queued for FPO collection.')}
                   </p>
                 </div>
 
                 {agreementModal.createdOrder && (
                   <div className="bg-slate-50 rounded-xl p-5 border border-slate-200 text-left text-xs space-y-2.5">
                     <div className="flex justify-between border-b border-slate-200/60 pb-2">
-                      <span className="text-slate-500 font-medium uppercase text-[10px]">Official Order ID:</span>
+                      <span className="text-slate-500 font-medium uppercase text-[10px]">{t('matching.officialOrderId', 'Official Order ID:')}</span>
                       <span className="font-mono font-medium text-slate-900">{agreementModal.createdOrder.id}</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200/60 pb-2">
-                      <span className="text-slate-500 font-medium uppercase text-[10px]">Contract Agreement ID:</span>
+                      <span className="text-slate-500 font-medium uppercase text-[10px]">{t('matching.contractAgreementId', 'Contract Agreement ID:')}</span>
                       <span className="font-mono font-medium text-slate-900">{agreementModal.createdOrder.agreementId}</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200/60 pb-2">
-                      <span className="text-slate-500 font-medium uppercase text-[10px]">QR Traceability Batch ID:</span>
+                      <span className="text-slate-500 font-medium uppercase text-[10px]">{t('matching.qrTraceabilityBatchId', 'QR Traceability Batch ID:')}</span>
                       <span className="font-mono font-medium text-emerald-700">{agreementModal.createdOrder.batchId}</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200/60 pb-2">
-                      <span className="text-slate-500 font-medium uppercase text-[10px]">Allocated Volume:</span>
-                      <span className="font-medium text-slate-900">{agreementModal.createdOrder.quantityKg.toLocaleString()} kg @ ₹{agreementModal.createdOrder.pricePerKg}/kg</span>
+                      <span className="text-slate-500 font-medium uppercase text-[10px]">{t('matching.allocatedVolume', 'Allocated Volume:')}</span>
+                      <span className="font-medium text-slate-900">{formatNumber(agreementModal.createdOrder.quantityKg)} kg @ ₹{formatNumber(agreementModal.createdOrder.pricePerKg)}/kg</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500 font-medium uppercase text-[10px]">Total Contract Value:</span>
-                      <span className="font-semibold text-base text-slate-900 tracking-tight">₹{agreementModal.createdOrder.totalValue.toLocaleString()}</span>
+                      <span className="text-slate-500 font-medium uppercase text-[10px]">{t('matching.totalContractValue', 'Total Contract Value:')}</span>
+                      <span className="font-semibold text-base text-slate-900 tracking-tight">₹{formatNumber(agreementModal.createdOrder.totalValue)}</span>
                     </div>
                   </div>
                 )}
@@ -1171,14 +1175,14 @@ export const SmartMatchingEngine: React.FC = () => {
                     }}
                     className="w-full sm:w-auto px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-xl shadow-sm transition uppercase tracking-wider text-xs flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <span>Track in Active Orders</span>
+                    <span>{t('matching.trackInActiveOrders', 'Track in Active Orders')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setAgreementModal((prev) => ({ ...prev, isOpen: false }))}
                     className="btn-secondary text-xs"
                   >
-                    Done
+                    {t('modals.done', 'Done')}
                   </button>
                 </div>
               </div>

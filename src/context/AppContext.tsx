@@ -1726,30 +1726,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           setCurrentRole(canonicalRole);
           setIsAuthenticated(true);
 
-          // Fetch all real users from DB if this is an Admin
-          if (canonicalRole === 'ADMIN') {
-            try {
-              const profiles = await apiService.getAllUsers();
-              if (profiles && profiles.length > 0) {
-                const mappedUsers = profiles.map((p: any) => ({
-                  id: p.id,
-                  name: p.name || 'Unknown',
-                  role: p.role,
-                  email: p.email || '',
-                  phone: p.phone || '',
-                  location: p.location || p.district || 'Unknown',
-                  status: 'ACTIVE' as const,
-                  joinedDate: p.created_at ? new Date(p.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
-                  permissions: ['VIEW_DASHBOARD' as const]
-                }));
-                // Only override if we successfully got profiles
-                setSystemUsers(mappedUsers);
-              }
-            } catch (error) {
-              console.error("Failed to load real users", error);
-            }
-          }
-
           // Resolve URL on startup, strictly ignoring any ?role= parameter tampering
           const initialTab = getTabFromPath(typeof window !== 'undefined' ? window.location.pathname : '/');
           if (PUBLIC_TABS.includes(initialTab) && initialTab !== 'traceability' && initialTab !== 'tracking') {

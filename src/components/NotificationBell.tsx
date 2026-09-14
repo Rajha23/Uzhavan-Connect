@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   Bell,
   CheckCheck,
@@ -28,6 +29,7 @@ export const NotificationBell: React.FC = () => {
     markAllNotificationsRead,
     setActiveTab
   } = useApp();
+  const { t, formatNumber } = useLanguage();
 
   const [isOpen, setIsOpen] = useState(false);
   const [filterMode, setFilterMode] = useState<'ALL' | 'UNREAD' | 'IMPORTANT'>('ALL');
@@ -95,21 +97,21 @@ export const NotificationBell: React.FC = () => {
         return (
           <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-800 border border-rose-200 uppercase tracking-wider">
             <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
-            Urgent
+            {t('notifications.urgent', 'Urgent')}
           </span>
         );
       case 'WARNING':
         return (
           <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 uppercase tracking-wider">
             <AlertTriangle className="w-2.5 h-2.5 text-amber-600" />
-            Action Req.
+            {t('notifications.actionReq', 'Action Req.')}
           </span>
         );
       case 'SUCCESS':
         return (
           <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider">
             <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
-            Success
+            {t('notifications.success', 'Success')}
           </span>
         );
       case 'INFO':
@@ -117,7 +119,7 @@ export const NotificationBell: React.FC = () => {
         return (
           <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40 uppercase tracking-wider">
             <Info className="w-2.5 h-2.5 text-[#01472e]" />
-            Info
+            {t('notifications.info', 'Info')}
           </span>
         );
     }
@@ -130,14 +132,14 @@ export const NotificationBell: React.FC = () => {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-2xl bg-white/90 hover:bg-white text-[#01472e] border border-[#ccd5ae]/80 shadow-2xs hover:border-[#01472e]/60 transition hover:scale-[1.03] active:scale-[0.97] cursor-pointer"
-        title="Notifications & Operational Alerts"
-        aria-label="Notifications"
+        title={t('notifications.title', 'Notifications & Operational Alerts')}
+        aria-label={t('nav.notifications', 'Notifications')}
         aria-expanded={isOpen}
       >
         <Bell className="w-4 h-4 text-[#01472e]" />
         {unreadNotificationsCount > 0 && (
           <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#01472e] text-[9px] font-extrabold text-[#fefae0] shadow-xs ring-2 ring-[#faf9f5] animate-pulse">
-            {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+            {unreadNotificationsCount > 99 ? '99+' : formatNumber(unreadNotificationsCount)}
           </span>
         )}
       </button>
@@ -153,10 +155,12 @@ export const NotificationBell: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-xs font-bold text-[#01472e] tracking-tight">
-                  Alerts & Notifications
+                  {t('notifications.title', 'Alerts & Notifications')}
                 </h3>
                 <p className="text-[10px] text-[#5c7065]">
-                  {unreadNotificationsCount > 0 ? `${unreadNotificationsCount} unread operational alert${unreadNotificationsCount > 1 ? 's' : ''}` : 'All caught up'}
+                  {unreadNotificationsCount > 0
+                    ? t('notifications.unreadCount', { count: formatNumber(unreadNotificationsCount), plural: unreadNotificationsCount > 1 ? 's' : '' }, `${unreadNotificationsCount} unread operational alert${unreadNotificationsCount > 1 ? 's' : ''}`)
+                    : t('notifications.allCaughtUp', 'All caught up')}
                 </p>
               </div>
             </div>
@@ -167,17 +171,17 @@ export const NotificationBell: React.FC = () => {
                   type="button"
                   onClick={markAllNotificationsRead}
                   className="flex items-center gap-1 text-[10px] font-bold text-[#01472e] hover:text-[#025a3b] bg-white px-2.5 py-1 rounded-xl border border-[#ccd5ae]/60 shadow-2xs hover:bg-[#eaf4ec]/40 transition cursor-pointer"
-                  title="Mark all notifications as read"
+                  title={t('notifications.markRead', 'Mark all notifications as read')}
                 >
                   <CheckCheck className="w-3 h-3 text-[#01472e]" />
-                  <span>Mark Read</span>
+                  <span>{t('notifications.markRead', 'Mark Read')}</span>
                 </button>
               )}
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
                 className="p-1.5 rounded-xl hover:bg-[#ccd5ae]/20 text-slate-500 hover:text-slate-800 transition cursor-pointer"
-                aria-label="Close panel"
+                aria-label={t('modals.close', 'Close panel')}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -195,7 +199,7 @@ export const NotificationBell: React.FC = () => {
                   : 'text-[#5c7065] hover:bg-white hover:text-[#01472e]'
               }`}
             >
-              All ({notifications.length})
+              {t('notifications.all', 'All')} ({formatNumber(notifications.length)})
             </button>
             <button
               type="button"
@@ -206,7 +210,7 @@ export const NotificationBell: React.FC = () => {
                   : 'text-[#5c7065] hover:bg-white hover:text-[#01472e]'
               }`}
             >
-              Unread ({unreadNotificationsCount})
+              {t('notifications.unread', 'Unread')} ({formatNumber(unreadNotificationsCount)})
             </button>
             <button
               type="button"
@@ -217,7 +221,7 @@ export const NotificationBell: React.FC = () => {
                   : 'text-[#5c7065] hover:bg-white hover:text-[#01472e]'
               }`}
             >
-              Action Required
+              {t('notifications.actionRequired', 'Action Required')}
             </button>
           </div>
 
@@ -228,11 +232,11 @@ export const NotificationBell: React.FC = () => {
                 <div className="w-10 h-10 mx-auto rounded-2xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
-                <p className="text-xs font-bold text-[#01472e]">No alerts found</p>
+                <p className="text-xs font-bold text-[#01472e]">{t('notifications.noAlerts', 'No alerts found')}</p>
                 <p className="text-[11px] text-slate-500 max-w-xs mx-auto">
                   {filterMode === 'UNREAD'
-                    ? 'You have read all pending notifications for this role.'
-                    : 'Everything is up to date with your current harvest and logistics workflow.'}
+                    ? t('notifications.allReadDesc', 'You have read all pending notifications for this role.')
+                    : t('notifications.upToDateDesc', 'Everything is up to date with your current harvest and logistics workflow.')}
                 </p>
               </div>
             ) : (
@@ -296,7 +300,7 @@ export const NotificationBell: React.FC = () => {
               className="w-full flex items-center justify-center gap-1.5 py-2 rounded-2xl bg-[#01472e] hover:bg-[#025a3b] text-white font-bold text-xs shadow-soft transition cursor-pointer"
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-[#e9edc9]" />
-              <span>Open Notification Command Center</span>
+              <span>{t('notifications.openCommandCenter', 'Open Notification Command Center')}</span>
             </button>
           </div>
         </div>

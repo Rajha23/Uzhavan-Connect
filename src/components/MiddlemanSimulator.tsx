@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 import { MIDDLEMAN_SIMULATOR_DATA } from '../data/mockData';
 import {
   TrendingUp,
@@ -12,6 +13,7 @@ import {
 } from 'lucide-react';
 
 export const MiddlemanSimulator: React.FC = () => {
+  const { t, formatNumber } = useLanguage();
   const [consumerSpend, setConsumerSpend] = useState<number>(100);
 
   const traditionalRatio = consumerSpend / 100;
@@ -29,13 +31,13 @@ export const MiddlemanSimulator: React.FC = () => {
         <div className="max-w-4xl">
           <div className="inline-flex items-center gap-2 bg-amber-400/20 text-amber-300 px-3 py-1 rounded-full text-xs font-medium border border-amber-400/30 mb-3">
             <Scale className="w-3.5 h-3.5" />
-            <span>Economic Impact Model • </span>
+            <span>{t('middlemanSimulator.economicImpactModel', 'Economic Impact Model • ')}</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-            Where Does Your ₹100 Go?
+            {t('middlemanSimulator.title', 'Where Does Your ₹100 Go?')}
           </h2>
           <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
-            Comparing a fragmented 6-tier intermediary chain against Uzhavan Connect’s digitally coordinated demand-first network.
+            {t('middlemanSimulator.subtitle', 'Comparing a fragmented 6-tier intermediary chain against Uzhavan Connect’s digitally coordinated demand-first network.')}
           </p>
         </div>
 
@@ -43,10 +45,10 @@ export const MiddlemanSimulator: React.FC = () => {
         <div className="mt-6 p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/15 max-w-lg">
           <div className="flex items-center justify-between gap-4 mb-2">
             <label htmlFor="spend-input" className="text-xs font-medium text-emerald-300 uppercase tracking-wider">
-              Consumer / Buyer Expenditure
+              {t('middlemanSimulator.consumerSpendLabel', 'Consumer / Buyer Expenditure')}
             </label>
             <span className="text-lg font-semibold font-mono text-white">
-              ₹{consumerSpend}
+              ₹{formatNumber(consumerSpend)}
             </span>
           </div>
           <input
@@ -74,40 +76,40 @@ export const MiddlemanSimulator: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center sm:text-left">
           <div className="bg-white p-4 rounded-xl border border-rose-200 shadow-2xs">
             <p className="text-xs text-rose-700 font-medium uppercase tracking-wider">
-              Traditional Mandi Flow
+              {t('middlemanSimulator.traditionalFlow', 'Traditional Mandi Flow')}
             </p>
             <p className="text-2xl font-semibold text-slate-900 mt-1 font-mono">
-              ₹{traditionalFarmerGets}
+              ₹{formatNumber(traditionalFarmerGets)}
             </p>
             <p className="text-xs text-slate-500 mt-0.5">
-              Only 34% reaches the farmer
+              {t('middlemanSimulator.traditionalNote', 'Only 34% reaches the farmer')}
             </p>
           </div>
 
           <div className="bg-white p-4 rounded-xl border border-emerald-300 shadow-2xs">
             <p className="text-xs text-emerald-800 font-medium uppercase tracking-wider">
-              Uzhavan Connect Coordinated Flow
+              {t('middlemanSimulator.uzhavanFlow', 'Uzhavan Connect Coordinated Flow')}
             </p>
             <p className="text-2xl font-semibold text-emerald-700 mt-1 font-mono">
-              ₹{uzhavanconnectFarmerGets}
+              ₹{formatNumber(uzhavanconnectFarmerGets)}
             </p>
             <p className="text-xs text-slate-500 mt-0.5">
-              72% reaches the farmer
+              {t('middlemanSimulator.uzhavanNote', '72% reaches the farmer')}
             </p>
           </div>
 
           <div className="bg-gradient-to-br from-emerald-600 to-agri-800 p-4 rounded-xl text-white shadow-sm flex flex-col justify-center">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-emerald-200 font-medium">Farmer Net Benefit</span>
+              <span className="text-xs text-emerald-200 font-medium">{t('middlemanSimulator.farmerNetBenefit', 'Farmer Net Benefit')}</span>
               <span className="bg-emerald-500/40 text-[11px] font-medium px-2 py-0.5 rounded text-emerald-100">
-                +{percentageGain}% Realization
+                {t('middlemanSimulator.realizationGain', { gain: percentageGain }, `+${percentageGain}% Realization`)}
               </span>
             </div>
             <p className="text-2xl font-semibold font-mono mt-1">
-              +₹{difference} Extra Cash
+              {t('middlemanSimulator.extraCash', { diff: formatNumber(difference) }, `+₹${difference} Extra Cash`)}
             </p>
             <p className="text-[11px] text-emerald-100 mt-0.5">
-              Straight to farmer bank accounts
+              {t('middlemanSimulator.directToBank', 'Straight to farmer bank accounts')}
             </p>
           </div>
         </div>
@@ -122,16 +124,16 @@ export const MiddlemanSimulator: React.FC = () => {
               <div className="flex items-center gap-2">
                 <AlertOctagon className="w-5 h-5 text-rose-600" />
                 <h3 className="font-medium text-slate-900 text-base">
-                  Traditional Intermediary Flow
+                  {t('middlemanSimulator.traditionalFlow', 'Traditional Intermediary Flow')}
                 </h3>
               </div>
               <span className="text-xs bg-rose-100 text-rose-800 font-semibold px-2.5 py-0.5 rounded-full">
-                6 Layers • 22% Spoilage
+                {t('middlemanSimulator.traditionalLayers', '6 Layers • 22% Spoilage')}
               </span>
             </div>
 
             <p className="text-xs text-slate-600">
-              Multiple speculative commissions, unauthorized cuts, and uncoordinated multi-leg transport erode farmer earnings.
+              {t('middlemanSimulator.traditionalDesc', 'Multiple speculative commissions, unauthorized cuts, and uncoordinated multi-leg transport erode farmer earnings.')}
             </p>
 
             <div className="space-y-2.5">
@@ -152,7 +154,7 @@ export const MiddlemanSimulator: React.FC = () => {
                         {idx + 1}. {item.role}
                       </span>
                       <span className="font-mono text-slate-900">
-                        ₹{calculated} ({item.percentage}%)
+                        ₹{formatNumber(calculated)} ({item.percentage}%)
                       </span>
                     </div>
 
@@ -178,16 +180,16 @@ export const MiddlemanSimulator: React.FC = () => {
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-emerald-600" />
                 <h3 className="font-medium text-slate-900 text-base">
-                  Uzhavan Connect Digitally Coordinated Flow
+                  {t('middlemanSimulator.uzhavanFlow', 'Uzhavan Connect Digitally Coordinated Flow')}
                 </h3>
               </div>
               <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2.5 py-0.5 rounded-full">
-                Zero Speculative Layers • 3.8% Spoilage
+                {t('middlemanSimulator.uzhavanLayers', 'Zero Speculative Layers • 3.8% Spoilage')}
               </span>
             </div>
 
             <p className="text-xs text-slate-600">
-              Retains essential aggregation and cold logistics, but replaces speculative middlemen with transparent digital coordination.
+              {t('middlemanSimulator.uzhavanDesc', 'Retains essential aggregation and cold logistics, but replaces speculative middlemen with transparent digital coordination.')}
             </p>
 
             <div className="space-y-2.5">
@@ -208,7 +210,7 @@ export const MiddlemanSimulator: React.FC = () => {
                         {idx + 1}. {item.role}
                       </span>
                       <span className="font-mono font-semibold text-emerald-800">
-                        ₹{calculated} ({item.percentage}%)
+                        ₹{formatNumber(calculated)} ({item.percentage}%)
                       </span>
                     </div>
 
@@ -233,8 +235,8 @@ export const MiddlemanSimulator: React.FC = () => {
         <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
           <Info className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
           <div className="text-xs text-amber-900 leading-relaxed">
-            <strong className="font-semibold text-amber-950">Crucial Agricultural Architecture Principle:</strong>{' '}
-            We do <em>not</em> naively claim that every intermediary function disappears. Aggregation, grading, cold pre-cooling, and transportation are essential physical services. Uzhavan Connect digitally targets and replaces <strong>unnecessary coordination and speculative information layers</strong>, ensuring farmers retain genuine net realization while logistics and aggregation remain efficient and transparent.
+            <strong className="font-semibold text-amber-950">{t('middlemanSimulator.crucialPrincipleTitle', 'Crucial Agricultural Architecture Principle:')}</strong>{' '}
+            {t('middlemanSimulator.crucialPrincipleDesc', 'We do not naively claim that every intermediary function disappears. Aggregation, grading, cold pre-cooling, and transportation are essential physical services. Uzhavan Connect digitally targets and replaces unnecessary coordination and speculative information layers, ensuring farmers retain genuine net realization while logistics and aggregation remain efficient and transparent.')}
           </div>
         </div>
       </div>

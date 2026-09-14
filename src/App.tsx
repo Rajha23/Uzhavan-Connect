@@ -12,7 +12,6 @@ import { Footer } from './components/Footer';
 import { ProducePassportModal } from './components/ProducePassportModal';
 import { LanguageSelectorModal } from './components/LanguageSelectorModal';
 import { LanguageOnboardingModal } from './components/LanguageOnboardingModal';
-import { ChatbotWidget } from './components/ChatbotWidget';
 
 // Public pages (no sidebar)
 import { LandingPage } from './pages/LandingPage';
@@ -290,7 +289,6 @@ const PublicShell: React.FC = () => (
     <ProducePassportModal />
     <LanguageSelectorModal />
     <LanguageOnboardingModal />
-    <ChatbotWidget />
   </div>
 );
 
@@ -316,7 +314,6 @@ const AuthenticatedShell: React.FC = () => {
       <ProducePassportModal />
       <LanguageSelectorModal />
       <LanguageOnboardingModal />
-      <ChatbotWidget />
     </div>
   );
 };
