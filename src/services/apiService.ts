@@ -218,6 +218,13 @@ export const apiService = {
     pincode?: string;
     mainCrop?: string;
     farmSize?: number;
+    aadhaar?: string;
+    fpoCert?: string;
+    pan?: string;
+    gst?: string;
+    businessProof?: string;
+    drivingLicence?: string;
+    vehicleRc?: string;
   }): Promise<UserProfile> => {
     const rawEmail = (userData.email || '').trim();
     const rawMobile = (userData.mobile || '').trim();

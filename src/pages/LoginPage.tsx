@@ -59,6 +59,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
   const [regSuccess, setRegSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  
+  // Extra role-specific registration fields
+  const [regAadhaar, setRegAadhaar] = useState('');
+  const [regFpoCert, setRegFpoCert] = useState('');
+  const [regPan, setRegPan] = useState('');
+  const [regGst, setRegGst] = useState('');
+  const [regBusinessProof, setRegBusinessProof] = useState('');
+  const [regDrivingLicence, setRegDrivingLicence] = useState('');
+  const [regVehicleRc, setRegVehicleRc] = useState('');
 
   const handleManualLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,6 +118,22 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
       setErrorMsg('Password must be at least 6 characters long.');
       return;
     }
+    if (regRole === 'FARMER' && !regAadhaar.trim()) {
+      setErrorMsg('Please enter your Aadhaar / Farmer ID.');
+      return;
+    }
+    if (regRole === 'FPO_AGGREGATOR' && (!regFpoCert.trim() || !regPan.trim())) {
+      setErrorMsg('Please enter FPO Registration Certificate and PAN.');
+      return;
+    }
+    if ((regRole === 'RETAIL_BUYER' || regRole === 'BULK_BUYER') && (!regPan.trim() && !regGst.trim() || !regBusinessProof.trim())) {
+      setErrorMsg('Please enter PAN/GST and Business Proof.');
+      return;
+    }
+    if (regRole === 'LOGISTICS' && (!regDrivingLicence.trim() || !regVehicleRc.trim())) {
+      setErrorMsg('Please enter Driving Licence and Vehicle RC.');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -119,7 +144,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
         password: cleanPassword,
         role: regRole,
         district: regDistrict.trim(),
-        state: regState.trim()
+        state: regState.trim(),
+        aadhaar: regAadhaar.trim(),
+        fpoCert: regFpoCert.trim(),
+        pan: regPan.trim(),
+        gst: regGst.trim(),
+        businessProof: regBusinessProof.trim(),
+        drivingLicence: regDrivingLicence.trim(),
+        vehicleRc: regVehicleRc.trim()
       });
       setRegSuccess(true);
       setTimeout(() => {
@@ -442,6 +474,106 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                       ))}
                     </select>
                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {regRole === 'FARMER' && (
+                    <div className="col-span-2">
+                      <label className="font-bold text-slate-700 block mb-1">Aadhaar / Farmer ID</label>
+                      <input
+                        type="text"
+                        value={regAadhaar}
+                        onChange={(e) => setRegAadhaar(e.target.value)}
+                        placeholder="e.g. 1234 5678 9012"
+                        required
+                        className="w-full bg-[#faf9f5] border border-[#ccd5ae] rounded-2xl p-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-[#01472e]"
+                      />
+                    </div>
+                  )}
+
+                  {regRole === 'FPO_AGGREGATOR' && (
+                    <>
+                      <div>
+                        <label className="font-bold text-slate-700 block mb-1">FPO Registration/Certificate</label>
+                        <input
+                          type="text"
+                          value={regFpoCert}
+                          onChange={(e) => setRegFpoCert(e.target.value)}
+                          placeholder="Reg No."
+                          required
+                          className="w-full bg-[#faf9f5] border border-[#ccd5ae] rounded-2xl p-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-[#01472e]"
+                        />
+                      </div>
+                      <div>
+                        <label className="font-bold text-slate-700 block mb-1">PAN</label>
+                        <input
+                          type="text"
+                          value={regPan}
+                          onChange={(e) => setRegPan(e.target.value)}
+                          placeholder="ABCDE1234F"
+                          required
+                          className="w-full bg-[#faf9f5] border border-[#ccd5ae] rounded-2xl p-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-[#01472e]"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {(regRole === 'RETAIL_BUYER' || regRole === 'BULK_BUYER') && (
+                    <>
+                      <div>
+                        <label className="font-bold text-slate-700 block mb-1">PAN / GST</label>
+                        <input
+                          type="text"
+                          value={regPan}
+                          onChange={(e) => {
+                            setRegPan(e.target.value);
+                            setRegGst(e.target.value);
+                          }}
+                          placeholder="PAN or GSTIN"
+                          required
+                          className="w-full bg-[#faf9f5] border border-[#ccd5ae] rounded-2xl p-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-[#01472e]"
+                        />
+                      </div>
+                      <div>
+                        <label className="font-bold text-slate-700 block mb-1">Business Proof</label>
+                        <input
+                          type="text"
+                          value={regBusinessProof}
+                          onChange={(e) => setRegBusinessProof(e.target.value)}
+                          placeholder="Licence No / Reg No"
+                          required
+                          className="w-full bg-[#faf9f5] border border-[#ccd5ae] rounded-2xl p-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-[#01472e]"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {regRole === 'LOGISTICS' && (
+                    <>
+                      <div>
+                        <label className="font-bold text-slate-700 block mb-1">Driving Licence</label>
+                        <input
+                          type="text"
+                          value={regDrivingLicence}
+                          onChange={(e) => setRegDrivingLicence(e.target.value)}
+                          placeholder="DL Number"
+                          required
+                          className="w-full bg-[#faf9f5] border border-[#ccd5ae] rounded-2xl p-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-[#01472e]"
+                        />
+                      </div>
+                      <div>
+                        <label className="font-bold text-slate-700 block mb-1">Vehicle RC</label>
+                        <input
+                          type="text"
+                          value={regVehicleRc}
+                          onChange={(e) => setRegVehicleRc(e.target.value)}
+                          placeholder="Registration No"
+                          required
+                          className="w-full bg-[#faf9f5] border border-[#ccd5ae] rounded-2xl p-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-[#01472e]"
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
