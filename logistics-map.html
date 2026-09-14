@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Logistics Live Map | Uzhavan Connect</title>
+
+  <!-- Leaflet.js CSS (No API Key Required) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #01472e;
+      --primary-light: #026642;
+      --accent: #2563eb;
+      --pending: #f97316;
+      --in-transit: #3b82f6;
+      --delivered: #22c55e;
+      --bg-glass: rgba(255, 255, 255, 0.92);
+      --border-color: rgba(226, 232, 240, 0.85);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --shadow-lg: 0 10px 30px -5px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-main);
+      background-color: #f8fafc;
+      overflow: hidden;
+    }
+
+    #map {
+      height: 100vh;
+      width: 100vw;
+      z-index: 1;
+    }
+
+    /* Floating Control Panel */
+    .control-panel {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 1000;
+      background: var(--bg-glass);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px 18px;
+      width: 280px;
+      max-width: calc(100vw - 32px);
+      box-shadow: var(--shadow-lg);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .panel-header h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      background-color: var(--delivered);
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
+    /* Summary Stats Badges */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .stat-badge {
+      padding: 6px 8px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+
+    .stat-pending { background: #fff7ed; color: #c2410c; border-color: #ffedd5; }
+    .stat-transit { background: #eff6ff; color: #1d4ed8; border-color: #dbeafe; }
+    .stat-delivered { background: #f0fdf4; color: #15803d; border-color: #dcfce7; }
+    .stat-val { font-size: 14px; font-weight: 700; display: block; line-height: 1.2; }
+
+    /* Control Buttons */
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #ffffff;
+      color: #334155;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .btn:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+    }
+
+    .btn-toggle-badge {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 20px;
+      background: #f1f5f9;
+      color: #64748b;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .btn.active .btn-toggle-badge {
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+
+    .btn-recenter {
+      background: #01472e !important;
+      color: #ffffff !important;
+      border-color: #01472e !important;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 4px;
+      box-shadow: 0 4px 10px rgba(1, 71, 46, 0.25);
+    }
+
+    .btn-recenter:hover {
+      background: #026642 !important;
+    }
+
+    /* Custom Leaflet Markers */
+    .depot-marker {
+      background: #01472e;
+      color: #ffffff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(1, 71, 46, 0.45);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .depot-marker:hover {
+      transform: scale(1.12);
+    }
+
+    .delivery-marker {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2.5px solid #ffffff;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .delivery-marker:hover {
+      transform: scale(1.15);
+    }
+
+    .delivery-marker.pending { background-color: var(--pending); }
+    .delivery-marker.in-transit {
+      background-color: var(--in-transit);
+      animation: transitPulse 2s infinite;
+    }
+    .delivery-marker.delivered { background-color: var(--delivered); }
+
+    @keyframes transitPulse {
+      0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
+      70% { box-shadow: 0 0 0 9px rgba(59, 130, 246, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+
+    /* Custom Popups */
+    .leaflet-popup-content-wrapper {
+      border-radius: 14px;
+      padding: 4px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+      border: 1px solid #e2e8f0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .leaflet-popup-content {
+      margin: 10px 12px;
+      line-height: 1.4;
+    }
+
+    .popup-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .popup-desc {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    .popup-badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .popup-badge.pending { background: #ffedd5; color: #c2410c; }
+    .popup-badge.in-transit { background: #dbeafe; color: #1d4ed8; }
+    .popup-badge.delivered { background: #dcfce7; color: #15803d; }
+    .popup-badge.warehouse { background: #ecfdf5; color: #01472e; border: 1px solid #a7f3d0; }
+
+    .popup-meta {
+      font-size: 11.5px;
+      color: #475569;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Responsive Mobile Overrides */
+    @media (max-width: 640px) {
+      .control-panel {
+        top: auto;
+        bottom: 20px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+        padding: 14px;
+        border-radius: 14px;
+      }
+      .stats-grid { margin-bottom: 10px; }
+      .btn { padding: 8px 10px; font-size: 12px; }
+      .leaflet-top.leaflet-left { top: 12px; left: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fullscreen Interactive Map Container -->
+  <div id="map" role="application" aria-label="Logistics Live Delivery Map"></div>
+
+  <!-- Modern Floating Control Panel -->
+  <aside class="control-panel" aria-label="Map Controls">
+    <div class="panel-header">
+      <h3>
+        <span class="status-indicator" title="Telemetry Feed Active"></span>
+        Logistics Live Map
+      </h3>
+      <span style="font-size: 11px; font-weight: 600; color: #64748b;">Live GPS</span>
+    </div>
+
+    <!-- Live Counters -->
+    <div class="stats-grid">
+      <div class="stat-badge stat-pending">
+        <span class="stat-val" id="countPending">0</span>
+        Pending
+      </div>
+      <div class="stat-badge stat-transit">
+        <span class="stat-val" id="countTransit">0</span>
+        In Transit
+      </div>
+      <div class="stat-badge stat-delivered">
+        <span class="stat-val" id="countDelivered">0</span>
+        Delivered
+      </div>
+    </div>
+
+    <!-- Toggle Controls -->
+    <div class="btn-group">
+      <button type="button" class="btn active" id="toggleWarehouse" aria-pressed="true">
+        <span>🏢 Central Hub</span>
+        <span class="btn-toggle-badge" id="badgeWarehouse">ON</span>
+      </button>
+
+      <button type="button" class="btn active" id="toggleDeliveries" aria-pressed="true">
+        <span>📦 Delivery Points</span>
+        <span class="btn-toggle-badge" id="badgeDeliveries">ON</span>
+      </button>
+
+      <button type="button" class="btn active" id="toggleRoute" aria-pressed="true">
+        <span>🚚 Active Route</span>
+        <span class="btn-toggle-badge" id="badgeRoute">ON</span>
+      </button>
+
+      <button type="button" class="btn btn-recenter" id="recenterBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="22" y1="12" x2="18" y2="12"></line>
+          <line x1="6" y1="12" x2="2" y2="12"></line>
+          <line x1="12" y1="6" x2="12" y2="2"></line>
+          <line x1="12" y1="22" x2="12" y2="18"></line>
+        </svg>
+        Recenter Fleet Route
+      </button>
+    </div>
+  </aside>
+
+  <!-- Leaflet.js Library from CDN (No API Key required) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <script>
+    /**
+     * =========================================================================
+     * Logistics Live Map - Interactive Client Engine
+     * Powered by Leaflet.js & OpenStreetMap (Zero API key required)
+     * =========================================================================
+     */
+
+    // 1. CONFIGURATION: Central Depot & Map Center
+    const CONFIG = {
+      defaultCenter: [28.6139, 77.2090], // New Delhi, India
+      defaultZoom: 12,
+      tileUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    };
+
+    // 2. DATA SOURCE: Warehouse & Delivery Points
+    const warehouseData = {
+      id: "DEPOT-DEL-01",
+      name: "North Hub – Delhi Central Cold Storage",
+      lat: 28.6139,
+      lng: 77.2090,
+      capacity: "1,500 MT Reefer Capacity",
+      manager: "Rajiv Sharma (+91 98110-23456)"
+    };
+
+    const deliveryPoints = [
+      {
+        id: "ORD-4821",
+        customer: "Safal Agro Mart",
+        address: "Connaught Place Outer Circle, New Delhi",
+        lat: 28.6304,
+        lng: 77.2177,
+        status: "pending",
+        cargo: "Fresh Hydroponic Tomatoes (120 kg)",
+        eta: "18:45 IST"
+      },
+      {
+        id: "ORD-4822",
+        customer: "Nature's Basket Retail",
+        address: "South Extension Part II, New Delhi",
+        lat: 28.5672,
+        lng: 77.2430,
+        status: "in-transit",
+        cargo: "Cold-Chain Organic Strawberries (45 kg)",
+        eta: "17:15 IST (En Route)"
+      },
+      {
+        id: "ORD-4823",
+        customer: "Metro Cash & Carry",
+        address: "Rohini Sector 10, New Delhi",
+        lat: 28.7041,
+        lng: 77.1025,
+        status: "delivered",
+        cargo: "Grade-A Red Onions (500 kg)",
+        eta: "Completed at 14:20 IST"
+      },
+      {
+        id: "ORD-4824",
+        customer: "Blinkit Fulfillment Dark Store",
+        address: "Sector 62 Institutional Area, Noida",
+        lat: 28.6255,
+        lng: 77.3750,
+        status: "pending",
+        cargo: "Export Cluster Cavendish Bananas (200 kg)",
+        eta: "19:30 IST"
+      },
+      {
+        id: "ORD-4825",
+        customer: "Zomato Hyperpure Warehouse",
+        address: "Cyber City DLF Phase II, Gurugram",
+        lat: 28.4895,
+        lng: 77.0866,
+        status: "in-transit",
+        cargo: "Premium Shimla Apples (350 kg)",
+        eta: "17:40 IST (Driver: Amit K.)"
+      }
+    ];
+
+    // 3. MAP INITIALIZATION
+    const map = L.map('map', {
+      zoomControl: true,
+      scrollWheelZoom: true
+    }).setView(CONFIG.defaultCenter, CONFIG.defaultZoom);
+
+    // OpenStreetMap Standard Tile Layer
+    L.tileLayer(CONFIG.tileUrl, {
+      maxZoom: 19,
+      attribution: CONFIG.attribution
+    }).addTo(map);
+
+    // Move zoom control on mobile for neat spacing
+    map.zoomControl.setPosition('topleft');
+
+    // 4. LAYER GROUPS (For Independent Toggling)
+    const warehouseLayer = L.layerGroup().addTo(map);
+    const deliveriesLayer = L.layerGroup().addTo(map);
+    const routeLayer = L.layerGroup().addTo(map);
+
+    // 5. CUSTOM ICON FACTORIES
+    // Central Warehouse Icon (SVG Depicting Hub)
+    const depotCustomIcon = L.divIcon({
+      className: 'depot-div-icon',
+      html: `
+        <div class="depot-marker" title="${warehouseData.name}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21h18"></path>
+            <path d="M3 7v14"></path>
+            <path d="M21 7v14"></path>
+            <path d="M12 3L2 9h20l-10-6z"></path>
+            <path d="M9 13h6"></path>
+          </svg>
+        </div>
+      `,
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -20]
+    });
+
+    // Delivery Stop Icon (Color Coded with Stop Index)
+    function createDeliveryIcon(index, status) {
+      return L.divIcon({
+        className: 'delivery-div-icon',
+        html: `<div class="delivery-marker ${status}">${index + 1}</div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+        popupAnchor: [0, -16]
+      });
+    }
+
+    // 6. POPULATE WAREHOUSE MARKER
+    const warehouseMarker = L.marker([warehouseData.lat, warehouseData.lng], { icon: depotCustomIcon })
+      .bindPopup(`
+        <div class="popup-title">${warehouseData.name}</div>
+        <div class="popup-desc">Primary Cold Chain Aggregation Hub</div>
+        <span class="popup-badge warehouse">Central Hub</span>
+        <div class="popup-meta">
+          <span><strong>Capacity:</strong> ${warehouseData.capacity}</span>
+        </div>
+        <div class="popup-meta" style="border:none; padding-top:2px;">
+          <span><strong>Dispatch:</strong> ${warehouseData.manager}</span>
+        </div>
+      `)
+      .addTo(warehouseLayer);
+
+    // 7. POPULATE DELIVERY POINTS & STATS
+    let pendingCount = 0;
+    let transitCount = 0;
+    let deliveredCount = 0;
+
+    deliveryPoints.forEach((point, idx) => {
+      // Tally statuses
+      if (point.status === 'pending') pendingCount++;
+      else if (point.status === 'in-transit') transitCount++;
+      else if (point.status === 'delivered') deliveredCount++;
+
+      const marker = L.marker([point.lat, point.lng], {
+        icon: createDeliveryIcon(idx, point.status)
+      })
+      .bindPopup(`
+        <div class="popup-title">${point.customer}</div>
+        <div class="popup-desc">${point.address}</div>
+        <span class="popup-badge ${point.status}">${point.status.replace('-', ' ')}</span>
+        <div class="popup-meta">
+          <span><strong>Order:</strong> ${point.id}</span>
+          <span><strong>Stop:</strong> #${idx + 1}</span>
+        </div>
+        <div class="popup-meta">
+          <span><strong>Cargo:</strong> ${point.cargo}</span>
+        </div>
+        <div class="popup-meta" style="color: #01472e; font-weight: 600;">
+          <span><strong>ETA:</strong> ${point.eta}</span>
+        </div>
+      `)
+      .addTo(deliveriesLayer);
+    });
+
+    // Update UI counters
+    document.getElementById('countPending').textContent = pendingCount;
+    document.getElementById('countTransit').textContent = transitCount;
+    document.getElementById('countDelivered').textContent = deliveredCount;
+
+    // 8. PLANNED ROUTE POLYLINE
+    const routeCoordinates = [
+      [warehouseData.lat, warehouseData.lng],
+      ...deliveryPoints.map(p => [p.lat, p.lng])
+    ];
+
+    // Background shadow route line for depth
+    L.polyline(routeCoordinates, {
+      color: '#0f172a',
+      weight: 6,
+      opacity: 0.25,
+      lineCap: 'round',
+      lineJoin: 'round'
+    }).addTo(routeLayer);
+
+    // Foreground active route line
+    const activeRoutePolyline = L.polyline(routeCoordinates, {
+      color: '#2563eb',
+      weight: 4,
+      opacity: 0.9,
+      dashArray: '8, 8',
+      lineCap: 'round',
+      lineJoin: 'round'
+    }).addTo(routeLayer);
+
+    // Auto-Fit Bounds to Show All Points with Padding
+    function fitAllBounds() {
+      const bounds = L.latLngBounds(routeCoordinates);
+      map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 });
+    }
+    fitAllBounds();
+
+    // 9. INTERACTIVE CONTROLS
+    function wireToggle(btnId, badgeId, layer) {
+      const btn = document.getElementById(btnId);
+      const badge = document.getElementById(badgeId);
+
+      btn.addEventListener('click', () => {
+        const isActive = btn.classList.toggle('active');
+        btn.setAttribute('aria-pressed', isActive);
+        badge.textContent = isActive ? 'ON' : 'OFF';
+
+        if (isActive) {
+          map.addLayer(layer);
+        } else {
+          map.removeLayer(layer);
+        }
+      });
+    }
+
+    wireToggle('toggleWarehouse', 'badgeWarehouse', warehouseLayer);
+    wireToggle('toggleDeliveries', 'badgeDeliveries', deliveriesLayer);
+    wireToggle('toggleRoute', 'badgeRoute', routeLayer);
+
+    document.getElementById('recenterBtn').addEventListener('click', fitAllBounds);
+
+    /**
+     * =========================================================================
+     * EXTENSION HOOKS (Architecture for Production Enhancements):
+     * 1. Real-time Telemetry:
+     *    const socket = new WebSocket('wss://api.uzhavanconnect.in/telemetry');
+     *    socket.onmessage = (event) => updateVehicleLocation(JSON.parse(event.data));
+     * 2. Dynamic Routing:
+     *    Call OSRM / OpenRouteService API with waypoint coordinates to draw
+     *    turn-by-turn road geometry instead of straight polylines.
+     * =========================================================================
+     */
+  </script>
+</body>
+</html>
