@@ -182,6 +182,7 @@ export const AdminDashboard: React.FC = () => {
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
                 className="input-modern py-1.5 px-3 text-xs rounded-xl bg-white font-medium text-slate-700"
+              >
                 <option value="ALL">{t('admin.allRoles', 'All Roles')}</option>
                 <option value="FARMER">{t('roles.farmer', 'Farmers')}</option>
                 <option value="FPO_AGGREGATOR">{t('roles.fpo', 'FPO Aggregators')}</option>

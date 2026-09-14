@@ -526,7 +526,7 @@ export const enTranslations: TranslationDictionary = {
     exportCsv: 'Export Raw Data CSV'
   },
 
-  profile2: {
+  profile: {
     title: 'User Profile & Operational Credentials',
     editProfile: 'Edit Profile',
     cancel: 'Cancel',
