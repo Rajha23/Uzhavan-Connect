@@ -578,6 +578,7 @@ export const LogisticsDashboard: React.FC = () => {
                   </div>
                 </div>
               );
+            })}
           </div>
         </div>
       )}
