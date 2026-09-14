@@ -96,6 +96,7 @@ export const apiService = {
             const { user, token } = await authVault.authenticateCredentials(normEmail, rawPass);
             if (user) {
               console.warn('[Auth] Falling back to local auth due to Supabase error:', authError.message);
+              ApiClient.setToken(token);
               return { token, user };
             }
           } catch (localErr) {
@@ -103,6 +104,11 @@ export const apiService = {
           }
 
           const errMsg = (authError.message || '').toLowerCase();
+          
+          if (errMsg.includes('email not confirmed')) {
+            throw new Error('Your account is created but email is not confirmed. Please check your inbox for the confirmation link.');
+          }
+          
           if (errMsg.includes('invalid login credentials') || errMsg.includes('invalid credentials')) {
             throw new Error('The email or password is incorrect. Please check your credentials and try again.');
           }

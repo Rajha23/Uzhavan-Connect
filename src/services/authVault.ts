@@ -148,7 +148,7 @@ export const seedDemoAccounts = async (): Promise<void> => {
     },
     {
       user: DEMO_USERS.ADMIN,
-      email: 'admin@uzhavanconnect.gov.in',
+      email: DEMO_USERS.ADMIN.email,
       mobile: '9900011122',
       passwords: ['Admin@2026', 'SecurePass@2026', 'admin123']
     },
