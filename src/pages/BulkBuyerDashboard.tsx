@@ -10,6 +10,7 @@ import {
   ShipmentLifecycleStage
 } from '../types';
 import { BulkShipmentMap } from '../components/BulkShipmentMap';
+import { GovernmentSchemes } from '../components/GovernmentSchemes';
 import confetti from 'canvas-confetti';
 import {
   ShoppingBag,

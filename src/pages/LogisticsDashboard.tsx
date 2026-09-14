@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
+import { GovernmentSchemes } from '../components/GovernmentSchemes';
 import {
   Truck,
   Navigation,
@@ -577,10 +578,11 @@ export const LogisticsDashboard: React.FC = () => {
                   </div>
                 </div>
               );
-            })}
           </div>
         </div>
       )}
+
+      <GovernmentSchemes role="LOGISTICS" className="mt-8" />
     </div>
   );
 };
