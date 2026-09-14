@@ -285,8 +285,11 @@ export const DemandPoolPage: React.FC = () => {
                 ))}
               </div>
 
-              <div className="mt-4 p-3 bg-emerald-50/70 rounded-xl border border-emerald-200/70 text-[11px] text-emerald-950 leading-relaxed font-normal">
-                🛡️ <strong className="text-emerald-950 font-medium">{t('demand.integrityInvariant', undefined, 'Integrity Invariant:')}</strong> {t('demand.integrityInvariantDesc', undefined, 'Individual buyer demands are never modified, merged, or lost. Aggregation acts as a coordinated procurement umbrella.')}
+              <div className="mt-4 p-3 bg-emerald-50/70 rounded-xl border border-emerald-200/70 text-[11px] text-emerald-950 leading-relaxed font-normal flex items-start gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-emerald-950 font-medium">{t('demand.integrityInvariant', undefined, 'Integrity Invariant:')}</strong> {t('demand.integrityInvariantDesc', undefined, 'Individual buyer demands are never modified, merged, or lost. Aggregation acts as a coordinated procurement umbrella.')}
+                </div>
               </div>
             </div>
 

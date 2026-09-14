@@ -260,51 +260,62 @@ export const FpoDashboard: React.FC = () => {
       {/* Operational Stage Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-3.5">
         {[
-          { labelKey: 'fpo.kpi.memberSupply', defaultLabel: 'Member Supply', count: produceListings.length, descKey: 'fpo.kpi.activeFarmSupply', defaultDesc: 'Active Farm Supply', stage: 'MEMBER_SUPPLY' as const, color: 'text-[#01472e]' },
-          { labelKey: 'fpo.kpi.collectionQueue', defaultLabel: 'Collection Queue', count: pendingCollectionOrders.length, descKey: 'fpo.kpi.awaitingPickup', defaultDesc: 'Awaiting Farm Pickup', stage: 'COLLECTION' as const, color: 'text-amber-800' },
-          { labelKey: 'fpo.kpi.awaitingQA', defaultLabel: 'Awaiting QA', count: collectedAwaitingGrading.length, descKey: 'fpo.kpi.atMicroHub', defaultDesc: 'At Micro-Hub Station', stage: 'GRADING' as const, color: 'text-[#01472e]' },
-          { labelKey: 'fpo.kpi.awaitingPacking', defaultLabel: 'Awaiting Packing', count: gradedAwaitingPacking.length, descKey: 'fpo.kpi.readyForCrates', defaultDesc: 'Ready for Crates & QR', stage: 'PACKING' as const, color: 'text-[#01472e]' },
-          { labelKey: 'fpo.kpi.bulkPools', defaultLabel: 'Bulk Pools', count: bulkConsolidatedOrders.length, descKey: 'fpo.kpi.multiFarmerBatches', defaultDesc: 'Multi-Farmer Batches', stage: 'CONSOLIDATION' as const, color: 'text-[#01472e]' },
-          { labelKey: 'fpo.kpi.dispatchReady', defaultLabel: 'Dispatch Ready', count: packedReadyForLogistics.length, descKey: 'fpo.kpi.transportReadyGate', defaultDesc: 'Transport Ready Gate', stage: 'ALL' as const, color: 'text-[#01472e]' },
-        ].map((item) => (
-          <button
-            key={item.labelKey}
-            onClick={() => setActiveTabSection(item.stage)}
-            className={`agri-card p-4.5 rounded-[24px] border text-left transition shadow-soft cursor-pointer ${
-              activeTabSection === item.stage
-                ? 'bg-[#eaf4ec] border-[#01472e] ring-2 ring-[#01472e]/20 shadow-forest/10'
-                : 'border-[#ccd5ae]/40 hover:border-[#a3b18a]/60 hover:shadow-forest/5'
-            }`}
-          >
-            <p className="text-[11px] text-[#01472e]/60 font-semibold uppercase tracking-wider truncate">{t(item.labelKey, item.defaultLabel)}</p>
-            <p className={`text-2xl font-semibold font-mono mt-0.5 ${item.color}`}>{item.count}</p>
-            <p className="text-[10px] text-[#01472e]/60 mt-0.5 truncate">{t(item.descKey, item.defaultDesc)}</p>
-          </button>
-        ))}
+          { labelKey: 'fpo.kpi.memberSupply', defaultLabel: 'Member Supply', count: produceListings.length, descKey: 'fpo.kpi.activeFarmSupply', defaultDesc: 'Active Farm Supply', stage: 'MEMBER_SUPPLY' as const, icon: Sprout, color: 'text-[#01472e]' },
+          { labelKey: 'fpo.kpi.collectionQueue', defaultLabel: 'Collection Queue', count: pendingCollectionOrders.length, descKey: 'fpo.kpi.awaitingPickup', defaultDesc: 'Awaiting Farm Pickup', stage: 'COLLECTION' as const, icon: Package, color: 'text-amber-800' },
+          { labelKey: 'fpo.kpi.awaitingQA', defaultLabel: 'Awaiting QA', count: collectedAwaitingGrading.length, descKey: 'fpo.kpi.atMicroHub', defaultDesc: 'At Micro-Hub Station', stage: 'GRADING' as const, icon: ShieldCheck, color: 'text-[#01472e]' },
+          { labelKey: 'fpo.kpi.awaitingPacking', defaultLabel: 'Awaiting Packing', count: gradedAwaitingPacking.length, descKey: 'fpo.kpi.readyForCrates', defaultDesc: 'Ready for Crates & QR', stage: 'PACKING' as const, icon: Box, color: 'text-[#01472e]' },
+          { labelKey: 'fpo.kpi.bulkPools', defaultLabel: 'Bulk Pools', count: bulkConsolidatedOrders.length, descKey: 'fpo.kpi.multiFarmerBatches', defaultDesc: 'Multi-Farmer Batches', stage: 'CONSOLIDATION' as const, icon: Layers, color: 'text-[#01472e]' },
+          { labelKey: 'fpo.kpi.dispatchReady', defaultLabel: 'Dispatch Ready', count: packedReadyForLogistics.length, descKey: 'fpo.kpi.transportReadyGate', defaultDesc: 'Transport Ready Gate', stage: 'ALL' as const, icon: Truck, color: 'text-[#01472e]' },
+        ].map((item) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.labelKey}
+              onClick={() => setActiveTabSection(item.stage)}
+              className={`agri-card p-4.5 rounded-[24px] border text-left transition shadow-soft cursor-pointer ${
+                activeTabSection === item.stage
+                  ? 'bg-[#eaf4ec] border-[#01472e] ring-2 ring-[#01472e]/20 shadow-forest/10'
+                  : 'border-[#ccd5ae]/40 hover:border-[#a3b18a]/60 hover:shadow-forest/5'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-[11px] text-[#01472e]/60 font-semibold uppercase tracking-wider truncate">{t(item.labelKey, item.defaultLabel)}</p>
+                <Icon className="w-3.5 h-3.5 text-[#01472e]/60" />
+              </div>
+              <p className={`text-2xl font-semibold font-mono mt-0.5 ${item.color}`}>{item.count}</p>
+              <p className="text-[10px] text-[#01472e]/60 mt-0.5 truncate">{t(item.descKey, item.defaultDesc)}</p>
+            </button>
+          );
+        })}
       </div>
 
       {/* Stage Tabs Navigation */}
       <div className="flex gap-2.5 border-b border-[#ccd5ae]/30 pb-3.5 overflow-x-auto">
         {[
-          { key: 'MEMBER_SUPPLY', label: t('fpo.tab.memberSupply', 'Member Supply ({count})', { count: produceListings.length }) },
-          { key: 'COLLECTION', label: t('fpo.tab.collection', '1. Farm Gate Collection ({count})', { count: pendingCollectionOrders.length }) },
-          { key: 'GRADING', label: t('fpo.tab.grading', '2. Quality Check & Grading ({count})', { count: collectedAwaitingGrading.length }) },
-          { key: 'PACKING', label: t('fpo.tab.packing', '3. Packing & Batch QR ({count})', { count: gradedAwaitingPacking.length }) },
-          { key: 'CONSOLIDATION', label: t('fpo.tab.consolidation', '4. Bulk Consolidation ({count})', { count: bulkConsolidatedOrders.length }) },
-          { key: 'ALL', label: t('fpo.tab.all', '5. All Collective Orders ({count})', { count: orders.length }) }
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTabSection(tab.key as any)}
-            className={`px-4 py-2.5 text-xs font-semibold rounded-2xl transition whitespace-nowrap cursor-pointer ${
-              activeTabSection === tab.key
-                ? 'bg-[#01472e] text-white shadow-xs'
-                : 'bg-white/80 hover:bg-[#eaf4ec] text-[#01472e]/70 border border-[#ccd5ae]/40'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+          { key: 'MEMBER_SUPPLY', label: t('fpo.tab.memberSupply', 'Member Supply ({count})', { count: produceListings.length }), icon: Sprout },
+          { key: 'COLLECTION', label: t('fpo.tab.collection', '1. Farm Gate Collection ({count})', { count: pendingCollectionOrders.length }), icon: Package },
+          { key: 'GRADING', label: t('fpo.tab.grading', '2. Quality Check & Grading ({count})', { count: collectedAwaitingGrading.length }), icon: ShieldCheck },
+          { key: 'PACKING', label: t('fpo.tab.packing', '3. Packing & Batch QR ({count})', { count: gradedAwaitingPacking.length }), icon: QrCode },
+          { key: 'CONSOLIDATION', label: t('fpo.tab.consolidation', '4. Bulk Consolidation ({count})', { count: bulkConsolidatedOrders.length }), icon: Layers },
+          { key: 'ALL', label: t('fpo.tab.all', '5. All Collective Orders ({count})', { count: orders.length }), icon: ClipboardList }
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isSelected = activeTabSection === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTabSection(tab.key as any)}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold rounded-2xl transition whitespace-nowrap cursor-pointer ${
+                isSelected
+                  ? 'bg-[#01472e] text-white shadow-xs'
+                  : 'bg-white/80 hover:bg-[#eaf4ec] text-[#01472e]/70 border border-[#ccd5ae]/40'
+              }`}
+            >
+              <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-[#fefae0]' : 'text-slate-400'}`} />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* ── STAGE 0: MEMBER FARM SUPPLY POOL ───────────────────────────────── */}
@@ -1126,7 +1137,6 @@ export const FpoDashboard: React.FC = () => {
           </div>
         </div>
       )}
-
 
       {/* ── MODAL: PACKING & CRATING ─────────────────────────────────────────── */}
       {packingModalOrder && (

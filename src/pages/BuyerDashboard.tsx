@@ -23,7 +23,9 @@ import {
   Check,
   AlertTriangle,
   QrCode,
-  FileCheck2
+  FileCheck2,
+  Package,
+  Gavel
 } from 'lucide-react';
 import { AiInsightCard } from '../components/AiInsightCard';
 import confetti from 'canvas-confetti';
@@ -215,25 +217,45 @@ export const BuyerDashboard: React.FC = () => {
       {/* Procurement Metrics Overview Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="agri-card p-6 rounded-[28px] border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-300">
-          <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-1.5">{t('buyer.activeDemands', 'Active Demands')}</span>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider">{t('buyer.activeDemands', 'Active Demands')}</span>
+            <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
+              <Layers className="w-4 h-4" />
+            </div>
+          </div>
           <p className="text-3xl font-semibold tracking-tight text-[#01472e]">{demands.length}</p>
           <span className="text-xs text-[#01472e]/70 font-medium mt-1 block">{t('buyer.acrossCommodities', 'Across {count} Commodities', { count: activeCropsCount })}</span>
         </div>
 
         <div className="agri-card p-6 rounded-[28px] border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-300">
-          <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-1.5">{t('buyer.unmetTargetVolume', 'Unmet Target Volume')}</span>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider">{t('buyer.unmetTargetVolume', 'Unmet Target Volume')}</span>
+            <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
+              <Package className="w-4 h-4" />
+            </div>
+          </div>
           <p className="text-3xl font-semibold tracking-tight text-[#01472e]">{totalDemandVolumeKg.toLocaleString()} <span className="text-sm font-normal text-[#01472e]/60">kg</span></p>
           <span className="text-xs text-[#01472e] font-semibold mt-1 block">{t('buyer.openForAllocation', 'Open for Allocation')}</span>
         </div>
 
         <div className="agri-card p-6 rounded-[28px] border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-300">
-          <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-1.5">{t('buyer.allocatedVolume', 'Allocated Volume')}</span>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider">{t('buyer.allocatedVolume', 'Allocated Volume')}</span>
+            <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+          </div>
           <p className="text-3xl font-semibold tracking-tight text-[#01472e]">{totalAllocatedVolumeKg.toLocaleString()} <span className="text-sm font-normal text-[#01472e]/60">kg</span></p>
           <span className="text-xs text-[#01472e]/70 font-medium mt-1 block">{t('buyer.underContract', 'Under Contract')}</span>
         </div>
 
         <div className="agri-card p-6 rounded-[28px] border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-300">
-          <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider block mb-1.5">{t('buyer.aggregationReady', 'Aggregation Ready')}</span>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider">{t('buyer.aggregationReady', 'Aggregation Ready')}</span>
+            <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" />
+            </div>
+          </div>
           <p className="text-3xl font-semibold tracking-tight text-[#01472e]">100%</p>
           <span className="text-xs text-[#01472e] font-semibold uppercase tracking-wider mt-1 block">{t('buyer.coordinatedLogistics', 'Coordinated Logistics')}</span>
         </div>
@@ -259,9 +281,10 @@ export const BuyerDashboard: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('reverse-auction')}
-              className="btn-secondary text-xs py-2.5 px-5 rounded-2xl"
+              className="btn-secondary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-2"
             >
-              {t('buyer.openReverseAuction', 'Open Reverse Auction →')}
+              <Gavel className="w-3.5 h-3.5 text-[#01472e]" />
+              <span>{t('buyer.openReverseAuction', 'Open Reverse Auction →')}</span>
             </button>
           </div>
         </div>
@@ -599,7 +622,6 @@ export const BuyerDashboard: React.FC = () => {
           </div>
         )}
       </div>
-
 
       {/* Create Demand Modal Dialog */}
       {isModalOpen && (

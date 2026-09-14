@@ -21,7 +21,11 @@ import {
   X,
   Sparkles,
   Check,
-  Briefcase
+  Briefcase,
+  ShoppingBag,
+  Users,
+  PackageCheck,
+  Layers
 } from 'lucide-react';
 import { LanguageSettingsCard } from '../components/LanguageSettingsCard';
 import { NotificationPreferencesCard } from '../components/NotificationPreferencesCard';
@@ -164,13 +168,21 @@ export const ProfilePage: React.FC = () => {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-6">
             <div className="relative">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-[#013824] border-2 border-[#ccd5ae]/40 text-white flex items-center justify-center text-4xl shadow-xl shrink-0 overflow-hidden">
-                {currentUser.avatar ? (
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-[#013824] border-2 border-[#ccd5ae]/40 text-white flex items-center justify-center shadow-xl shrink-0 overflow-hidden">
+                {currentUser.avatar && !currentUser.avatar.includes('🌾') && !currentUser.avatar.includes('👨') ? (
                   <span className="text-4xl">{currentUser.avatar}</span>
+                ) : currentRole === 'BULK_BUYER' ? (
+                  <Building2 className="w-10 h-10 text-[#fefae0]" />
+                ) : currentRole === 'RETAIL_BUYER' ? (
+                  <ShoppingBag className="w-10 h-10 text-[#fefae0]" />
+                ) : currentRole === 'ADMIN' ? (
+                  <ShieldCheck className="w-10 h-10 text-[#fefae0]" />
+                ) : currentRole === 'LOGISTICS' ? (
+                  <Truck className="w-10 h-10 text-[#fefae0]" />
+                ) : currentRole === 'FPO_AGGREGATOR' ? (
+                  <Users className="w-10 h-10 text-[#fefae0]" />
                 ) : (
-                  <span className="text-3xl">
-                    {currentRole === 'BULK_BUYER' ? '🏭' : currentRole === 'ADMIN' ? '⚙️' : currentRole === 'LOGISTICS' ? '🚛' : currentRole === 'FPO_AGGREGATOR' ? '🏛️' : '👨‍🌾'}
-                  </span>
+                  <Sprout className="w-10 h-10 text-[#fefae0]" />
                 )}
               </div>
               <div className="absolute -bottom-1.5 -right-1.5 bg-[#ccd5ae] text-[#01472e] p-1.5 rounded-xl shadow-md border border-white">
@@ -471,8 +483,9 @@ export const ProfilePage: React.FC = () => {
               <span className="text-xs font-bold text-slate-600 block mb-2">{t('profile.mainCultivatedCrops', 'Main Cultivated Crops:')}</span>
               <div className="flex flex-wrap gap-2">
                 {(currentUser.mainCrops && currentUser.mainCrops.length > 0 ? currentUser.mainCrops : [t('profile.noneSpecified', 'None specified')]).map((c, i) => (
-                  <span key={i} className="bg-[#eaf4ec] text-[#01472e] font-semibold px-3 py-1 rounded-xl text-xs border border-[#a3b18a]/40">
-                    🌱 {c}
+                  <span key={i} className="inline-flex items-center gap-1.5 bg-[#eaf4ec] text-[#01472e] font-semibold px-3 py-1 rounded-xl text-xs border border-[#a3b18a]/40">
+                    <Sprout className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{c}</span>
                   </span>
                 ))}
               </div>
@@ -482,16 +495,25 @@ export const ProfilePage: React.FC = () => {
           {/* Farmer Statistics Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <div className="bg-white p-6 rounded-[28px] border border-[#ccd5ae]/60 shadow-sm text-center">
+              <div className="w-9 h-9 mx-auto rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center mb-2">
+                <Sprout className="w-4 h-4" />
+              </div>
               <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">{t('profile.totalHarvestListings', 'Total Harvest Listings')}</span>
               <p className="text-3xl font-bold font-mono text-slate-900 mt-2">{currentUser.totalListings || 0}</p>
               <span className="text-[11px] text-slate-500 mt-1 block">{t('profile.activeMarketplace', 'Active on marketplace')}</span>
             </div>
             <div className="bg-white p-6 rounded-[28px] border border-[#ccd5ae]/60 shadow-sm text-center">
+              <div className="w-9 h-9 mx-auto rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center mb-2">
+                <PackageCheck className="w-4 h-4" />
+              </div>
               <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">{t('profile.settledDirectOrders', 'Settled Direct Orders')}</span>
               <p className="text-3xl font-bold font-mono text-[#01472e] mt-2">{currentUser.completedOrders || 0}</p>
               <span className="text-[11px] text-emerald-700 font-medium mt-1 block">{t('profile.automatedEscrow', '100% automated escrow')}</span>
             </div>
             <div className="bg-white p-6 rounded-[28px] border border-[#ccd5ae]/60 shadow-sm text-center">
+              <div className="w-9 h-9 mx-auto rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center mb-2">
+                <Truck className="w-4 h-4" />
+              </div>
               <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">{t('profile.totalDispatchedProduce', 'Total Dispatched Produce')}</span>
               <p className="text-3xl font-bold font-mono text-[#01472e] mt-2">{(currentUser.quantitySoldKg || 0).toLocaleString()} <span className="text-base font-normal">{t('common.kg', 'kg')}</span></p>
               <span className="text-[11px] text-slate-500 mt-1 block">{t('profile.coldChain', 'Via verified cold chain')}</span>

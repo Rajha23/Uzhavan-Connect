@@ -11,7 +11,13 @@ import {
   HeartHandshake,
   Lock,
   UserPlus,
-  ArrowRight
+  ArrowRight,
+  Users,
+  Scale,
+  Clock,
+  BarChart3,
+  AlertTriangle,
+  CreditCard
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
@@ -19,14 +25,14 @@ export const LandingPage: React.FC = () => {
   const { t } = useLanguage();
 
   const problemCards = [
-    { title: t('landing.fragmentedDemand', undefined, 'Fragmented Demand'), desc: t('landing.fragmentedDemandDesc', undefined, 'Small retailers & restaurants purchase independently, inflating ordering costs and driving speculative local arbitrage.') },
-    { title: t('landing.fragmentedSupply', undefined, 'Fragmented Supply'), desc: t('landing.fragmentedSupplyDesc', undefined, '86% of Indian farmers are smallholders (<2 hectares) lacking individual bargaining power or volume scale for bulk buyers.') },
-    { title: t('landing.uncertainPricing', undefined, 'Uncertain Pricing'), desc: t('landing.uncertainPricingDesc', undefined, 'Farmers bring produce blindly to mandis, where distress sales and unauthorized cuts depress gate prices to 30-40% of retail.') },
-    { title: t('landing.duplicateLogistics', undefined, 'Duplicate Logistics'), desc: t('landing.duplicateLogisticsDesc', undefined, 'Uncoordinated mini-trucks make redundant single-drop runs, burning fuel with 40%+ empty return miles and no cold-chain.') },
-    { title: t('landing.slowMatching', undefined, 'Slow Matching'), desc: t('landing.slowMatchingDesc', undefined, 'Spot telephone negotiations and 4-6 intermediary touchpoints create 48 to 72 hour delays for highly perishable commodities.') },
-    { title: t('landing.limitedDemandVisibility', undefined, 'Limited Demand Visibility'), desc: t('landing.limitedDemandVisibilityDesc', undefined, 'Farmers plant without knowing what the market will need 3 months later, triggering recurrent glut-and-famine cycles.') },
-    { title: t('landing.postHarvestLoss', undefined, 'Post-Harvest Value Loss'), desc: t('landing.postHarvestLossDesc', undefined, 'Over 20% of Indian horticultural produce rots in transit due to lack of pre-cooling micro-hubs and refrigerated routing.') },
-    { title: t('landing.opaqueRealization', undefined, 'Opaque Farmer Realization'), desc: t('landing.opaqueRealizationDesc', undefined, 'No itemized visibility into transport, mandi cess, or commission deductions, leaving farmers in perpetual debt.') }
+    { icon: TrendingUp, title: t('landing.fragmentedDemand', undefined, 'Fragmented Demand'), desc: t('landing.fragmentedDemandDesc', undefined, 'Small retailers & restaurants purchase independently, inflating ordering costs and driving speculative local arbitrage.') },
+    { icon: Users, title: t('landing.fragmentedSupply', undefined, 'Fragmented Supply'), desc: t('landing.fragmentedSupplyDesc', undefined, '86% of Indian farmers are smallholders (<2 hectares) lacking individual bargaining power or volume scale for bulk buyers.') },
+    { icon: Scale, title: t('landing.uncertainPricing', undefined, 'Uncertain Pricing'), desc: t('landing.uncertainPricingDesc', undefined, 'Farmers bring produce blindly to mandis, where distress sales and unauthorized cuts depress gate prices to 30-40% of retail.') },
+    { icon: Truck, title: t('landing.duplicateLogistics', undefined, 'Duplicate Logistics'), desc: t('landing.duplicateLogisticsDesc', undefined, 'Uncoordinated mini-trucks make redundant single-drop runs, burning fuel with 40%+ empty return miles and no cold-chain.') },
+    { icon: Clock, title: t('landing.slowMatching', undefined, 'Slow Matching'), desc: t('landing.slowMatchingDesc', undefined, 'Spot telephone negotiations and 4-6 intermediary touchpoints create 48 to 72 hour delays for highly perishable commodities.') },
+    { icon: BarChart3, title: t('landing.limitedDemandVisibility', undefined, 'Limited Demand Visibility'), desc: t('landing.limitedDemandVisibilityDesc', undefined, 'Farmers plant without knowing what the market will need 3 months later, triggering recurrent glut-and-famine cycles.') },
+    { icon: AlertTriangle, title: t('landing.postHarvestLoss', undefined, 'Post-Harvest Value Loss'), desc: t('landing.postHarvestLossDesc', undefined, 'Over 20% of Indian horticultural produce rots in transit due to lack of pre-cooling micro-hubs and refrigerated routing.') },
+    { icon: CreditCard, title: t('landing.opaqueRealization', undefined, 'Opaque Farmer Realization'), desc: t('landing.opaqueRealizationDesc', undefined, 'No itemized visibility into transport, mandi cess, or commission deductions, leaving farmers in perpetual debt.') }
   ];
 
   return (
@@ -195,18 +201,24 @@ export const LandingPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {problemCards.map((card, idx) => (
-            <div
-              key={idx}
-              className="bg-white p-5 rounded-[24px] border border-[#ccd5ae]/60 shadow-2xs hover:border-[#01472e]/40 hover:shadow-forest transition-all duration-200 space-y-2.5 group"
-            >
-              <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] border border-[#a3b18a]/40 text-[#01472e] flex items-center justify-center font-bold text-xs shadow-2xs group-hover:scale-105 transition font-mono">
-                0{idx + 1}
+          {problemCards.map((card, idx) => {
+            const Icon = card.icon;
+            return (
+              <div
+                key={idx}
+                className="bg-white p-5 rounded-[24px] border border-[#ccd5ae]/60 shadow-2xs hover:border-[#01472e]/40 hover:shadow-forest transition-all duration-200 space-y-2.5 group"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] border border-[#a3b18a]/40 text-[#01472e] flex items-center justify-center font-bold text-xs shadow-2xs group-hover:scale-105 transition font-mono">
+                    0{idx + 1}
+                  </div>
+                  <Icon className="w-4 h-4 text-[#01472e]/60 group-hover:text-[#01472e] transition" />
+                </div>
+                <h3 className="font-bold text-[#01472e] text-sm tracking-normal">{card.title}</h3>
+                <p className="text-xs text-slate-600 leading-relaxed font-normal">{card.desc}</p>
               </div>
-              <h3 className="font-bold text-[#01472e] text-sm tracking-normal">{card.title}</h3>
-              <p className="text-xs text-slate-600 leading-relaxed font-normal">{card.desc}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

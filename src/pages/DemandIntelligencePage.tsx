@@ -18,7 +18,12 @@ import {
   CheckCircle2,
   ArrowRight,
   Database,
-  Sliders
+  Sliders,
+  Sprout,
+  MapPin,
+  Activity,
+  Gauge,
+  Award
 } from 'lucide-react';
 
 import {
@@ -170,22 +175,27 @@ export const DemandIntelligencePage: React.FC = () => {
       <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 p-6 sm:p-8 shadow-soft space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#ccd5ae]/30 pb-4">
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#01472e]">
-              {t('demandIntelligence.section1', undefined, '1. Agricultural Parameters & Regional Corridors')}
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#01472e] flex items-center gap-2">
+              <Sliders className="w-4 h-4 text-[#01472e]" />
+              <span>{t('demandIntelligence.section1', undefined, '1. Agricultural Parameters & Regional Corridors')}</span>
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
               {t('demandIntelligence.section1Subtitle', undefined, 'Select commodity variety, target logistics hub, and evaluation forecasting horizon.')}
             </p>
           </div>
-          <span className="text-xs text-[#01472e] bg-[#eaf4ec] px-3 py-1 rounded-full border border-[#a3b18a]/40 font-bold">
-            {t('demandIntelligence.dynamicMlQuery', undefined, 'Dynamic ML Query')}
+          <span className="text-xs text-[#01472e] bg-[#eaf4ec] px-3 py-1 rounded-full border border-[#a3b18a]/40 font-bold flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-[#01472e]" />
+            <span>{t('demandIntelligence.dynamicMlQuery', undefined, 'Dynamic ML Query')}</span>
           </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Commodity Dropdown */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-slate-700">{t('demandIntelligence.commodityProduce', undefined, 'Commodity Produce')}</label>
+            <label className="block text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+              <Sprout className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{t('demandIntelligence.commodityProduce', undefined, 'Commodity Produce')}</span>
+            </label>
             <select
               value={selectedCrop}
               onChange={(e) => setSelectedCrop(e.target.value)}
@@ -199,7 +209,10 @@ export const DemandIntelligencePage: React.FC = () => {
 
           {/* Region Corridor */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-slate-700">{t('demandIntelligence.consolidationCorridor', undefined, 'Consolidation Corridor')}</label>
+            <label className="block text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{t('demandIntelligence.consolidationCorridor', undefined, 'Consolidation Corridor')}</span>
+            </label>
             <select
               value={selectedRegion}
               onChange={(e) => setSelectedRegion(e.target.value)}
@@ -214,7 +227,10 @@ export const DemandIntelligencePage: React.FC = () => {
 
           {/* Forecast Horizon */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-slate-700">{t('demandIntelligence.forecastHorizonLabel', undefined, 'Forecast Horizon')}</label>
+            <label className="block text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{t('demandIntelligence.forecastHorizonLabel', undefined, 'Forecast Horizon')}</span>
+            </label>
             <select
               value={horizonDays}
               onChange={(e) => setHorizonDays(Number(e.target.value))}
@@ -252,17 +268,22 @@ export const DemandIntelligencePage: React.FC = () => {
       {/* 3. PREDICTION OUTPUT GAUGES */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#01472e]">
-            {t('demandIntelligence.section2', undefined, '2. Forecast Predictions & Supply Gap')}
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[#01472e] flex items-center gap-2">
+            <BarChart3 className="w-4 h-4 text-[#01472e]" />
+            <span>{t('demandIntelligence.section2', undefined, '2. Forecast Predictions & Supply Gap')}</span>
           </h3>
-          <span className="text-[11px] font-mono text-slate-500 font-medium">
-            {t('demandIntelligence.targetHorizon', undefined, 'Target Horizon:')} {forecastResult?.forecast_date || '2026-09-15'}
+          <span className="text-[11px] font-mono text-slate-500 font-medium flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-slate-400" />
+            <span>{t('demandIntelligence.targetHorizon', undefined, 'Target Horizon:')} {forecastResult?.forecast_date || '2026-09-15'}</span>
           </span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
           <div className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
-            <span className="text-xs font-medium text-slate-500 block mb-1">{t('demandIntelligence.projectedDemand', undefined, 'Projected Demand')}</span>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-medium text-slate-500">{t('demandIntelligence.projectedDemand', undefined, 'Projected Demand')}</span>
+              <TrendingUp className="w-4 h-4 text-[#01472e]" />
+            </div>
             <p className="text-3xl sm:text-4xl font-bold text-[#01472e] tracking-tight font-mono">
               {formatNumber(forecastResult?.predicted_demand_kg || 8500)} <span className="text-sm font-semibold text-slate-400">{t('common.kg', undefined, 'kg')}</span>
             </p>
@@ -272,7 +293,10 @@ export const DemandIntelligencePage: React.FC = () => {
           </div>
 
           <div className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
-            <span className="text-xs font-medium text-slate-500 block mb-1">{t('demandIntelligence.committedSupply', undefined, 'Committed Supply')}</span>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-medium text-slate-500">{t('demandIntelligence.committedSupply', undefined, 'Committed Supply')}</span>
+              <Layers className="w-4 h-4 text-slate-500" />
+            </div>
             <p className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight font-mono">
               {formatNumber(forecastResult?.current_supply_kg || 6900)} <span className="text-sm font-semibold text-slate-400">{t('common.kg', undefined, 'kg')}</span>
             </p>
@@ -282,7 +306,10 @@ export const DemandIntelligencePage: React.FC = () => {
           </div>
 
           <div className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
-            <span className="text-xs font-medium text-amber-700 block mb-1">{t('demandIntelligence.projectedDeficit', undefined, 'Projected Deficit')}</span>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-medium text-amber-700">{t('demandIntelligence.projectedDeficit', undefined, 'Projected Deficit')}</span>
+              <AlertCircle className="w-4 h-4 text-amber-600" />
+            </div>
             <p className="text-3xl sm:text-4xl font-bold text-amber-700 tracking-tight font-mono">
               +{formatNumber(forecastResult?.shortage_kg || 1600)} <span className="text-sm font-semibold text-amber-600">{t('common.kg', undefined, 'kg')}</span>
             </p>
@@ -292,7 +319,10 @@ export const DemandIntelligencePage: React.FC = () => {
           </div>
 
           <div className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
-            <span className="text-xs font-medium text-slate-500 block mb-1">{t('demandIntelligence.confidenceScore', undefined, 'Model Confidence')}</span>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-medium text-slate-500">{t('demandIntelligence.confidenceScore', undefined, 'Model Confidence')}</span>
+              <Sparkles className="w-4 h-4 text-[#01472e]" />
+            </div>
             <p className="text-3xl sm:text-4xl font-bold text-[#01472e] tracking-tight font-mono">
               {forecastResult?.confidence_percent || '82%'}
             </p>
@@ -320,7 +350,10 @@ export const DemandIntelligencePage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs">
           <div className="bg-white p-5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">{t('demandIntelligence.maeTitle', undefined, 'MAE (Mean Absolute Error)')}</span>
+              <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                <Activity className="w-3.5 h-3.5 text-[#01472e]" />
+                <span>{t('demandIntelligence.maeTitle', undefined, 'MAE (Mean Absolute Error)')}</span>
+              </span>
               <span className="font-bold font-mono text-base text-[#01472e]">{metrics.mae}%</span>
             </div>
             <p className="text-[11px] text-slate-500 font-normal">
@@ -330,7 +363,10 @@ export const DemandIntelligencePage: React.FC = () => {
 
           <div className="bg-white p-5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">{t('demandIntelligence.rmseTitle', undefined, 'RMSE (Root Mean Squared Error)')}</span>
+              <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                <Gauge className="w-3.5 h-3.5 text-slate-600" />
+                <span>{t('demandIntelligence.rmseTitle', undefined, 'RMSE (Root Mean Squared Error)')}</span>
+              </span>
               <span className="font-bold font-mono text-base text-slate-900">{formatNumber(metrics.rmse)} {t('common.kg', undefined, 'kg')}</span>
             </div>
             <p className="text-[11px] text-slate-500 font-normal">
@@ -340,7 +376,10 @@ export const DemandIntelligencePage: React.FC = () => {
 
           <div className="bg-white p-5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">{t('demandIntelligence.mapeTitle', undefined, 'MAPE (Mean Absolute % Error)')}</span>
+              <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                <Award className="w-3.5 h-3.5 text-[#01472e]" />
+                <span>{t('demandIntelligence.mapeTitle', undefined, 'MAPE (Mean Absolute % Error)')}</span>
+              </span>
               <span className="font-bold font-mono text-base text-[#01472e]">{metrics.mape}%</span>
             </div>
             <p className="text-[11px] text-slate-500 font-normal">

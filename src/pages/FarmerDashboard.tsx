@@ -275,7 +275,7 @@ export const FarmerDashboard: React.FC = () => {
                 {t('farmer.heroTitle', 'Better Markets. Better Prices. Better Futures.')}
               </h1>
               <p className="text-sm text-[#fefae0]/80 mt-2 font-normal leading-relaxed">
-                {t('farmer.heroSubtitle', 'Welcome back, {name} 👨‍🌾 • Connect your harvest directly with institutional buyers, secure transparent farm-gate pricing, and bypass multiple intermediary commissions.', { name: (currentUser.name || 'Farmer').split(' ')[0] })}
+                {t('farmer.heroSubtitle', 'Welcome back, {name} • Connect your harvest directly with institutional buyers, secure transparent farm-gate pricing, and bypass multiple intermediary commissions.', { name: (currentUser.name || 'Farmer').split(' ')[0] })}
               </p>
             </div>
           </div>
@@ -651,6 +651,9 @@ export const FarmerDashboard: React.FC = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#ccd5ae]/30 pb-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center shrink-0">
+                          <Sprout className="w-4 h-4" />
+                        </div>
                         <h4 className="text-xl font-medium tracking-tight text-[#01472e]">
                           {item.crop}
                         </h4>
@@ -729,19 +732,31 @@ export const FarmerDashboard: React.FC = () => {
                     {/* Listing Parameters Box */}
                     <div className="bg-[#faf9f5] border border-[#ccd5ae]/50 rounded-2xl p-4 sm:p-5 grid grid-cols-2 gap-3 text-xs">
                       <div>
-                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block">{t('farmer.expectedPriceLabel', 'Expected Price')}</span>
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] flex items-center gap-1 mb-0.5">
+                          <TrendingUp className="w-3 h-3 text-[#01472e]" />
+                          <span>{t('farmer.expectedPriceLabel', 'Expected Price')}</span>
+                        </span>
                         <strong className="text-[#01472e] text-base sm:text-lg font-semibold tracking-tight">₹{item.expectedPricePerKg}/kg</strong>
                       </div>
                       <div>
-                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block">{t('farmer.gradeLabel', 'Quality Grade')}</span>
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] flex items-center gap-1 mb-0.5">
+                          <ShieldCheck className="w-3 h-3 text-[#01472e]" />
+                          <span>{t('farmer.gradeLabel', 'Quality Grade')}</span>
+                        </span>
                         <strong className="text-[#01472e] font-medium">{item.grade}</strong>
                       </div>
                       <div>
-                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block">{t('farmer.locationLabel', 'Location Hub')}</span>
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] flex items-center gap-1 mb-0.5">
+                          <MapPin className="w-3 h-3 text-[#01472e]" />
+                          <span>{t('farmer.locationLabel', 'Location Hub')}</span>
+                        </span>
                         <span className="text-[#01472e] font-medium truncate block">{item.location}</span>
                       </div>
                       <div>
-                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] block">{t('farmer.harvestDateLabel', 'Harvest Date')}</span>
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-[#788c80] flex items-center gap-1 mb-0.5">
+                          <Calendar className="w-3 h-3 text-[#01472e]" />
+                          <span>{t('farmer.harvestDateLabel', 'Harvest Date')}</span>
+                        </span>
                         <span className="text-[#01472e] font-medium">{item.harvestDate}</span>
                       </div>
                     </div>
@@ -905,7 +920,6 @@ export const FarmerDashboard: React.FC = () => {
           )}
         </div>
       </div>
-
       </div>
     </div>
   );

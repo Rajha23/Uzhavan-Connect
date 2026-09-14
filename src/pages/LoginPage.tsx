@@ -15,7 +15,9 @@ import {
   ShieldCheck,
   Sparkles,
   Building2,
-  Truck
+  Truck,
+  ShoppingBag,
+  Users
 } from 'lucide-react';
 
 interface LoginPageProps {
@@ -297,48 +299,48 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                     className="p-2.5 rounded-2xl bg-[#faf9f5] hover:bg-[#eaf4ec] text-[#01472e] border border-[#ccd5ae]/60 font-semibold transition text-center cursor-pointer flex flex-col items-center group shadow-2xs"
                     title="Procure bulk commodities and track 14-stage logistics"
                   >
-                    <span className="text-base group-hover:scale-110 transition">🏭</span>
-                    <span className="font-bold text-[10px] mt-1">Bulk Buyer</span>
+                    <Building2 className="w-5 h-5 text-[#01472e] group-hover:scale-110 transition" />
+                    <span className="font-bold text-[10px] mt-1.5">Bulk Buyer</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => { setIdentifier('rajesh.kumar@uzhavanconnect.gov.in'); setPassword('Farmer@2026'); }}
                     className="p-2.5 rounded-2xl bg-[#faf9f5] hover:bg-[#eaf4ec] text-[#01472e] border border-[#ccd5ae]/60 font-semibold transition text-center cursor-pointer flex flex-col items-center group shadow-2xs"
                   >
-                    <span className="text-base group-hover:scale-110 transition">👨‍🌾</span>
-                    <span className="font-bold text-[10px] mt-1">Farmer</span>
+                    <Sprout className="w-5 h-5 text-emerald-600 group-hover:scale-110 transition" />
+                    <span className="font-bold text-[10px] mt-1.5">Farmer</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => { setIdentifier('anita.procurement@abcretail.in'); setPassword('Buyer@2026'); }}
                     className="p-2.5 rounded-2xl bg-[#faf9f5] hover:bg-[#eaf4ec] text-[#01472e] border border-[#ccd5ae]/60 font-semibold transition text-center cursor-pointer flex flex-col items-center group shadow-2xs"
                   >
-                    <span className="text-base group-hover:scale-110 transition">🏬</span>
-                    <span className="font-bold text-[10px] mt-1">Retail Buyer</span>
+                    <ShoppingBag className="w-5 h-5 text-amber-600 group-hover:scale-110 transition" />
+                    <span className="font-bold text-[10px] mt-1.5">Retail Buyer</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => { setIdentifier('ravi.fpo@uzhavanconnect.gov.in'); setPassword('Fpo@2026'); }}
                     className="p-2.5 rounded-2xl bg-[#faf9f5] hover:bg-[#eaf4ec] text-[#01472e] border border-[#ccd5ae]/60 font-semibold transition text-center cursor-pointer flex flex-col items-center group shadow-2xs"
                   >
-                    <span className="text-base group-hover:scale-110 transition">🌾</span>
-                    <span className="font-bold text-[10px] mt-1">FPO Hub</span>
+                    <Users className="w-5 h-5 text-blue-600 group-hover:scale-110 transition" />
+                    <span className="font-bold text-[10px] mt-1.5">FPO Hub</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => { setIdentifier('dispatch@sundartrans.in'); setPassword('Logistics@2026'); }}
                     className="p-2.5 rounded-2xl bg-[#faf9f5] hover:bg-[#eaf4ec] text-[#01472e] border border-[#ccd5ae]/60 font-semibold transition text-center cursor-pointer flex flex-col items-center group shadow-2xs"
                   >
-                    <span className="text-base group-hover:scale-110 transition">🚚</span>
-                    <span className="font-bold text-[10px] mt-1">Logistics</span>
+                    <Truck className="w-5 h-5 text-teal-600 group-hover:scale-110 transition" />
+                    <span className="font-bold text-[10px] mt-1.5">Logistics</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => { setIdentifier('admin@uzhavanconnect.gov.in'); setPassword('Admin@2026'); }}
                     className="p-2.5 rounded-2xl bg-[#faf9f5] hover:bg-[#eaf4ec] text-[#01472e] border border-[#ccd5ae]/60 font-semibold transition text-center cursor-pointer flex flex-col items-center group shadow-2xs"
                   >
-                    <span className="text-base group-hover:scale-110 transition">🛡️</span>
-                    <span className="font-bold text-[10px] mt-1">Admin</span>
+                    <ShieldCheck className="w-5 h-5 text-[#01472e] group-hover:scale-110 transition" />
+                    <span className="font-bold text-[10px] mt-1.5">Admin</span>
                   </button>
                 </div>
               </div>

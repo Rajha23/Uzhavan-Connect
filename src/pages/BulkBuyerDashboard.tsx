@@ -39,8 +39,28 @@ import {
   PackageCheck,
   Filter,
   RefreshCw,
-  Award
+  Award,
+  Sprout,
+  Package,
+  Navigation
 } from 'lucide-react';
+
+const STAGE_ICONS: Record<ShipmentLifecycleStage, React.ElementType> = {
+  DEMAND_CREATED: Plus,
+  SUPPLIERS_MATCHED: Users,
+  SUPPLY_CONFIRMED: CheckCircle2,
+  PRODUCE_READY: Sprout,
+  COLLECTION_SCHEDULED: Calendar,
+  COLLECTED: PackageCheck,
+  AT_AGGREGATION_HUB: Building2,
+  QUALITY_VERIFIED: ShieldCheck,
+  LOADED_FOR_TRANSPORT: Package,
+  IN_TRANSIT: Truck,
+  NEAR_DESTINATION: Navigation,
+  DELIVERED: Check,
+  DELIVERY_CONFIRMED: FileCheck2,
+  SETTLEMENT_COMPLETED: DollarSign
+};
 
 const LIFECYCLE_STAGES: Array<{ id: ShipmentLifecycleStage; label: string; desc: string }> = [
   { id: 'DEMAND_CREATED', label: '1. Demand Created', desc: 'Bulk requirement published to network' },
@@ -416,6 +436,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                 {LIFECYCLE_STAGES.map((st, i) => {
                   const isCompleted = i < 9;
                   const isActive = i === 9; // Stage 10: In Transit
+                  const StageIcon = STAGE_ICONS[st.id] || CheckCircle2;
 
                   return (
                     <div key={st.id} className="flex flex-col items-center text-center relative z-10 w-20">
@@ -433,7 +454,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                         ) : isActive ? (
                           <Truck className="w-4 h-4 animate-bounce text-[#ccd5ae]" />
                         ) : (
-                          <span className="text-xs font-semibold">{i + 1}</span>
+                          <StageIcon className="w-3.5 h-3.5" />
                         )}
                       </div>
                       <p className={`text-[11px] font-semibold mt-2.5 leading-tight ${
@@ -502,7 +523,10 @@ export const BulkBuyerDashboard: React.FC = () => {
                     }}
                   >
                     <div className="flex items-center justify-between mb-1 text-xs">
-                      <span className="font-semibold text-[#01472e]">{d.crop} • {d.variety || 'Hybrid'}</span>
+                      <span className="font-semibold text-[#01472e] flex items-center gap-1.5">
+                        <Sprout className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>{d.crop} • {d.variety || 'Hybrid'}</span>
+                      </span>
                       <span className="text-[10px] font-mono font-semibold bg-[#eaf4ec] text-[#01472e] px-2.5 py-0.5 rounded-full border border-[#a3b18a]/40">
                         {d.quantityKg.toLocaleString()} kg
                       </span>
@@ -815,6 +839,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                 <div key={o.id} className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
+                      <Sprout className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span className="font-semibold text-[#01472e] text-sm">{o.crop}</span>
                       <span className="text-[10px] font-mono bg-[#faf9f5] border border-[#ccd5ae]/40 text-[#01472e]/80 px-2 py-0.5 rounded font-semibold">
                         {o.id}

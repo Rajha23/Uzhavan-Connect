@@ -16,7 +16,10 @@ import {
   TrendingUp,
   MapPin,
   Clock,
-  Award
+  Award,
+  Building2,
+  Users,
+  Package
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -132,28 +135,46 @@ export const ReverseAuctionPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs text-center">
-          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">{t('reverseAuction.step1', undefined, 'STEP 1')}</span>
+          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col items-center">
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1">{t('reverseAuction.step1', undefined, 'STEP 1')}</span>
+            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 text-[#01472e] flex items-center justify-center mb-1.5 shadow-2xs">
+              <Building2 className="w-4 h-4" />
+            </div>
             <span className="font-medium text-slate-800">{t('reverseAuction.step1Desc', undefined, 'Buyer creates demand')}</span>
           </div>
-          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">{t('reverseAuction.step2', undefined, 'STEP 2')}</span>
+          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col items-center">
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1">{t('reverseAuction.step2', undefined, 'STEP 2')}</span>
+            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 text-[#01472e] flex items-center justify-center mb-1.5 shadow-2xs">
+              <Users className="w-4 h-4" />
+            </div>
             <span className="font-medium text-slate-800">{t('reverseAuction.step2Desc', undefined, 'Farmers/FPOs receive')}</span>
           </div>
-          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">{t('reverseAuction.step3', undefined, 'STEP 3')}</span>
+          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col items-center">
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1">{t('reverseAuction.step3', undefined, 'STEP 3')}</span>
+            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 text-[#01472e] flex items-center justify-center mb-1.5 shadow-2xs">
+              <Scale className="w-4 h-4" />
+            </div>
             <span className="font-medium text-slate-800">{t('reverseAuction.step3Desc', undefined, 'Submit prices')}</span>
           </div>
-          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">{t('reverseAuction.step4', undefined, 'STEP 4')}</span>
+          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col items-center">
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1">{t('reverseAuction.step4', undefined, 'STEP 4')}</span>
+            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 text-[#01472e] flex items-center justify-center mb-1.5 shadow-2xs">
+              <TrendingUp className="w-4 h-4" />
+            </div>
             <span className="font-medium text-slate-800">{t('reverseAuction.step4Desc', undefined, 'Compare offers')}</span>
           </div>
-          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs">
-            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1.5">{t('reverseAuction.step5', undefined, 'STEP 5')}</span>
+          <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col items-center">
+            <span className="text-[9px] text-slate-400 font-medium uppercase tracking-wider block mb-1">{t('reverseAuction.step5', undefined, 'STEP 5')}</span>
+            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 text-[#01472e] flex items-center justify-center mb-1.5 shadow-2xs">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
             <span className="font-medium text-slate-800">{t('reverseAuction.step5Desc', undefined, 'Select suitable offer')}</span>
           </div>
-          <div className="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-300/80 shadow-2xs transform hover:-translate-y-0.5 transition">
-            <span className="text-[9px] text-emerald-800 font-medium uppercase tracking-wider block mb-1.5">{t('reverseAuction.step6', undefined, 'STEP 6')}</span>
+          <div className="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-300/80 shadow-2xs transform hover:-translate-y-0.5 transition flex flex-col items-center">
+            <span className="text-[9px] text-emerald-800 font-medium uppercase tracking-wider block mb-1">{t('reverseAuction.step6', undefined, 'STEP 6')}</span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center mb-1.5 shadow-2xs">
+              <Package className="w-4 h-4" />
+            </div>
             <span className="font-medium text-emerald-900">{t('reverseAuction.step6Desc', undefined, 'Order confirmed')}</span>
           </div>
         </div>

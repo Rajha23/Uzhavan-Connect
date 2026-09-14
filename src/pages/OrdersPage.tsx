@@ -17,7 +17,9 @@ import {
   ArrowRight,
   ExternalLink,
   FileCheck2,
-  AlertTriangle
+  AlertTriangle,
+  Layers,
+  Building2
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -202,16 +204,24 @@ export const OrdersPage: React.FC = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
         {[
-          { label: t('orders.totalOrders', 'Total Orders'), value: orders.length.toString(), color: 'text-slate-900', bg: 'bg-[#faf9f5]' },
-          { label: t('orders.deliveredSettled', 'Delivered / Settled'), value: deliveredCount.toString(), color: 'text-[#01472e]', bg: 'bg-[#eaf4ec]' },
-          { label: t('orders.inProgress', 'In Progress'), value: inProgressCount.toString(), color: 'text-amber-700', bg: 'bg-amber-50' },
-          { label: t('orders.totalValue', 'Total Value'), value: `₹${totalRevenue.toLocaleString()}`, color: 'text-[#01472e]', bg: 'bg-[#faf9f5]' },
-        ].map((card) => (
-          <div key={card.label} className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
-            <p className="text-xs text-slate-500 font-medium">{card.label}</p>
-            <p className={`text-2xl sm:text-3xl font-bold font-mono mt-1.5 ${card.color}`}>{card.value}</p>
-          </div>
-        ))}
+          { label: t('orders.totalOrders', 'Total Orders'), value: orders.length.toString(), icon: Package, color: 'text-slate-900', bg: 'bg-[#faf9f5]' },
+          { label: t('orders.deliveredSettled', 'Delivered / Settled'), value: deliveredCount.toString(), icon: CheckCircle2, color: 'text-[#01472e]', bg: 'bg-[#eaf4ec]' },
+          { label: t('orders.inProgress', 'In Progress'), value: inProgressCount.toString(), icon: Clock, color: 'text-amber-700', bg: 'bg-amber-50' },
+          { label: t('orders.totalValue', 'Total Value'), value: `₹${totalRevenue.toLocaleString()}`, icon: CreditCard, color: 'text-[#01472e]', bg: 'bg-[#faf9f5]' },
+        ].map((card) => {
+          const Icon = card.icon;
+          return (
+            <div key={card.label} className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-slate-500 font-medium">{card.label}</p>
+                <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
+                  <Icon className="w-4 h-4" />
+                </div>
+              </div>
+              <p className={`text-2xl sm:text-3xl font-bold font-mono mt-1.5 ${card.color}`}>{card.value}</p>
+            </div>
+          );
+        })}
       </div>
 
       {/* Filters & Search */}
@@ -227,25 +237,27 @@ export const OrdersPage: React.FC = () => {
           />
         </div>
         <div className="flex gap-2 flex-wrap items-center">
-          {['All', 'Pending', 'Processing', 'In Transit', 'Delivered'].map((s) => {
-            const label =
-              s === 'All' ? t('common.all', 'All') :
-              s === 'Pending' ? t('common.pending', 'Pending') :
-              s === 'Processing' ? t('common.processing', 'Processing') :
-              s === 'In Transit' ? t('stages.inTransit', 'In Transit') :
-              s === 'Delivered' ? t('stages.delivered', 'Delivered') : s;
-
+          {[
+            { id: 'All', label: t('common.all', 'All'), icon: Layers },
+            { id: 'Pending', label: t('common.pending', 'Pending'), icon: Clock },
+            { id: 'Processing', label: t('common.processing', 'Processing'), icon: ShieldCheck },
+            { id: 'In Transit', label: t('stages.inTransit', 'In Transit'), icon: Truck },
+            { id: 'Delivered', label: t('stages.delivered', 'Delivered'), icon: CheckCircle2 }
+          ].map((item) => {
+            const Icon = item.icon;
+            const isSelected = filter === item.id;
             return (
               <button
-                key={s}
-                onClick={() => setFilter(s)}
-                className={`px-4 py-2 text-xs font-semibold rounded-2xl border transition-all cursor-pointer ${
-                  filter === s
+                key={item.id}
+                onClick={() => setFilter(item.id)}
+                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-2xl border transition-all cursor-pointer ${
+                  isSelected
                     ? 'bg-[#01472e] text-white border-[#01472e] shadow-soft'
                     : 'bg-white text-slate-600 border-[#ccd5ae]/50 hover:bg-[#faf9f5] hover:text-[#01472e]'
                 }`}
               >
-                {label}
+                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-[#fefae0]' : 'text-slate-400'}`} />
+                <span>{item.label}</span>
               </button>
             );
           })}

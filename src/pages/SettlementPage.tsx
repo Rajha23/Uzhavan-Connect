@@ -19,7 +19,8 @@ import {
   Users,
   Wallet,
   Check,
-  QrCode
+  QrCode,
+  Layers
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useLanguage } from '../context/LanguageContext';
@@ -190,9 +191,14 @@ export const SettlementPage: React.FC = () => {
       {/* Aggregate KPI Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <div className="agri-card bg-white rounded-3xl border border-[#ccd5ae]/40 p-6 shadow-soft hover:border-[#a3b18a] transition">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
-            {t('settlement.totalSettledPayouts', 'Total Settled Payouts')}
-          </span>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              {t('settlement.totalSettledPayouts', 'Total Settled Payouts')}
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+          </div>
           <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-[#01472e]">
             ₹{totalSettledAmount.toLocaleString()}
           </p>
@@ -202,9 +208,14 @@ export const SettlementPage: React.FC = () => {
         </div>
 
         <div className="agri-card bg-white rounded-3xl border border-[#ccd5ae]/40 p-6 shadow-soft hover:border-[#a3b18a] transition">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
-            {t('settlement.pendingEscrow', 'Locked in Escrow (Awaiting Payout)')}
-          </span>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              {t('settlement.pendingEscrow', 'Locked in Escrow (Awaiting Payout)')}
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+              <Clock className="w-4 h-4" />
+            </div>
+          </div>
           <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-amber-700">
             ₹{totalPendingAmount.toLocaleString()}
           </p>
@@ -214,9 +225,14 @@ export const SettlementPage: React.FC = () => {
         </div>
 
         <div className="agri-card bg-white rounded-3xl border border-[#ccd5ae]/40 p-6 shadow-soft hover:border-[#a3b18a] transition">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
-            {t('settlement.avgRealization', 'Average Farmer Net Realization')}
-          </span>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              {t('settlement.avgRealization', 'Average Farmer Net Realization')}
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" />
+            </div>
+          </div>
           <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-[#01472e]">
             88.9%
           </p>
@@ -226,29 +242,34 @@ export const SettlementPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Settlements List & Switcher */}
+      {/* Settlement Records List & Detail Container */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <span className="text-xs font-bold uppercase tracking-wider text-[#01472e]">{t('common.filter', 'Filter')}:</span>
             <div className="inline-flex bg-white p-1 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
-              {(['ALL', 'IN_PROGRESS', 'COMPLETED'] as const).map((st) => (
-                <button
-                  key={st}
-                  onClick={() => setFilterStatus(st)}
-                  className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                    filterStatus === st
-                      ? 'bg-[#01472e] text-white shadow-xs'
-                      : 'text-slate-600 hover:text-[#01472e]'
-                  }`}
-                >
-                  {st === 'IN_PROGRESS'
-                    ? t('settlement.inSettlement', 'In Settlement')
-                    : st === 'ALL'
-                    ? t('settlement.allSettlements', 'All Settlements')
-                    : t('common.completed', 'Completed')}
-                </button>
-              ))}
+              {[
+                { id: 'ALL', label: t('settlement.allSettlements', 'All Settlements'), icon: Layers },
+                { id: 'IN_PROGRESS', label: t('settlement.inSettlement', 'In Settlement'), icon: Clock },
+                { id: 'COMPLETED', label: t('common.completed', 'Completed'), icon: CheckCircle2 }
+              ].map((item) => {
+                const Icon = item.icon;
+                const isSelected = filterStatus === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setFilterStatus(item.id as any)}
+                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#01472e] text-white shadow-xs'
+                        : 'text-slate-600 hover:text-[#01472e]'
+                    }`}
+                  >
+                    <Icon className={`w-3 h-3 ${isSelected ? 'text-[#fefae0]' : 'text-slate-400'}`} />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
           <span className="text-xs text-slate-500 font-medium font-mono">

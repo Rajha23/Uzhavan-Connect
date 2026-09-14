@@ -20,7 +20,12 @@ import {
   ChevronRight,
   TrendingUp,
   Cpu,
-  Layers
+  Layers,
+  Sprout,
+  ShoppingBag,
+  Building2,
+  Truck,
+  Check
 } from 'lucide-react';
 import { UserRole, Permission } from '../types';
 
@@ -213,8 +218,14 @@ export const AdminDashboard: React.FC = () => {
                       <div className="font-mono text-[11px] text-slate-400">{user.id}</div>
                     </td>
                     <td className="py-4 px-3">
-                      <span className="font-semibold text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40">
-                        {user.role.replace('_', ' ')}
+                      <span className="font-semibold text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40 inline-flex items-center gap-1.5">
+                        {user.role === 'FARMER' && <Sprout className="w-3 h-3" />}
+                        {user.role === 'FPO_AGGREGATOR' && <Users className="w-3 h-3" />}
+                        {user.role === 'RETAIL_BUYER' && <ShoppingBag className="w-3 h-3" />}
+                        {user.role === 'BULK_BUYER' && <Building2 className="w-3 h-3" />}
+                        {user.role === 'LOGISTICS' && <Truck className="w-3 h-3" />}
+                        {user.role === 'ADMIN' && <ShieldCheck className="w-3 h-3" />}
+                        <span>{user.role.replace('_', ' ')}</span>
                       </span>
                     </td>
                     <td className="py-4 px-3 space-y-0.5">
@@ -246,9 +257,10 @@ export const AdminDashboard: React.FC = () => {
                             key={perm}
                             onClick={() => toggleUserPermission(user.id, perm)}
                             title="Click to toggle permission"
-                            className="bg-white hover:bg-[#faf9f5] border border-[#ccd5ae]/60 text-slate-700 px-2 py-0.5 rounded-lg text-[10px] font-mono cursor-pointer transition shadow-2xs"
+                            className="bg-white hover:bg-[#faf9f5] border border-[#ccd5ae]/60 text-slate-700 px-2 py-0.5 rounded-lg text-[10px] font-mono cursor-pointer transition shadow-2xs inline-flex items-center gap-1"
                           >
-                            ✓ {perm}
+                            <Check className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
+                            <span>{perm}</span>
                           </button>
                         ))}
                         {user.permissions.length > 3 && (

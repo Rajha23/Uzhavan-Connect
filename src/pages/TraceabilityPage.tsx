@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { QrCode, Search, CheckCircle2, Clock, Package, Truck, MapPin, ExternalLink, ShieldCheck, Sparkles } from 'lucide-react';
+import { QrCode, Search, CheckCircle2, Clock, Package, Truck, MapPin, ExternalLink, ShieldCheck, Sparkles, Droplet, Gauge, FlaskConical, Award, Sprout, Users, Scale, Calendar } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const STATUS_STEPS = ['Harvested', 'Quality Checked', 'Packed', 'In Transit', 'Delivered'];
+
+const STEP_ICONS: Record<string, React.ElementType> = {
+  Harvested: Sprout,
+  'Quality Checked': ShieldCheck,
+  Packed: Package,
+  'In Transit': Truck,
+  Delivered: CheckCircle2,
+};
 
 const STATUS_COLORS: Record<string, string> = {
   Harvested: 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
@@ -168,8 +176,9 @@ export const TraceabilityPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Batch List */}
         <div className="lg:col-span-5 space-y-3.5">
-          <h3 className="text-xs font-bold text-[#01472e] uppercase tracking-wider">
-            {t('traceability.activeBatches', 'Active Tracked Batches')} ({filtered.length})
+          <h3 className="text-xs font-bold text-[#01472e] uppercase tracking-wider flex items-center gap-2">
+            <Package className="w-3.5 h-3.5 text-[#01472e]" />
+            <span>{t('traceability.activeBatches', 'Active Tracked Batches')} ({filtered.length})</span>
           </h3>
           {filtered.map((b) => (
             <button
@@ -187,14 +196,21 @@ export const TraceabilityPage: React.FC = () => {
                     <span className={`text-[10px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full border ${STATUS_COLORS[b.status] || 'bg-slate-50 text-slate-700 border-slate-200'}`}>
                       {t('stages.' + (b.status === 'Quality Checked' ? 'qualityCheck' : b.status === 'In Transit' ? 'inTransit' : b.status.toLowerCase()), b.status)}
                     </span>
-                    <span className="text-[10px] bg-[#01472e] text-[#fefae0] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    <span className="text-[10px] bg-[#01472e] text-[#fefae0] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
+                      <ShieldCheck className="w-2.5 h-2.5" />
                       {b.qualityGrade || t('common.gradeA', 'Grade A')}
                     </span>
                   </div>
-                  <p className="font-bold text-slate-900 text-base mt-2 tracking-tight">
-                    {b.crop} {b.variety ? `(${b.variety})` : ''} — <span className="font-mono text-[#01472e]">{b.quantityKg.toLocaleString()} kg</span>
+                  <p className="font-bold text-slate-900 text-base mt-2 tracking-tight flex items-center gap-1.5">
+                    <Sprout className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>{b.crop} {b.variety ? `(${b.variety})` : ''}</span>
+                    <span className="text-slate-400 font-normal">—</span>
+                    <span className="font-mono text-[#01472e]">{b.quantityKg.toLocaleString()} kg</span>
                   </p>
-                  <p className="text-xs font-medium text-slate-500 mt-0.5">{b.farmerOrFpo}</p>
+                  <p className="text-xs font-medium text-slate-500 mt-0.5 flex items-center gap-1">
+                    <Users className="w-3 h-3 text-slate-400" />
+                    <span>{b.farmerOrFpo}</span>
+                  </p>
                 </div>
                 <QrCode className={`w-5 h-5 shrink-0 mt-1 ${selectedBatchId === b.batchId ? 'text-[#01472e]' : 'text-slate-400'}`} />
               </div>
@@ -218,12 +234,14 @@ export const TraceabilityPage: React.FC = () => {
                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${STATUS_COLORS[selectedBatch.status] || ''}`}>
                       {t('stages.' + (selectedBatch.status === 'Quality Checked' ? 'qualityCheck' : selectedBatch.status === 'In Transit' ? 'inTransit' : selectedBatch.status.toLowerCase()), selectedBatch.status)}
                     </span>
-                    <span className="text-[10px] bg-[#01472e] text-[#fefae0] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                    <span className="text-[10px] bg-[#01472e] text-[#fefae0] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
+                      <ShieldCheck className="w-2.5 h-2.5" />
                       {selectedBatch.qualityGrade || t('traceability.certifiedGradeA', 'Certified Grade A')}
                     </span>
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-900 mt-2 tracking-tight">
-                    {selectedBatch.crop} {t('traceability.batch', 'Batch')}
+                  <h2 className="text-2xl font-bold text-slate-900 mt-2 tracking-tight flex items-center gap-2">
+                    <Sprout className="w-6 h-6 text-emerald-600" />
+                    <span>{selectedBatch.crop} {t('traceability.batch', 'Batch')}</span>
                   </h2>
                   <p className="text-xs font-mono font-semibold text-slate-500 mt-1">
                     {selectedBatch.batchId} {selectedBatch.orderId ? `• ${t('orders.orderId', 'Order')}: ${selectedBatch.orderId}` : ''}
@@ -241,13 +259,16 @@ export const TraceabilityPage: React.FC = () => {
               {/* Key Info */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  { label: t('traceability.farmerOrFpo', 'Farmer / FPO'), value: selectedBatch.farmerOrFpo, icon: Package },
-                  { label: t('common.quantity', 'Quantity'), value: `${selectedBatch.quantityKg.toLocaleString()} kg`, icon: Package },
-                  { label: t('farmer.harvestDate', 'Harvest Date'), value: selectedBatch.harvestDate, icon: Clock },
+                  { label: t('traceability.farmerOrFpo', 'Farmer / FPO'), value: selectedBatch.farmerOrFpo, icon: Users },
+                  { label: t('common.quantity', 'Quantity'), value: `${selectedBatch.quantityKg.toLocaleString()} kg`, icon: Scale },
+                  { label: t('farmer.harvestDate', 'Harvest Date'), value: selectedBatch.harvestDate, icon: Calendar },
                   { label: t('buyer.deliveryLocation', 'Destination'), value: selectedBatch.destination, icon: MapPin },
                 ].map((item) => (
                   <div key={item.label} className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">{item.label}</span>
+                    <div className="flex items-center gap-1.5 text-slate-500 mb-1">
+                      <item.icon className="w-3.5 h-3.5 text-[#01472e]/70" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider block">{item.label}</span>
+                    </div>
                     <p className="font-bold text-sm text-slate-900 mt-0.5 tracking-tight truncate">{item.value}</p>
                   </div>
                 ))}
@@ -264,19 +285,31 @@ export const TraceabilityPage: React.FC = () => {
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                     <div className="bg-white p-3.5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
-                      <span className="text-[10px] text-slate-400 uppercase font-semibold block">{t('fpo.sugarBrix', 'Sugar (Brix)')}</span>
+                      <div className="flex items-center gap-1 text-slate-500 mb-1">
+                        <Award className="w-3.5 h-3.5 text-amber-500" />
+                        <span className="text-[10px] uppercase font-semibold">{t('fpo.sugarBrix', 'Sugar (Brix)')}</span>
+                      </div>
                       <strong className="text-sm font-bold font-mono text-slate-900">{selectedBatch.inspectionMetrics.sugarBrix}° Bx</strong>
                     </div>
                     <div className="bg-white p-3.5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
-                      <span className="text-[10px] text-slate-400 uppercase font-semibold block">{t('fpo.firmness', 'Firmness')}</span>
+                      <div className="flex items-center gap-1 text-slate-500 mb-1">
+                        <Gauge className="w-3.5 h-3.5 text-sky-500" />
+                        <span className="text-[10px] uppercase font-semibold">{t('fpo.firmness', 'Firmness')}</span>
+                      </div>
                       <strong className="text-sm font-bold font-mono text-slate-900">{selectedBatch.inspectionMetrics.firmnessKgCm} kg/cm²</strong>
                     </div>
                     <div className="bg-white p-3.5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
-                      <span className="text-[10px] text-slate-400 uppercase font-semibold block">{t('fpo.moisture', 'Moisture')}</span>
+                      <div className="flex items-center gap-1 text-slate-500 mb-1">
+                        <Droplet className="w-3.5 h-3.5 text-blue-500" />
+                        <span className="text-[10px] uppercase font-semibold">{t('fpo.moisture', 'Moisture')}</span>
+                      </div>
                       <strong className="text-sm font-bold font-mono text-slate-900">{selectedBatch.inspectionMetrics.moistureContent}</strong>
                     </div>
                     <div className="bg-white p-3.5 rounded-2xl border border-[#ccd5ae]/40 shadow-xs">
-                      <span className="text-[10px] text-slate-400 uppercase font-semibold block">{t('fpo.pesticideResidue', 'Pesticide Assay')}</span>
+                      <div className="flex items-center gap-1 text-slate-500 mb-1">
+                        <FlaskConical className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="text-[10px] uppercase font-semibold">{t('fpo.pesticideResidue', 'Pesticide Assay')}</span>
+                      </div>
                       <strong className="text-xs font-bold text-[#01472e] block truncate">{selectedBatch.inspectionMetrics.pesticideResidueTest}</strong>
                     </div>
                   </div>
@@ -292,6 +325,7 @@ export const TraceabilityPage: React.FC = () => {
                   {STATUS_STEPS.map((step, idx) => {
                     const isCompleted = idx <= currentStepIdx;
                     const isCurrent = idx === currentStepIdx;
+                    const StepIcon = STEP_ICONS[step] || CheckCircle2;
                     const stepLabel =
                       step === 'Harvested' ? t('stages.listed', 'Harvested') :
                       step === 'Quality Checked' ? t('stages.qualityCheck', 'Quality Checked') :
@@ -310,7 +344,7 @@ export const TraceabilityPage: React.FC = () => {
                                 ? 'bg-[#eaf4ec] border-[#01472e] text-[#01472e] shadow-soft ring-2 ring-[#01472e]/20'
                                 : 'bg-white border-[#ccd5ae]/60 text-slate-400'
                           }`}>
-                            {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-xs font-bold">{idx + 1}</span>}
+                            {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <StepIcon className="w-4 h-4" />}
                           </div>
                           {idx < STATUS_STEPS.length - 1 && (
                             <div className={`absolute top-8 bottom-0 left-4 w-0.5 -ml-[1px] ${isCompleted ? 'bg-[#01472e]' : 'bg-[#ccd5ae]/40'}`} />

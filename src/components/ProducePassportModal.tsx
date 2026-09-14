@@ -21,7 +21,9 @@ import {
   Building2,
   FileCheck2,
   AlertTriangle,
-  UserCheck
+  UserCheck,
+  Sprout,
+  Scale
 } from 'lucide-react';
 
 export const ProducePassportModal: React.FC = () => {
@@ -209,7 +211,10 @@ export const ProducePassportModal: React.FC = () => {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">{t('passport.verifiedProduce', 'Verified Agricultural Produce')}</span>
-                  <h4 className="text-2xl font-semibold tracking-tight text-slate-900">{crop}</h4>
+                  <h4 className="text-2xl font-semibold tracking-tight text-slate-900 flex items-center gap-2">
+                    <Sprout className="w-6 h-6 text-emerald-600 shrink-0" />
+                    <span>{crop}</span>
+                  </h4>
                   <p className="text-xs text-slate-500 font-medium">{variety}</p>
                 </div>
 
@@ -221,19 +226,31 @@ export const ProducePassportModal: React.FC = () => {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
                 <div className="p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="text-slate-400 text-[10px] font-medium uppercase block">{t('passport.fpoProducer', 'FPO / Producer')}:</span>
+                  <span className="text-slate-400 text-[10px] font-medium uppercase flex items-center gap-1">
+                    <Building2 className="w-3 h-3 text-emerald-700" />
+                    <span>{t('passport.fpoProducer', 'FPO / Producer')}:</span>
+                  </span>
                   <p className="font-medium text-slate-800 truncate mt-0.5">{producer}</p>
                 </div>
                 <div className="p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="text-slate-400 text-[10px] font-medium uppercase block">{t('passport.harvestListed', 'Harvest / Listed')}:</span>
+                  <span className="text-slate-400 text-[10px] font-medium uppercase flex items-center gap-1">
+                    <Calendar className="w-3 h-3 text-emerald-700" />
+                    <span>{t('passport.harvestListed', 'Harvest / Listed')}:</span>
+                  </span>
                   <p className="font-medium text-slate-800 mt-0.5">{harvestDate}</p>
                 </div>
                 <div className="p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="text-slate-400 text-[10px] font-medium uppercase block">{t('passport.sourceOrigin', 'Source Origin')}:</span>
+                  <span className="text-slate-400 text-[10px] font-medium uppercase flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-emerald-700" />
+                    <span>{t('passport.sourceOrigin', 'Source Origin')}:</span>
+                  </span>
                   <p className="font-medium text-slate-800 truncate mt-0.5">{location}</p>
                 </div>
                 <div className="p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="text-slate-400 text-[10px] font-medium uppercase block">{t('passport.verifiedVolume', 'Verified Volume')}:</span>
+                  <span className="text-slate-400 text-[10px] font-medium uppercase flex items-center gap-1">
+                    <Scale className="w-3 h-3 text-emerald-700" />
+                    <span>{t('passport.verifiedVolume', 'Verified Volume')}:</span>
+                  </span>
                   <p className="font-semibold text-emerald-700 font-mono mt-0.5">{quantityKg.toLocaleString()} {t('common.kg', 'kg')}</p>
                 </div>
               </div>

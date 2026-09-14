@@ -64,27 +64,27 @@ export const NotificationsPage: React.FC = () => {
 
   // Filter categories based on role
   const categoryTabs = useMemo(() => {
-    const tabs = [
-      { id: 'ALL', label: t('notifications.allAlerts', 'All Alerts') },
-      { id: 'UNREAD', label: `${t('notifications.unreadOnly', 'Unread')} (${stats.unread})` },
-      { id: 'ACTION_REQUIRED', label: `${t('notifications.actionRequired', 'Action Required')} (${stats.actionRequired})` }
+    const tabs: Array<{ id: string; label: string; icon: any }> = [
+      { id: 'ALL', label: t('notifications.allAlerts', 'All Alerts'), icon: Bell },
+      { id: 'UNREAD', label: `${t('notifications.unreadOnly', 'Unread')} (${stats.unread})`, icon: Eye },
+      { id: 'ACTION_REQUIRED', label: `${t('notifications.actionRequired', 'Action Required')} (${stats.actionRequired})`, icon: AlertTriangle }
     ];
 
     if (currentRole === 'FARMER' || currentRole === 'FPO_AGGREGATOR') {
-      tabs.push({ id: 'CROPS', label: t('nav.myCrops', 'Crops & Harvest') });
+      tabs.push({ id: 'CROPS', label: t('nav.myCrops', 'Crops & Harvest'), icon: Sprout });
     }
-    tabs.push({ id: 'ORDERS', label: t('nav.orders', 'Orders') });
-    tabs.push({ id: 'MARKET_DEMAND', label: t('nav.demandSignals', 'Market & Demand') });
-    tabs.push({ id: 'LOGISTICS', label: t('nav.logistics', 'Logistics & Fleet') });
-    tabs.push({ id: 'SETTLEMENT', label: t('nav.settlement', 'Settlement & Escrow') });
-    tabs.push({ id: 'TRACEABILITY', label: t('nav.traceability', 'Traceability & QR') });
+    tabs.push({ id: 'ORDERS', label: t('nav.orders', 'Orders'), icon: Package });
+    tabs.push({ id: 'MARKET_DEMAND', label: t('nav.demandSignals', 'Market & Demand'), icon: TrendingUp });
+    tabs.push({ id: 'LOGISTICS', label: t('nav.logistics', 'Logistics & Fleet'), icon: Truck });
+    tabs.push({ id: 'SETTLEMENT', label: t('nav.settlement', 'Settlement & Escrow'), icon: Scale });
+    tabs.push({ id: 'TRACEABILITY', label: t('nav.traceability', 'Traceability & QR'), icon: QrCode });
 
     if (currentRole === 'FARMER') {
-      tabs.push({ id: 'ADVISORY', label: t('ai.agronomistMentor', 'AI Advisory') });
+      tabs.push({ id: 'ADVISORY', label: t('ai.agronomistMentor', 'AI Advisory'), icon: Sparkles });
     }
 
     if (currentRole === 'ADMIN') {
-      tabs.push({ id: 'SYSTEM', label: t('nav.systemMonitoring', 'System & Governance') });
+      tabs.push({ id: 'SYSTEM', label: t('nav.systemMonitoring', 'System & Governance'), icon: ShieldAlert });
     }
 
     return tabs;
@@ -241,36 +241,48 @@ export const NotificationsPage: React.FC = () => {
         {/* Quick KPI Stats Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-6 mt-6 border-t border-[#ccd5ae]/40">
           <div className="p-4 bg-white/90 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
-            <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">
-              {t('notifications.kpiTotal', 'Total Alerts')}
-            </span>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
+                {t('notifications.kpiTotal', 'Total Alerts')}
+              </span>
+              <Bell className="w-3.5 h-3.5 text-[#01472e]" />
+            </div>
             <div className="flex items-baseline gap-1.5">
               <strong className="text-xl font-bold text-[#01472e]">{stats.total}</strong>
             </div>
           </div>
 
           <div className="p-4 bg-white/90 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
-            <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">
-              {t('notifications.kpiUnread', 'Unread')}
-            </span>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
+                {t('notifications.kpiUnread', 'Unread')}
+              </span>
+              <Eye className="w-3.5 h-3.5 text-amber-600" />
+            </div>
             <div className="flex items-baseline gap-1.5">
               <strong className="text-xl font-bold text-amber-700">{stats.unread}</strong>
             </div>
           </div>
 
           <div className="p-4 bg-white/90 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
-            <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">
-              {t('notifications.kpiAction', 'Action Required')}
-            </span>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
+                {t('notifications.kpiAction', 'Action Required')}
+              </span>
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+            </div>
             <div className="flex items-baseline gap-1.5">
               <strong className="text-xl font-bold text-rose-700">{stats.actionRequired}</strong>
             </div>
           </div>
 
           <div className="p-4 bg-white/90 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
-            <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">
-              {t('notifications.kpiSettled', 'Completed Events')}
-            </span>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
+                {t('notifications.kpiSettled', 'Completed Events')}
+              </span>
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            </div>
             <div className="flex items-baseline gap-1.5">
               <strong className="text-xl font-bold text-emerald-800">{stats.success}</strong>
             </div>
@@ -282,20 +294,25 @@ export const NotificationsPage: React.FC = () => {
       <div className="space-y-4">
         {/* Category Pills Bar */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-          {categoryTabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setSelectedCategory(tab.id)}
-              className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${
-                selectedCategory === tab.id
-                  ? 'bg-[#01472e] text-white shadow-soft scale-[1.02]'
-                  : 'bg-white text-slate-700 hover:bg-[#faf9f5] border border-[#ccd5ae]/60'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          {categoryTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isSelected = selectedCategory === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setSelectedCategory(tab.id)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#01472e] text-white shadow-soft scale-[1.02]'
+                    : 'bg-white text-slate-700 hover:bg-[#faf9f5] border border-[#ccd5ae]/60'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-[#fefae0]' : 'text-slate-400'}`} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Search & Priority Controls */}

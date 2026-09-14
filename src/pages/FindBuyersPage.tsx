@@ -14,7 +14,9 @@ import {
   ArrowRight,
   ShieldCheck,
   Building2,
-  Sparkles
+  Sparkles,
+  Check,
+  Sprout
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -131,7 +133,7 @@ export const FindBuyersPage: React.FC = () => {
         <div className="p-4 sm:p-5 bg-[#eaf4ec] border border-[#a3b18a]/50 text-[#01472e] rounded-2xl shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-[#01472e] text-[#fefae0] flex items-center justify-center font-bold text-sm shrink-0">
-              ✓
+              <CheckCircle2 className="w-4 h-4" />
             </div>
             <span className="text-xs font-semibold">{offerSuccess}</span>
           </div>
@@ -178,7 +180,17 @@ export const FindBuyersPage: React.FC = () => {
                       {t('common.verified', 'VERIFIED')}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-600 mt-1 font-medium">{off.crop} • {off.distanceKm} km</p>
+                  <div className="flex items-center gap-2 text-xs text-slate-600 mt-1 font-medium">
+                    <span className="flex items-center gap-1">
+                      <Sprout className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>{off.crop}</span>
+                    </span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                      <span>{off.distanceKm} km</span>
+                    </span>
+                  </div>
                 </div>
 
                 <div className="text-right">
@@ -196,15 +208,17 @@ export const FindBuyersPage: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleAcceptOffer(off)}
-                      className="btn-primary px-4 py-2 rounded-xl text-xs font-semibold shadow-soft cursor-pointer"
+                      className="btn-primary px-4 py-2 rounded-xl text-xs font-semibold shadow-soft cursor-pointer flex items-center gap-1.5"
                     >
-                      {t('findBuyers.acceptOffer', 'Accept & Contract')}
+                      <Check className="w-3.5 h-3.5" />
+                      <span>{t('findBuyers.acceptOffer', 'Accept & Contract')}</span>
                     </button>
                     <button
                       onClick={() => handleRejectOffer(off.id)}
-                      className="btn-secondary px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer"
+                      className="btn-secondary px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer flex items-center gap-1.5"
                     >
-                      {t('findBuyers.rejectOffer', 'Decline')}
+                      <XCircle className="w-3.5 h-3.5" />
+                      <span>{t('findBuyers.rejectOffer', 'Decline')}</span>
                     </button>
                   </div>
                 ) : (

@@ -11,7 +11,9 @@ import {
   ArrowRight,
   CheckCircle2,
   PlayCircle,
-  FileCheck
+  FileCheck,
+  ShoppingBag,
+  Truck
 } from 'lucide-react';
 
 export const ImpactKPIPage: React.FC = () => {
@@ -88,7 +90,9 @@ export const ImpactKPIPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-sm transition space-y-3 flex flex-col">
           <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-wider text-slate-500">
-            <span>Primary Farmer Impact</span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" />
+            </div>
             <span className="text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-full font-medium">+152% Gain</span>
           </div>
           <h4 className="text-lg font-medium text-slate-900 tracking-tight">{t('impactKpi.netRealizationTitle', 'Farmer Net Realization')}</h4>
@@ -99,7 +103,9 @@ export const ImpactKPIPage: React.FC = () => {
 
         <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-sm transition space-y-3 flex flex-col">
           <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-wider text-slate-500">
-            <span>Consumer & Buyer Benefit</span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <ShoppingBag className="w-4 h-4" />
+            </div>
             <span className="text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-full font-medium">-15.8% Landed</span>
           </div>
           <h4 className="text-lg font-medium text-slate-900 tracking-tight">{t('impactKpi.affordabilityTitle', 'Downstream Affordability')}</h4>
@@ -110,7 +116,9 @@ export const ImpactKPIPage: React.FC = () => {
 
         <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-sm transition space-y-3 flex flex-col">
           <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-wider text-slate-500">
-            <span>Logistics & Perishability</span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <Truck className="w-4 h-4" />
+            </div>
             <span className="text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-full font-medium">-83% Wastage</span>
           </div>
           <h4 className="text-lg font-medium text-slate-900 tracking-tight">{t('impactKpi.coldChainTitle', 'Cold-Chain Food Security')}</h4>

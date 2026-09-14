@@ -9,7 +9,8 @@ import {
   Info,
   Scale,
   Sparkles,
-  DollarSign
+  DollarSign,
+  CheckCircle2
 } from 'lucide-react';
 
 export const MiddlemanSimulator: React.FC = () => {
@@ -75,8 +76,9 @@ export const MiddlemanSimulator: React.FC = () => {
       <div className="bg-emerald-50 border-b border-emerald-100 p-4 sm:p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center sm:text-left">
           <div className="bg-white p-4 rounded-xl border border-rose-200 shadow-2xs">
-            <p className="text-xs text-rose-700 font-medium uppercase tracking-wider">
-              {t('middlemanSimulator.traditionalFlow', 'Traditional Mandi Flow')}
+            <p className="text-xs text-rose-700 font-medium uppercase tracking-wider flex items-center gap-1.5">
+              <AlertOctagon className="w-3.5 h-3.5 text-rose-600" />
+              <span>{t('middlemanSimulator.traditionalFlow', 'Traditional Mandi Flow')}</span>
             </p>
             <p className="text-2xl font-semibold text-slate-900 mt-1 font-mono">
               ₹{formatNumber(traditionalFarmerGets)}
@@ -87,8 +89,9 @@ export const MiddlemanSimulator: React.FC = () => {
           </div>
 
           <div className="bg-white p-4 rounded-xl border border-emerald-300 shadow-2xs">
-            <p className="text-xs text-emerald-800 font-medium uppercase tracking-wider">
-              {t('middlemanSimulator.uzhavanFlow', 'Uzhavan Connect Coordinated Flow')}
+            <p className="text-xs text-emerald-800 font-medium uppercase tracking-wider flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{t('middlemanSimulator.uzhavanFlow', 'Uzhavan Connect Coordinated Flow')}</span>
             </p>
             <p className="text-2xl font-semibold text-emerald-700 mt-1 font-mono">
               ₹{formatNumber(uzhavanconnectFarmerGets)}
@@ -100,7 +103,10 @@ export const MiddlemanSimulator: React.FC = () => {
 
           <div className="bg-gradient-to-br from-emerald-600 to-agri-800 p-4 rounded-xl text-white shadow-sm flex flex-col justify-center">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-emerald-200 font-medium">{t('middlemanSimulator.farmerNetBenefit', 'Farmer Net Benefit')}</span>
+              <span className="text-xs text-emerald-200 font-medium flex items-center gap-1">
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-200" />
+                <span>{t('middlemanSimulator.farmerNetBenefit', 'Farmer Net Benefit')}</span>
+              </span>
               <span className="bg-emerald-500/40 text-[11px] font-medium px-2 py-0.5 rounded text-emerald-100">
                 {t('middlemanSimulator.realizationGain', { gain: percentageGain }, `+${percentageGain}% Realization`)}
               </span>

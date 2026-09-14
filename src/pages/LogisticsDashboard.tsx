@@ -17,7 +17,8 @@ import {
   Building2,
   FileCheck2,
   Info,
-  ExternalLink
+  ExternalLink,
+  Sprout
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { TransportAssignment } from '../types';
@@ -159,7 +160,7 @@ export const LogisticsDashboard: React.FC = () => {
       {actionNotice && (
         <div className="p-4 bg-[#eaf4ec] border border-[#a3b18a]/50 rounded-2xl flex items-center gap-3 shadow-soft animate-in fade-in">
           <div className="w-8 h-8 rounded-xl bg-[#01472e] text-[#fefae0] flex items-center justify-center font-bold text-sm shrink-0">
-            ✓
+            <Check className="w-4 h-4 text-[#fefae0]" />
           </div>
           <p className="text-xs font-semibold text-[#01472e]">{actionNotice}</p>
         </div>
@@ -168,10 +169,10 @@ export const LogisticsDashboard: React.FC = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         {[
-          { labelKey: 'logistics.kpi.awaitingVehicle', defaultLabel: 'Awaiting Vehicle', count: awaitingTransportOrders.length, descKey: 'logistics.kpi.packedQRSealed', defaultDesc: 'Packed & QR Sealed', section: 'ASSIGN' as const, color: 'text-teal-700', bg: 'bg-teal-50' },
-          { labelKey: 'logistics.kpi.assignedOnBay', defaultLabel: 'Assigned on Bay', count: assignedOrders.length, descKey: 'logistics.kpi.readyForDispatch', defaultDesc: 'Ready for Dispatch', section: 'TRANSIT' as const, color: 'text-indigo-700', bg: 'bg-indigo-50' },
-          { labelKey: 'logistics.kpi.enRouteInTransit', defaultLabel: 'En Route in Transit', count: inTransitOrders.length, descKey: 'logistics.kpi.coldChainTelemetry', defaultDesc: 'Cold-Chain Telemetry', section: 'TRANSIT' as const, color: 'text-amber-700', bg: 'bg-amber-50' },
-          { labelKey: 'logistics.kpi.deliveredAtBuyerHubs', defaultLabel: 'Delivered at Buyer Hubs', count: deliveredOrders.length, descKey: 'logistics.kpi.receiptVerification', defaultDesc: 'Receipt Verification', section: 'DELIVERED' as const, color: 'text-[#01472e]', bg: 'bg-emerald-50' },
+          { labelKey: 'logistics.kpi.awaitingVehicle', defaultLabel: 'Awaiting Vehicle', count: awaitingTransportOrders.length, descKey: 'logistics.kpi.packedQRSealed', defaultDesc: 'Packed & QR Sealed', section: 'ASSIGN' as const, color: 'text-teal-700', bg: 'bg-teal-50', icon: Package },
+          { labelKey: 'logistics.kpi.assignedOnBay', defaultLabel: 'Assigned on Bay', count: assignedOrders.length, descKey: 'logistics.kpi.readyForDispatch', defaultDesc: 'Ready for Dispatch', section: 'TRANSIT' as const, color: 'text-indigo-700', bg: 'bg-indigo-50', icon: Clock },
+          { labelKey: 'logistics.kpi.enRouteInTransit', defaultLabel: 'En Route in Transit', count: inTransitOrders.length, descKey: 'logistics.kpi.coldChainTelemetry', defaultDesc: 'Cold-Chain Telemetry', section: 'TRANSIT' as const, color: 'text-amber-700', bg: 'bg-amber-50', icon: Truck },
+          { labelKey: 'logistics.kpi.deliveredAtBuyerHubs', defaultLabel: 'Delivered at Buyer Hubs', count: deliveredOrders.length, descKey: 'logistics.kpi.receiptVerification', defaultDesc: 'Receipt Verification', section: 'DELIVERED' as const, color: 'text-[#01472e]', bg: 'bg-emerald-50', icon: CheckCircle2 },
         ].map((item) => (
           <button
             key={item.labelKey}
@@ -184,7 +185,9 @@ export const LogisticsDashboard: React.FC = () => {
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-slate-500 font-medium">{t(item.labelKey, item.defaultLabel)}</span>
-              <span className={`w-2.5 h-2.5 rounded-full ${item.bg} border border-current opacity-60`} />
+              <div className={`w-8 h-8 rounded-xl ${item.bg} flex items-center justify-center ${item.color}`}>
+                <item.icon className="w-4 h-4" />
+              </div>
             </div>
             <p className={`text-3xl sm:text-4xl font-bold font-mono tracking-tight ${item.color}`}>{item.count}</p>
             <p className="text-[11px] text-slate-400 mt-1.5 font-medium">{t(item.descKey, item.defaultDesc)}</p>
@@ -258,8 +261,12 @@ export const LogisticsDashboard: React.FC = () => {
                             {order.crateCount ? t('logistics.packedCrates', 'Packed ({count} Crates)', { count: order.crateCount }) : t('logistics.packedCrated', 'Packed (Crated)')}
                           </span>
                         </div>
-                        <h4 className="text-base font-bold text-slate-900 mt-2">
-                          {t(`crops.${order.crop}`, order.crop)} ({order.variety || 'Hybrid'}) — <span className="font-mono text-[#01472e]">{cargoVolume.toLocaleString()} kg</span> ({t(`grades.${order.qualityGrade}`, order.qualityGrade)})
+                        <h4 className="text-base font-bold text-slate-900 mt-2 flex items-center gap-1.5">
+                          <Sprout className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>{t(`crops.${order.crop}`, order.crop)} ({order.variety || 'Hybrid'})</span>
+                          <span className="text-slate-400 font-normal">—</span>
+                          <span className="font-mono text-[#01472e]">{cargoVolume.toLocaleString()} kg</span>
+                          <span className="text-slate-500 font-normal text-xs">({t(`grades.${order.qualityGrade}`, order.qualityGrade)})</span>
                         </h4>
                         <p className="text-xs text-slate-600 mt-1 flex items-center gap-2 flex-wrap">
                           <span>{t('logistics.pickupLabel', 'Pickup:')} <strong className="text-slate-800">{order.farmerLocation}</strong></span>
@@ -408,7 +415,12 @@ export const LogisticsDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h5 className="font-bold text-slate-900 text-base">{t(`crops.${order.crop}`, order.crop)} — {(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg</h5>
+                      <h5 className="font-bold text-slate-900 text-base flex items-center gap-1.5">
+                        <Sprout className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>{t(`crops.${order.crop}`, order.crop)}</span>
+                        <span className="text-slate-400 font-normal">—</span>
+                        <span className="font-mono text-[#01472e]">{(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg</span>
+                      </h5>
                       <p className="text-xs text-slate-600 mt-1.5">
                         {t('logistics.vehicleLabel', 'Vehicle:')} <strong className="font-mono text-slate-900">{order.transportDetails?.vehicleNumber}</strong> ({order.transportDetails?.vehicleType})
                       </p>
@@ -581,7 +593,6 @@ export const LogisticsDashboard: React.FC = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
