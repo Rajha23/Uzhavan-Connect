@@ -292,12 +292,13 @@
      * - 200m Geofencing visualization
      */
 
-    // 1. CONFIG & CARTO TILES (Reliable, high-speed, zero API key)
+    // 1. CONFIG & CARTO TILES (Reliable, high-speed, zero API key, no 403 on file://)
     const CONFIG = {
       center: [28.6139, 77.2090], // New Delhi
       zoom: 12,
-      // CARTO Voyager tiles allow file://, localhost, and production without HTTP 403 blocks
+      // CARTO Voyager & Positron allow file://, localhost, and web embedding without OSM 403 blocks
       tileUrl: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      fallbackTileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
     };
 
