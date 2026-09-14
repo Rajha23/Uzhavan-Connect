@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import L from 'leaflet';
 import { useApp } from '../context/AppContext';
 import {
   RouteOptimizationService,
@@ -21,7 +22,10 @@ import {
   Layers,
   Box,
   Info,
-  ChevronRight
+  ChevronRight,
+  ExternalLink,
+  Map as MapIcon,
+  GitCommit
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -33,6 +37,10 @@ export const RouteOptimizationMap: React.FC = () => {
   const [selectedCrop, setSelectedCrop] = useState<string>('All Crops');
   const [vehicleCapacityKg, setVehicleCapacityKg] = useState<number>(3500);
   const [routePlan, setRoutePlan] = useState<RouteOptimizationResponseDto | null>(null);
+  const [viewMode, setViewMode] = useState<'MAP' | 'SCHEMATIC'>('MAP');
+
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
 
   // Available unique crop types from real context
   const availableCrops = useMemo(() => {
@@ -118,6 +126,126 @@ export const RouteOptimizationMap: React.FC = () => {
       .map((pt, i) => `${i === 0 ? 'M' : 'L'} ${pt.x} ${pt.y}`)
       .join(' ');
   }, [waypointsWithCoords]);
+
+  // Initialize Leaflet Interactive Map when in MAP view mode
+  useEffect(() => {
+    if (viewMode !== 'MAP' || !mapContainerRef.current || !routePlan) return;
+
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+      mapInstanceRef.current = null;
+    }
+
+    const waypointsWithLatLng = routePlan.waypoints.map((wp, idx) => {
+      const coords = wp.locationCoordinates || {
+        lat: 28.7950 - (idx * 0.07),
+        lng: 77.1350 + (idx * 0.04)
+      };
+      return { ...wp, coords };
+    });
+
+    const coordsArray: [number, number][] = waypointsWithLatLng.map(w => [w.coords.lat, w.coords.lng]);
+    if (coordsArray.length === 0) return;
+
+    const map = L.map(mapContainerRef.current, {
+      zoomControl: true,
+      scrollWheelZoom: false
+    });
+    mapInstanceRef.current = map;
+
+    // High performance, zero watermark Esri WorldStreetMap tiles
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 18,
+      attribution: '&copy; Esri &mdash; Uzhavan Connect Fleet Telematics'
+    }).addTo(map);
+
+    // Route polyline shadow
+    L.polyline(coordsArray, {
+      color: '#013623',
+      weight: 6,
+      opacity: 0.35,
+      lineCap: 'round',
+      lineJoin: 'round'
+    }).addTo(map);
+
+    // Main emerald route line
+    L.polyline(coordsArray, {
+      color: '#10b981',
+      weight: 4,
+      opacity: 0.95,
+      dashArray: '6, 6',
+      lineCap: 'round',
+      lineJoin: 'round'
+    }).addTo(map);
+
+    // Add Waypoint markers & 200m geofence rings
+    waypointsWithLatLng.forEach((wp) => {
+      const color = wp.type === 'PICKUP' ? '#10b981' : wp.type === 'HUB' ? '#06b6d4' : '#2563eb';
+
+      // 200m Geofence ring
+      L.circle([wp.coords.lat, wp.coords.lng], {
+        radius: 200,
+        color,
+        weight: 1,
+        fillColor: color,
+        fillOpacity: 0.1,
+        dashArray: '4, 4'
+      }).addTo(map);
+
+      const icon = L.divIcon({
+        className: 'custom-route-icon',
+        html: `<div style="background-color: ${color}; color: white; width: 28px; height: 28px; border-radius: 50%; border: 2.5px solid white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; box-shadow: 0 3px 8px rgba(0,0,0,0.3); cursor: pointer;">${wp.stopOrder}</div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+      });
+
+      L.marker([wp.coords.lat, wp.coords.lng], { icon })
+        .bindPopup(`
+          <div style="font-family: system-ui; font-size: 12px; line-height: 1.4;">
+            <strong style="color: #01472e;">Stop #${wp.stopOrder}: ${wp.name}</strong><br/>
+            <span style="color: #64748b;">${wp.type === 'PICKUP' ? 'Farm Pick-Up' : wp.type === 'HUB' ? 'QC Micro-Hub' : 'Buyer Wholesale Drop'}</span><br/>
+            <b>ETA:</b> ${wp.eta} &bull; <b>Payload:</b> ${wp.quantityKg} kg
+          </div>
+        `)
+        .addTo(map);
+    });
+
+    // Moving Vehicle Marker (Tata Ace EV Reefer)
+    const vehicleIcon = L.divIcon({
+      className: 'custom-vehicle-icon',
+      html: `<div style="background-color: #01472e; color: #a7f3d0; width: 34px; height: 34px; border-radius: 50%; border: 2.5px solid white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(1,71,46,0.6); font-size: 16px;">🚚</div>`,
+      iconSize: [34, 34],
+      iconAnchor: [17, 17]
+    });
+
+    const vehicleMarker = L.marker(coordsArray[0], { icon: vehicleIcon })
+      .bindPopup(`
+        <div style="font-family: system-ui; font-size: 12px;">
+          <strong style="color: #01472e;">${routePlan.vehicle_id}</strong><br/>
+          <span>Driver: ${routePlan.driver_name}</span><br/>
+          <span style="color: #10b981; font-weight: 600;">❄️ Reefer: 3.8°C (Optimal)</span>
+        </div>
+      `)
+      .addTo(map);
+
+    // Animate along waypoints
+    let step = 0;
+    const interval = setInterval(() => {
+      if (coordsArray.length <= 1) return;
+      step = (step + 1) % coordsArray.length;
+      vehicleMarker.setLatLng(coordsArray[step]);
+    }, 1800);
+
+    map.fitBounds(L.latLngBounds(coordsArray), { padding: [35, 35] });
+
+    return () => {
+      clearInterval(interval);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [viewMode, routePlan]);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -295,16 +423,55 @@ export const RouteOptimizationMap: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12">
         {/* Left: Vector Route Visualizer */}
         <div className="lg:col-span-7 bg-slate-900 p-6 relative min-h-[380px] flex flex-col justify-between text-white">
-          <div className="flex items-center justify-between text-xs z-10">
-            <span className="bg-slate-800 px-3 py-1 rounded border border-slate-700 font-mono text-emerald-400">
-              Assigned Vehicle: {routePlan?.vehicle_id || 'TN-07-AG-4921 (Tata Ace EV Reefer)'}
-            </span>
-            <span className="text-[11px] text-slate-400">
-              Driver: {routePlan?.driver_name || 'M. Selvakumar'}
-            </span>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs z-10 mb-3">
+            <div className="flex items-center gap-2">
+              <span className="bg-slate-800 px-3 py-1 rounded border border-slate-700 font-mono text-emerald-400">
+                Assigned Vehicle: {routePlan?.vehicle_id || 'TN-07-AG-4921 (Tata Ace EV Reefer)'}
+              </span>
+              <span className="text-[11px] text-slate-400 hidden sm:inline">
+                Driver: {routePlan?.driver_name || 'M. Selvakumar'}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700 text-[11px]">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('MAP')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded ${viewMode === 'MAP' ? 'bg-emerald-600 text-white font-medium shadow-xs' : 'text-slate-400 hover:text-white'}`}
+                >
+                  <MapIcon className="w-3 h-3" />
+                  <span>GPS Map</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('SCHEMATIC')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded ${viewMode === 'SCHEMATIC' ? 'bg-emerald-600 text-white font-medium shadow-xs' : 'text-slate-400 hover:text-white'}`}
+                >
+                  <GitCommit className="w-3 h-3" />
+                  <span>Schematic</span>
+                </button>
+              </div>
+
+              <a
+                href="/logistics-map.html"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold bg-emerald-700 hover:bg-emerald-600 rounded-lg text-white transition-colors"
+                title="Open Standalone Fullscreen Live Map"
+              >
+                <span>Fullscreen</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
 
-          {/* SVG Map of Multi-Stop Route */}
+          {/* Interactive Map Visualizer vs SVG Topology */}
+          {viewMode === 'MAP' ? (
+            <div className="w-full h-72 rounded-xl overflow-hidden my-auto border border-slate-700 shadow-inner relative z-0">
+              <div ref={mapContainerRef} className="w-full h-full" />
+            </div>
+          ) : (
           <div className="w-full h-64 relative my-auto">
             <svg viewBox="0 0 550 300" className="w-full h-full">
               {/* Route Line */}
@@ -384,6 +551,7 @@ export const RouteOptimizationMap: React.FC = () => {
               })}
             </svg>
           </div>
+          )}
 
           <div className="z-10 flex flex-wrap items-center justify-between text-[11px] pt-3 border-t border-slate-800 text-slate-300 gap-2">
             <span className="flex items-center gap-1.5">

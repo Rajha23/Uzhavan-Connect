@@ -148,15 +148,25 @@ export class RouteOptimizationService {
     const waypoints: RouteWaypoint[] = [];
     let order = 1;
 
+    // Preset realistic coordinates for corridor nodes
+    const defaultCoords = [
+      { lat: 28.7950, lng: 77.1350 }, // Farm Node 1
+      { lat: 28.7100, lng: 77.2300 }, // Farm Node 2
+      { lat: 28.6750, lng: 77.2900 }, // Farm Node 3
+      { lat: 28.6139, lng: 77.2090 }, // Node 4
+      { lat: 28.5672, lng: 77.2430 }  // Node 5
+    ];
+
     // Pickups
-    pickups.forEach((pickupLoc) => {
+    pickups.forEach((pickupLoc, pIdx) => {
       waypoints.push({
         stopOrder: order++,
         name: pickupLoc,
         type: 'PICKUP',
         eta: `0${3 + order}:15 AM`,
         quantityKg: Math.round(payloadKg / (pickups.length || 1)),
-        status: order === 2 ? 'LOADED' : 'SCHEDULED'
+        status: order === 2 ? 'LOADED' : 'SCHEDULED',
+        locationCoordinates: defaultCoords[pIdx % defaultCoords.length]
       });
     });
 
@@ -167,7 +177,8 @@ export class RouteOptimizationService {
       type: 'HUB',
       eta: '05:45 AM',
       quantityKg: payloadKg,
-      status: 'SCHEDULED'
+      status: 'SCHEDULED',
+      locationCoordinates: { lat: 28.5355, lng: 77.2750 }
     });
 
     // Delivery destination
@@ -177,7 +188,8 @@ export class RouteOptimizationService {
       type: 'DELIVERY',
       eta: '07:15 AM',
       quantityKg: payloadKg,
-      status: 'SCHEDULED'
+      status: 'SCHEDULED',
+      locationCoordinates: { lat: 28.4950, lng: 77.0890 }
     });
 
     const activeConstraints: OptimizationConstraint[] = [

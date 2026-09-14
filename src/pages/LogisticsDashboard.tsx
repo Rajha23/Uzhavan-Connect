@@ -16,7 +16,8 @@ import {
   Check,
   Building2,
   FileCheck2,
-  Info
+  Info,
+  ExternalLink
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { TransportAssignment } from '../types';
@@ -140,6 +141,16 @@ export const LogisticsDashboard: React.FC = () => {
               <Navigation className="w-4 h-4 text-[#01472e]" />
               <span>{t('logistics.routeOptimizerMap', 'Route Optimizer Map')}</span>
             </button>
+            <a
+              href="/logistics-map.html"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-2 bg-emerald-700/60 hover:bg-emerald-700/80 text-[#fefae0] border border-emerald-400/30 text-xs font-semibold px-4 py-3 rounded-2xl shadow-soft hover:shadow-md transition-all cursor-pointer backdrop-blur-sm"
+              title="Open Fullscreen Interactive Fleet Map"
+            >
+              <ExternalLink className="w-4 h-4 text-emerald-300" />
+              <span>{t('logistics.fullscreenMap', 'Live Fleet Web Map')}</span>
+            </a>
           </div>
         </div>
       </div>
