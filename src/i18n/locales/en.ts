@@ -490,7 +490,7 @@ export const enTranslations: TranslationDictionary = {
     exportCsv: 'Export Raw Data CSV'
   },
 
-  profile: {
+  profile2: {
     title: 'User Profile & Operational Credentials',
     editProfile: 'Edit Profile',
     cancel: 'Cancel',

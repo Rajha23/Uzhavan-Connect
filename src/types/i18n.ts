@@ -47,7 +47,7 @@ export interface LanguageContextType {
   direction: ScriptDirection;
   setLanguage: (code: string) => void;
 
-  t: (key: string, params?: Record<string, string | number>, defaultText?: string) => string;
+  t: (key: string, arg2?: any, arg3?: any) => string;
   formatCurrency: (amount: number) => string;
   formatNumber: (value: number) => string;
   formatDate: (date: string | Date) => string;

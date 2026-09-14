@@ -66,8 +66,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   }, [currentLanguage, applyDocumentLocale]);
 
   // Translation helper with parameters and fallback
-  const t = useCallback((key: string, params?: Record<string, string | number>, defaultText?: string): string => {
-    return getTranslation(currentLanguage.code, key, params, defaultText);
+  const t = useCallback((key: string, arg2?: any, arg3?: any): string => {
+    return getTranslation(currentLanguage.code, key, arg2, arg3);
   }, [currentLanguage.code]);
 
   // Indian Numbering Currency Formatter (₹1,25,000)
