@@ -3,7 +3,6 @@ import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import { INITIAL_DEMAND_REQUESTS, SMART_MATCH_SUPPLIERS } from '../data/mockData';
 import { DemandRequest, WorkflowOrder, BuyerDeliveryConfirmation } from '../types';
-import { GovernmentSchemes } from '../components/GovernmentSchemes';
 import {
   ShoppingBag,
   Plus,
@@ -601,7 +600,6 @@ export const BuyerDashboard: React.FC = () => {
         )}
       </div>
 
-      <GovernmentSchemes role="RETAIL_BUYER" className="mt-8" />
 
       {/* Create Demand Modal Dialog */}
       {isModalOpen && (

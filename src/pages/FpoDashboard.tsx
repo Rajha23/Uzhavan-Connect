@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
-import { GovernmentSchemes } from '../components/GovernmentSchemes';
 import {
   Users,
   Package,
@@ -1128,7 +1127,6 @@ export const FpoDashboard: React.FC = () => {
         </div>
       )}
 
-      <GovernmentSchemes role="FPO_AGGREGATOR" className="mt-8" />
 
       {/* ── MODAL: PACKING & CRATING ─────────────────────────────────────────── */}
       {packingModalOrder && (

@@ -5,7 +5,6 @@ import { CHENNAI_TOMATO_FORECAST, AGRICULTURE_NEWS } from '../data/mockData';
 import { ProduceListing, WorkflowOrder, WorkflowAgreement } from '../types';
 import { NewsTicker } from '../components/NewsTicker';
 import { NewsCard } from '../components/NewsCard';
-import { GovernmentSchemes } from '../components/GovernmentSchemes';
 import {
   Sprout,
   TrendingUp,
@@ -907,7 +906,6 @@ export const FarmerDashboard: React.FC = () => {
         </div>
       </div>
 
-      <GovernmentSchemes role="FARMER" className="mt-8" />
       </div>
     </div>
   );

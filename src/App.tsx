@@ -42,6 +42,7 @@ import { ProfilePage } from './pages/ProfilePage';
 import { TraceabilityPage } from './pages/TraceabilityPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { NotificationsPage } from './pages/NotificationsPage';
+import { SchemesPage } from './pages/SchemesPage';
 
 // Inline components for simple stubs
 import { MiddlemanSimulator } from './components/MiddlemanSimulator';
@@ -249,6 +250,9 @@ const PageContent: React.FC = () => {
     // ── Notifications & Operational Alerts Center ────
     case 'notifications':
       return <NotificationsPage />;
+
+    case 'schemes':
+      return <SchemesPage />;
 
     default:
       if (currentRole === 'BULK_BUYER') return <BulkBuyerDashboard />;
