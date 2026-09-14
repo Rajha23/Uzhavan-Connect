@@ -43,6 +43,7 @@ import { TraceabilityPage } from './pages/TraceabilityPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { SchemesPage } from './pages/SchemesPage';
+import { SubsidyPage } from './pages/SubsidyPage';
 
 // Inline components for simple stubs
 import { MiddlemanSimulator } from './components/MiddlemanSimulator';
@@ -253,6 +254,9 @@ const PageContent: React.FC = () => {
 
     case 'schemes':
       return <SchemesPage />;
+
+    case 'subsidy':
+      return <SubsidyPage />;
 
     default:
       if (currentRole === 'BULK_BUYER') return <BulkBuyerDashboard />;
