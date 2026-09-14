@@ -72,6 +72,7 @@ export const PATH_TO_TAB: Record<string, string> = {
   '/demand-intel': 'demand-intel',
   '/demand-forecast': 'demand-forecast',
   '/notifications': 'notifications',
+  '/schemes': 'schemes',
   '/access-denied': 'access-denied'
 };
 
@@ -114,6 +115,7 @@ export const TAB_TO_PATH: Record<string, string> = {
   'sys-users': '/admin/users',
   'roles-permissions': '/admin/roles',
   'system-monitoring': '/admin/monitoring',
+  schemes: '/schemes',
   'access-denied': '/access-denied'
 };
 
@@ -140,6 +142,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'tracking',
     'profile',
     'notifications',
+    'schemes',
     'access-denied'
   ],
   RETAIL_BUYER: [
@@ -158,6 +161,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'tracking',
     'profile',
     'notifications',
+    'schemes',
     'access-denied'
   ],
   BULK_BUYER: [
@@ -179,6 +183,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'settlement',
     'profile',
     'notifications',
+    'schemes',
     'access-denied'
   ],
   FPO_AGGREGATOR: [
@@ -198,6 +203,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'tracking',
     'profile',
     'notifications',
+    'schemes',
     'access-denied'
   ],
   LOGISTICS: [
@@ -216,6 +222,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'tracking',
     'profile',
     'notifications',
+    'schemes',
     'access-denied'
   ],
   ADMIN: [
@@ -241,6 +248,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'tracking',
     'profile',
     'notifications',
+    'schemes',
     'access-denied'
   ]
 };
@@ -273,7 +281,8 @@ export const TAB_FEATURE_NAMES: Record<string, string> = {
   'system-monitoring': 'Real-Time System Monitoring & Health',
   reports: 'Executive Analytics & Impact Reports',
   settlement: 'Automated Instant Farmer Settlement',
-  'demand-intel': 'Demand Forecasting & Market Intelligence'
+  'demand-intel': 'Demand Forecasting & Market Intelligence',
+  schemes: 'Government Schemes & Support'
 };
 
 /**
