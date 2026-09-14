@@ -91,6 +91,17 @@ export const apiService = {
         });
 
         if (authError) {
+          // Fallback to local vault for users who failed to sync to Supabase due to DB errors
+          try {
+            const { user, token } = await authVault.authenticateCredentials(normEmail, rawPass);
+            if (user) {
+              console.warn('[Auth] Falling back to local auth due to Supabase error:', authError.message);
+              return { token, user };
+            }
+          } catch (localErr) {
+            // Ignore local auth failure, rely on Supabase error
+          }
+
           const errMsg = (authError.message || '').toLowerCase();
           if (errMsg.includes('invalid login credentials') || errMsg.includes('invalid credentials')) {
             throw new Error('The email or password is incorrect. Please check your credentials and try again.');
