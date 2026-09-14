@@ -303,6 +303,40 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   }, [produceListings]);
 
+  // Fetch real users from Supabase DB to replace dummy users
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    const fetchProfiles = async () => {
+      try {
+        const { data, error } = await supabase.from('profiles').select('*');
+        if (error) {
+          console.error('Failed to fetch system users from Supabase:', error);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          const mappedUsers: SystemUserRecord[] = data.map(p => ({
+            id: p.id,
+            name: p.name || 'Unknown',
+            role: p.role as UserRole,
+            phone: p.phone || '',
+            email: p.email || '',
+            location: p.location || p.district || p.state || 'Unknown Location',
+            status: 'ACTIVE',
+            joinedDate: p.created_at ? new Date(p.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Unknown',
+            permissions: ROLE_PERMISSIONS[p.role as UserRole] || []
+          }));
+          setSystemUsers(mappedUsers);
+        }
+      } catch (err) {
+        console.error('Exception fetching system users:', err);
+      }
+    };
+
+    fetchProfiles();
+  }, []);
+
   // Automatically sync demand requests to localStorage
   useEffect(() => {
     try {
