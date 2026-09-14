@@ -86,6 +86,15 @@ export default {
         'forest-xl': '0 24px 50px -10px rgba(1, 71, 46, 0.15)',
         'ai-card': '0 2px 10px 0 rgba(1, 71, 46, 0.04)',
         'ai-hover': '0 12px 32px -4px rgba(1, 71, 46, 0.12), 0 4px 12px -2px rgba(1, 71, 46, 0.06)',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        }
+      },
+      animation: {
+        marquee: 'marquee 35s linear infinite',
       }
     },
   },

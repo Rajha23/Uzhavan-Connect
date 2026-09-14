@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
-import { CHENNAI_TOMATO_FORECAST } from '../data/mockData';
+import { CHENNAI_TOMATO_FORECAST, AGRICULTURE_NEWS } from '../data/mockData';
 import { ProduceListing, WorkflowOrder, WorkflowAgreement } from '../types';
+import { NewsTicker } from '../components/NewsTicker';
+import { NewsCard } from '../components/NewsCard';
 import {
   Sprout,
   TrendingUp,
@@ -253,8 +255,10 @@ export const FarmerDashboard: React.FC = () => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-7">
-      {/* 1. Agricultural Hero Card */}
+    <div className="flex flex-col w-full">
+      <NewsTicker news={AGRICULTURE_NEWS} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-7 w-full">
+        {/* 1. Agricultural Hero Card */}
       <div className="relative overflow-hidden bg-gradient-to-br from-[#01472e] via-[#025235] to-[#013823] text-[#fefae0] rounded-[32px] p-6 sm:p-9 border border-[#a3b18a]/30 shadow-forest">
         {/* Subtle botanical background ambient glow */}
         <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#ccd5ae]/10 blur-3xl pointer-events-none" />
@@ -414,6 +418,22 @@ export const FarmerDashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Agriculture News Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-medium tracking-tight text-[#01472e]">
+            {t('farmer.newsTitle', 'Agriculture News & Updates')}
+          </h2>
+          <button className="text-xs font-medium text-emerald-700 hover:text-emerald-800 transition-colors">
+            View all
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {AGRICULTURE_NEWS.slice(0, 4).map((article) => (
+            <NewsCard key={article.id} article={article} />
+          ))}
+        </div>
+      </div>
       {successMessage && (
         <div className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-medium flex items-center gap-2 animate-in fade-in duration-200">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -884,6 +904,7 @@ export const FarmerDashboard: React.FC = () => {
             })
           )}
         </div>
+      </div>
       </div>
     </div>
   );

@@ -229,20 +229,9 @@ export const AdminDashboard: React.FC = () => {
                 onClick={() => setIsCreateUserModalOpen(true)}
                 className="btn-primary flex items-center gap-2 px-4 py-2 text-xs rounded-xl shadow-soft"
               >
-<<<<<<< HEAD
-                <option value="ALL">{t('admin.allRoles', 'All Roles')}</option>
-                <option value="FARMER">{t('roles.farmer', 'Farmers')}</option>
-                <option value="FPO_AGGREGATOR">{t('roles.fpo', 'FPO Aggregators')}</option>
-                <option value="RETAIL_BUYER">{t('roles.buyer', 'Retail Buyers')}</option>
-                <option value="BULK_BUYER">{t('roles.bulk_buyer', 'Bulk Buyers')}</option>
-                <option value="LOGISTICS">{t('roles.logistics', 'Logistics')}</option>
-                <option value="ADMIN">{t('roles.admin', 'Admins')}</option>
-              </select>
-=======
                 <UserPlus className="w-4 h-4" />
                 <span>Create User</span>
               </button>
->>>>>>> origin/main
             </div>
           </div>
           

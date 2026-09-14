@@ -699,3 +699,15 @@ export interface SystemUserRecord {
   joinedDate: string;
   permissions: Permission[];
 }
+
+export interface NewsArticle {
+  id: string;
+  title: string;
+  summary: string;
+  content: string;
+  source: string;
+  publishedAt: string;
+  url?: string;
+  imageUrl?: string;
+  category: 'Policy' | 'Weather' | 'Market' | 'Technology' | 'General';
+}

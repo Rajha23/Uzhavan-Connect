@@ -22,7 +22,8 @@ import {
   WorkflowOrder,
   WorkflowAgreement,
   QualityInspectionData,
-  TransportAssignment
+  TransportAssignment,
+  NewsArticle
 } from '../types';
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
@@ -1513,4 +1514,47 @@ export const SIH_EVALUATION_KPIS = [
   { label: 'Vehicle Fleet Utilization', traditional: '44.0%', uzhavanconnect: '93.8%', change: '+113% Capacity Full', positive: true },
   { label: 'Matching & Fulfillment Time', traditional: '48 – 72 hrs', uzhavanconnect: '4.2 hrs', change: '10x Faster', positive: true },
   { label: 'Forecast Accuracy (MAPE)', traditional: 'Unforecasted (Blind)', uzhavanconnect: '5.34% Error', change: '94.6% Accuracy', positive: true }
+];
+
+export const AGRICULTURE_NEWS: NewsArticle[] = [
+  {
+    id: 'news_1',
+    title: 'Government announces 5% hike in Minimum Support Price for Kharif crops',
+    summary: 'The Cabinet Committee on Economic Affairs has approved an increase in the Minimum Support Prices (MSP) for all mandated Kharif crops for the marketing season 2026-27.',
+    content: 'The government today announced a significant hike in the Minimum Support Price (MSP) for major Kharif crops to ensure remunerative prices to the growers for their produce. The highest absolute increase in MSP over the previous year has been recommended for oilseeds and pulses.',
+    source: 'AgriNews India',
+    publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
+    category: 'Policy',
+    imageUrl: 'https://images.unsplash.com/photo-1592982537447-6f296b020080?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'news_2',
+    title: 'Monsoon forecast: Above-average rainfall expected in Southern Peninsula',
+    summary: 'The India Meteorological Department (IMD) predicts favorable monsoon conditions over the southern peninsula in the coming weeks, bringing relief to farmers.',
+    content: 'Farmers in Tamil Nadu, Karnataka, and Kerala can expect robust rainfall this month. The IMD stated that the southwest monsoon is advancing steadily and conditions are highly favorable for widespread agricultural activities to commence.',
+    source: 'Weather Desk',
+    publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 15).toISOString(), // 15 hours ago
+    category: 'Weather',
+    imageUrl: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'news_3',
+    title: 'New AI-driven soil testing kits distributed to 10,000 FPOs',
+    summary: 'A new initiative aims to empower Farmer Producer Organizations with rapid, AI-driven soil health testing kits to optimize fertilizer usage.',
+    content: 'To reduce the dependency on chemical fertilizers and improve soil health, a coalition of agritech startups has partnered with the government to distribute portable AI soil testing kits. These devices give instant readings on NPK levels and suggest organic alternatives.',
+    source: 'TechKrishi',
+    publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
+    category: 'Technology',
+    imageUrl: 'https://images.unsplash.com/photo-1628183181878-eb09f3df9dd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'news_4',
+    title: 'Tomato prices surge in wholesale markets due to supply chain disruptions',
+    summary: 'Wholesale prices of tomatoes have seen a sharp 20% increase this week across major mandis in South India.',
+    content: 'Unseasonal rains in parts of Karnataka and Maharashtra have disrupted the supply chain, leading to a temporary shortage of fresh tomatoes in the market. Retail prices are expected to remain elevated for the next two weeks until fresh harvests arrive.',
+    source: 'Market Watch',
+    publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
+    category: 'Market',
+    imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  }
 ];
