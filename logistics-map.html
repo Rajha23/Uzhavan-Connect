@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Logistics Live Map | Uzhavan Connect</title>
 
-  <!-- Leaflet.js CSS -->
+  <!-- Leaflet.js CSS (No API Key Required) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <!-- Google Font: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,21 +17,53 @@
       --primary: #01472e;
       --primary-dark: #013623;
       --accent: #2563eb;
-      --pending: #f97316;
-      --in-transit: #3b82f6;
-      --delivered: #10b981;
-      --bg-glass: rgba(255, 255, 255, 0.94);
+      --farm-node: #10b981;
+      --micro-hub: #06b6d4;
+      --buyer-drop: #3b82f6;
+      --bg-glass: rgba(255, 255, 255, 0.95);
       --border: rgba(226, 232, 240, 0.9);
       --text: #0f172a;
       --text-muted: #64748b;
-      --shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.14), 0 4px 12px -2px rgba(0, 0, 0, 0.06);
+      --shadow: 0 14px 35px -4px rgba(0, 0, 0, 0.15), 0 4px 12px -2px rgba(0, 0, 0, 0.08);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-    body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); background: #f8fafc; overflow: hidden; }
+    body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); background: #0f172a; overflow: hidden; }
     #map { height: 100vh; width: 100vw; z-index: 1; }
 
-    /* Control Panel */
+    /* Top Left Fleet Metadata Card (Uzhavan Connect Theme) */
+    .fleet-card {
+      position: absolute;
+      top: 16px;
+      left: 60px;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 10px 16px;
+      color: #f8fafc;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      max-width: calc(100vw - 380px);
+    }
+    .fleet-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #34d399;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+    .fleet-sub {
+      font-size: 11px;
+      color: #94a3b8;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Floating Control Panel (Top Right) */
     .control-panel {
       position: absolute;
       top: 16px;
@@ -42,7 +74,7 @@
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 16px 18px;
-      width: 310px;
+      width: 315px;
       max-width: calc(100vw - 32px);
       box-shadow: var(--shadow);
     }
@@ -57,7 +89,7 @@
     }
     .panel-header h3 { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
     .live-dot {
-      width: 8px; height: 8px; background: var(--delivered); border-radius: 50%;
+      width: 8px; height: 8px; background: #10b981; border-radius: 50%;
       box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
       animation: pulse 2s infinite;
     }
@@ -67,7 +99,7 @@
       100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
-    /* Telemetry Pill */
+    /* Telemetry Bar */
     .telemetry-bar {
       display: flex;
       align-items: center;
@@ -81,9 +113,9 @@
       color: #166534;
       font-weight: 600;
     }
-    .telemetry-item { display: flex; align-items: center; gap: 5px; }
+    .telemetry-item { display: flex; align-items: center; gap: 4px; }
 
-    /* Filter Counters */
+    /* Node Filter Legend Badges */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -91,10 +123,10 @@
       margin-bottom: 12px;
     }
     .stat-badge {
-      padding: 7px 6px;
+      padding: 7px 5px;
       border-radius: 10px;
       text-align: center;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 600;
       cursor: pointer;
       border: 1.5px solid transparent;
@@ -102,12 +134,12 @@
     }
     .stat-badge:hover { transform: translateY(-1px); }
     .stat-badge.selected { border-color: currentColor; }
-    .stat-pending { background: #fff7ed; color: #c2410c; }
-    .stat-transit { background: #eff6ff; color: #1d4ed8; }
-    .stat-delivered { background: #ecfdf5; color: #047857; }
-    .stat-val { font-size: 15px; font-weight: 700; display: block; }
+    .stat-farm { background: #ecfdf5; color: #047857; }
+    .stat-hub { background: #ecfeff; color: #0e7490; }
+    .stat-drop { background: #eff6ff; color: #1d4ed8; }
+    .stat-val { font-size: 14px; font-weight: 700; display: block; }
 
-    /* Button Group */
+    /* Buttons */
     .btn-group { display: flex; flex-direction: column; gap: 6px; }
     .btn {
       display: flex;
@@ -141,49 +173,60 @@
     }
     .btn-recenter:hover { background: var(--primary-dark) !important; }
 
-    /* Custom Markers */
-    .depot-marker {
-      background: #01472e; color: #fff; width: 38px; height: 38px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      border: 3px solid #fff; box-shadow: 0 4px 14px rgba(1, 71, 46, 0.45);
-      cursor: pointer; transition: transform 0.2s;
-    }
-    .depot-marker:hover { transform: scale(1.15); }
-
-    .delivery-marker {
-      width: 28px; height: 28px; border-radius: 50%; border: 2.5px solid #fff;
+    /* Custom Node Markers */
+    .node-marker {
+      width: 32px; height: 32px; border-radius: 50%; border: 2.5px solid #fff;
       color: #fff; display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+      font-size: 12px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.25);
       cursor: pointer; transition: transform 0.2s;
     }
-    .delivery-marker:hover { transform: scale(1.2); }
-    .delivery-marker.pending { background: var(--pending); }
-    .delivery-marker.in-transit {
-      background: var(--in-transit);
-      animation: transitPulse 2s infinite;
-    }
-    .delivery-marker.delivered { background: var(--delivered); }
+    .node-marker:hover { transform: scale(1.18); }
+    .node-marker.farm { background: #10b981; }
+    .node-marker.hub { background: #06b6d4; box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.3); }
+    .node-marker.buyer { background: #2563eb; animation: dropPulse 2s infinite; }
 
-    @keyframes transitPulse {
-      0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6); }
-      70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    @keyframes dropPulse {
+      0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); }
+      70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
     }
 
-    /* Live Vehicle Marker */
+    /* Moving Vehicle Marker */
     .truck-marker {
-      background: #0f172a;
-      width: 36px; height: 36px; border-radius: 50%;
+      background: #01472e;
+      width: 38px; height: 38px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      color: #38bdf8; border: 3px solid #ffffff;
-      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.5);
+      color: #a7f3d0; border: 3px solid #ffffff;
+      box-shadow: 0 4px 16px rgba(1, 71, 46, 0.55);
       transition: transform 0.3s ease-out;
     }
+
+    /* Bottom Pipeline Legend Bar */
+    .bottom-legend {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.94);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 30px;
+      padding: 9px 20px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 11.5px;
+      color: #e2e8f0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
 
     /* Popups */
     .leaflet-popup-content-wrapper {
       border-radius: 14px; padding: 4px; font-family: 'Inter', sans-serif;
-      box-shadow: 0 12px 28px -4px rgba(0,0,0,0.18); border: 1px solid #e2e8f0;
+      box-shadow: 0 12px 28px -4px rgba(0,0,0,0.22); border: 1px solid #e2e8f0;
     }
     .leaflet-popup-content { margin: 10px 12px; line-height: 1.4; }
     .popup-title { font-size: 13.5px; font-weight: 700; color: #0f172a; }
@@ -192,79 +235,98 @@
       display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px;
       border-radius: 6px; text-transform: uppercase;
     }
-    .popup-badge.pending { background: #ffedd5; color: #c2410c; }
-    .popup-badge.in-transit { background: #dbeafe; color: #1d4ed8; }
-    .popup-badge.delivered { background: #dcfce7; color: #15803d; }
-    .popup-badge.warehouse { background: #ecfdf5; color: #01472e; border: 1px solid #a7f3d0; }
+    .popup-badge.farm { background: #ecfdf5; color: #047857; }
+    .popup-badge.hub { background: #ecfeff; color: #0e7490; }
+    .popup-badge.buyer { background: #eff6ff; color: #1d4ed8; }
     .popup-meta {
       font-size: 11px; color: #475569; margin-top: 6px; padding-top: 5px;
       border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between;
     }
 
-    @media (max-width: 640px) {
-      .control-panel { top: auto; bottom: 16px; right: 12px; left: 12px; width: auto; padding: 14px; }
+    @media (max-width: 768px) {
+      .fleet-card { left: 12px; top: 12px; max-width: calc(100vw - 24px); }
+      .control-panel { top: auto; bottom: 65px; right: 12px; left: 12px; width: auto; padding: 14px; }
+      .bottom-legend { display: none; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Fullscreen Map -->
   <div id="map" role="application"></div>
 
-  <!-- Control Panel -->
+  <!-- Top-Left Fleet Info Card (From UZHAVAN Connect Specs) -->
+  <div class="fleet-card">
+    <div class="fleet-title">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <rect x="1" y="3" width="15" height="13"></rect>
+        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+        <circle cx="5.5" cy="18.5" r="2.5"></circle>
+        <circle cx="18.5" cy="18.5" r="2.5"></circle>
+      </svg>
+      Assigned Vehicle: TN-07-AG-4921 (Tata Ace EV Reefer)
+    </div>
+    <div class="fleet-sub">
+      <span>👤 Driver: M. Selvakumar (Verified Logistics Partner)</span>
+      <span style="color:#34d399;">⚡ Payload: 4,200 / 3,500 kg (Overload Safe)</span>
+    </div>
+  </div>
+
+  <!-- Floating Control Panel -->
   <aside class="control-panel">
     <div class="panel-header">
       <h3>
         <span class="live-dot" title="Active Fleet Telemetry"></span>
         Logistics Live Map
       </h3>
-      <span style="font-size: 11px; font-weight: 700; color: #0284c7;">OSRM Live</span>
+      <span style="font-size: 11px; font-weight: 700; color: #0284c7;">OSRM Road Net</span>
     </div>
 
     <!-- Live Telemetry Banner -->
     <div class="telemetry-bar">
       <div class="telemetry-item">
-        <span>🚚 Reefer #DL-9C</span>
+        <span>🚚 TN-07-AG-4921</span>
       </div>
       <div class="telemetry-item">
         <span>❄️ 3.8°C</span>
         <span style="color:#10b981;">• OK</span>
       </div>
       <div class="telemetry-item">
-        <span id="speedDisplay">42 km/h</span>
+        <span id="speedDisplay">38 km/h</span>
       </div>
     </div>
 
-    <!-- Status Filter Badges -->
+    <!-- Node Stats Filters -->
     <div class="stats-grid">
-      <div class="stat-badge stat-pending" data-filter="pending" title="Filter Pending">
-        <span class="stat-val" id="countPending">0</span>
-        Pending
+      <div class="stat-badge stat-farm" data-filter="farm" title="Filter Farm Pickups">
+        <span class="stat-val" id="countFarm">3</span>
+        Farm Pick-Up
       </div>
-      <div class="stat-badge stat-transit" data-filter="in-transit" title="Filter In Transit">
-        <span class="stat-val" id="countTransit">0</span>
-        In Transit
+      <div class="stat-badge stat-hub" data-filter="hub" title="Filter QC Micro-Hub">
+        <span class="stat-val" id="countHub">1</span>
+        QC Micro-Hub
       </div>
-      <div class="stat-badge stat-delivered" data-filter="delivered" title="Filter Delivered">
-        <span class="stat-val" id="countDelivered">0</span>
-        Delivered
+      <div class="stat-badge stat-drop" data-filter="buyer" title="Filter Buyer Drop">
+        <span class="stat-val" id="countBuyer">1</span>
+        Buyer Drop
       </div>
     </div>
 
-    <!-- Layer Toggles -->
+    <!-- Toggles -->
     <div class="btn-group">
-      <button type="button" class="btn active" id="toggleWarehouse">
-        <span>🏢 Central Cold Depot</span>
-        <span class="btn-pill" id="badgeWarehouse">ON</span>
-      </button>
-
-      <button type="button" class="btn active" id="toggleDeliveries">
-        <span>📦 Delivery Points</span>
-        <span class="btn-pill" id="badgeDeliveries">ON</span>
+      <button type="button" class="btn active" id="toggleNodes">
+        <span>📍 Aggregation Nodes</span>
+        <span class="btn-pill" id="badgeNodes">ON</span>
       </button>
 
       <button type="button" class="btn active" id="toggleRoute">
-        <span>🛣️ OSRM Road Route</span>
+        <span>🛣️ OSRM Planned Route</span>
         <span class="btn-pill" id="badgeRoute">ON</span>
+      </button>
+
+      <button type="button" class="btn active" id="toggleGeofence">
+        <span>⭕ 200m Geofences</span>
+        <span class="btn-pill" id="badgeGeofence">ON</span>
       </button>
 
       <button type="button" class="btn btn-recenter" id="recenterBtn">
@@ -280,160 +342,161 @@
     </div>
   </aside>
 
+  <!-- Bottom Legend Bar -->
+  <div class="bottom-legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#10b981;"></div>
+      <span>Farm Pick-Up Nodes</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#06b6d4;"></div>
+      <span>Micro-Hub QC Aggregation</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#3b82f6;"></div>
+      <span>Buyer Wholesale Drop</span>
+    </div>
+    <div class="legend-item" style="border-left:1px solid rgba(255,255,255,0.2); padding-left:12px; color:#34d399; font-weight:700;">
+      <span>Payload: 4,200 / 3,500 kg</span>
+    </div>
+  </div>
+
   <!-- Leaflet CDN -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
   <script>
     /**
-     * Logistics Live Map - Production Grade Engine
-     * - Uses CARTO Voyager tiles (Permits file:// & localhost without OSM 403 blocks)
-     * - OSRM Turn-by-Turn Real Road Routing API
-     * - Real-Time Animated Reefer Vehicle with Heading & Telemetry
-     * - 200m Geofencing visualization
+     * =========================================================================
+     * Logistics Live Map - Production Engine
+     * Base Map: Esri WorldStreetMap (100% Free, NO API Key, NO Watermark, NO 403)
+     * Routing: OSRM Public Highway Network
+     * =========================================================================
      */
 
-    // 1. CONFIG & CARTO TILES (Reliable, high-speed, zero API key, no 403 on file://)
+    // 1. CONFIG: Esri High-Resolution World Street Map (Clean, No Watermark, No Key)
     const CONFIG = {
-      center: [28.6139, 77.2090], // New Delhi
+      center: [28.6139, 77.2090], // New Delhi Logistics Corridor
       zoom: 12,
-      // CARTO Voyager & Positron allow file://, localhost, and web embedding without OSM 403 blocks
-      tileUrl: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-      fallbackTileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
+      // High-performance Esri WorldStreetMap tiles (Zero watermarks, completely free, works on file:// & web)
+      tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, METI'
     };
 
-    // 2. DATA
-    const warehouse = {
-      name: "North Hub – Delhi Central Cold Storage",
-      lat: 28.6139,
-      lng: 77.2090,
-      capacity: "1,500 MT Reefer Capacity",
-      manager: "Rajiv Sharma (+91 98110-23456)"
-    };
-
-    const deliveryPoints = [
+    // 2. LOGISTICS PIPELINE NODES (Exact pipeline from Uzhavan Connect)
+    const pipelineNodes = [
       {
-        id: "ORD-4821", customer: "Safal Agro Mart",
-        address: "Connaught Place, New Delhi",
-        lat: 28.6304, lng: 77.2177, status: "pending",
-        cargo: "Hydroponic Tomatoes (120 kg)", eta: "18:45 IST"
+        id: "NODE-1",
+        name: "Farm Pick-Up #1 (Green Valley Collective)",
+        type: "farm",
+        schedule: "05:15 AM",
+        load: "1,400 kg",
+        commodity: "Grade-A Hydroponic Tomatoes",
+        address: "Alipur Farm Cluster, North Delhi",
+        lat: 28.7950,
+        lng: 77.1350
       },
       {
-        id: "ORD-4822", customer: "Nature's Basket Retail",
-        address: "South Extension Part II, New Delhi",
-        lat: 28.5672, lng: 77.2430, status: "in-transit",
-        cargo: "Organic Strawberries (45 kg)", eta: "17:15 IST (En Route)"
+        id: "NODE-2",
+        name: "Farm Pick-Up #2 (Yamuna Organic Belt)",
+        type: "farm",
+        schedule: "06:15 AM",
+        load: "1,400 kg",
+        commodity: "Crisp Bell Peppers & Herbs",
+        address: "Wazirabad Green Belt, Delhi",
+        lat: 28.7100,
+        lng: 77.2300
       },
       {
-        id: "ORD-4823", customer: "Metro Cash & Carry",
-        address: "Rohini Sector 10, New Delhi",
-        lat: 28.7041, lng: 77.1025, status: "delivered",
-        cargo: "Red Onions (500 kg)", eta: "Completed at 14:20 IST"
+        id: "NODE-3",
+        name: "Farm Pick-Up #3 (Hindon Aggregation Point)",
+        type: "farm",
+        schedule: "07:15 AM",
+        load: "1,400 kg",
+        commodity: "Cavendish Premium Bananas",
+        address: "Shahdara Periphery, East Delhi",
+        lat: 28.6750,
+        lng: 77.2900
       },
       {
-        id: "ORD-4824", customer: "Blinkit Fulfillment Dark Store",
-        address: "Sector 62, Noida",
-        lat: 28.6255, lng: 77.3750, status: "pending",
-        cargo: "Cavendish Bananas (200 kg)", eta: "19:30 IST"
+        id: "NODE-4",
+        name: "QC Micro-Hub (Central Cold Aggregation)",
+        type: "hub",
+        schedule: "05:45 AM Arrival",
+        load: "4,200 kg Consolidate",
+        commodity: "Pre-Cooling & Automated Grading",
+        address: "Okhla Industrial Cold Terminal Phase III",
+        lat: 28.5355,
+        lng: 77.2750
       },
       {
-        id: "ORD-4825", customer: "Zomato Hyperpure Warehouse",
-        address: "Cyber City DLF Phase II, Gurugram",
-        lat: 28.4895, lng: 77.0866, status: "in-transit",
-        cargo: "Shimla Apples (350 kg)", eta: "17:40 IST"
+        id: "NODE-5",
+        name: "Buyer Wholesale Drop (Apex Retail Hub)",
+        type: "buyer",
+        schedule: "07:15 AM Delivery",
+        load: "4,200 kg Final Delivery",
+        commodity: "Certified Farm-to-Fork Direct Handover",
+        address: "Cyber City Procurement Dock, Gurugram",
+        lat: 28.4950,
+        lng: 77.0890
       }
     ];
 
-    // 3. MAP INIT
+    // 3. MAP INITIALIZATION
     const map = L.map('map', { zoomControl: true }).setView(CONFIG.center, CONFIG.zoom);
     L.tileLayer(CONFIG.tileUrl, {
       maxZoom: 19,
-      subdomains: 'abcd',
       attribution: CONFIG.attribution
     }).addTo(map);
     map.zoomControl.setPosition('topleft');
 
-    // 4. LAYERS
-    const warehouseLayer = L.layerGroup().addTo(map);
-    const deliveriesLayer = L.layerGroup().addTo(map);
+    // 4. LAYER GROUPS
+    const nodesLayer = L.layerGroup().addTo(map);
     const routeLayer = L.layerGroup().addTo(map);
     const geofenceLayer = L.layerGroup().addTo(map);
     const vehicleLayer = L.layerGroup().addTo(map);
 
-    // 5. ICONS
-    const depotIcon = L.divIcon({
-      className: 'depot-div-icon',
-      html: `
-        <div class="depot-marker" title="${warehouse.name}">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M3 21h18"></path><path d="M3 7v14"></path><path d="M21 7v14"></path>
-            <path d="M12 3L2 9h20l-10-6z"></path><path d="M9 13h6"></path>
-          </svg>
-        </div>
-      `,
-      iconSize: [38, 38], iconAnchor: [19, 19], popupAnchor: [0, -22]
-    });
-
-    function createDeliveryIcon(index, status) {
+    // 5. CUSTOM ICONS
+    function createNodeIcon(index, type) {
       return L.divIcon({
-        className: 'delivery-div-icon',
-        html: `<div class="delivery-marker ${status}">${index + 1}</div>`,
-        iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -16]
+        className: 'node-div-icon',
+        html: `<div class="node-marker ${type}">${index + 1}</div>`,
+        iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -18]
       });
     }
 
-    // 6. POPULATE WAREHOUSE
-    L.marker([warehouse.lat, warehouse.lng], { icon: depotIcon })
-      .bindPopup(`
-        <div class="popup-title">${warehouse.name}</div>
-        <div class="popup-desc">Central Reefer Logistics Depot</div>
-        <span class="popup-badge warehouse">Central Hub</span>
-        <div class="popup-meta"><span><strong>Capacity:</strong> ${warehouse.capacity}</span></div>
-        <div class="popup-meta" style="border:none;"><span><strong>Dispatch:</strong> ${warehouse.manager}</span></div>
-      `).addTo(warehouseLayer);
-
-    // 7. POPULATE DELIVERIES & GEOFENCES
-    let counts = { pending: 0, "in-transit": 0, delivered: 0 };
+    // 6. POPULATE NODES & GEOFENCES
     const markerRegistry = [];
 
-    deliveryPoints.forEach((point, idx) => {
-      counts[point.status] = (counts[point.status] || 0) + 1;
-
-      // 200m Geofence Circle
-      const geofence = L.circle([point.lat, point.lng], {
+    pipelineNodes.forEach((node, idx) => {
+      // 200m Geofence
+      const geofenceColor = node.type === 'farm' ? '#10b981' : node.type === 'hub' ? '#06b6d4' : '#3b82f6';
+      const geofence = L.circle([node.lat, node.lng], {
         radius: 200,
-        color: point.status === 'delivered' ? '#10b981' : '#3b82f6',
-        weight: 1,
-        fillColor: point.status === 'delivered' ? '#10b981' : '#3b82f6',
-        fillOpacity: 0.08,
-        dashArray: '4, 4'
+        color: geofenceColor,
+        weight: 1.5,
+        fillColor: geofenceColor,
+        fillOpacity: 0.1,
+        dashArray: '5, 5'
       }).addTo(geofenceLayer);
 
-      const marker = L.marker([point.lat, point.lng], {
-        icon: createDeliveryIcon(idx, point.status)
+      const marker = L.marker([node.lat, node.lng], {
+        icon: createNodeIcon(idx, node.type)
       })
       .bindPopup(`
-        <div class="popup-title">${point.customer}</div>
-        <div class="popup-desc">${point.address}</div>
-        <span class="popup-badge ${point.status}">${point.status.replace('-', ' ')}</span>
-        <div class="popup-meta"><span><strong>Order:</strong> ${point.id}</span><span><strong>Stop:</strong> #${idx + 1}</span></div>
-        <div class="popup-meta"><span><strong>Cargo:</strong> ${point.cargo}</span></div>
-        <div class="popup-meta" style="color:#01472e; font-weight:700;"><span><strong>ETA:</strong> ${point.eta}</span></div>
-      `).addTo(deliveriesLayer);
+        <div class="popup-title">${node.name}</div>
+        <div class="popup-desc">${node.address}</div>
+        <span class="popup-badge ${node.type}">${node.type.toUpperCase()} STOP</span>
+        <div class="popup-meta"><span><strong>Schedule:</strong> ${node.schedule}</span><span><strong>Load:</strong> ${node.load}</span></div>
+        <div class="popup-meta"><span><strong>Cargo:</strong> ${node.commodity}</span></div>
+        <div class="popup-meta" style="color:#01472e; font-weight:700;"><span><strong>Vehicle:</strong> TN-07-AG-4921</span></div>
+      `).addTo(nodesLayer);
 
-      markerRegistry.push({ point, marker, geofence });
+      markerRegistry.push({ node, marker, geofence });
     });
 
-    document.getElementById('countPending').textContent = counts.pending;
-    document.getElementById('countTransit').textContent = counts['in-transit'];
-    document.getElementById('countDelivered').textContent = counts.delivered;
-
-    // 8. TURN-BY-TURN ROAD ROUTING (Free OSRM API with Polyline Fallback)
-    const stops = [
-      [warehouse.lng, warehouse.lat],
-      ...deliveryPoints.map(p => [p.lng, p.lat])
-    ];
-    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${stops.map(s => s.join(',')).join(';')}?overview=full&geometries=geojson`;
+    // 7. OSRM TURN-BY-TURN ROAD ROUTING
+    const waypoints = pipelineNodes.map(n => [n.lng, n.lat]);
+    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${waypoints.map(w => w.join(',')).join(';')}?overview=full&geometries=geojson`;
 
     let activeRoutePath = [];
 
@@ -442,31 +505,31 @@
       .then(data => {
         if (data.routes && data.routes.length > 0) {
           const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
-          drawRoute(coords, (data.routes[0].distance / 1000).toFixed(1), Math.round(data.routes[0].duration / 60));
+          drawRoute(coords);
           startVehicleSimulation(coords);
         } else {
-          fallbackStraightRoute();
+          fallbackRoute();
         }
       })
-      .catch(() => fallbackStraightRoute());
+      .catch(() => fallbackRoute());
 
-    function fallbackStraightRoute() {
-      const coords = [[warehouse.lat, warehouse.lng], ...deliveryPoints.map(p => [p.lat, p.lng])];
-      drawRoute(coords, "78.4", 145);
+    function fallbackRoute() {
+      const coords = pipelineNodes.map(n => [n.lat, n.lng]);
+      drawRoute(coords);
       startVehicleSimulation(coords);
     }
 
-    function drawRoute(coords, distanceKm, durationMin) {
+    function drawRoute(coords) {
       activeRoutePath = coords;
 
       // Glow shadow
       L.polyline(coords, {
-        color: '#0f172a', weight: 6, opacity: 0.25, lineCap: 'round', lineJoin: 'round'
+        color: '#013623', weight: 7, opacity: 0.3, lineCap: 'round', lineJoin: 'round'
       }).addTo(routeLayer);
 
-      // Main road line
+      // Main Road Line (Emerald Green)
       L.polyline(coords, {
-        color: '#2563eb', weight: 4.5, opacity: 0.9, lineCap: 'round', lineJoin: 'round'
+        color: '#10b981', weight: 4.5, opacity: 0.95, lineCap: 'round', lineJoin: 'round'
       }).addTo(routeLayer);
 
       fitRouteBounds();
@@ -474,11 +537,11 @@
 
     function fitRouteBounds() {
       if (activeRoutePath.length > 0) {
-        map.fitBounds(L.latLngBounds(activeRoutePath), { padding: [50, 50], maxZoom: 14 });
+        map.fitBounds(L.latLngBounds(activeRoutePath), { padding: [60, 60], maxZoom: 13 });
       }
     }
 
-    // 9. REAL-TIME GPS VEHICLE TRACKING SIMULATION
+    // 8. REAL-TIME GPS VEHICLE SIMULATION (Tata Ace EV Reefer)
     let vehicleMarker = null;
     let pathIndex = 0;
 
@@ -488,8 +551,8 @@
       const truckIcon = L.divIcon({
         className: 'truck-div-icon',
         html: `
-          <div class="truck-marker" id="liveTruck" title="Reefer Truck #DL-9C">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <div class="truck-marker" id="liveTruck" title="Tata Ace EV Reefer (TN-07-AG-4921)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <rect x="1" y="3" width="15" height="13"></rect>
               <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
               <circle cx="5.5" cy="18.5" r="2.5"></circle>
@@ -497,41 +560,39 @@
             </svg>
           </div>
         `,
-        iconSize: [36, 36], iconAnchor: [18, 18]
+        iconSize: [38, 38], iconAnchor: [19, 19]
       });
 
       vehicleMarker = L.marker(coords[0], { icon: truckIcon })
         .bindPopup(`
-          <div class="popup-title">Reefer Truck #DL-9C</div>
-          <div class="popup-desc">Driver: Ramesh Yadav • In-Transit</div>
-          <div class="popup-meta"><span><strong>Speed:</strong> 42 km/h</span><span><strong>Reefer:</strong> 3.8°C (Optimal)</span></div>
-          <div class="popup-meta"><span><strong>Route:</strong> Central Hub → South Ext</span></div>
+          <div class="popup-title">Tata Ace EV Reefer</div>
+          <div class="popup-desc">Reg: TN-07-AG-4921 • Driver: M. Selvakumar</div>
+          <div class="popup-meta"><span><strong>Speed:</strong> 38 km/h</span><span><strong>Reefer Temp:</strong> 3.8°C (Optimal)</span></div>
+          <div class="popup-meta"><span><strong>Payload:</strong> 4,200 / 3,500 kg</span></div>
         `).addTo(vehicleLayer);
 
-      // Smooth Animation along waypoints
       setInterval(() => {
         if (coords.length <= 1) return;
         pathIndex = (pathIndex + 1) % coords.length;
-        const currentCoord = coords[pathIndex];
-        const nextCoord = coords[(pathIndex + 1) % coords.length];
+        const curr = coords[pathIndex];
+        const next = coords[(pathIndex + 1) % coords.length];
 
-        vehicleMarker.setLatLng(currentCoord);
+        vehicleMarker.setLatLng(curr);
 
-        // Calculate heading angle
-        const angle = Math.atan2(nextCoord[1] - currentCoord[1], nextCoord[0] - currentCoord[0]) * 180 / Math.PI;
+        // Heading rotation
+        const angle = Math.atan2(next[1] - curr[1], next[0] - curr[0]) * 180 / Math.PI;
         const truckEl = document.getElementById('liveTruck');
         if (truckEl) {
           truckEl.style.transform = `rotate(${Math.round(angle)}deg)`;
         }
 
-        // Vary speed slightly for realism
-        const speed = 38 + Math.floor(Math.random() * 8);
+        const speed = 36 + Math.floor(Math.random() * 8);
         const speedEl = document.getElementById('speedDisplay');
         if (speedEl) speedEl.textContent = `${speed} km/h`;
-      }, 900);
+      }, 850);
     }
 
-    // 10. STATUS FILTER INTERACTION
+    // 9. STATUS FILTER INTERACTIONS
     document.querySelectorAll('.stat-badge').forEach(badge => {
       badge.addEventListener('click', () => {
         const filter = badge.getAttribute('data-filter');
@@ -541,8 +602,8 @@
           if (b !== badge) b.classList.remove('selected');
         });
 
-        markerRegistry.forEach(({ point, marker, geofence }) => {
-          if (!isSelected || point.status === filter) {
+        markerRegistry.forEach(({ node, marker, geofence }) => {
+          if (!isSelected || node.type === filter) {
             map.addLayer(marker);
             map.addLayer(geofence);
           } else {
@@ -553,7 +614,7 @@
       });
     });
 
-    // 11. LAYER TOGGLES & RECENTER
+    // 10. LAYER TOGGLES & RECENTER
     function wireToggle(btnId, badgeId, layer) {
       const btn = document.getElementById(btnId);
       const badge = document.getElementById(badgeId);
@@ -565,9 +626,9 @@
       });
     }
 
-    wireToggle('toggleWarehouse', 'badgeWarehouse', warehouseLayer);
-    wireToggle('toggleDeliveries', 'badgeDeliveries', deliveriesLayer);
+    wireToggle('toggleNodes', 'badgeNodes', nodesLayer);
     wireToggle('toggleRoute', 'badgeRoute', routeLayer);
+    wireToggle('toggleGeofence', 'badgeGeofence', geofenceLayer);
     document.getElementById('recenterBtn').addEventListener('click', fitRouteBounds);
   </script>
 </body>
