@@ -273,3 +273,72 @@
 .section-rounded {
   border-radius: 2rem;
 }
+
+/* ── Detail Drawer Slide-Over ──────────────────────────────────────────── */
+.detail-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(1, 71, 46, 0.12);
+  backdrop-filter: blur(2px);
+  animation: drawer-backdrop-in 200ms ease-out forwards;
+}
+
+@keyframes drawer-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.detail-drawer-panel {
+  height: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-left: 1px solid rgba(204, 213, 174, 0.5);
+  box-shadow:
+    -8px 0 32px rgba(1, 71, 46, 0.08),
+    -2px 0 8px rgba(1, 71, 46, 0.04);
+  animation: drawer-slide-in 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  outline: none;
+}
+
+/* Desktop: rounded left corners */
+@media (min-width: 640px) {
+  .detail-drawer-panel {
+    border-top-left-radius: 1.5rem;
+    border-bottom-left-radius: 1.5rem;
+  }
+}
+
+/* Mobile: full-width */
+@media (max-width: 639px) {
+  .detail-drawer-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-left: none;
+    border-radius: 0;
+  }
+}
+
+@keyframes drawer-slide-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Custom scrollbar inside drawer */
+.detail-drawer-body::-webkit-scrollbar {
+  width: 4px;
+}
+.detail-drawer-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.detail-drawer-body::-webkit-scrollbar-thumb {
+  background: #ccd5ae;
+  border-radius: 9999px;
+}
+.detail-drawer-body::-webkit-scrollbar-thumb:hover {
+  background: #a3b18a;
+}

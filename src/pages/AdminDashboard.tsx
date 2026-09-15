@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
+import { DetailDrawer } from '../components/DetailDrawer';
 import {
   ShieldCheck,
   BarChart3,
@@ -52,6 +53,7 @@ export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveSection] = useState<'USERS' | 'ESCROW' | 'TRACEABILITY' | 'SYSTEM'>('USERS');
   const [roleFilter, setRoleFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [drawerState, setDrawerState] = useState<{ type: string } | null>(null);
 
   // Calculations
   const totalTradeVolumeKg = orders.reduce((sum, o) => sum + (o.packedQuantityKg || o.quantityKg || 0), 0);
@@ -69,7 +71,8 @@ export const AdminDashboard: React.FC = () => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header Banner */}
       <div className="relative overflow-hidden rounded-[32px] p-7 sm:p-10 border border-[#01472e]/20 shadow-forest bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white">
         <div className="absolute -right-16 -top-16 w-80 h-80 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
@@ -118,16 +121,20 @@ export const AdminDashboard: React.FC = () => {
           { labelKey: 'admin.kpi.escrowSettlements', defaultLabel: 'Escrow Settlements', val: `₹${totalSettledAmount.toLocaleString()}`, subKey: 'admin.kpi.auditedPayouts', defaultSub: '{count} Audited Payouts', count: settlements.length, icon: Landmark, color: 'text-indigo-700' },
           { labelKey: 'admin.kpi.registeredEntities', defaultLabel: 'Registered Entities', val: systemUsers.length.toString(), subKey: 'admin.kpi.verifiedActiveProfiles', defaultSub: '{count} Verified Active Profiles', count: activeUsersCount, icon: Users, color: 'text-teal-700' },
           { labelKey: 'admin.kpi.certifiedBatches', defaultLabel: 'Certified Batches', val: verifiedBatchesCount.toString(), subKey: 'admin.kpi.cryptoPassports', defaultSub: 'Cryptographic QR Passports', count: undefined, icon: QrCode, color: 'text-amber-700' },
-        ].map((item, idx) => (
-          <KPIStatCard
-            key={idx}
-            label={t(item.labelKey, item.defaultLabel)}
-            value={item.val}
-            subtitle={t(item.subKey, item.defaultSub, item.count !== undefined ? { count: item.count } : undefined)}
-            icon={item.icon}
-            valueColor={item.color}
-          />
-        ))}
+        ].map((item, idx) => {
+          const drawerTypes = ['trade-volume', 'settlements', 'entities', 'batches'];
+          return (
+            <KPIStatCard
+              key={idx}
+              label={t(item.labelKey, item.defaultLabel)}
+              value={item.val}
+              subtitle={t(item.subKey, item.defaultSub, item.count !== undefined ? { count: item.count } : undefined)}
+              icon={item.icon}
+              valueColor={item.color}
+              onClick={() => setDrawerState({ type: drawerTypes[idx] })}
+            />
+          );
+        })}
       </KPIGrid>
 
       {/* Section Filter Pills */}
@@ -423,5 +430,121 @@ export const AdminDashboard: React.FC = () => {
         </div>
       )}
     </div>
+
+      {/* ── DETAIL DRAWER ─────────────────────────────────────────── */}
+      <DetailDrawer
+        isOpen={!!drawerState}
+        onClose={() => setDrawerState(null)}
+        title={
+          drawerState?.type === 'trade-volume' ? 'Platform Trade Volume' :
+          drawerState?.type === 'settlements' ? 'Escrow Settlements' :
+          drawerState?.type === 'entities' ? 'Registered Entities' :
+          drawerState?.type === 'batches' ? 'Certified Batches' :
+          'Details'
+        }
+        description={
+          drawerState?.type === 'trade-volume' ? 'All orders contributing to platform volume' :
+          drawerState?.type === 'settlements' ? 'Audited escrow settlement records' :
+          drawerState?.type === 'entities' ? 'All registered platform users' :
+          drawerState?.type === 'batches' ? 'Cryptographic QR produce passports' :
+          undefined
+        }
+        icon={
+          drawerState?.type === 'trade-volume' ? Layers :
+          drawerState?.type === 'settlements' ? Landmark :
+          drawerState?.type === 'entities' ? Users :
+          drawerState?.type === 'batches' ? QrCode :
+          undefined
+        }
+        width="lg"
+      >
+        {drawerState?.type === 'trade-volume' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-[#eaf4ec] rounded-xl border border-[#a3b18a]/30">
+              <span className="text-xs font-medium text-[#01472e]">Total Volume</span>
+              <span className="text-sm font-bold text-[#01472e]">{totalTradeVolumeKg.toLocaleString()} kg</span>
+            </div>
+            {orders.slice(0, 10).map((o) => (
+              <div key={o.id} className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-semibold text-[#01472e] font-mono">{o.id}</span>
+                  <span className="text-[10px] text-[#5c7065] block">{o.crop} • {o.farmerName} → {o.buyerName}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-bold text-[#01472e]">{o.quantityKg.toLocaleString()} kg</span>
+                  <span className="text-[10px] text-[#5c7065] block">₹{o.totalValue.toLocaleString()}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {drawerState?.type === 'settlements' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-[#eaf4ec] rounded-xl border border-[#a3b18a]/30">
+              <span className="text-xs font-medium text-[#01472e]">Total Settled</span>
+              <span className="text-sm font-bold text-[#01472e]">₹{totalSettledAmount.toLocaleString()}</span>
+            </div>
+            {settlements.map((s) => (
+              <div key={s.orderId} className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#01472e] font-mono">{s.orderId}</span>
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${s.status === 'COMPLETED' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200'}`}>{s.status}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-[10px] text-[#5c7065]">
+                  <div><span className="block font-medium text-[#788c80]">Order Value</span><span className="text-[#01472e] font-semibold">₹{(s.totalOrderValue || 0).toLocaleString()}</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Farmer Share</span><span className="text-[#01472e] font-semibold">₹{(s.farmerAmount || 0).toLocaleString()}</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Platform Fee</span><span className="text-[#01472e] font-semibold">₹{(s.platformAmount || 0).toLocaleString()}</span></div>
+                </div>
+              </div>
+            ))}
+            {settlements.length === 0 && <div className="p-6 text-center text-xs text-[#5c7065]">No settlement records.</div>}
+          </div>
+        )}
+
+        {drawerState?.type === 'entities' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-[#eaf4ec] rounded-xl border border-[#a3b18a]/30">
+              <span className="text-xs font-medium text-[#01472e]">Total Users</span>
+              <span className="text-sm font-bold text-[#01472e]">{systemUsers.length}</span>
+            </div>
+            {systemUsers.slice(0, 12).map((u) => (
+              <div key={u.id} className="p-3 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-semibold text-[#01472e]">{u.name}</span>
+                  <span className="text-[10px] text-[#5c7065] block">{u.email} • {u.location}</span>
+                </div>
+                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${u.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-slate-50 text-slate-600 border-slate-200'}`}>{u.role}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {drawerState?.type === 'batches' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-[#eaf4ec] rounded-xl border border-[#a3b18a]/30">
+              <span className="text-xs font-medium text-[#01472e]">Certified Batches</span>
+              <span className="text-sm font-bold text-[#01472e]">{verifiedBatchesCount}</span>
+            </div>
+            {producePassports.map((p) => (
+              <button
+                key={p.batchId}
+                onClick={() => openPassportModal(p.batchId)}
+                className="w-full text-left p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs hover:border-[#a3b18a]/60 transition cursor-pointer space-y-1"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#01472e] font-mono">{p.batchId}</span>
+                  <QrCode className="w-3.5 h-3.5 text-[#01472e]" />
+                </div>
+                <div className="text-[10px] text-[#5c7065]">
+                  {p.crop} • {p.farmerOrFpo} • {p.quantityKg.toLocaleString()} kg
+                </div>
+              </button>
+            ))}
+            {producePassports.length === 0 && <div className="p-6 text-center text-xs text-[#5c7065]">No certified batches yet.</div>}
+          </div>
+        )}
+      </DetailDrawer>
+    </>
   );
 };

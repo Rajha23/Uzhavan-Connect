@@ -43,6 +43,7 @@ import {
   ProduceListing,
   TransportAssignment
 } from '../types';
+import { DetailDrawer } from '../components/DetailDrawer';
 
 export const FpoDashboard: React.FC = () => {
   const { t } = useLanguage();
@@ -147,6 +148,7 @@ export const FpoDashboard: React.FC = () => {
 
   // Stage 8: Transport Modal State
   const [transportModalOrder, setTransportModalOrder] = useState<WorkflowOrder | null>(null);
+  const [drawerOrder, setDrawerOrder] = useState<WorkflowOrder | null>(null);
   const [carrierName, setCarrierName] = useState('Sundar Transport & Cold Chain');
   const [vehicleNumber, setVehicleNumber] = useState('TN-15-AGRI-5510');
   const [driverName, setDriverName] = useState('Karthik Subramanian');
@@ -630,7 +632,8 @@ export const FpoDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fadeIn">
+    <>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fadeIn">
       {/* ── HEADER BANNER ─────────────────────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-[32px] p-7 sm:p-10 border border-emerald-500/20 shadow-forest bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#ccd5ae]/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
@@ -662,7 +665,10 @@ export const FpoDashboard: React.FC = () => {
           </button>
 
           <button
-            onClick={() => setActiveTab('orders')}
+            onClick={() => {
+              if (orders.length > 0) setDrawerOrder(orders[0]);
+              else setActiveTab('orders');
+            }}
             className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-5 py-3 rounded-2xl border border-white/20 shadow-sm transition cursor-pointer"
           >
             <span>{t('fpo.allOrdersCount', 'Orders Ledger ({count})', { count: orders.length })}</span>
@@ -2896,5 +2902,146 @@ export const FpoDashboard: React.FC = () => {
         </div>
       )}
     </div>
+
+      {/* ── ORDER DETAIL DRAWER ─────────────────────────────────── */}
+      <DetailDrawer
+        isOpen={!!drawerOrder}
+        onClose={() => setDrawerOrder(null)}
+        title={drawerOrder ? `Order ${drawerOrder.id}` : 'Order Details'}
+        description={drawerOrder ? `${drawerOrder.crop} — ${drawerOrder.quantityKg.toLocaleString()} kg — ${drawerOrder.status}` : undefined}
+        icon={ClipboardList}
+        width="lg"
+        footer={
+          drawerOrder ? (
+            <div className="flex gap-2">
+              <button onClick={() => { if (drawerOrder) openPassportModal(drawerOrder.batchId); }} className="btn-primary text-xs flex-1"><QrCode className="w-3.5 h-3.5" /> View Passport</button>
+              <button onClick={() => setDrawerOrder(null)} className="btn-ghost text-xs">Close</button>
+            </div>
+          ) : undefined
+        }
+      >
+        {drawerOrder && (
+          <div className="space-y-4">
+            {/* Order Information */}
+            <div className="space-y-2">
+              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Order Information</span>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { label: 'Order ID', value: drawerOrder.id },
+                  { label: 'Batch ID', value: drawerOrder.batchId },
+                  { label: 'Status', value: drawerOrder.status },
+                  { label: 'Lifecycle', value: drawerOrder.lifecycleStage || 'N/A' },
+                  { label: 'Crop', value: `${drawerOrder.crop} (${drawerOrder.variety || 'Hybrid'})` },
+                  { label: 'Quantity', value: `${drawerOrder.quantityKg.toLocaleString()} kg` },
+                  { label: 'Price', value: `₹${drawerOrder.pricePerKg}/kg` },
+                  { label: 'Total Value', value: `₹${drawerOrder.totalValue.toLocaleString()}` },
+                ].map((r) => (
+                  <div key={r.label} className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[10px] font-medium text-[#788c80] block">{r.label}</span>
+                    <span className="text-xs font-semibold text-[#01472e]">{r.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Route */}
+            <div className="p-4 bg-[#faf9f5] rounded-xl border border-[#ccd5ae]/30 space-y-2">
+              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Route</span>
+              <div className="flex items-center gap-2 text-xs text-[#01472e] flex-wrap">
+                <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span className="font-medium">{drawerOrder.farmerLocation}</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#5c7065] shrink-0" />
+                <span className="font-medium">{drawerOrder.deliveryLocation}</span>
+              </div>
+              <div className="text-[10px] text-[#5c7065]">
+                <span>Farmer: <strong className="text-[#01472e]">{drawerOrder.farmerName}</strong></span>
+                <span className="mx-2">•</span>
+                <span>Buyer: <strong className="text-[#01472e]">{drawerOrder.buyerName}</strong></span>
+              </div>
+            </div>
+
+            {/* Farmer Contributions */}
+            {drawerOrder.farmerContributions && drawerOrder.farmerContributions.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Farmer Contributions</span>
+                {drawerOrder.farmerContributions.map((fc, i) => (
+                  <div key={i} className="p-3 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs flex items-center justify-between">
+                    <div>
+                      <span className="text-xs font-semibold text-[#01472e]">{fc.farmerName}</span>
+                      <span className="text-[10px] text-[#5c7065] block">{fc.collectionStatus || 'Pending'}</span>
+                    </div>
+                    <span className="text-xs font-bold text-[#01472e]">{fc.contributedQuantityKg.toLocaleString()} kg</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Transport Details */}
+            {drawerOrder.transportDetails && (
+              <div className="space-y-2">
+                <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Transport</span>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { label: 'Carrier', value: drawerOrder.transportDetails.carrierName },
+                    { label: 'Vehicle', value: drawerOrder.transportDetails.vehicleNumber },
+                    { label: 'Driver', value: drawerOrder.transportDetails.driverName },
+                    { label: 'ETA', value: drawerOrder.transportDetails.estimatedArrival },
+                  ].map((r) => (
+                    <div key={r.label} className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                      <span className="text-[10px] font-medium text-[#788c80] block">{r.label}</span>
+                      <span className="text-xs font-semibold text-[#01472e]">{r.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Quality Metrics */}
+            {drawerOrder.inspectionMetrics && (
+              <div className="space-y-2">
+                <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Quality Inspection</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[10px] font-medium text-[#788c80] block">Sugar Brix</span>
+                    <span className="text-xs font-semibold text-[#01472e]">{drawerOrder.inspectionMetrics.sugarBrix}°</span>
+                  </div>
+                  <div className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[10px] font-medium text-[#788c80] block">Grade</span>
+                    <span className="text-xs font-semibold text-[#01472e]">{drawerOrder.inspectionMetrics.verifiedGrade}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* All Orders List */}
+            <div className="space-y-2">
+              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">All Orders ({orders.length})</span>
+              {orders.slice(0, 8).map((o) => (
+                <button
+                  key={o.id}
+                  onClick={() => setDrawerOrder(o)}
+                  className={`w-full text-left p-3 rounded-xl border shadow-2xs flex items-center justify-between transition cursor-pointer ${
+                    o.id === drawerOrder.id ? 'bg-[#eaf4ec] border-[#a3b18a]' : 'bg-white border-[#ccd5ae]/40 hover:border-[#a3b18a]/60'
+                  }`}
+                >
+                  <div>
+                    <span className="text-xs font-semibold text-[#01472e] font-mono">{o.id}</span>
+                    <span className="text-[10px] text-[#5c7065] block">{o.crop} • {o.farmerName}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] font-medium text-[#01472e]">{o.quantityKg.toLocaleString()} kg</span>
+                    <span className={`text-[9px] font-medium block px-1.5 py-0.5 rounded-full mt-0.5 ${
+                      o.status === 'Completed' ? 'bg-emerald-50 text-emerald-800' :
+                      o.status === 'In Transit' ? 'bg-amber-50 text-amber-800' :
+                      'bg-slate-50 text-slate-700'
+                    }`}>{o.status}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </DetailDrawer>
+    </>
   );
 };

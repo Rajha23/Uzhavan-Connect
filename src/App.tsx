@@ -50,6 +50,7 @@ import { SupportPage } from './pages/SupportPage';
 import { MiddlemanSimulator } from './components/MiddlemanSimulator';
 import { RouteOptimizationMap } from './components/RouteOptimizationMap';
 import { SmartMatchingEngine } from './components/SmartMatchingEngine';
+import { DocumentManagerModal } from './components/DocumentManagerModal';
 
 // ─── Public and Role-Guarded Route Definitions ──────────────────────────────
 
@@ -329,6 +330,7 @@ const AuthenticatedShell: React.FC = () => {
 
       {/* Global modals */}
       <ProducePassportModal />
+      <DocumentManagerModal />
       <LanguageSelectorModal />
       <LanguageOnboardingModal />
       <ChatbotWidget />

@@ -13,6 +13,7 @@ export interface AiInsightProps {
   onAction?: () => void;
   className?: string;
   variant?: 'light' | 'dark';
+  onClick?: () => void;
 }
 
 export const AiInsightCard: React.FC<AiInsightProps> = ({
@@ -26,12 +27,18 @@ export const AiInsightCard: React.FC<AiInsightProps> = ({
   actionLabel,
   onAction,
   className = '',
-  variant = 'light'
+  variant = 'light',
+  onClick
 }) => {
   const descText = description || [subtitle, recommendation].filter(Boolean).join(' ');
+  const cardClick = onClick || onAction;
+
   if (variant === 'dark') {
     return (
-      <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white p-6 border border-[#a3b18a]/30 shadow-forest ${className}`}>
+      <div 
+        onClick={cardClick}
+        className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white p-6 border border-[#a3b18a]/30 shadow-forest ${cardClick ? 'cursor-pointer hover:shadow-forest/20 transition-all' : ''} ${className}`}
+      >
         <div className="absolute -right-12 -top-12 w-48 h-48 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 relative z-10">
           <div className="space-y-2">
@@ -69,7 +76,10 @@ export const AiInsightCard: React.FC<AiInsightProps> = ({
   }
 
   return (
-    <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#eaf4ec]/70 via-[#faf9f5] to-[#fefae0]/40 p-6 border border-[#ccd5ae]/50 shadow-soft hover:border-[#a3b18a] transition-all ${className}`}>
+    <div 
+      onClick={cardClick}
+      className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#eaf4ec]/70 via-[#faf9f5] to-[#fefae0]/40 p-6 border border-[#ccd5ae]/50 shadow-soft hover:border-[#a3b18a] transition-all ${cardClick ? 'cursor-pointer' : ''} ${className}`}
+    >
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/50">

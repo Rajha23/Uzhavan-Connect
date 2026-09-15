@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Menu, Search, ChevronDown, LogOut, User, WifiOff, RefreshCw, Download, Globe2, Bell } from 'lucide-react';
+import { Menu, Search, ChevronDown, LogOut, User, WifiOff, RefreshCw, Download, Globe2, Bell, FileText } from 'lucide-react';
 import { NotificationBell } from './NotificationBell';
+import { FileRecord } from '../services/fileService';
 
 // Maps tab ids to human-readable page titles
 const PAGE_TITLES: Record<string, string> = {
@@ -58,12 +59,31 @@ export const Header: React.FC = () => {
     syncOfflineQueue,
     isInstallable,
     promptInstall,
+    openDocumentManager,
+    searchDocuments,
   } = useApp();
 
   const { currentLanguageDef, openLanguageSelector, t } = useLanguage();
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [matchingDocs, setMatchingDocs] = useState<FileRecord[]>([]);
+
+  React.useEffect(() => {
+    if (!searchValue.trim()) {
+      setMatchingDocs([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const docs = await searchDocuments(searchValue);
+        setMatchingDocs(docs);
+      } catch {
+        setMatchingDocs([]);
+      }
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [searchValue, searchDocuments]);
 
   const getLocalizedTitle = (tab: string): string => {
     switch (tab) {
@@ -118,9 +138,44 @@ export const Header: React.FC = () => {
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder={t('common.search', undefined, 'Search produce, orders, demands...')}
+            placeholder={t('common.search', undefined, 'Search produce, orders, demands, files...')}
             className="w-full pl-10 pr-4 py-2 text-xs bg-white/80 border border-[#ccd5ae]/60 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#01472e]/20 focus:border-[#01472e] focus:bg-white transition placeholder:text-[#788c80] text-[#01472e] shadow-2xs"
           />
+          {searchValue.trim() && (
+            <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-forest-lg border border-[#ccd5ae]/60 z-50 overflow-hidden py-1.5 animate-in fade-in duration-150 max-h-72 overflow-y-auto">
+              <div className="px-3.5 py-1.5 text-[10px] font-semibold text-[#5c7065] uppercase tracking-wider flex items-center justify-between border-b border-[#ccd5ae]/30 bg-[#faf9f5]">
+                <span>Verified Files ({matchingDocs.length})</span>
+                <span className="text-emerald-700 font-semibold lowercase">1 file = 1 result</span>
+              </div>
+              {matchingDocs.length > 0 ? (
+                <div className="py-1">
+                  {matchingDocs.map((doc) => (
+                    <button
+                      key={doc.id}
+                      onClick={() => {
+                        setSearchValue('');
+                        openDocumentManager(doc.category);
+                      }}
+                      className="w-full px-3.5 py-2 text-left hover:bg-[#eaf4ec]/70 transition flex items-center justify-between gap-2 text-xs group cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <FileText className="w-4 h-4 text-[#01472e] shrink-0" />
+                        <div className="min-w-0">
+                          <p className="font-semibold text-[#01472e] truncate">{doc.name}</p>
+                          <p className="text-[10px] text-[#5c7065]">{doc.category} • {(doc.size / 1024).toFixed(1)} KB</p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-emerald-700 font-medium shrink-0 group-hover:underline">Open Vault →</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-3 text-center text-xs text-[#5c7065]">
+                  No documents matching "{searchValue}"
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -161,6 +216,17 @@ export const Header: React.FC = () => {
           <Globe2 className="w-3.5 h-3.5 text-[#01472e] shrink-0" />
           <span className="font-bold tracking-tight">{currentLanguageDef.nativeName}</span>
           <span className="hidden xl:inline text-[10px] text-slate-500 font-normal">({currentLanguageDef.name})</span>
+        </button>
+
+        {/* Document Vault & Invoices Button */}
+        <button
+          type="button"
+          onClick={() => openDocumentManager()}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-semibold bg-white/90 hover:bg-white text-[#01472e] border border-[#ccd5ae]/80 shadow-2xs hover:border-[#01472e]/60 transition hover:scale-[1.02] cursor-pointer"
+          title="Document Vault & Verified Files (Idempotent 1:1 Storage)"
+        >
+          <FileText className="w-3.5 h-3.5 text-[#01472e] shrink-0" />
+          <span className="hidden sm:inline">Vault</span>
         </button>
 
         {/* Centralized Notifications & Operational Alerts Bell */}
@@ -212,6 +278,14 @@ export const Header: React.FC = () => {
               >
                 <User className="w-4 h-4 text-[#788c80]" />
                 {t('nav.profile', undefined, 'My Profile')}
+              </button>
+
+              <button
+                onClick={() => { openDocumentManager(); setIsUserMenuOpen(false); }}
+                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-[#01472e] hover:bg-[#eef2e1]/50 transition text-left cursor-pointer"
+              >
+                <FileText className="w-4 h-4 text-[#788c80]" />
+                <span>Document Vault & Invoices</span>
               </button>
 
               <button

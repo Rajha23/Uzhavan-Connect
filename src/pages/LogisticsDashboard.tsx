@@ -21,8 +21,9 @@ import {
   Sprout
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { TransportAssignment } from '../types';
+import { TransportAssignment, WorkflowOrder } from '../types';
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
+import { DetailDrawer } from '../components/DetailDrawer';
 
 export const LogisticsDashboard: React.FC = () => {
   const { t, formatNumber } = useLanguage();
@@ -38,6 +39,7 @@ export const LogisticsDashboard: React.FC = () => {
 
   const [activeSection, setActiveSection] = useState<'ASSIGN' | 'TRANSIT' | 'DELIVERED'>('ASSIGN');
   const [selectedOrderForTransport, setSelectedOrderForTransport] = useState<string | null>(null);
+  const [drawerOrder, setDrawerOrder] = useState<WorkflowOrder | null>(null);
 
   // Vehicle Assignment Form State
   const [carrierName, setCarrierName] = useState<string>('Sundar Transport & Cold Chain');
@@ -105,7 +107,8 @@ export const LogisticsDashboard: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header Banner */}
       <div className="relative overflow-hidden rounded-[32px] p-7 sm:p-10 border border-[#01472e]/20 shadow-forest bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white">
         <div className="absolute -right-16 -top-16 w-80 h-80 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
@@ -576,8 +579,8 @@ export const LogisticsDashboard: React.FC = () => {
                       <span>{t('logistics.qrPassportBtn', 'Passport')}</span>
                     </button>
                     <button
-                      onClick={() => setActiveTab('orders')}
                       className="btn-primary px-4 py-2 rounded-xl text-xs font-semibold shadow-soft cursor-pointer"
+                      onClick={() => setDrawerOrder(order)}
                     >
                       {t('logistics.orderLedgerBtn', 'Order Ledger')}
                     </button>
@@ -589,5 +592,105 @@ export const LogisticsDashboard: React.FC = () => {
         </div>
       )}
     </div>
+
+      {/* ── ORDER DETAIL DRAWER ─────────────────────────────────── */}
+      <DetailDrawer
+        isOpen={!!drawerOrder}
+        onClose={() => setDrawerOrder(null)}
+        title={drawerOrder ? `Order ${drawerOrder.id}` : 'Order Details'}
+        description={drawerOrder ? `${drawerOrder.crop} — ${drawerOrder.quantityKg.toLocaleString()} kg` : undefined}
+        icon={Package}
+        width="md"
+        footer={
+          drawerOrder ? (
+            <div className="flex gap-2">
+              <button onClick={() => { if (drawerOrder) openPassportModal(drawerOrder.batchId); }} className="btn-primary text-xs flex-1"><QrCode className="w-3.5 h-3.5" /> View Passport</button>
+              <button onClick={() => setDrawerOrder(null)} className="btn-ghost text-xs">Close</button>
+            </div>
+          ) : undefined
+        }
+      >
+        {drawerOrder && (
+          <div className="space-y-4">
+            {/* Order Info */}
+            <div className="space-y-2">
+              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Order Information</span>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { label: 'Order ID', value: drawerOrder.id },
+                  { label: 'Batch ID', value: drawerOrder.batchId },
+                  { label: 'Status', value: drawerOrder.status },
+                  { label: 'Crop', value: `${drawerOrder.crop} (${drawerOrder.variety || 'Hybrid'})` },
+                  { label: 'Quantity', value: `${drawerOrder.quantityKg.toLocaleString()} kg` },
+                  { label: 'Grade', value: drawerOrder.qualityGrade || drawerOrder.inspectionMetrics?.verifiedGrade || 'Pending' },
+                  { label: 'Price', value: `₹${drawerOrder.pricePerKg}/kg` },
+                  { label: 'Total Value', value: `₹${drawerOrder.totalValue.toLocaleString()}` },
+                ].map((r) => (
+                  <div key={r.label} className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[10px] font-medium text-[#788c80] block">{r.label}</span>
+                    <span className="text-xs font-semibold text-[#01472e]">{r.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Route */}
+            <div className="p-4 bg-[#faf9f5] rounded-xl border border-[#ccd5ae]/30 space-y-2">
+              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Route</span>
+              <div className="flex items-center gap-2 text-xs text-[#01472e]">
+                <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span className="font-medium">{drawerOrder.farmerLocation}</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#5c7065] shrink-0" />
+                <span className="font-medium">{drawerOrder.deliveryLocation}</span>
+              </div>
+              <div className="text-[10px] text-[#5c7065]">
+                <span>Farmer: <strong className="text-[#01472e]">{drawerOrder.farmerName}</strong></span>
+                <span className="mx-2">•</span>
+                <span>Buyer: <strong className="text-[#01472e]">{drawerOrder.buyerName}</strong></span>
+              </div>
+            </div>
+
+            {/* Transport Details */}
+            {drawerOrder.transportDetails && (
+              <div className="space-y-2">
+                <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Transport Details</span>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { label: 'Carrier', value: drawerOrder.transportDetails.carrierName },
+                    { label: 'Vehicle', value: drawerOrder.transportDetails.vehicleNumber },
+                    { label: 'Type', value: drawerOrder.transportDetails.vehicleType },
+                    { label: 'Driver', value: drawerOrder.transportDetails.driverName },
+                    { label: 'Phone', value: drawerOrder.transportDetails.driverPhone },
+                    { label: 'ETA', value: drawerOrder.transportDetails.estimatedArrival },
+                  ].map((r) => (
+                    <div key={r.label} className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                      <span className="text-[10px] font-medium text-[#788c80] block">{r.label}</span>
+                      <span className="text-xs font-semibold text-[#01472e]">{r.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Quality Metrics */}
+            {drawerOrder.inspectionMetrics && (
+              <div className="space-y-2">
+                <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Quality Metrics</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[10px] font-medium text-[#788c80] block">Sugar Brix</span>
+                    <span className="text-xs font-semibold text-[#01472e]">{drawerOrder.inspectionMetrics.sugarBrix}°</span>
+                  </div>
+                  <div className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[10px] font-medium text-[#788c80] block">Grade</span>
+                    <span className="text-xs font-semibold text-[#01472e]">{drawerOrder.inspectionMetrics.verifiedGrade}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </DetailDrawer>
+    </>
   );
 };

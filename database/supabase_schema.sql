@@ -1,4 +1,4 @@
-﻿-- ============================================================
+-- ============================================================
 -- UZHAVAN CONNECT (SIH2026 - SIH26033)
 -- Production Supabase PostgreSQL Schema & Authentication Alignment
 -- ============================================================
@@ -106,3 +106,86 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- ============================================================
+-- 4. FILES & DOCUMENTS TABLE (Idempotent Storage & Metadata)
+-- Guarantees: 1 File = 1 Storage Object = 1 DB Record
+-- ============================================================
+CREATE TABLE IF NOT EXISTS public.files (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    size BIGINT NOT NULL,
+    mime_type TEXT NOT NULL,
+    file_hash TEXT NOT NULL,
+    storage_path TEXT NOT NULL,
+    category TEXT NOT NULL DEFAULT 'GENERAL' CHECK (category IN ('INVOICE', 'QUALITY_CERT', 'PRODUCE_PASSPORT', 'SETTLEMENT_RECEIPT', 'CONTRACT', 'WAYBILL', 'GENERAL')),
+    status TEXT NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'ARCHIVED', 'DELETED')),
+    metadata JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    -- Strict Idempotency Constraint: user cannot have duplicate records of identical content
+    CONSTRAINT uq_user_file_hash UNIQUE (user_id, file_hash)
+);
+
+CREATE INDEX IF NOT EXISTS idx_files_user ON public.files(user_id);
+CREATE INDEX IF NOT EXISTS idx_files_hash ON public.files(file_hash);
+CREATE INDEX IF NOT EXISTS idx_files_category ON public.files(category);
+CREATE INDEX IF NOT EXISTS idx_files_created ON public.files(created_at DESC);
+
+-- Enable RLS on files
+ALTER TABLE public.files ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own files or admins view all"
+    ON public.files
+    FOR SELECT
+    USING (
+        auth.uid() = user_id
+        OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN'
+    );
+
+CREATE POLICY "Users can insert own files"
+    ON public.files
+    FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own files"
+    ON public.files
+    FOR UPDATE
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own files"
+    ON public.files
+    FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- ============================================================
+-- 5. FILE SEARCH INDEX TABLE (Idempotent Search Records)
+-- Guarantees: 1 Document = Exactly 1 Search Record
+-- ============================================================
+CREATE TABLE IF NOT EXISTS public.file_search_index (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    file_id UUID NOT NULL REFERENCES public.files(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    searchable_text TEXT NOT NULL,
+    category TEXT,
+    indexed_at TIMESTAMPTZ DEFAULT NOW(),
+    -- Strict 1:1 constraint ensuring no duplicate index records for the same file
+    CONSTRAINT uq_index_file_id UNIQUE (file_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_search_user ON public.file_search_index(user_id);
+CREATE INDEX IF NOT EXISTS idx_search_text ON public.file_search_index USING gin(to_tsvector('english', searchable_text));
+
+-- Enable RLS on file_search_index
+ALTER TABLE public.file_search_index ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can search own files or admins search all"
+    ON public.file_search_index
+    FOR SELECT
+    USING (
+        auth.uid() = user_id
+        OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN'
+    );
+

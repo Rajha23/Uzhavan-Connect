@@ -47,11 +47,13 @@ export const KPIStatCard: React.FC<KPIStatCardProps> = ({
     <Component
       type={isClickable ? 'button' : undefined}
       onClick={onClick}
-      className={`agri-card rounded-[22px] sm:rounded-[24px] p-3.5 sm:p-4 border border-[#ccd5ae]/50 bg-white/95 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-200 flex flex-col justify-between h-full min-w-0 min-h-[128px] text-left ${
+      title={isClickable && typeof label === 'string' ? `${label} — Click to view complete details` : undefined}
+      aria-label={isClickable && typeof label === 'string' ? `Open full view for ${label}` : undefined}
+      className={`agri-card rounded-[22px] sm:rounded-[24px] p-3.5 sm:p-4 border border-[#ccd5ae]/50 bg-white/95 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-200 flex flex-col justify-between h-full min-w-0 min-h-[128px] text-left group ${
         isActive
           ? 'border-[#01472e] ring-2 ring-[#01472e]/20 shadow-forest -translate-y-0.5'
           : ''
-      } ${isClickable ? 'cursor-pointer' : ''} ${className}`}
+      } ${isClickable ? 'cursor-pointer hover:-translate-y-0.5 hover:ring-1 hover:ring-[#01472e]/20' : ''} ${className}`}
     >
       {/* ── HEADER ROW: LABEL + TOP-RIGHT ICON (UNIFORM 34px HEIGHT) ──── */}
       <div className="flex items-start justify-between gap-2 h-[34px] w-full">

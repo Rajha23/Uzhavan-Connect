@@ -481,3 +481,48 @@ CREATE POLICY settlement_policy ON settlements
         SELECT 1 FROM users WHERE id = current_setting('request.jwt.claim.sub', true) AND role IN ('ADMIN', 'SYSADMIN', 'GOVERNMENT', 'FPO')
     ));
 
+-- ============================================================
+-- 7. FILES & DOCUMENTS TABLE (Idempotent Storage & Metadata)
+-- Guarantees: 1 File = 1 Storage Object = 1 DB Record
+-- ============================================================
+CREATE TABLE IF NOT EXISTS files (
+    id VARCHAR(64) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
+    user_id VARCHAR(64) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    size BIGINT NOT NULL,
+    mime_type VARCHAR(128) NOT NULL,
+    file_hash VARCHAR(128) NOT NULL,
+    storage_path VARCHAR(512) NOT NULL,
+    category VARCHAR(64) NOT NULL DEFAULT 'GENERAL' CHECK (category IN ('INVOICE', 'QUALITY_CERT', 'PRODUCE_PASSPORT', 'SETTLEMENT_RECEIPT', 'CONTRACT', 'WAYBILL', 'GENERAL')),
+    status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'ARCHIVED', 'DELETED')),
+    metadata JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    -- Strict Idempotency Constraint: user cannot have duplicate records of identical content
+    CONSTRAINT uq_user_file_hash UNIQUE (user_id, file_hash)
+);
+
+CREATE INDEX IF NOT EXISTS idx_files_user ON files(user_id);
+CREATE INDEX IF NOT EXISTS idx_files_hash ON files(file_hash);
+CREATE INDEX IF NOT EXISTS idx_files_category ON files(category);
+CREATE INDEX IF NOT EXISTS idx_files_created ON files(created_at DESC);
+
+-- ============================================================
+-- 8. FILE SEARCH INDEX TABLE (Idempotent Search Records)
+-- Guarantees: 1 Document = Exactly 1 Search Record
+-- ============================================================
+CREATE TABLE IF NOT EXISTS file_search_index (
+    id VARCHAR(64) PRIMARY KEY DEFAULT uuid_generate_v4()::text,
+    file_id VARCHAR(64) NOT NULL REFERENCES files(id) ON DELETE CASCADE,
+    user_id VARCHAR(64) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    searchable_text TEXT NOT NULL,
+    category VARCHAR(64),
+    indexed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    -- Strict 1:1 constraint ensuring no duplicate index records for the same file
+    CONSTRAINT uq_index_file_id UNIQUE (file_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_search_user ON file_search_index(user_id);
+CREATE INDEX IF NOT EXISTS idx_search_text ON file_search_index USING gin(to_tsvector('english', searchable_text));
+
+

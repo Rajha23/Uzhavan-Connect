@@ -11,6 +11,7 @@ import {
 } from '../types';
 import { BulkShipmentMap } from '../components/BulkShipmentMap';
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
+import { DetailDrawer } from '../components/DetailDrawer';
 import confetti from 'canvas-confetti';
 import {
   ShoppingBag,
@@ -96,6 +97,7 @@ export const BulkBuyerDashboard: React.FC = () => {
 
   // Active View Tab inside Bulk Buyer Portal
   const [activePortalTab, setActivePortalTab] = useState<'OVERVIEW' | 'AGGREGATION' | 'TRACKING' | 'ORDERS'>('OVERVIEW');
+  const [drawerState, setDrawerState] = useState<{ type: string; data?: any } | null>(null);
 
   // Modal State for Creating Bulk Demand
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -254,7 +256,8 @@ export const BulkBuyerDashboard: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fadeIn">
+    <>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fadeIn">
       {/* Top Banner: Authentic Light Agricultural Palette */}
       <div className="relative overflow-hidden rounded-[32px] p-7 sm:p-10 border border-emerald-500/20 shadow-forest bg-gradient-to-br from-[#01472e] via-[#025a3b] to-[#013824] text-white">
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#ccd5ae]/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
@@ -361,16 +364,20 @@ export const BulkBuyerDashboard: React.FC = () => {
             icon: Users,
             badgeColor: 'text-[#01472e] bg-[#e9edc9]/50 border-[#ccd5ae]/50'
           }
-        ].map((kpi, idx) => (
-          <KPIStatCard
-            key={idx}
-            label={kpi.label}
-            value={kpi.value}
-            subtitle={kpi.sub}
-            icon={kpi.icon}
-            badgeColor={kpi.badgeColor}
-          />
-        ))}
+        ].map((kpi, idx) => {
+          const drawerTypes = ['active-demands', 'required-qty', 'confirmed-supply', 'in-transit', 'deliveries', 'suppliers'];
+          return (
+            <KPIStatCard
+              key={idx}
+              label={kpi.label}
+              value={kpi.value}
+              subtitle={kpi.sub}
+              icon={kpi.icon}
+              badgeColor={kpi.badgeColor}
+              onClick={() => setDrawerState({ type: drawerTypes[idx] })}
+            />
+          );
+        })}
       </KPIGrid>
 
       {/* View Section 1: Overview */}
@@ -1138,5 +1145,183 @@ export const BulkBuyerDashboard: React.FC = () => {
         </div>
       )}
     </div>
+
+      {/* ── DETAIL DRAWER ─────────────────────────────────────────── */}
+      <DetailDrawer
+        isOpen={!!drawerState}
+        onClose={() => setDrawerState(null)}
+        title={
+          drawerState?.type === 'active-demands' ? 'Active Bulk Demands' :
+          drawerState?.type === 'required-qty' ? 'Total Required Quantity' :
+          drawerState?.type === 'confirmed-supply' ? 'Confirmed Supply' :
+          drawerState?.type === 'in-transit' ? 'Orders in Transit' :
+          drawerState?.type === 'deliveries' ? 'Deliveries Completed' :
+          drawerState?.type === 'suppliers' ? 'Active Suppliers' :
+          'Details'
+        }
+        description={
+          drawerState?.type === 'active-demands' ? 'All bulk demand requests currently open' :
+          drawerState?.type === 'required-qty' ? 'Quantity breakdown per demand' :
+          drawerState?.type === 'confirmed-supply' ? 'Orders with confirmed supply allocations' :
+          drawerState?.type === 'in-transit' ? 'Live shipment tracking details' :
+          drawerState?.type === 'deliveries' ? 'Completed delivery confirmations' :
+          drawerState?.type === 'suppliers' ? 'Farmers and FPOs in the supply pool' :
+          undefined
+        }
+        icon={
+          drawerState?.type === 'active-demands' ? Sparkles :
+          drawerState?.type === 'required-qty' ? Scale :
+          drawerState?.type === 'confirmed-supply' ? CheckCircle2 :
+          drawerState?.type === 'in-transit' ? Truck :
+          drawerState?.type === 'deliveries' ? Award :
+          drawerState?.type === 'suppliers' ? Users :
+          undefined
+        }
+        width="lg"
+      >
+        {/* Active Demands Drawer */}
+        {drawerState?.type === 'active-demands' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-[#eaf4ec] rounded-xl border border-[#a3b18a]/30">
+              <span className="text-xs font-medium text-[#01472e]">Total Demands</span>
+              <span className="text-sm font-bold text-[#01472e]">{bulkDemands.length}</span>
+            </div>
+            {bulkDemands.map((d) => (
+              <div key={d.id} className="p-4 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#01472e] font-mono">{d.id}</span>
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${d.status === 'OPEN' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200'}`}>{d.status}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-[10px] text-[#5c7065]">
+                  <div><span className="block font-medium text-[#788c80]">Crop</span><span className="text-[#01472e] font-semibold">{d.crop} {d.variety ? `(${d.variety})` : ''}</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Quantity</span><span className="text-[#01472e] font-semibold">{d.quantityKg.toLocaleString()} kg</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Quality</span><span className="text-[#01472e] font-semibold">{d.qualityRequirement}</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Delivery</span><span className="text-[#01472e] font-semibold">{d.deliveryDate}</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Max Price</span><span className="text-[#01472e] font-semibold">₹{d.maxTargetPricePerKg}/kg</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Location</span><span className="text-[#01472e] font-semibold truncate">{d.location}</span></div>
+                </div>
+              </div>
+            ))}
+            {bulkDemands.length === 0 && <div className="p-6 text-center text-xs text-[#5c7065]">No active bulk demands.</div>}
+          </div>
+        )}
+
+        {/* Required Qty Drawer */}
+        {drawerState?.type === 'required-qty' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-[#eaf4ec] rounded-xl border border-[#a3b18a]/30">
+              <span className="text-xs font-medium text-[#01472e]">Total Required</span>
+              <span className="text-sm font-bold text-[#01472e]">{totalRequiredQuantityKg.toLocaleString()} kg</span>
+            </div>
+            {bulkDemands.map((d) => (
+              <div key={d.id} className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-semibold text-[#01472e]">{d.crop}</span>
+                  <span className="text-[10px] text-[#5c7065] block font-mono">{d.id}</span>
+                </div>
+                <span className="text-sm font-bold text-[#01472e]">{(d.initialQuantityKg || d.quantityKg).toLocaleString()} kg</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Confirmed Supply Drawer */}
+        {drawerState?.type === 'confirmed-supply' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-[#eaf4ec] rounded-xl border border-[#a3b18a]/30">
+              <span className="text-xs font-medium text-[#01472e]">Confirmed Supply</span>
+              <span className="text-sm font-bold text-[#01472e]">{confirmedSupplyKg.toLocaleString()} kg</span>
+            </div>
+            {bulkOrders.map((o) => (
+              <div key={o.id} className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#01472e] font-mono">{o.id}</span>
+                  <span className="text-[10px] font-medium text-[#01472e] bg-[#eaf4ec] px-2 py-0.5 rounded-full border border-[#a3b18a]/30">{o.status}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-[10px] text-[#5c7065]">
+                  <div><span className="block font-medium text-[#788c80]">Crop</span><span className="text-[#01472e] font-semibold">{o.crop}</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Qty</span><span className="text-[#01472e] font-semibold">{o.quantityKg.toLocaleString()} kg</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Farmer</span><span className="text-[#01472e] font-semibold">{o.farmerName}</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Value</span><span className="text-[#01472e] font-semibold">₹{o.totalValue.toLocaleString()}</span></div>
+                </div>
+              </div>
+            ))}
+            {bulkOrders.length === 0 && <div className="p-6 text-center text-xs text-[#5c7065]">No confirmed supply orders yet.</div>}
+          </div>
+        )}
+
+        {/* In Transit Drawer */}
+        {drawerState?.type === 'in-transit' && (
+          <div className="space-y-3">
+            {bulkOrders.filter(o => o.status === 'In Transit' || o.lifecycleStage === 'IN_TRANSIT').map((o) => (
+              <div key={o.id} className="p-4 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#01472e] font-mono">{o.id}</span>
+                  <span className="text-[10px] font-medium text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">In Transit</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-[10px] text-[#5c7065]">
+                  <div><span className="block font-medium text-[#788c80]">Crop</span><span className="text-[#01472e] font-semibold">{o.crop}</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Qty</span><span className="text-[#01472e] font-semibold">{o.quantityKg.toLocaleString()} kg</span></div>
+                  {o.transportDetails && <>
+                    <div><span className="block font-medium text-[#788c80]">Vehicle</span><span className="text-[#01472e] font-semibold">{o.transportDetails.vehicleNumber}</span></div>
+                    <div><span className="block font-medium text-[#788c80]">ETA</span><span className="text-[#01472e] font-semibold">{o.transportDetails.estimatedArrival}</span></div>
+                  </>}
+                </div>
+              </div>
+            ))}
+            {bulkOrders.filter(o => o.status === 'In Transit').length === 0 && (
+              <div className="p-6 text-center text-xs text-[#5c7065]">No orders currently in transit.</div>
+            )}
+          </div>
+        )}
+
+        {/* Deliveries Drawer */}
+        {drawerState?.type === 'deliveries' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-[#eaf4ec] rounded-xl border border-[#a3b18a]/30">
+              <span className="text-xs font-medium text-[#01472e]">Completed</span>
+              <span className="text-sm font-bold text-[#01472e]">{completedDeliveriesCount} orders</span>
+            </div>
+            {orders.filter(o => o.status === 'Delivered' || o.status === 'Buyer Confirmed' || o.status === 'Completed').map((o) => (
+              <div key={o.id} className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#01472e] font-mono">{o.id}</span>
+                  <span className="text-[10px] font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">{o.status}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-[10px] text-[#5c7065]">
+                  <div><span className="block font-medium text-[#788c80]">Crop</span><span className="text-[#01472e] font-semibold">{o.crop}</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Qty</span><span className="text-[#01472e] font-semibold">{o.quantityKg.toLocaleString()} kg</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Value</span><span className="text-[#01472e] font-semibold">₹{o.totalValue.toLocaleString()}</span></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Suppliers Drawer */}
+        {drawerState?.type === 'suppliers' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-[#eaf4ec] rounded-xl border border-[#a3b18a]/30">
+              <span className="text-xs font-medium text-[#01472e]">Active Suppliers</span>
+              <span className="text-sm font-bold text-[#01472e]">{activeSuppliersCount}</span>
+            </div>
+            {produceListings.filter(l => l.quantityKg > 0).slice(0, 6).map((l) => (
+              <div key={l.id} className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#01472e]">{l.farmerName}</span>
+                  <span className="text-[10px] text-[#01472e] bg-[#eaf4ec] px-2 py-0.5 rounded-full border border-[#a3b18a]/30 font-medium">{l.fpoName}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-[10px] text-[#5c7065]">
+                  <div><span className="block font-medium text-[#788c80]">Crop</span><span className="text-[#01472e] font-semibold">{l.crop}</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Available</span><span className="text-[#01472e] font-semibold">{l.quantityKg.toLocaleString()} kg</span></div>
+                  <div><span className="block font-medium text-[#788c80]">Grade</span><span className="text-[#01472e] font-semibold">{l.grade}</span></div>
+                </div>
+                <div className="text-[10px] text-[#5c7065] flex items-center gap-1"><MapPin className="w-3 h-3" />{l.location}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </DetailDrawer>
+    </>
   );
 };

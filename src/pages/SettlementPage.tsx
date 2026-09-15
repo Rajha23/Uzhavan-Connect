@@ -20,7 +20,8 @@ import {
   Wallet,
   Check,
   QrCode,
-  Layers
+  Layers,
+  FileCheck2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useLanguage } from '../context/LanguageContext';
@@ -35,7 +36,9 @@ export const SettlementPage: React.FC = () => {
     completeTransaction,
     settlePayment,
     openPassportModal,
-    setActiveTab
+    setActiveTab,
+    uploadDocument,
+    openDocumentManager
   } = useApp();
 
   const { t } = useLanguage();
@@ -69,16 +72,51 @@ export const SettlementPage: React.FC = () => {
     .filter((s) => !isCompletedStatus(s.status))
     .reduce((acc, s) => acc + s.farmerAmount, 0);
 
-  const handleDownloadInvoice = () => {
+  const handleDownloadInvoice = async () => {
     setDownloading(true);
-    setTimeout(() => {
-      setDownloading(false);
+    try {
+      // Canonical Tax Invoice Content for SIH2026 Direct Farmer Realization
+      const invoiceText = `============================================================
+UZHAVAN CONNECT (SIH2026 - SIH26033) — TAX & SETTLEMENT INVOICE
+============================================================
+Settlement Reference: INV-ESCROW-${new Date().getFullYear()}-009182
+Date of Issue: ${new Date().toLocaleDateString('en-GB')}
+Settled Volume: ${settlements.reduce((acc, s) => acc + (s.quantityKg || 0), 0).toLocaleString()} kg
+Total Realization Amount: ₹${totalSettledAmount.toLocaleString()}
+Farmer Direct Share: 89.0% (Zero Middlemen Deductions)
+Escrow Status: RBI / e-RUPI Prototype Smart Contract Disbursed
+============================================================
+Verified Authenticity Fingerprint: Cryptographically Indexed
+`;
+      const blob = new Blob([invoiceText], { type: 'application/pdf' });
+      const invoiceFile = new File([blob], 'invoice.pdf', { type: 'application/pdf' });
+
+      // Idempotent upload: if already uploaded, won't duplicate!
+      await uploadDocument(invoiceFile, 'INVOICE', {
+        source: 'SettlementPage',
+        settledAmount: totalSettledAmount,
+      });
+
+      // Browser download trigger
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'invoice.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
       confetti({
         particleCount: 35,
         spread: 50,
         origin: { y: 0.7 }
       });
-    }, 600);
+    } catch (err) {
+      console.warn('Failed to export invoice', err);
+    } finally {
+      setDownloading(false);
+    }
   };
 
   const handleRecordPayment = (orderId: string) => {
@@ -162,13 +200,21 @@ export const SettlementPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 relative z-10">
+          <div className="flex items-center gap-3 relative z-10 flex-wrap">
             <button
               onClick={handleDownloadInvoice}
               className="flex items-center gap-2 bg-[#fefae0] hover:bg-white text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-soft hover:shadow-md transition-all cursor-pointer"
             >
               <Download className="w-4 h-4 text-[#01472e]" />
               <span>{downloading ? t('settlement.exportingPdf', 'Exporting PDF...') : t('settlement.downloadInvoice', 'Download Tax Invoice')}</span>
+            </button>
+            <button
+              onClick={() => openDocumentManager('INVOICE')}
+              className="flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/20 text-xs font-medium px-4 py-3 rounded-2xl shadow-soft transition-all cursor-pointer backdrop-blur-sm"
+              title="Open verified invoice vault"
+            >
+              <FileCheck2 className="w-4 h-4 text-[#ccd5ae]" />
+              <span>Invoice Vault</span>
             </button>
           </div>
         </div>

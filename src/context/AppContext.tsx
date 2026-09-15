@@ -60,8 +60,29 @@ import {
   saveNotificationPreferences,
   DEFAULT_NOTIFICATION_PREFERENCES
 } from '../services/notificationService';
+import {
+  FileRecord,
+  FileCategory,
+  UploadResult,
+  CleanupReport,
+  uploadFile,
+  getFiles,
+  searchFiles,
+  deleteFile,
+  cleanupExistingDuplicates
+} from '../services/fileService';
 
 interface AppContextType {
+  files: FileRecord[];
+  uploadDocument: (file: File, category?: FileCategory, metadata?: Record<string, any>) => Promise<UploadResult>;
+  searchDocuments: (query: string, category?: FileCategory) => Promise<FileRecord[]>;
+  deleteDocument: (fileId: string) => Promise<boolean>;
+  cleanupDuplicateDocuments: () => Promise<CleanupReport>;
+  refreshDocuments: () => Promise<void>;
+  isDocumentManagerOpen: boolean;
+  documentManagerCategory: FileCategory | undefined;
+  openDocumentManager: (category?: FileCategory) => void;
+  closeDocumentManager: () => void;
   isInitializing: boolean;
   isAuthenticated: boolean;
   login: (user: UserProfile) => void;
@@ -287,6 +308,80 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [produceListings, setProduceListings] = useState<ProduceListing[]>([]);
 
   const [demandRequests, setDemandRequests] = useState<DemandRequest[]>([]);
+
+  // ── IDEMPOTENT FILE & DOCUMENT STORAGE ──────────────────────────────────────
+  const [files, setFiles] = useState<FileRecord[]>([]);
+  const [isDocumentManagerOpen, setIsDocumentManagerOpen] = useState<boolean>(false);
+  const [documentManagerCategory, setDocumentManagerCategory] = useState<FileCategory | undefined>(undefined);
+
+  const refreshDocuments = useCallback(async () => {
+    try {
+      const records = await getFiles(currentUser?.id || 'demo-user-1');
+      setFiles(records);
+    } catch (err) {
+      console.warn('Failed to refresh files', err);
+    }
+  }, [currentUser?.id]);
+
+  useEffect(() => {
+    refreshDocuments();
+  }, [refreshDocuments]);
+
+  const uploadDocument = useCallback(
+    async (file: File, category: FileCategory = 'GENERAL', metadata: Record<string, any> = {}) => {
+      const result = await uploadFile(file, file.name, {
+        userId: currentUser?.id || 'demo-user-1',
+        category,
+        metadata,
+      });
+
+      // Update state without duplicating
+      setFiles((prev) => {
+        const exists = prev.some((f) => f.id === result.file.id || f.fileHash === result.file.fileHash);
+        if (exists) {
+          return prev.map((f) => (f.id === result.file.id ? result.file : f));
+        }
+        return [result.file, ...prev];
+      });
+
+      return result;
+    },
+    [currentUser?.id]
+  );
+
+  const searchDocuments = useCallback(
+    async (query: string, category?: FileCategory) => {
+      return searchFiles(query, {
+        userId: currentUser?.id,
+        category,
+      });
+    },
+    [currentUser?.id]
+  );
+
+  const deleteDocument = useCallback(async (fileId: string) => {
+    const success = await deleteFile(fileId);
+    if (success) {
+      setFiles((prev) => prev.filter((f) => f.id !== fileId));
+    }
+    return success;
+  }, []);
+
+  const cleanupDuplicateDocuments = useCallback(async () => {
+    const report = await cleanupExistingDuplicates(currentUser?.id);
+    await refreshDocuments();
+    return report;
+  }, [currentUser?.id, refreshDocuments]);
+
+  const openDocumentManager = useCallback((category?: FileCategory) => {
+    setDocumentManagerCategory(category);
+    setIsDocumentManagerOpen(true);
+  }, []);
+
+  const closeDocumentManager = useCallback(() => {
+    setIsDocumentManagerOpen(false);
+    setDocumentManagerCategory(undefined);
+  }, []);
 
   // Automatically sync produce listings to localStorage
   useEffect(() => {
@@ -2266,7 +2361,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         pendingSyncCount,
         syncOfflineQueue,
         isInstallable,
-        promptInstall: promptAppInstall
+        promptInstall: promptAppInstall,
+        files,
+        uploadDocument,
+        searchDocuments,
+        deleteDocument,
+        cleanupDuplicateDocuments,
+        refreshDocuments,
+        isDocumentManagerOpen,
+        documentManagerCategory,
+        openDocumentManager,
+        closeDocumentManager
       }}
     >
       {children}
