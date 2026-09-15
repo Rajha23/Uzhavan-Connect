@@ -281,11 +281,11 @@ export const SmartMatchingEngine: React.FC = () => {
     });
   };
 
-  const handleConfirmAndIssueOrder = () => {
+  const handleConfirmAndIssueOrder = async () => {
     if (!agreementModal.listing || agreementModal.agreedQty <= 0) return;
 
     const listing = agreementModal.listing;
-    const order = confirmMatchAndCreateOrder(
+    const order = await confirmMatchAndCreateOrder(
       listing.id,
       currentTarget.underlyingDemandId,
       agreementModal.agreedPrice,

@@ -459,6 +459,57 @@ export const apiService = {
     };
   },
 
+  getDemandRequests: async (): Promise<DemandRequest[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('demand_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      return data.map(d => ({
+        id: d.id,
+        buyerId: d.buyer_id,
+        buyerName: d.buyer_name,
+        buyerType: d.buyer_type,
+        crop: d.crop,
+        quantityKg: d.quantity_kg,
+        qualityRequirement: d.quality_requirement,
+        location: d.location,
+        deliveryDate: d.delivery_date,
+        deliveryTimeWindow: d.delivery_time_window,
+        maxTargetPricePerKg: d.max_target_price_per_kg,
+        status: d.status,
+        createdAt: d.created_at
+      }));
+    } catch {
+      return [];
+    }
+  },
+
+  subscribeToDemandRequests: (callback: (payload: any) => void) => {
+    return supabase
+      .channel('demand_requests_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'demand_requests' },
+        (payload) => callback(payload)
+      )
+      .subscribe();
+  },
+
+  subscribeToProduceListings: (callback: (payload: any) => void) => {
+    return supabase
+      .channel('produce_listings_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'produce_listings' },
+        (payload) => callback(payload)
+      )
+      .subscribe();
+  },
+
   // Demand Service - Buyer Requests & Pooling
   createDemandRequest: async (demand: Omit<DemandRequest, 'id' | 'status' | 'createdAt'>): Promise<DemandRequest> => {
     try {
@@ -571,6 +622,96 @@ export const apiService = {
       ...OPTIMIZED_ROUTE_PLAN,
       status: 'SCHEDULED'
     };
+  },
+  // Orders
+  createOrder: async (orderData: { buyerId: string; farmerId: string; crop: string; quantityKg: number; pricePerKg: number; totalValue: number }): Promise<any> => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .insert([{
+          buyer_id: orderData.buyerId,
+          farmer_id: orderData.farmerId,
+          crop: orderData.crop,
+          quantity_kg: orderData.quantityKg,
+          price_per_kg: orderData.pricePerKg,
+          total_value: orderData.totalValue,
+          status: 'CONFIRMED'
+        }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+
+      // Automatically create a produce passport entry for this order
+      await supabase.from('produce_passports').insert([{
+        batch_id: `BATCH-${Date.now().toString().slice(-6)}`,
+        order_id: data.id,
+        crop: orderData.crop,
+        quantity_kg: orderData.quantityKg,
+        current_status: 'Confirmed',
+        timeline: [{
+          step: '1',
+          title: 'Order Confirmed',
+          location: 'Platform',
+          timestamp: new Date().toISOString(),
+          operator: 'Smart Contract',
+          completed: true
+        }]
+      }]);
+
+      return data;
+    } catch (e) {
+      console.error("Failed to create order:", e);
+      throw e;
+    }
+  },
+
+  getOrders: async (): Promise<any[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    } catch {
+      return [];
+    }
+  },
+
+  subscribeToOrders: (callback: (payload: any) => void) => {
+    return supabase
+      .channel('orders_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'orders' },
+        (payload) => callback(payload)
+      )
+      .subscribe();
+  },
+
+  getSettlements: async (): Promise<any[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('settlement_records')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    } catch {
+      return [];
+    }
+  },
+
+  subscribeToSettlements: (callback: (payload: any) => void) => {
+    return supabase
+      .channel('settlements_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'settlement_records' },
+        (payload) => callback(payload)
+      )
+      .subscribe();
   },
 
   // Traceability & Produce Passport

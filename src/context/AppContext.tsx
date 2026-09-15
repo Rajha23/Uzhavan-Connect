@@ -121,7 +121,7 @@ interface AppContextType {
     agreedPrice?: number,
     agreedQty?: number,
     aggregatedGroupId?: string
-  ) => WorkflowOrder | null;
+  ) => Promise<WorkflowOrder | null>;
   fpoRecordCollection: (orderId: string, farmerId: string, quantityToCollect: number, notes?: string) => boolean;
   fpoCollectProduce: (orderId: string, hubLocation?: string) => void;
   fpoRecordQualityGrading: (orderId: string, metrics: QualityInspectionData) => boolean;
@@ -263,36 +263,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [systemUsers, setSystemUsers] = useState<SystemUserRecord[]>(SYSTEM_USERS_DATA);
 
   // Persistent Produce Listings (Farmer supply)
-  const [produceListings, setProduceListings] = useState<ProduceListing[]>(() => {
-    try {
-      const saved = localStorage.getItem('uzhavan_produce_listings');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      }
-    } catch (e) {
-      console.warn('Failed to parse saved produce listings from localStorage', e);
-    }
-    return INITIAL_FARMER_LISTINGS;
-  });
+  const [produceListings, setProduceListings] = useState<ProduceListing[]>([]);
 
-  // Persistent Demand Requests (Buyer demand)
-  const [demandRequests, setDemandRequests] = useState<DemandRequest[]>(() => {
-    try {
-      const saved = localStorage.getItem('uzhavan_demand_requests');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      }
-    } catch (e) {
-      console.warn('Failed to parse saved demand requests from localStorage', e);
-    }
-    return INITIAL_DEMAND_REQUESTS;
-  });
+  const [demandRequests, setDemandRequests] = useState<DemandRequest[]>([]);
 
   // Automatically sync produce listings to localStorage
   useEffect(() => {
@@ -352,18 +325,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, [demandRequests]);
 
   // Persistent Orders
-  const [orders, setOrders] = useState<WorkflowOrder[]>(() => {
-    try {
-      const saved = localStorage.getItem('uzhavan_orders');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch (e) {
-      console.warn('Failed to parse saved orders from localStorage', e);
-    }
-    return INITIAL_ORDERS;
-  });
+  const [orders, setOrders] = useState<WorkflowOrder[]>([]);
 
   // Persistent Agreements
   const [agreements, setAgreements] = useState<WorkflowAgreement[]>(() => {
@@ -394,18 +356,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
 
   // Persistent Settlements
-  const [settlements, setSettlements] = useState<SettlementRecord[]>(() => {
-    try {
-      const saved = localStorage.getItem('uzhavan_settlements');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch (e) {
-      console.warn('Failed to parse saved settlements from localStorage', e);
-    }
-    return INITIAL_SETTLEMENTS;
-  });
+  const [settlements, setSettlements] = useState<SettlementRecord[]>([]);
 
   // Automatically sync orders to localStorage
   useEffect(() => {
@@ -516,58 +467,241 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
   }, [syncOfflineQueue]);
 
-  const addProduceListing = (listing: ProduceListing) => {
-    const isCurrentlyOnline = isOnline && (typeof navigator !== 'undefined' ? navigator.onLine : true);
-    const initialQty = listing.initialQuantityKg || listing.quantityKg;
-    const enrichedListing: ProduceListing = {
-      ...listing,
-      initialQuantityKg: initialQty,
-      allocatedQuantityKg: listing.allocatedQuantityKg || 0,
-      unit: listing.unit || 'kg',
-      status: listing.status || 'Listed',
-      syncStatus: isCurrentlyOnline ? 'SYNCED' : 'PENDING_SYNC',
-      offlineCreated: !isCurrentlyOnline
-    };
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Fetch initial data
+      const fetchData = async () => {
+        try {
+          const [listings, demands, dbOrders, dbSettlements] = await Promise.all([
+            apiService.getProduceListings(),
+            apiService.getDemandRequests(),
+            apiService.getOrders(),
+            apiService.getSettlements()
+          ]);
+          setProduceListings(listings);
+          setDemandRequests(demands);
+          
+          const mappedOrders: WorkflowOrder[] = dbOrders.map((o: any) => ({
+            id: o.id,
+            buyerId: o.buyer_id,
+            farmerId: o.farmer_id,
+            crop: o.crop,
+            quantityKg: o.quantity_kg,
+            pricePerKg: o.price_per_kg,
+            totalValue: o.total_value,
+            status: o.status,
+            date: o.created_at,
+            batchId: 'N/A',
+            farmerName: 'Unknown',
+            buyerName: 'Unknown',
+            produceListingId: '',
+            demandRequestId: '',
+            deliveryLocation: '',
+            farmerLocation: '',
+            fpoName: 'GreenHarvest FPO',
+            qualityGrade: 'Standard',
+            timeline: [],
+            remainingCollectionKg: o.quantity_kg,
+            collectedQuantityKg: 0,
+            collectionStatus: 'Collection Pending'
+          }));
+          setOrders(mappedOrders);
 
-    if (!isCurrentlyOnline) {
+          const mappedSettlements: SettlementRecord[] = dbSettlements.map((s: any) => ({
+            id: s.id,
+            orderId: s.order_id,
+            batchId: 'N/A',
+            crop: 'Unknown',
+            quantityKg: 0,
+            buyerName: 'Unknown',
+            farmerOrFpoName: 'Unknown',
+            totalOrderValue: s.total_order_value,
+            farmerAmount: s.farmer_amount,
+            logisticsAmount: 0,
+            platformAmount: 0,
+            farmerRealizationPercentage: 0,
+            traditionalFarmerEarnings: 0,
+            earningsGainPercentage: 0,
+            status: s.status,
+            settlementDate: s.settlement_date,
+            utrNumber: 'N/A'
+          }));
+          setSettlements(mappedSettlements);
+        } catch (e) {
+          console.error("Failed to fetch initial data", e);
+        }
+      };
+      
+      fetchData();
+
+      // Subscribe to real-time changes
+      const demandSub = apiService.subscribeToDemandRequests((payload) => {
+        console.log("Realtime Demand Update:", payload);
+        if (payload.eventType === 'INSERT') {
+          // Add mapping from snake_case DB to camelCase UI
+          const d = payload.new;
+          const newDemand: DemandRequest = {
+            id: d.id,
+            buyerId: d.buyer_id,
+            buyerName: d.buyer_name,
+            buyerType: d.buyer_type,
+            crop: d.crop,
+            quantityKg: d.quantity_kg,
+            initialQuantityKg: d.quantity_kg,
+            allocatedQuantityKg: 0,
+            unit: 'kg',
+            qualityRequirement: d.quality_requirement,
+            location: d.location,
+            deliveryDate: d.delivery_date,
+            deliveryTimeWindow: d.delivery_time_window,
+            maxTargetPricePerKg: d.max_target_price_per_kg,
+            status: d.status,
+            createdAt: d.created_at
+          };
+          setDemandRequests((prev) => [newDemand, ...prev.filter(x => x.id !== d.id)]);
+        }
+      });
+
+      const produceSub = apiService.subscribeToProduceListings((payload) => {
+        console.log("Realtime Produce Update:", payload);
+        if (payload.eventType === 'INSERT') {
+          const p = payload.new;
+          const newListing: ProduceListing = {
+            id: p.id,
+            farmerId: p.farmer_id,
+            farmerName: p.farmer_name,
+            crop: p.crop,
+            variety: p.variety,
+            quantityKg: p.quantity_kg,
+            grade: p.grade,
+            expectedPricePerKg: p.expected_price_per_kg,
+            harvestDate: p.harvest_date,
+            availabilityDate: p.availability_date,
+            location: p.location,
+            status: p.status,
+            initialQuantityKg: p.quantity_kg,
+            allocatedQuantityKg: 0,
+            unit: 'kg'
+          };
+          setProduceListings((prev) => [newListing, ...prev.filter(x => x.id !== p.id)]);
+        }
+      });
+
+      const orderSub = apiService.subscribeToOrders((payload) => {
+        console.log("Realtime Order Update:", payload);
+        if (payload.eventType === 'INSERT') {
+          const o = payload.new;
+          const newOrder: WorkflowOrder = {
+            id: o.id,
+            buyerId: o.buyer_id,
+            farmerId: o.farmer_id,
+            crop: o.crop,
+            quantityKg: o.quantity_kg,
+            pricePerKg: o.price_per_kg,
+            totalValue: o.total_value,
+            status: o.status,
+            date: o.created_at,
+            batchId: 'N/A',
+            farmerName: 'Unknown',
+            buyerName: 'Unknown',
+            produceListingId: '',
+            demandRequestId: '',
+            deliveryLocation: '',
+            farmerLocation: '',
+            fpoName: 'GreenHarvest FPO',
+            qualityGrade: 'Standard',
+            timeline: [],
+            remainingCollectionKg: o.quantity_kg,
+            collectedQuantityKg: 0,
+            collectionStatus: 'Collection Pending'
+          };
+          setOrders((prev) => [newOrder, ...prev.filter(x => x.id !== o.id)]);
+        }
+      });
+
+      const settlementSub = apiService.subscribeToSettlements((payload) => {
+        console.log("Realtime Settlement Update:", payload);
+        if (payload.eventType === 'INSERT') {
+          const s = payload.new;
+          const newSettlement: SettlementRecord = {
+            id: s.id,
+            orderId: s.order_id,
+            batchId: 'N/A',
+            crop: 'Unknown',
+            quantityKg: 0,
+            buyerName: 'Unknown',
+            farmerOrFpoName: 'Unknown',
+            totalOrderValue: s.total_order_value,
+            farmerAmount: s.farmer_amount,
+            logisticsAmount: 0,
+            platformAmount: 0,
+            farmerRealizationPercentage: 0,
+            traditionalFarmerEarnings: 0,
+            earningsGainPercentage: 0,
+            status: s.status,
+            settlementDate: s.settlement_date,
+            utrNumber: 'N/A'
+          };
+          setSettlements((prev) => [newSettlement, ...prev.filter(x => x.id !== s.id)]);
+        }
+      });
+
+      return () => {
+        demandSub.unsubscribe();
+        produceSub.unsubscribe();
+        orderSub.unsubscribe();
+        settlementSub.unsubscribe();
+      };
+    }
+  }, [isAuthenticated]);
+
+  const addProduceListing = async (listing: ProduceListing) => {
+    const isCurrentlyOnline = isOnline && (typeof navigator !== 'undefined' ? navigator.onLine : true);
+    
+    if (isCurrentlyOnline) {
+      try {
+        const result = await apiService.createProduceListing(listing);
+        // The real-time subscription will catch this, but we can optimistically update
+        setProduceListings((prev) => [result, ...prev.filter(l => l.id !== result.id)]);
+      } catch (err) {
+        console.error("Failed to create listing", err);
+      }
+    } else {
+      // Offline fallback
       setSyncStatus('offline_saved');
       try {
         const queue = JSON.parse(localStorage.getItem('uzhavan_offline_sync_queue') || '[]');
-        queue.push({ type: 'ADD_PRODUCE', payload: enrichedListing, timestamp: Date.now() });
+        queue.push({ type: 'ADD_PRODUCE', payload: listing, timestamp: Date.now() });
         localStorage.setItem('uzhavan_offline_sync_queue', JSON.stringify(queue));
       } catch {}
+      setProduceListings((prev) => [listing, ...prev]);
     }
-
-    setProduceListings((prev) => [enrichedListing, ...prev]);
   };
 
   const deleteProduceListing = (id: string) => {
     setProduceListings((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const addDemandRequest = (demand: DemandRequest) => {
+  const addDemandRequest = async (demand: DemandRequest) => {
     const isCurrentlyOnline = isOnline && (typeof navigator !== 'undefined' ? navigator.onLine : true);
-    const initialQty = demand.initialQuantityKg || demand.quantityKg;
-    const enrichedDemand: DemandRequest = {
-      ...demand,
-      initialQuantityKg: initialQty,
-      allocatedQuantityKg: demand.allocatedQuantityKg || 0,
-      unit: demand.unit || 'kg',
-      variety: demand.variety || 'Certified Hybrid',
-      syncStatus: isCurrentlyOnline ? 'SYNCED' : 'PENDING_SYNC',
-      offlineCreated: !isCurrentlyOnline
-    };
-
-    if (!isCurrentlyOnline) {
+    
+    if (isCurrentlyOnline) {
+      try {
+        const result = await apiService.createDemandRequest(demand);
+        // Optimistic update, though subscription will also catch it
+        setDemandRequests((prev) => [result, ...prev.filter(d => d.id !== result.id)]);
+      } catch (err) {
+        console.error("Failed to create demand", err);
+      }
+    } else {
       setSyncStatus('offline_saved');
       try {
         const queue = JSON.parse(localStorage.getItem('uzhavan_offline_sync_queue') || '[]');
-        queue.push({ type: 'ADD_DEMAND', payload: enrichedDemand, timestamp: Date.now() });
+        queue.push({ type: 'ADD_DEMAND', payload: demand, timestamp: Date.now() });
         localStorage.setItem('uzhavan_offline_sync_queue', JSON.stringify(queue));
       } catch {}
+      setDemandRequests((prev) => [demand, ...prev]);
     }
-
-    setDemandRequests((prev) => [enrichedDemand, ...prev]);
   };
 
   const deleteDemandRequest = (id: string) => {
@@ -579,13 +713,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // ─────────────────────────────────────────────────────────────
 
   // Step 3 & 4 & 5: Match Confirmed -> Agreement Created -> Order Initialized
-  const confirmMatchAndCreateOrder = (
+  const confirmMatchAndCreateOrder = async (
     listingId: string,
     demandId: string,
     agreedPrice?: number,
     agreedQty?: number,
     aggregatedGroupId?: string
-  ): WorkflowOrder | null => {
+  ): Promise<WorkflowOrder | null> => {
     const listing = produceListings.find((l) => l.id === listingId);
     const demand = demandRequests.find((d) => d.id === demandId);
     if (!listing || !demand) {
@@ -640,18 +774,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     const newOrder: WorkflowOrder = {
-      id: orderId,
-      agreementId,
-      produceListingId: listing.id,
+      id: `ORD-BULK-${Date.now().toString().slice(-4)}`,
+      batchId: `BATCH-${Date.now().toString().slice(-6)}`,
       demandRequestId: demand.id,
-      aggregatedGroupId: aggregatedGroupId || demand.aggregatedGroupId,
-      batchId,
-      farmerId: listing.farmerId,
-      farmerName: listing.farmerName,
       buyerId: demand.buyerId,
       buyerName: demand.buyerName,
+      farmerId: listing.farmerId,
+      farmerName: listing.farmerName,
+      produceListingId: listing.id,
       crop: listing.crop,
-      variety: listing.variety || demand.variety || 'Certified Hybrid',
       quantityKg: finalQty,
       pricePerKg: finalPrice,
       totalValue: totalVal,
@@ -2084,9 +2215,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         produceListings,
         demandRequests,
         aggregatedDemandGroups,
-        addProduceListing,
+        addProduceListing: (listing) => { addProduceListing(listing); },
         deleteProduceListing,
-        addDemandRequest,
+        addDemandRequest: (demand) => { addDemandRequest(demand); },
         deleteDemandRequest,
         orders,
         agreements,
