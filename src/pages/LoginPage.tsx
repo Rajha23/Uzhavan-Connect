@@ -184,9 +184,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                 <span className="text-2xl font-bold tracking-tight text-[#01472e]">
                   Uzhavan Connect
                 </span>
-                <span className="text-[10px] font-bold bg-[#eaf4ec] text-[#01472e] px-2 py-0.5 rounded-full border border-[#a3b18a]/40">
-                  SIH26033
-                </span>
               </div>
               <span className="text-[11px] text-slate-500 font-medium block">
                 Ministry of Consumer Affairs, Food & Public Distribution
@@ -321,7 +318,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
               <div className="mt-6 pt-5 border-t border-[#ccd5ae]/40">
                 <div className="flex items-center justify-between mb-2.5">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                    {t('auth.quickDemoLogins', undefined, 'SIH Demo Quick-Logins (One-Click)')}
+                    {t('auth.quickDemoLogins', undefined, 'Demo Quick-Logins (One-Click)')}
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-[11px]">

@@ -2530,7 +2530,7 @@ export const MIDDLEMAN_SIMULATOR_DATA = {
     ]
   },
   uzhavanconnect: {
-    title: 'Uzhavan Connect Direct Coordinated Chain (SIH26033)',
+    title: 'Uzhavan Connect Direct Coordinated Chain',
     farmerReceives: 25.5,
     logisticsAndPlatform: 5.5,
     buyerPays: 31.0,

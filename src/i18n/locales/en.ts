@@ -183,7 +183,7 @@ export const enTranslations: TranslationDictionary = {
     forgotPassword: 'Forgot Password?',
     loginButton: 'Login to Uzhavan Connect',
     completeRegistration: 'Complete Registration',
-    quickDemoLogins: 'SIH Demo Quick-Logins (One-Click)',
+    quickDemoLogins: 'Demo Quick-Logins (One-Click)',
     selectRole: 'Select Role to Register',
     fullName: 'Full Legal Name',
     enterPassword: 'Enter Secure Password',
@@ -997,7 +997,7 @@ export const enTranslations: TranslationDictionary = {
   footer: {
     platformTitle: 'UZHAVAN Connect 🌱',
     platformSubtitle: 'Eliminating intermediaries, connecting farmers directly with institutional buyers, and securing farm prosperity.',
-    copyright: '© 2026 UZHAVAN Connect • Ministry of Consumer Affairs, Food & Public Distribution • Smart India Hackathon SIH26033',
+    copyright: '© 2026 UZHAVAN Connect • Ministry of Consumer Affairs, Food & Public Distribution',
     ministryCredit: 'Government of India National Agricultural Initiative',
     privacyPolicy: 'Data Privacy & Farmer Rights',
     termsOfUse: 'Operating Standards',

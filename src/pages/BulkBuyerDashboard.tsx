@@ -262,10 +262,6 @@ export const BulkBuyerDashboard: React.FC = () => {
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-[#fefae0] backdrop-blur-sm border border-white/20">
-              <Building2 className="w-3.5 h-3.5 text-[#ccd5ae]" />
-              <span>{t('bulkBuyer.sihGoal', 'SIH2026 Problem Statement SIH26033: Elimination of Intermediaries')}</span>
-            </div>
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
               {t('bulkBuyer.procurementTitle', 'Bulk Buyer Procurement & Logistics Control')}
             </h1>
