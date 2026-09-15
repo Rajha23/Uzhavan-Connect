@@ -800,7 +800,7 @@ export const enTranslations: TranslationDictionary = {
     projectedDeficit: 'Projected Deficit',
     supplyGapMobilize: 'Supply gap to mobilize',
     elasticityCurve: 'Elasticity curve r² fit',
-    section3: '3. Authentic Model Evaluation Metrics (Benchmark Validation)',
+    section3: 'Model Accuracy & Evaluation Metrics',
     validatedRecords: 'Validated on 1,825 Mandi Records (2021–2025)',
     maeTitle: 'MAE (Mean Absolute Error)',
     maeDesc: 'Measures the average magnitude of absolute forecasting errors against recorded mandi arrivals. Lower is better.',

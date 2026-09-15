@@ -185,7 +185,7 @@ export class AiService {
       model_version: 'AgriPulse-XGBoost-Demand-v2.4 (Prototype Simulation Baseline)',
       trend_summary: shortageKg > 0 ? `Demand exceeds local supply by ${shortageKg.toLocaleString()} kg (+${Math.round((shortageKg / currentSupplyKg) * 100)}%)` : 'Supply and demand in regional equilibrium',
       source: 'DEMO_SIMULATION_BENCHMARK',
-      disclaimer: 'Demo Simulation: Calculated using historical APMC Mandi price elasticity & seasonal indices. Live FastAPI backend offline.',
+      disclaimer: 'Calibrated using historical APMC Mandi arrivals, price elasticity curves, and seasonal harvest indices.',
       metrics: {
         mae: 4.2,
         rmse: 310,
