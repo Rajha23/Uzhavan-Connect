@@ -54,11 +54,6 @@ export const Footer: React.FC = () => {
             <p className="text-xs text-emerald-100/80 leading-relaxed font-normal">
               Demand-Driven Agricultural Marketplace & Operating System unifies smallholder farmers directly with institutional buyers using real-time demand forecasting.
             </p>
-            <div className="pt-1">
-              <span className="text-[11px] bg-emerald-950/60 text-emerald-300 px-3 py-1 rounded-lg border border-emerald-500/30 font-medium inline-block">
-                Ministry of Consumer Affairs, Food & Public Distribution
-              </span>
-            </div>
           </div>
 
           {/* Col 2: Modules & Dashboards */}
