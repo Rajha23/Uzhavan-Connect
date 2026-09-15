@@ -92,7 +92,7 @@ export const TAB_TO_PATH: Record<string, string> = {
   farmer: '/farmer',
   buyer: '/buyer',
   'bulk-buyer': '/bulk-buyer',
-  'bulk-demand': '/bulk-buyer',
+  'bulk-demand': '/bulk-demand',
   fpo: '/fpo',
   logistics: '/operations',
   admin: '/admin',

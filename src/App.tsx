@@ -102,11 +102,16 @@ const PageContent: React.FC = () => {
     // ── Direct Portal Routes ─────────────────────────
     case 'bulk-buyer':
     case 'bulk-dashboard':
-    case 'bulk-demand':
       if (currentRole !== 'BULK_BUYER' && currentRole !== 'ADMIN') {
         return <AccessDenied attemptedFeature="Bulk Buyer Procurement Portal" />;
       }
       return <BulkBuyerDashboard />;
+
+    case 'bulk-demand':
+      if (currentRole !== 'BULK_BUYER' && currentRole !== 'ADMIN') {
+        return <AccessDenied attemptedFeature="Bulk Demand Pool" />;
+      }
+      return <DemandPoolPage />;
 
     case 'farmer':
     case 'farmer-dashboard':
