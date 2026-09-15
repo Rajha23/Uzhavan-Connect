@@ -167,6 +167,19 @@
     @apply bg-[#f8faf8]/95 backdrop-blur-md border-r border-[#7f9f94]/30 shadow-soft;
   }
 
+  .dashboard-main {
+    background:
+      radial-gradient(circle at 12% 0%, rgba(44, 126, 119, 0.34), transparent 32%),
+      radial-gradient(circle at 88% 10%, rgba(216, 155, 66, 0.16), transparent 28%),
+      linear-gradient(135deg, #173b40 0%, #16333a 48%, #102a31 100%);
+    color: #eef8f2;
+  }
+
+  .dashboard-main > * {
+    position: relative;
+    z-index: 1;
+  }
+
   /* AI Card Standard */
   .ai-card {
     @apply bg-white/95 rounded-2xl border border-[#7f9f94]/30 shadow-soft hover:border-[#147d78]/45 hover:shadow-ai-hover transition-all duration-200;
