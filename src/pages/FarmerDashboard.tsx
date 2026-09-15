@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
-import { CHENNAI_TOMATO_FORECAST, AGRICULTURE_NEWS } from '../data/mockData';
-import { getCropImageUrl } from "../utils/cropImages";
-
+import { CHENNAI_TOMATO_FORECAST } from '../data/mockData';
+import { getCropImageUrl } from '../utils/cropImages';
 import { ProduceListing, WorkflowOrder, WorkflowAgreement } from '../types';
-import { NewsTicker } from '../components/NewsTicker';
-import { NewsCard } from '../components/NewsCard';
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 import {
   Sprout,
@@ -259,7 +256,6 @@ export const FarmerDashboard: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full">
-      <NewsTicker news={AGRICULTURE_NEWS} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-7 w-full">
         {/* 1. Agricultural Hero Card */}
       <div className="relative overflow-hidden bg-gradient-to-br from-[#01472e] via-[#025235] to-[#013823] text-[#fefae0] rounded-[32px] p-6 sm:p-9 border border-[#a3b18a]/30 shadow-forest">
@@ -411,22 +407,6 @@ export const FarmerDashboard: React.FC = () => {
         />
       </KPIGrid>
 
-      {/* Agriculture News Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-medium tracking-tight text-[#01472e]">
-            {t('farmer.newsTitle', 'Agriculture News & Updates')}
-          </h2>
-          <button className="text-xs font-medium text-emerald-700 hover:text-emerald-800 transition-colors">
-            View all
-          </button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {AGRICULTURE_NEWS.slice(0, 4).map((article) => (
-            <NewsCard key={article.id} article={article} />
-          ))}
-        </div>
-      </div>
       {successMessage && (
         <div className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-medium flex items-center gap-2 animate-in fade-in duration-200">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -913,7 +893,418 @@ export const FarmerDashboard: React.FC = () => {
           )}
         </div>
       </div>
-      </div>
+    </div>
+
+      {/* ── DETAIL DRAWER ─────────────────────────────────────────── */}
+      <DetailDrawer
+        isOpen={!!drawerState}
+        onClose={() => setDrawerState(null)}
+        title={
+          drawerState?.type === 'harvest-listing' ? `${drawerState.data?.crop || 'Produce'} (${drawerState.data?.variety || 'Lot'})` :
+          drawerState?.type === 'listed-volume' ? 'Total Listed Volume' :
+          drawerState?.type === 'buyer-demand' ? 'Active Buyer Demand' :
+          drawerState?.type === 'payout-share' ? 'Direct Payout Share' :
+          drawerState?.type === 'cold-chain' ? 'Assigned Cold-Chain' :
+          drawerState?.type === 'ai-mentor' ? 'AI Farmer Mentor & Demand Forecast' :
+          'Details'
+        }
+        description={
+          drawerState?.type === 'harvest-listing' ? `Listing ID: ${drawerState.data?.id} • ${drawerState.data?.fpoName || 'GreenHarvest FPO'}` :
+          drawerState?.type === 'listed-volume' ? 'All your produce listings and quantities' :
+          drawerState?.type === 'buyer-demand' ? 'Current demand matching your produce' :
+          drawerState?.type === 'payout-share' ? 'Earnings breakdown comparison' :
+          drawerState?.type === 'cold-chain' ? 'Cold-chain transport assignment details' :
+          drawerState?.type === 'ai-mentor' ? 'Predictive intelligence, Brix advisory & 7-day forecast' :
+          undefined
+        }
+        icon={
+          drawerState?.type === 'harvest-listing' ? Sprout :
+          drawerState?.type === 'listed-volume' ? Sprout :
+          drawerState?.type === 'buyer-demand' ? Sparkles :
+          drawerState?.type === 'payout-share' ? Scale :
+          drawerState?.type === 'cold-chain' ? Truck :
+          drawerState?.type === 'ai-mentor' ? Sparkles :
+          undefined
+        }
+        width={drawerState?.type === 'harvest-listing' || drawerState?.type === 'ai-mentor' ? 'lg' : 'md'}
+        footer={
+          drawerState?.type === 'harvest-listing' && drawerState.data ? (
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button 
+                onClick={() => { setDrawerState(null); setActiveTab('smart-matching'); }} 
+                className="btn-primary text-xs flex-1"
+              >
+                <Sparkles className="w-3.5 h-3.5" /> Smart Match ({drawerState.data.quantityKg.toLocaleString()} kg)
+              </button>
+              <button 
+                onClick={() => { setDrawerState(null); openPassportModal(); }} 
+                className="btn-secondary text-xs"
+              >
+                <QrCode className="w-3.5 h-3.5" /> Batch QR Passport
+              </button>
+              <button onClick={() => setDrawerState(null)} className="btn-ghost text-xs">Close</button>
+            </div>
+          ) : drawerState?.type === 'listed-volume' ? (
+            <div className="flex gap-2">
+              <button onClick={() => { setDrawerState(null); setIsAddingListing(true); }} className="btn-primary text-xs flex-1"><Plus className="w-3.5 h-3.5" /> Add New Crop</button>
+              <button onClick={() => setDrawerState(null)} className="btn-ghost text-xs">Close</button>
+            </div>
+          ) : drawerState?.type === 'buyer-demand' ? (
+            <div className="flex gap-2">
+              <button onClick={() => { setDrawerState(null); setActiveTab('smart-matching'); }} className="btn-primary text-xs flex-1"><Sparkles className="w-3.5 h-3.5" /> Smart Match</button>
+              <button onClick={() => setDrawerState(null)} className="btn-ghost text-xs">Close</button>
+            </div>
+          ) : drawerState?.type === 'ai-mentor' ? (
+            <div className="flex gap-2">
+              <button onClick={() => { setDrawerState(null); setActiveTab('smart-matching'); }} className="btn-primary text-xs flex-1"><Sparkles className="w-3.5 h-3.5" /> Match for Market Premium</button>
+              <button onClick={() => setDrawerState(null)} className="btn-ghost text-xs">Close</button>
+            </div>
+          ) : undefined
+        }
+      >
+        {/* Harvest Listing Full View Drawer */}
+        {drawerState?.type === 'harvest-listing' && drawerState.data && (() => {
+          const item: ProduceListing = drawerState.data;
+          const lifecycle = getFarmerProduceLifecycle(item, orders, agreements);
+          const totalListed = item.initialQuantityKg || (item.quantityKg + (item.allocatedQuantityKg || 0));
+          const allocated = item.allocatedQuantityKg || 0;
+          const available = item.quantityKg;
+          const allocatedPct = totalListed > 0 ? Math.round((allocated / totalListed) * 100) : 0;
+
+          return (
+            <div className="space-y-4">
+              {/* Header Status & Identification */}
+              <div className="p-4 bg-[#eaf4ec] rounded-2xl border border-[#a3b18a]/40 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-[#01472e] font-semibold">{item.id}</span>
+                  <span className={`text-[10px] font-semibold px-3 py-0.5 rounded-full border ${lifecycle.badgeColor}`}>
+                    {lifecycle.stage}
+                  </span>
+                </div>
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <h3 className="text-base font-bold text-[#01472e]">{item.crop}</h3>
+                    <p className="text-xs text-[#5c7065]">{item.variety || 'Certified Hybrid Lot'}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-lg font-bold text-[#01472e]">₹{item.expectedPricePerKg}</span>
+                    <span className="text-[10px] text-[#5c7065] block">/kg expected</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Volume & Inventory Allocation Strip */}
+              <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-[#01472e] uppercase tracking-wider text-[10px]">Inventory Allocation</span>
+                  <span className="font-semibold text-[#01472e]">{allocatedPct}% Committed</span>
+                </div>
+                <div className="w-full bg-[#ccd5ae]/40 h-2.5 rounded-full overflow-hidden">
+                  <div
+                    className="bg-[#01472e] h-full rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, allocatedPct)}%` }}
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div className="bg-white p-2.5 rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[9px] uppercase text-[#788c80] block font-medium">Available</span>
+                    <span className="font-bold text-[#01472e] text-sm">{available.toLocaleString()} kg</span>
+                  </div>
+                  <div className="bg-white p-2.5 rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[9px] uppercase text-[#788c80] block font-medium">Allocated</span>
+                    <span className="font-bold text-amber-700 text-sm">{allocated.toLocaleString()} kg</span>
+                  </div>
+                  <div className="bg-white p-2.5 rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[9px] uppercase text-[#788c80] block font-medium">Total Listed</span>
+                    <span className="font-bold text-[#01472e] text-sm">{totalListed.toLocaleString()} kg</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quality & Lot Specifications */}
+              <div className="space-y-2">
+                <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Lot Specifications</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-3 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[10px] text-[#788c80] block">Quality Grade</span>
+                    <span className="text-xs font-semibold text-[#01472e]">{item.grade}</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[10px] text-[#788c80] block">Harvest Date</span>
+                    <span className="text-xs font-semibold text-[#01472e]">{item.harvestDate}</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[10px] text-[#788c80] block">Mandi / Hub</span>
+                    <span className="text-xs font-semibold text-[#01472e] truncate block">{item.location}</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                    <span className="text-[10px] text-[#788c80] block">FPO Partner</span>
+                    <span className="text-xs font-semibold text-[#01472e] truncate block">{item.fpoName || 'GreenHarvest FPO'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 10-Stage Supply Chain Stepper */}
+              <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 space-y-2.5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-[#01472e] uppercase tracking-wider text-[10px]">
+                    Supply Chain Lifecycle (Stage {lifecycle.stageIndex + 1} of 10)
+                  </span>
+                  <span className="text-[10px] text-[#01472e] font-mono font-medium">
+                    {lifecycle.activeOrder ? `Order #${lifecycle.activeOrder.id}` : 'Open Supply Pool'}
+                  </span>
+                </div>
+                <div className="grid grid-cols-5 gap-1.5 pt-1">
+                  {STAGES.map((st, idx) => {
+                    const isPast = idx < lifecycle.stageIndex;
+                    const isCurrent = idx === lifecycle.stageIndex;
+                    return (
+                      <div
+                        key={st.key}
+                        className={`p-1.5 rounded-lg border text-center text-[9px] ${
+                          isCurrent
+                            ? 'bg-[#01472e] text-[#fefae0] border-[#01472e] font-bold shadow-2xs'
+                            : isPast
+                            ? 'bg-[#eaf4ec] text-[#01472e] border-[#a3b18a]/40 font-semibold'
+                            : 'bg-white text-[#788c80] border-[#ccd5ae]/30'
+                        }`}
+                      >
+                        <span className="block font-mono">{idx + 1}</span>
+                        <span className="truncate block">{st.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Listed Volume Drawer */}
+        {drawerState?.type === 'listed-volume' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-[#eaf4ec] rounded-xl border border-[#a3b18a]/30">
+              <span className="text-xs font-medium text-[#01472e]">Total Volume</span>
+              <span className="text-sm font-bold text-[#01472e]">{listings.reduce((sum, l) => sum + (l.quantityKg || 0), 0).toLocaleString()} kg</span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-[#faf9f5] rounded-xl border border-[#ccd5ae]/30">
+              <span className="text-xs font-medium text-[#5c7065]">Produce Lots</span>
+              <span className="text-sm font-semibold text-[#01472e]">{listings.length}</span>
+            </div>
+            <div className="pt-2 space-y-2">
+              {listings.map((item) => {
+                const lifecycle = getFarmerProduceLifecycle(item, orders, agreements);
+                return (
+                  <div 
+                    key={item.id} 
+                    onClick={() => setDrawerState({ type: 'harvest-listing', data: item })}
+                    className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs space-y-1.5 hover:border-[#01472e]/50 cursor-pointer transition-all"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Sprout className="w-3.5 h-3.5 text-[#01472e]" />
+                        <span className="text-xs font-semibold text-[#01472e]">{item.crop}</span>
+                        {item.variety && <span className="text-[10px] bg-[#fefae0] text-[#01472e] border border-[#ccd5ae] px-2 py-0.5 rounded-full">{item.variety}</span>}
+                      </div>
+                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${lifecycle.badgeColor}`}>{lifecycle.stage}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-[10px] text-[#5c7065]">
+                      <div><span className="block font-medium text-[#788c80]">Qty</span><span className="text-[#01472e] font-semibold">{item.quantityKg.toLocaleString()} kg</span></div>
+                      <div><span className="block font-medium text-[#788c80]">Price</span><span className="text-[#01472e] font-semibold">₹{item.expectedPricePerKg}/kg</span></div>
+                      <div><span className="block font-medium text-[#788c80]">Grade</span><span className="text-[#01472e] font-semibold">{item.grade}</span></div>
+                    </div>
+                    <div className="text-[10px] text-[#5c7065] flex items-center justify-between pt-1">
+                      <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{item.location}</span>
+                      <span className="text-[#01472e] font-semibold flex items-center gap-0.5">Details →</span>
+                    </div>
+                  </div>
+                );
+              })}
+              {listings.length === 0 && (
+                <div className="p-6 text-center text-[#5c7065] text-xs">
+                  <Sprout className="w-8 h-8 mx-auto mb-2 text-[#a3b18a]" />
+                  <p>No produce listings yet.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Buyer Demand Drawer */}
+        {drawerState?.type === 'buyer-demand' && (
+          <div className="space-y-3">
+            <div className="p-4 bg-blue-50 rounded-xl border border-blue-200 space-y-2">
+              <div className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-blue-700" /><span className="text-xs font-semibold text-blue-900">Active Demand Match</span></div>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div><span className="text-[10px] font-medium text-blue-600 block">Buyer</span><span className="font-semibold text-blue-900">Koyambedu Terminal</span></div>
+                <div><span className="text-[10px] font-medium text-blue-600 block">Product</span><span className="font-semibold text-blue-900">Tomato</span></div>
+                <div><span className="text-[10px] font-medium text-blue-600 block">Required</span><span className="font-semibold text-blue-900">1,000 kg</span></div>
+                <div><span className="text-[10px] font-medium text-blue-600 block">Quality</span><span className="font-semibold text-blue-900">Grade A</span></div>
+                <div><span className="text-[10px] font-medium text-blue-600 block">Delivery</span><span className="font-semibold text-blue-900">Sep 17, 2026</span></div>
+                <div><span className="text-[10px] font-medium text-blue-600 block">Status</span><span className="font-semibold text-emerald-700">Open</span></div>
+              </div>
+            </div>
+            <div className="pt-1">
+              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Matching Farmers</span>
+              <div className="mt-2 space-y-2">
+                {[
+                  { name: 'Kallakurichi Farmer A', qty: 400, match: '92% match', rate: '₹26/kg' },
+                  { name: 'Salem Hub Farmer B', qty: 350, match: '87% match', rate: '₹25.5/kg' },
+                  { name: 'Attur Collective C', qty: 250, match: '84% match', rate: '₹25/kg' }
+                ].map((m, idx) => (
+                  <div key={idx} className="p-3 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs flex items-center justify-between">
+                    <div>
+                      <span className="text-xs font-medium text-[#01472e] block">{m.name}</span>
+                      <span className="text-[10px] text-emerald-700 font-semibold">{m.match}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-bold text-[#01472e]">{m.qty.toLocaleString()} kg</span>
+                      <span className="text-[10px] text-[#5c7065] block">{m.rate}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Payout Share Drawer */}
+        {drawerState?.type === 'payout-share' && (
+          <div className="space-y-4">
+            <div className="p-4 bg-[#eaf4ec] rounded-xl border border-[#a3b18a]/30">
+              <div className="text-center">
+                <span className="text-3xl font-bold text-[#01472e]">89.0%</span>
+                <span className="text-xs text-[#5c7065] block mt-1">Net Farmer Realization</span>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Earnings Breakdown</span>
+              {[
+                { label: 'Farmer Share', value: '89.0%', color: 'bg-emerald-500' },
+                { label: 'Logistics', value: '8.0%', color: 'bg-blue-400' },
+                { label: 'FPO Service Fee', value: '3.0%', color: 'bg-amber-400' },
+              ].map((row) => (
+                <div key={row.label} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                  <div className={`w-3 h-3 rounded-full ${row.color} shrink-0`} />
+                  <span className="text-xs text-[#01472e] flex-1 font-medium">{row.label}</span>
+                  <span className="text-xs font-bold text-[#01472e]">{row.value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="p-4 bg-[#faf9f5] rounded-xl border border-[#ccd5ae]/30 space-y-2">
+              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Comparison</span>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="p-3 bg-white rounded-xl border border-[#ccd5ae]/40 text-center">
+                  <span className="text-[10px] text-[#788c80] block">Traditional Mandi</span>
+                  <span className="text-lg font-bold text-rose-600">27.2%</span>
+                </div>
+                <div className="p-3 bg-white rounded-xl border border-[#ccd5ae]/40 text-center">
+                  <span className="text-[10px] text-[#788c80] block">Uzhavan Connect</span>
+                  <span className="text-lg font-bold text-emerald-700">89.0%</span>
+                </div>
+              </div>
+              <div className="text-center text-xs text-emerald-700 font-semibold">+61.8% improvement in farmer earnings</div>
+            </div>
+          </div>
+        )}
+
+        {/* Cold-Chain Drawer */}
+        {drawerState?.type === 'cold-chain' && (
+          <div className="space-y-3">
+            <div className="p-4 bg-purple-50 rounded-xl border border-purple-200 space-y-3">
+              <div className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-purple-700" /><span className="text-xs font-semibold text-purple-900">Cold-Chain Status</span></div>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div><span className="text-[10px] font-medium text-purple-600 block">Temperature</span><span className="font-semibold text-purple-900">4.0°C</span></div>
+                <div><span className="text-[10px] font-medium text-purple-600 block">Type</span><span className="font-semibold text-purple-900">Reefer EV 5.5T</span></div>
+                <div><span className="text-[10px] font-medium text-purple-600 block">Monitoring</span><span className="font-semibold text-purple-900">IoT Sensor</span></div>
+                <div><span className="text-[10px] font-medium text-purple-600 block">Status</span><span className="font-semibold text-emerald-700">Active</span></div>
+              </div>
+            </div>
+            {orders.filter(o => o.transportDetails).slice(0, 3).map((o) => (
+              <div key={o.id} className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#01472e]">{o.id}</span>
+                  <span className="text-[10px] font-medium text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">{o.status}</span>
+                </div>
+                {o.transportDetails && (
+                  <div className="grid grid-cols-2 gap-2 text-[10px] text-[#5c7065]">
+                    <div><span className="block font-medium text-[#788c80]">Vehicle</span><span className="text-[#01472e] font-semibold">{o.transportDetails.vehicleNumber}</span></div>
+                    <div><span className="block font-medium text-[#788c80]">Driver</span><span className="text-[#01472e] font-semibold">{o.transportDetails.driverName}</span></div>
+                    <div><span className="block font-medium text-[#788c80]">Carrier</span><span className="text-[#01472e] font-semibold">{o.transportDetails.carrierName}</span></div>
+                    <div><span className="block font-medium text-[#788c80]">ETA</span><span className="text-[#01472e] font-semibold">{o.transportDetails.estimatedArrival}</span></div>
+                  </div>
+                )}
+              </div>
+            ))}
+            {orders.filter(o => o.transportDetails).length === 0 && (
+              <div className="p-4 text-center text-xs text-[#5c7065]">No active transport assignments.</div>
+            )}
+          </div>
+        )}
+
+        {/* AI Mentor & Demand Forecast Drawer */}
+        {drawerState?.type === 'ai-mentor' && (
+          <div className="space-y-4">
+            {/* Primary Insight */}
+            <div className="p-4 bg-[#eaf4ec] rounded-2xl border border-[#a3b18a]/40 space-y-2">
+              <div className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-[#01472e]" /><span className="text-xs font-semibold text-[#01472e]">AI Agronomist Strategic Intelligence</span></div>
+              <p className="text-xs text-[#01472e] leading-relaxed">
+                {CHENNAI_TOMATO_FORECAST.insight}
+              </p>
+            </div>
+
+            {/* Live 7-Day Demand Forecast Metrics */}
+            <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-semibold text-[#01472e] uppercase tracking-wider text-[10px]">
+                  7-Day Forward Demand Forecast ({CHENNAI_TOMATO_FORECAST.crop})
+                </span>
+                <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  {CHENNAI_TOMATO_FORECAST.confidenceScore}% Confidence
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                  <span className="text-[10px] text-[#788c80] block">Projected Demand</span>
+                  <span className="font-bold text-[#01472e] text-sm">{CHENNAI_TOMATO_FORECAST.predictedDemandKg.toLocaleString()} kg</span>
+                  <span className="text-[10px] text-emerald-700 block mt-0.5">↑ +13.6% vs current</span>
+                </div>
+                <div className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                  <span className="text-[10px] text-[#788c80] block">Available Supply</span>
+                  <span className="font-bold text-[#01472e] text-sm">{CHENNAI_TOMATO_FORECAST.availableSupplyKg.toLocaleString()} kg</span>
+                  <span className="text-[10px] text-amber-700 block mt-0.5">Deficit: {CHENNAI_TOMATO_FORECAST.supplyGapKg.toLocaleString()} kg</span>
+                </div>
+                <div className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                  <span className="text-[10px] text-[#788c80] block">Indicative Farmgate</span>
+                  <span className="font-bold text-[#01472e] text-sm">₹{CHENNAI_TOMATO_FORECAST.indicativePricePerKg}/kg</span>
+                  <span className="text-[10px] text-[#5c7065] block mt-0.5">Grade A Benchmark</span>
+                </div>
+                <div className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
+                  <span className="text-[10px] text-[#788c80] block">Corridor Region</span>
+                  <span className="font-bold text-[#01472e] text-xs truncate block">{CHENNAI_TOMATO_FORECAST.region}</span>
+                  <span className="text-[10px] text-[#5c7065] block mt-0.5">{CHENNAI_TOMATO_FORECAST.modelVersion}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Actionable Recommendations */}
+            <div className="space-y-2">
+              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Actionable Recommendations</span>
+              {[
+                { tip: 'Harvest within Sep 16–20 for Grade A export & institutional retail contracts', icon: Calendar },
+                { tip: 'Pre-grade lots at FPO hub: Grade A gets 15-25% premium above mandi floor', icon: TrendingUp },
+                { tip: 'Maintain cold chain below 4.5°C to preserve firmness and Brix sugar rating', icon: ShieldCheck },
+              ].map((r, i) => (
+                <div key={i} className="p-3 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs flex items-start gap-2.5">
+                  <r.icon className="w-3.5 h-3.5 text-[#01472e] shrink-0 mt-0.5" />
+                  <span className="text-xs text-[#01472e] leading-snug">{r.tip}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </DetailDrawer>
+>>>>>>> d9dd3a1 (feat: move agricultural news and updates to a separate page)
     </div>
   );
 };
