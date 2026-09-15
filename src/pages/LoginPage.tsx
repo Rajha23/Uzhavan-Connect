@@ -185,9 +185,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                   Uzhavan Connect
                 </span>
               </div>
-              <span className="text-[11px] text-slate-500 font-medium block">
-                Ministry of Consumer Affairs, Food & Public Distribution
-              </span>
             </div>
           </div>
 
