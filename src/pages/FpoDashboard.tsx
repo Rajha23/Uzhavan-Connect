@@ -671,33 +671,7 @@ export const FpoDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* ── CORE OBJECTIVE: DEMAND-DRIVEN ARCHITECTURE CALLOUT ───────────────── */}
-      <div className="p-4.5 bg-gradient-to-r from-[#eaf4ec] via-[#f4f7f2] to-[#eaf4ec] border border-[#a3b18a]/50 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
-        <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#01472e] text-[#fefae0] flex items-center justify-center font-bold text-sm shrink-0">
-            ★
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-xs font-semibold text-[#01472e] uppercase tracking-wider">
-                Demand-Driven Supply Chain Architecture
-              </h3>
-              <span className="text-[10px] bg-[#01472e] text-white px-2 py-0.5 rounded-full font-semibold">
-                Zero Speculative Holding
-              </span>
-            </div>
-            <p className="text-xs text-[#01472e]/80 mt-0.5">
-              Produce is collected strictly against verified buyer purchase requirements. Eliminates distress selling, reduces post-harvest losses by 28%, and secures guaranteed 89% net realization for member farmers.
-            </p>
-          </div>
-        </div>
 
-        <div className="flex items-center gap-2 text-xs font-semibold text-[#01472e] shrink-0 self-end sm:self-center">
-          <span className="bg-white px-3 py-1.5 rounded-xl border border-[#a3b18a]/40 shadow-xs font-mono">
-            Direct Escrow: 89% Farmer / 8% Logistics / 3% FPO
-          </span>
-        </div>
-      </div>
 
       {/* ── ACTION NOTIFICATION BANNER ────────────────────────────────────────── */}
       {actionSuccessMessage && (
