@@ -22,6 +22,7 @@ import {
   Building2
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 
 const STATUS_STYLES: Record<string, string> = {
   'Created': 'bg-[#faf9f5] text-slate-700 border-[#ccd5ae]/60',
@@ -202,27 +203,44 @@ export const OrdersPage: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
-        {[
-          { label: t('orders.totalOrders', 'Total Orders'), value: orders.length.toString(), icon: Package, color: 'text-slate-900', bg: 'bg-[#faf9f5]' },
-          { label: t('orders.deliveredSettled', 'Delivered / Settled'), value: deliveredCount.toString(), icon: CheckCircle2, color: 'text-[#01472e]', bg: 'bg-[#eaf4ec]' },
-          { label: t('orders.inProgress', 'In Progress'), value: inProgressCount.toString(), icon: Clock, color: 'text-amber-700', bg: 'bg-amber-50' },
-          { label: t('orders.totalValue', 'Total Value'), value: `₹${totalRevenue.toLocaleString()}`, icon: CreditCard, color: 'text-[#01472e]', bg: 'bg-[#faf9f5]' },
-        ].map((card) => {
-          const Icon = card.icon;
-          return (
-            <div key={card.label} className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-slate-500 font-medium">{card.label}</p>
-                <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
-                  <Icon className="w-4 h-4" />
-                </div>
-              </div>
-              <p className={`text-2xl sm:text-3xl font-bold font-mono mt-1.5 ${card.color}`}>{card.value}</p>
-            </div>
-          );
-        })}
-      </div>
+      <KPIGrid columns={4}>
+        <KPIStatCard
+          label={t('orders.totalOrders', 'Total Orders')}
+          value={orders.length.toString()}
+          icon={Package}
+          iconColor="text-[#01472e]"
+          iconBg="bg-[#eaf4ec]"
+          valueColor="text-slate-900"
+          subtitle={t('orders.allTimeBookings', 'All active & archived')}
+        />
+        <KPIStatCard
+          label={t('orders.deliveredSettled', 'Delivered / Settled')}
+          value={deliveredCount.toString()}
+          icon={CheckCircle2}
+          iconColor="text-[#01472e]"
+          iconBg="bg-[#eaf4ec]"
+          valueColor="text-[#01472e]"
+          subtitle={t('orders.completedFulfillments', 'Completed fulfillments')}
+        />
+        <KPIStatCard
+          label={t('orders.inProgress', 'In Progress')}
+          value={inProgressCount.toString()}
+          icon={Clock}
+          iconColor="text-amber-700"
+          iconBg="bg-amber-50"
+          valueColor="text-amber-700"
+          subtitle={t('orders.activeInPipeline', 'In active workflow pipeline')}
+        />
+        <KPIStatCard
+          label={t('orders.totalValue', 'Total Value')}
+          value={`₹${totalRevenue.toLocaleString()}`}
+          icon={CreditCard}
+          iconColor="text-[#01472e]"
+          iconBg="bg-[#eaf4ec]"
+          valueColor="text-[#01472e]"
+          subtitle={t('orders.cumulativeTurnover', 'Escrow transacted value')}
+        />
+      </KPIGrid>
 
       {/* Filters & Search */}
       <div className="flex flex-col sm:flex-row gap-3">

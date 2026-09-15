@@ -26,6 +26,7 @@ import {
 import { AppNotification, NotificationCategory, NotificationPriority } from '../types';
 import { ROLE_DISPLAY_LABELS, ROLE_BADGE_STYLES } from '../services/routeGuard';
 import { useLanguage } from '../context/LanguageContext';
+import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 
 export const NotificationsPage: React.FC = () => {
   const {
@@ -239,54 +240,45 @@ export const NotificationsPage: React.FC = () => {
         </div>
 
         {/* Quick KPI Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-6 mt-6 border-t border-[#ccd5ae]/40">
-          <div className="p-4 bg-white/90 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
-                {t('notifications.kpiTotal', 'Total Alerts')}
-              </span>
-              <Bell className="w-3.5 h-3.5 text-[#01472e]" />
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <strong className="text-xl font-bold text-[#01472e]">{stats.total}</strong>
-            </div>
-          </div>
-
-          <div className="p-4 bg-white/90 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
-                {t('notifications.kpiUnread', 'Unread')}
-              </span>
-              <Eye className="w-3.5 h-3.5 text-amber-600" />
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <strong className="text-xl font-bold text-amber-700">{stats.unread}</strong>
-            </div>
-          </div>
-
-          <div className="p-4 bg-white/90 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
-                {t('notifications.kpiAction', 'Action Required')}
-              </span>
-              <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <strong className="text-xl font-bold text-rose-700">{stats.actionRequired}</strong>
-            </div>
-          </div>
-
-          <div className="p-4 bg-white/90 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">
-                {t('notifications.kpiSettled', 'Completed Events')}
-              </span>
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <strong className="text-xl font-bold text-emerald-800">{stats.success}</strong>
-            </div>
-          </div>
+        <div className="pt-6 mt-6 border-t border-[#ccd5ae]/40">
+          <KPIGrid columns={4}>
+            <KPIStatCard
+              label={t('notifications.kpiTotal', 'Total Alerts')}
+              value={stats.total}
+              icon={Bell}
+              iconColor="text-[#01472e]"
+              iconBg="bg-[#eaf4ec]"
+              valueColor="text-[#01472e]"
+              subtitle={t('notifications.allTimeReceived', 'Logged platform alerts')}
+            />
+            <KPIStatCard
+              label={t('notifications.kpiUnread', 'Unread')}
+              value={stats.unread}
+              icon={Eye}
+              iconColor="text-amber-600"
+              iconBg="bg-amber-50"
+              valueColor="text-amber-700"
+              subtitle={t('notifications.pendingReview', 'Pending your review')}
+            />
+            <KPIStatCard
+              label={t('notifications.kpiAction', 'Action Required')}
+              value={stats.actionRequired}
+              icon={AlertTriangle}
+              iconColor="text-rose-600"
+              iconBg="bg-rose-50"
+              valueColor="text-rose-700"
+              subtitle={t('notifications.urgentAttention', 'Urgent workflow actions')}
+            />
+            <KPIStatCard
+              label={t('notifications.kpiSettled', 'Completed Events')}
+              value={stats.success}
+              icon={CheckCircle2}
+              iconColor="text-emerald-600"
+              iconBg="bg-emerald-50"
+              valueColor="text-emerald-800"
+              subtitle={t('notifications.settledDelivered', 'Verified & settled')}
+            />
+          </KPIGrid>
         </div>
       </div>
 

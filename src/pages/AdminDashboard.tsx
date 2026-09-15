@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
+import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 import {
   ShieldCheck,
   BarChart3,
@@ -111,28 +112,23 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      <KPIGrid columns={4}>
         {[
           { labelKey: 'admin.kpi.platformTradeVolume', defaultLabel: 'Platform Trade Volume', val: `${totalTradeVolumeKg.toLocaleString()} kg`, subKey: 'admin.kpi.completedActiveOrders', defaultSub: '{count} Completed & Active Orders', count: orders.length, icon: Layers, color: 'text-[#01472e]' },
           { labelKey: 'admin.kpi.escrowSettlements', defaultLabel: 'Escrow Settlements', val: `₹${totalSettledAmount.toLocaleString()}`, subKey: 'admin.kpi.auditedPayouts', defaultSub: '{count} Audited Payouts', count: settlements.length, icon: Landmark, color: 'text-indigo-700' },
           { labelKey: 'admin.kpi.registeredEntities', defaultLabel: 'Registered Entities', val: systemUsers.length.toString(), subKey: 'admin.kpi.verifiedActiveProfiles', defaultSub: '{count} Verified Active Profiles', count: activeUsersCount, icon: Users, color: 'text-teal-700' },
           { labelKey: 'admin.kpi.certifiedBatches', defaultLabel: 'Certified Batches', val: verifiedBatchesCount.toString(), subKey: 'admin.kpi.cryptoPassports', defaultSub: 'Cryptographic QR Passports', count: undefined, icon: QrCode, color: 'text-amber-700' },
-        ].map((item, idx) => {
-          const Icon = item.icon;
-          return (
-            <div key={idx} className="agri-card rounded-3xl p-5 sm:p-6 border border-[#ccd5ae]/40 bg-white shadow-soft">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-slate-500 font-medium">{t(item.labelKey, item.defaultLabel)}</span>
-                <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
-                  <Icon className="w-4 h-4" />
-                </div>
-              </div>
-              <p className={`text-2xl sm:text-3xl font-bold font-mono tracking-tight ${item.color}`}>{item.val}</p>
-              <p className="text-[11px] text-slate-400 mt-1.5 font-medium">{t(item.subKey, item.defaultSub, item.count !== undefined ? { count: item.count } : undefined)}</p>
-            </div>
-          );
-        })}
-      </div>
+        ].map((item, idx) => (
+          <KPIStatCard
+            key={idx}
+            label={t(item.labelKey, item.defaultLabel)}
+            value={item.val}
+            subtitle={t(item.subKey, item.defaultSub, item.count !== undefined ? { count: item.count } : undefined)}
+            icon={item.icon}
+            valueColor={item.color}
+          />
+        ))}
+      </KPIGrid>
 
       {/* Section Filter Pills */}
       <div className="flex gap-2.5 border-b border-[#ccd5ae]/40 pb-4 overflow-x-auto">

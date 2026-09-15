@@ -5,6 +5,7 @@ import { CHENNAI_TOMATO_FORECAST, AGRICULTURE_NEWS } from '../data/mockData';
 import { ProduceListing, WorkflowOrder, WorkflowAgreement } from '../types';
 import { NewsTicker } from '../components/NewsTicker';
 import { NewsCard } from '../components/NewsCard';
+import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 import {
   Sprout,
   TrendingUp,
@@ -368,55 +369,45 @@ export const FarmerDashboard: React.FC = () => {
       </div>
 
       {/* 4. Key Metric Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <div className="metric-card">
-          <span className="text-[11px] font-medium text-[#5c7065] uppercase tracking-wider block">
-            {t('farmer.totalListedVolume', 'Total Listed Volume')}
-          </span>
-          <p className="text-2xl sm:text-3xl font-medium tracking-tight text-[#01472e] mt-1.5">
-            {listings.reduce((sum, l) => sum + (l.quantityKg || 0), 0).toLocaleString()} <span className="text-sm font-normal text-[#5c7065]">kg</span>
-          </p>
-          <span className="text-[11px] text-[#01472e] font-medium mt-2 inline-flex items-center gap-1.5">
-            <TrendingUp className="w-3.5 h-3.5 text-[#01472e]" /> {t('farmer.acrossLots', 'Across {count} produce lots', { count: listings.length })}
-          </span>
-        </div>
+      <KPIGrid columns={4}>
+        <KPIStatCard
+          label={t('farmer.totalListedVolume', 'Total Listed Volume')}
+          value={`${listings.reduce((sum, l) => sum + (l.quantityKg || 0), 0).toLocaleString()} kg`}
+          subtitle={t('farmer.acrossLots', 'Across {count} produce lots', { count: listings.length })}
+          icon={Sprout}
+          trend={{ icon: TrendingUp }}
+          subtitleColor="text-[#01472e]"
+        />
 
-        <div className="metric-card">
-          <span className="text-[11px] font-medium text-[#5c7065] uppercase tracking-wider block">
-            {t('farmer.activeBuyerDemand', 'Active Buyer Demand')}
-          </span>
-          <p className="text-2xl sm:text-3xl font-medium tracking-tight text-[#01472e] mt-1.5">
-            1,000 <span className="text-sm font-normal text-[#5c7065]">kg</span>
-          </p>
-          <span className="text-[11px] text-blue-800 font-medium mt-2 inline-flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" /> {t('farmer.terminalMatch', 'Koyambedu Terminal Match')}
-          </span>
-        </div>
+        <KPIStatCard
+          label={t('farmer.activeBuyerDemand', 'Active Buyer Demand')}
+          value="1,000 kg"
+          subtitle={t('farmer.terminalMatch', 'Koyambedu Terminal Match')}
+          icon={Sparkles}
+          badgeColor="bg-blue-50 text-blue-700 border-blue-200"
+          trend={{ icon: Sparkles }}
+          subtitleColor="text-blue-800"
+        />
 
-        <div className="metric-card">
-          <span className="text-[11px] font-medium text-[#5c7065] uppercase tracking-wider block">
-            {t('farmer.directPayoutShare', 'Direct Payout Share')}
-          </span>
-          <p className="text-2xl sm:text-3xl font-medium tracking-tight text-[#01472e] mt-1.5">
-            89.0% <span className="text-sm font-normal text-[#5c7065]">net</span>
-          </p>
-          <span className="text-[11px] text-[#01472e] font-medium mt-2 inline-flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e]" /> {t('farmer.vsMandi', '+61.8% vs. Traditional Mandi')}
-          </span>
-        </div>
+        <KPIStatCard
+          label={t('farmer.directPayoutShare', 'Direct Payout Share')}
+          value="89.0% net"
+          subtitle={t('farmer.vsMandi', '+61.8% vs. Traditional Mandi')}
+          icon={Scale}
+          trend={{ icon: CheckCircle2 }}
+          subtitleColor="text-[#01472e]"
+        />
 
-        <div className="metric-card">
-          <span className="text-[11px] font-medium text-[#5c7065] uppercase tracking-wider block">
-            {t('farmer.assignedColdChain', 'Assigned Cold-Chain')}
-          </span>
-          <p className="text-2xl sm:text-3xl font-medium tracking-tight text-[#01472e] mt-1.5">
-            Reefer 4.0°C
-          </p>
-          <span className="text-[11px] text-purple-800 font-medium mt-2 inline-flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-purple-600" /> {t('farmer.sensorFleet', 'Sensor Monitored Fleet')}
-          </span>
-        </div>
-      </div>
+        <KPIStatCard
+          label={t('farmer.assignedColdChain', 'Assigned Cold-Chain')}
+          value="Reefer 4.0°C"
+          subtitle={t('farmer.sensorFleet', 'Sensor Monitored Fleet')}
+          icon={Truck}
+          badgeColor="bg-purple-50 text-purple-700 border-purple-200"
+          trend={{ icon: ShieldCheck }}
+          subtitleColor="text-purple-800"
+        />
+      </KPIGrid>
 
       {/* Agriculture News Section */}
       <div className="space-y-4">

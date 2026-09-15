@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { TransportAssignment } from '../types';
+import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 
 export const LogisticsDashboard: React.FC = () => {
   const { t, formatNumber } = useLanguage();
@@ -167,33 +168,27 @@ export const LogisticsDashboard: React.FC = () => {
       )}
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      <KPIGrid columns={4}>
         {[
           { labelKey: 'logistics.kpi.awaitingVehicle', defaultLabel: 'Awaiting Vehicle', count: awaitingTransportOrders.length, descKey: 'logistics.kpi.packedQRSealed', defaultDesc: 'Packed & QR Sealed', section: 'ASSIGN' as const, color: 'text-teal-700', bg: 'bg-teal-50', icon: Package },
           { labelKey: 'logistics.kpi.assignedOnBay', defaultLabel: 'Assigned on Bay', count: assignedOrders.length, descKey: 'logistics.kpi.readyForDispatch', defaultDesc: 'Ready for Dispatch', section: 'TRANSIT' as const, color: 'text-indigo-700', bg: 'bg-indigo-50', icon: Clock },
           { labelKey: 'logistics.kpi.enRouteInTransit', defaultLabel: 'En Route in Transit', count: inTransitOrders.length, descKey: 'logistics.kpi.coldChainTelemetry', defaultDesc: 'Cold-Chain Telemetry', section: 'TRANSIT' as const, color: 'text-amber-700', bg: 'bg-amber-50', icon: Truck },
           { labelKey: 'logistics.kpi.deliveredAtBuyerHubs', defaultLabel: 'Delivered at Buyer Hubs', count: deliveredOrders.length, descKey: 'logistics.kpi.receiptVerification', defaultDesc: 'Receipt Verification', section: 'DELIVERED' as const, color: 'text-[#01472e]', bg: 'bg-emerald-50', icon: CheckCircle2 },
         ].map((item) => (
-          <button
+          <KPIStatCard
             key={item.labelKey}
+            label={t(item.labelKey, item.defaultLabel)}
+            value={item.count}
+            subtitle={t(item.descKey, item.defaultDesc)}
+            icon={item.icon}
+            iconBg={item.bg}
+            iconColor={item.color}
+            valueColor={item.color}
+            isActive={activeSection === item.section}
             onClick={() => setActiveSection(item.section)}
-            className={`p-5 sm:p-6 rounded-3xl border text-left transition-all duration-200 cursor-pointer shadow-xs ${
-              activeSection === item.section
-                ? 'bg-white border-[#01472e] ring-2 ring-[#01472e]/20 shadow-soft -translate-y-0.5'
-                : 'bg-white/90 border-[#ccd5ae]/40 hover:border-[#a3b18a] hover:bg-white'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-slate-500 font-medium">{t(item.labelKey, item.defaultLabel)}</span>
-              <div className={`w-8 h-8 rounded-xl ${item.bg} flex items-center justify-center ${item.color}`}>
-                <item.icon className="w-4 h-4" />
-              </div>
-            </div>
-            <p className={`text-3xl sm:text-4xl font-bold font-mono tracking-tight ${item.color}`}>{item.count}</p>
-            <p className="text-[11px] text-slate-400 mt-1.5 font-medium">{t(item.descKey, item.defaultDesc)}</p>
-          </button>
+          />
         ))}
-      </div>
+      </KPIGrid>
 
       {/* Section Filter Pills */}
       <div className="flex gap-2.5 border-b border-[#ccd5ae]/40 pb-4 overflow-x-auto">

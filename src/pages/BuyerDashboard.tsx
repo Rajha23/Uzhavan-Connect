@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import { INITIAL_DEMAND_REQUESTS, SMART_MATCH_SUPPLIERS } from '../data/mockData';
 import { DemandRequest, WorkflowOrder, BuyerDeliveryConfirmation } from '../types';
+import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 import {
   ShoppingBag,
   Plus,
@@ -215,51 +216,35 @@ export const BuyerDashboard: React.FC = () => {
       />
 
       {/* Procurement Metrics Overview Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="agri-card p-6 rounded-[28px] border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-300">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider">{t('buyer.activeDemands', 'Active Demands')}</span>
-            <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
-              <Layers className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-3xl font-semibold tracking-tight text-[#01472e]">{demands.length}</p>
-          <span className="text-xs text-[#01472e]/70 font-medium mt-1 block">{t('buyer.acrossCommodities', 'Across {count} Commodities', { count: activeCropsCount })}</span>
-        </div>
+      <KPIGrid columns={4}>
+        <KPIStatCard
+          label={t('buyer.activeDemands', 'Active Demands')}
+          value={demands.length}
+          subtitle={t('buyer.acrossCommodities', 'Across {count} Commodities', { count: activeCropsCount })}
+          icon={Layers}
+        />
 
-        <div className="agri-card p-6 rounded-[28px] border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-300">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider">{t('buyer.unmetTargetVolume', 'Unmet Target Volume')}</span>
-            <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
-              <Package className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-3xl font-semibold tracking-tight text-[#01472e]">{totalDemandVolumeKg.toLocaleString()} <span className="text-sm font-normal text-[#01472e]/60">kg</span></p>
-          <span className="text-xs text-[#01472e] font-semibold mt-1 block">{t('buyer.openForAllocation', 'Open for Allocation')}</span>
-        </div>
+        <KPIStatCard
+          label={t('buyer.unmetTargetVolume', 'Unmet Target Volume')}
+          value={`${totalDemandVolumeKg.toLocaleString()} kg`}
+          subtitle={t('buyer.openForAllocation', 'Open for Allocation')}
+          icon={Package}
+        />
 
-        <div className="agri-card p-6 rounded-[28px] border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-300">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider">{t('buyer.allocatedVolume', 'Allocated Volume')}</span>
-            <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-3xl font-semibold tracking-tight text-[#01472e]">{totalAllocatedVolumeKg.toLocaleString()} <span className="text-sm font-normal text-[#01472e]/60">kg</span></p>
-          <span className="text-xs text-[#01472e]/70 font-medium mt-1 block">{t('buyer.underContract', 'Under Contract')}</span>
-        </div>
+        <KPIStatCard
+          label={t('buyer.allocatedVolume', 'Allocated Volume')}
+          value={`${totalAllocatedVolumeKg.toLocaleString()} kg`}
+          subtitle={t('buyer.underContract', 'Under Contract')}
+          icon={CheckCircle2}
+        />
 
-        <div className="agri-card p-6 rounded-[28px] border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-300">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-[#01472e]/60 font-semibold uppercase tracking-wider">{t('buyer.aggregationReady', 'Aggregation Ready')}</span>
-            <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-3xl font-semibold tracking-tight text-[#01472e]">100%</p>
-          <span className="text-xs text-[#01472e] font-semibold uppercase tracking-wider mt-1 block">{t('buyer.coordinatedLogistics', 'Coordinated Logistics')}</span>
-        </div>
-      </div>
+        <KPIStatCard
+          label={t('buyer.aggregationReady', 'Aggregation Ready')}
+          value="100%"
+          subtitle={t('buyer.coordinatedLogistics', 'Coordinated Logistics')}
+          icon={TrendingUp}
+        />
+      </KPIGrid>
 
       {/* Active Demands Table */}
       <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft overflow-hidden">

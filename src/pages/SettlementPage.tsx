@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useLanguage } from '../context/LanguageContext';
+import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 
 export const SettlementPage: React.FC = () => {
   const {
@@ -189,58 +190,35 @@ export const SettlementPage: React.FC = () => {
       </div>
 
       {/* Aggregate KPI Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="agri-card bg-white rounded-3xl border border-[#ccd5ae]/40 p-6 shadow-soft hover:border-[#a3b18a] transition">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              {t('settlement.totalSettledPayouts', 'Total Settled Payouts')}
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-[#01472e]">
-            ₹{totalSettledAmount.toLocaleString()}
-          </p>
-          <span className="text-xs text-slate-500 font-medium mt-1.5 block">
-            {settlements.filter((s) => isCompletedStatus(s.status)).length} {t('settlement.transactionsCompleted', 'Transactions Completed')}
-          </span>
-        </div>
-
-        <div className="agri-card bg-white rounded-3xl border border-[#ccd5ae]/40 p-6 shadow-soft hover:border-[#a3b18a] transition">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              {t('settlement.pendingEscrow', 'Locked in Escrow (Awaiting Payout)')}
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
-              <Clock className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-amber-700">
-            ₹{totalPendingAmount.toLocaleString()}
-          </p>
-          <span className="text-xs text-amber-700 font-medium mt-1.5 block">
-            {settlements.filter((s) => !isCompletedStatus(s.status)).length} {t('settlement.ordersInPipeline', 'Orders in Settlement Pipeline')}
-          </span>
-        </div>
-
-        <div className="agri-card bg-white rounded-3xl border border-[#ccd5ae]/40 p-6 shadow-soft hover:border-[#a3b18a] transition">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              {t('settlement.avgRealization', 'Average Farmer Net Realization')}
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-[#01472e]">
-            88.9%
-          </p>
-          <span className="text-xs text-slate-500 font-medium mt-1.5 block">
-            {t('settlement.mandiComparison', 'vs. 45-55% Traditional Mandi APMC Realization')}
-          </span>
-        </div>
-      </div>
+      <KPIGrid columns={3}>
+        <KPIStatCard
+          label={t('settlement.totalSettledPayouts', 'Total Settled Payouts')}
+          value={`₹${totalSettledAmount.toLocaleString()}`}
+          icon={CheckCircle2}
+          iconColor="text-[#01472e]"
+          iconBg="bg-[#eaf4ec]"
+          valueColor="text-[#01472e]"
+          subtitle={`${settlements.filter((s) => isCompletedStatus(s.status)).length} ${t('settlement.transactionsCompleted', 'Transactions Completed')}`}
+        />
+        <KPIStatCard
+          label={t('settlement.pendingEscrow', 'Locked in Escrow (Awaiting Payout)')}
+          value={`₹${totalPendingAmount.toLocaleString()}`}
+          icon={Clock}
+          iconColor="text-amber-700"
+          iconBg="bg-amber-50"
+          valueColor="text-amber-700"
+          subtitle={`${settlements.filter((s) => !isCompletedStatus(s.status)).length} ${t('settlement.ordersInPipeline', 'Orders in Settlement Pipeline')}`}
+        />
+        <KPIStatCard
+          label={t('settlement.avgRealization', 'Average Farmer Net Realization')}
+          value="88.9%"
+          icon={TrendingUp}
+          iconColor="text-[#01472e]"
+          iconBg="bg-[#eaf4ec]"
+          valueColor="text-[#01472e]"
+          subtitle={t('settlement.mandiComparison', 'vs. 45-55% Traditional Mandi APMC Realization')}
+        />
+      </KPIGrid>
 
       {/* Settlement Records List & Detail Container */}
       <div className="space-y-4">
