@@ -319,7 +319,7 @@ export const BulkBuyerDashboard: React.FC = () => {
       </div>
 
       {/* 6 Summary KPI Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 xl:gap-3.5 items-stretch">
         {[
           {
             label: t('bulkBuyer.activeBulkDemands', 'Active Bulk Demands'),
@@ -368,21 +368,39 @@ export const BulkBuyerDashboard: React.FC = () => {
           return (
             <div
               key={idx}
-              className="agri-card rounded-[24px] p-4.5 border border-[#ccd5ae]/40 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition flex flex-col justify-between"
+              className="agri-card rounded-[22px] sm:rounded-[24px] p-3.5 xl:p-4 border border-[#ccd5ae]/50 bg-white/95 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-200 flex flex-col justify-between h-full min-w-0"
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-semibold text-[#01472e]/60 uppercase tracking-wider leading-tight">
-                  {kpi.label}
-                </span>
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center border ${kpi.color}`}>
-                  <Icon className="w-4 h-4" />
+              {/* Header Row: Title & Icon (Uniform Height & Alignment) */}
+              <div className="flex items-start justify-between gap-2 h-[32px] xl:h-[34px]">
+                <div className="flex-1 min-w-0 flex items-start h-full pt-0.5">
+                  <span
+                    className="text-[10px] xl:text-[11px] font-bold text-[#01472e]/70 uppercase tracking-wider leading-tight line-clamp-2"
+                    title={kpi.label}
+                  >
+                    {kpi.label}
+                  </span>
+                </div>
+                <div
+                  className={`w-7 h-7 xl:w-8 xl:h-8 rounded-xl shrink-0 flex items-center justify-center border shadow-2xs ${kpi.color}`}
+                >
+                  <Icon className="w-3.5 h-3.5 xl:w-4 xl:h-4 shrink-0" />
                 </div>
               </div>
-              <div>
-                <p className="text-base sm:text-lg font-semibold text-[#01472e] tracking-tight">
+
+              {/* Value & Subtitle Section (Identical Vertical Position) */}
+              <div className="mt-3 xl:mt-3.5 pt-1.5 border-t border-[#ccd5ae]/20 min-w-0">
+                <p
+                  className="text-base sm:text-lg xl:text-xl font-bold font-heading text-[#01472e] tracking-tight leading-none truncate"
+                  title={kpi.value}
+                >
                   {kpi.value}
                 </p>
-                <p className="text-[10px] text-[#01472e]/60 mt-0.5">{kpi.sub}</p>
+                <p
+                  className="text-[10px] xl:text-[11px] text-[#01472e]/60 mt-1.5 font-medium leading-none truncate"
+                  title={kpi.sub}
+                >
+                  {kpi.sub}
+                </p>
               </div>
             </div>
           );
