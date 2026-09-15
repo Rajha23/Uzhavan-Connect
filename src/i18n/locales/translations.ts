@@ -1,4 +1,4 @@
-import { TranslationDictionary } from '../../types/i18n';
+import { TranslationDictionary, TranslationMap } from '../../types/i18n';
 import { enTranslations } from './en';
 import { taTranslations } from './ta';
 import { hiTranslations } from './hi';
@@ -288,6 +288,33 @@ const STATUS_TRANSLATIONS: Record<string, Record<string, string>> = {
   }
 };
 
+// Shared labels are resolved here so partially completed locale files do not
+// silently show English for the controls used throughout the application.
+const SHARED_TRANSLATIONS: Record<string, TranslationMap> = {
+  as: { noData: 'কোনো তথ্য উপলব্ধ নহয়', viewDetails: 'বিৱৰণ চাওক', submit: 'দাখিল কৰক', download: 'ডাউনলোড', share: 'ভাগ কৰক', retry: 'পুনৰ চেষ্টা কৰক', yes: 'হয়', no: 'নহয়', processing: 'প্ৰক্ৰিয়াকৰণ হৈ আছে...' },
+  bn: { noData: 'কোনও তথ্য পাওয়া যায়নি', viewDetails: 'বিস্তারিত দেখুন', submit: 'জমা দিন', download: 'ডাউনলোড', share: 'শেয়ার করুন', retry: 'আবার চেষ্টা করুন', yes: 'হ্যাঁ', no: 'না', processing: 'প্রক্রিয়াধীন...' },
+  br: { noData: 'कोनो डाटा उपलब्ध नङा', viewDetails: 'बिबरन नाय', submit: 'दाखिल खालाम', download: 'डाउनलोड', share: 'शेयर खालाम', retry: 'फिन प्रयास खालाम', yes: 'नङा', no: 'नङा', processing: 'प्रक्रिया जाबाय...' },
+  doi: { noData: 'कोई डेटा उपलब्ध नेईं', viewDetails: 'विस्तार दिक्खो', submit: 'जमा करो', download: 'डाउनलोड', share: 'सांझा करो', retry: 'दोबारा कोशिश करो', yes: 'हां', no: 'नेईं', processing: 'प्रक्रिया जारी ऐ...' },
+  gu: { noData: 'કોઈ ડેટા ઉપલબ્ધ નથી', viewDetails: 'વિગતો જુઓ', submit: 'સબમિટ કરો', download: 'ડાઉનલોડ કરો', share: 'શેર કરો', retry: 'ફરી પ્રયાસ કરો', yes: 'હા', no: 'ના', processing: 'પ્રક્રિયા થઈ રહી છે...' },
+  hi: { noData: 'कोई डेटा उपलब्ध नहीं है', viewDetails: 'विवरण देखें', submit: 'जमा करें', download: 'डाउनलोड करें', share: 'साझा करें', retry: 'फिर प्रयास करें', yes: 'हाँ', no: 'नहीं', processing: 'प्रक्रिया जारी है...' },
+  kn: { noData: 'ಯಾವುದೇ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ', viewDetails: 'ವಿವರಗಳನ್ನು ನೋಡಿ', submit: 'ಸಲ್ಲಿಸಿ', download: 'ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ', share: 'ಹಂಚಿಕೊಳ್ಳಿ', retry: 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ', yes: 'ಹೌದು', no: 'ಇಲ್ಲ', processing: 'ಪ್ರಕ್ರಿಯೆ ನಡೆಯುತ್ತಿದೆ...' },
+  kok: { noData: 'हांव डेटा उपलब्ध ना', viewDetails: 'तपशील पळोवचो', submit: 'सादर करात', download: 'डाउनलोड करात', share: 'वाटात', retry: 'परत येत्न करात', yes: 'हय', no: 'ना', processing: 'प्रक्रिया चलता...' },
+  ks: { noData: 'کُنہہ ڈیٹا دستیاب چھُ نہ', viewDetails: 'تفصیل وُچھِو', submit: 'جمع کٔرِو', download: 'ڈاؤن لوڈ کٔرِو', share: 'شیئر کٔرِو', retry: 'دوبارٕ کوشش کٔرِو', yes: 'آ', no: 'نہ', processing: 'عمل کاری جاری چھِ...' },
+  mai: { noData: 'कोनो डेटा उपलब्ध नहि अछि', viewDetails: 'विवरण देखू', submit: 'जमा करू', download: 'डाउनलोड करू', share: 'साझा करू', retry: 'फेर प्रयास करू', yes: 'हँ', no: 'नहि', processing: 'प्रक्रिया चलि रहल अछि...' },
+  ml: { noData: 'ഡാറ്റ ലഭ്യമല്ല', viewDetails: 'വിശദാംശങ്ങൾ കാണുക', submit: 'സമർപ്പിക്കുക', download: 'ഡൗൺലോഡ് ചെയ്യുക', share: 'പങ്കിടുക', retry: 'വീണ്ടും ശ്രമിക്കുക', yes: 'അതെ', no: 'ഇല്ല', processing: 'പ്രോസസ്സ് ചെയ്യുന്നു...' },
+  mni: { noData: 'ডাটা অমুক ইয়াওদে', viewDetails: 'মরোল অমুক উ', submit: 'দাখল তৌ', download: 'ডাউনলোড তৌ', share: 'শেয়ার তৌ', retry: 'অমুক হন্না চেষ্টা তৌ', yes: 'হায়', no: 'নত্তে', processing: 'প্রসেস তৌরি...' },
+  mr: { noData: 'कोणताही डेटा उपलब्ध नाही', viewDetails: 'तपशील पहा', submit: 'सादर करा', download: 'डाउनलोड करा', share: 'शेअर करा', retry: 'पुन्हा प्रयत्न करा', yes: 'होय', no: 'नाही', processing: 'प्रक्रिया सुरू आहे...' },
+  ne: { noData: 'कुनै डाटा उपलब्ध छैन', viewDetails: 'विवरण हेर्नुहोस्', submit: 'पेस गर्नुहोस्', download: 'डाउनलोड गर्नुहोस्', share: 'साझा गर्नुहोस्', retry: 'फेरि प्रयास गर्नुहोस्', yes: 'हो', no: 'होइन', processing: 'प्रक्रिया हुँदैछ...' },
+  or: { noData: 'କୌଣସି ତଥ୍ୟ ଉପଲବ୍ଧ ନାହିଁ', viewDetails: 'ବିବରଣୀ ଦେଖନ୍ତୁ', submit: 'ଦାଖଲ କରନ୍ତୁ', download: 'ଡାଉନଲୋଡ କରନ୍ତୁ', share: 'ସେୟାର କରନ୍ତୁ', retry: 'ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ', yes: 'ହଁ', no: 'ନା', processing: 'ପ୍ରକ୍ରିୟା ଚାଲିଛି...' },
+  pa: { noData: 'ਕੋਈ ਡਾਟਾ ਉਪਲਬਧ ਨਹੀਂ', viewDetails: 'ਵੇਰਵੇ ਵੇਖੋ', submit: 'ਜਮ੍ਹਾਂ ਕਰੋ', download: 'ਡਾਊਨਲੋਡ ਕਰੋ', share: 'ਸਾਂਝਾ ਕਰੋ', retry: 'ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ', yes: 'ਹਾਂ', no: 'ਨਹੀਂ', processing: 'ਕਾਰਵਾਈ ਜਾਰੀ ਹੈ...' },
+  sa: { noData: 'किमपि दत्तांशः उपलब्धः नास्ति', viewDetails: 'विवरणं पश्यतु', submit: 'समर्पयतु', download: 'अवतारयतु', share: 'विभजतु', retry: 'पुनः प्रयतताम्', yes: 'आम्', no: 'न', processing: 'प्रक्रिया प्रचलति...' },
+  sat: { noData: 'ᱡᱟᱦᱟᱱ ᱰᱟᱴᱟ ᱵᱟᱝ ᱢᱮᱱᱟ', viewDetails: 'ᱵᱤᱵᱨᱚᱱ ᱧᱮᱞ ᱢᱮ', submit: 'ᱡᱚᱢᱟ ᱢᱮ', download: 'ᱰᱟᱩᱱᱞᱳᱰ ᱢᱮ', share: 'ᱦᱟᱴᱤᱧ ᱢᱮ', retry: 'ᱫᱚᱦᱲᱟ ᱪᱮᱥᱴᱟ ᱢᱮ', yes: 'ᱦᱮᱸ', no: 'ᱵᱟᱝ', processing: 'ᱯᱨᱚᱥᱮᱥ ᱦᱚᱪᱚ ᱟ...' },
+  sd: { noData: 'ڪابه ڊيٽا موجود ناهي', viewDetails: 'تفصيل ڏسو', submit: 'جمع ڪريو', download: 'ڊائون لوڊ ڪريو', share: 'شيئر ڪريو', retry: 'ٻيهر ڪوشش ڪريو', yes: 'ها', no: 'نه', processing: 'عمل جاري آهي...' },
+  ta: { noData: 'தரவு எதுவும் இல்லை', viewDetails: 'விவரங்களைக் காண்க', submit: 'சமர்ப்பி', download: 'பதிவிறக்கு', share: 'பகிர்', retry: 'மீண்டும் முயற்சி', yes: 'ஆம்', no: 'இல்லை', processing: 'செயலாக்கப்படுகிறது...' },
+  te: { noData: 'డేటా అందుబాటులో లేదు', viewDetails: 'వివరాలను చూడండి', submit: 'సమర్పించండి', download: 'డౌన్‌లోడ్ చేయండి', share: 'పంచుకోండి', retry: 'మళ్లీ ప్రయత్నించండి', yes: 'అవును', no: 'కాదు', processing: 'ప్రాసెస్ అవుతోంది...' },
+  ur: { noData: 'کوئی ڈیٹا دستیاب نہیں', viewDetails: 'تفصیلات دیکھیں', submit: 'جمع کریں', download: 'ڈاؤن لوڈ کریں', share: 'شیئر کریں', retry: 'دوبارہ کوشش کریں', yes: 'ہاں', no: 'نہیں', processing: 'کارروائی جاری ہے...' }
+};
+
 /**
  * Resolves a translation key with deep fallback:
  * Selected Language -> English Dictionary -> Fallback Text -> Raw Key
@@ -340,7 +367,11 @@ export const getTranslation = (
   const parts = key.split('.');
   let translated: string | undefined;
 
-  if (parts.length >= 2) {
+  if (parts.length === 2 && parts[0] === 'common' && SHARED_TRANSLATIONS[langCode]?.[parts[1]]) {
+    translated = SHARED_TRANSLATIONS[langCode][parts[1]];
+  }
+
+  if (!translated && parts.length >= 2) {
     translated = resolve(targetDict, parts);
     if (!translated && langCode !== 'en') {
       translated = resolve(enTranslations, parts);
