@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export interface DetailDrawerProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ export const DetailDrawer: React.FC<DetailDrawerProps> = ({
   footer,
   width = 'md'
 }) => {
+  const { t } = useLanguage();
   const drawerRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
@@ -138,7 +140,7 @@ export const DetailDrawer: React.FC<DetailDrawerProps> = ({
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-xl flex items-center justify-center text-[#5c7065] hover:text-[#01472e] hover:bg-[#eaf4ec] transition-colors shrink-0 cursor-pointer"
-              aria-label="Close drawer"
+              aria-label={t('common.close', undefined, 'Close')}
             >
               <X className="w-4.5 h-4.5" />
             </button>

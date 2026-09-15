@@ -127,6 +127,7 @@ export const enTranslations: TranslationDictionary = {
     heroTitle: 'Sell Directly.',
     heroSubtitle: 'Uzhavan Connect unifies smallholder farmers directly with institutional food processors and retailers using ML demand forecasting, algorithmic matching, fair price discovery, and cold-chain route coordination.',
     earnRealization: 'Sell Directly',
+    login: 'Login',
     launchConsole: 'Launch Operational Console',
     registerAccount: 'Register Direct Account',
     directMarket: 'Direct Market',

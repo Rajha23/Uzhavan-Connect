@@ -9,7 +9,7 @@ import {
   ShoppingBag,
   User,
   HeartHandshake,
-  Lock,
+  LogIn,
   UserPlus,
   ArrowRight,
   Users,
@@ -63,8 +63,8 @@ export const LandingPage: React.FC = () => {
                 onClick={() => setActiveTab('login')}
                 className="px-7 py-3.5 rounded-2xl bg-[#01472e] hover:bg-[#025a3b] text-white font-semibold text-sm shadow-md transition hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2.5 cursor-pointer"
               >
-                <Lock className="w-4 h-4 text-[#e9edc9]" />
-                <span>{t('landing.launchConsole', undefined, 'Launch Operational Console')}</span>
+                <LogIn className="w-4 h-4 text-[#e9edc9]" />
+                <span>{t('landing.login', undefined, 'Login')}</span>
               </button>
 
               <button

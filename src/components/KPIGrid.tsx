@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export interface KPIStatCardProps {
   label: React.ReactNode;
@@ -35,6 +36,7 @@ export const KPIStatCard: React.FC<KPIStatCardProps> = ({
   onClick,
   className = ''
 }) => {
+  const { t } = useLanguage();
   const isClickable = typeof onClick === 'function';
   const Component = isClickable ? 'button' : 'div';
 
@@ -43,12 +45,14 @@ export const KPIStatCard: React.FC<KPIStatCardProps> = ({
     ? badgeColor
     : `${iconBg} ${iconColor} border-[#a3b18a]/40`;
 
+  const detailsText = t('common.viewDetails', undefined, 'View Details');
+
   return (
     <Component
       type={isClickable ? 'button' : undefined}
       onClick={onClick}
-      title={isClickable && typeof label === 'string' ? `${label} — Click to view complete details` : undefined}
-      aria-label={isClickable && typeof label === 'string' ? `Open full view for ${label}` : undefined}
+      title={isClickable && typeof label === 'string' ? `${label} — ${detailsText}` : undefined}
+      aria-label={isClickable && typeof label === 'string' ? `${detailsText}: ${label}` : undefined}
       className={`agri-card rounded-[22px] sm:rounded-[24px] p-3.5 sm:p-4 border border-[#ccd5ae]/50 bg-white/95 shadow-soft hover:shadow-forest/10 hover:border-[#a3b18a]/60 transition-all duration-200 flex flex-col justify-between h-full min-w-0 min-h-[128px] text-left group ${
         isActive
           ? 'border-[#01472e] ring-2 ring-[#01472e]/20 shadow-forest -translate-y-0.5'

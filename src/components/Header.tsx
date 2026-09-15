@@ -92,11 +92,13 @@ export const Header: React.FC = () => {
       case 'demand-forecast':
       case 'demand-intel': return t('nav.demandForecast', undefined, 'Demand Forecast');
       case 'find-buyers': return t('nav.findBuyers', undefined, 'Find Direct Buyers');
+      case 'farmer-offers': return t('nav.farmerOffers', undefined, 'Offers');
       case 'orders': return t('nav.orders', undefined, 'My Orders');
       case 'logistics': return t('nav.logistics', undefined, 'Logistics');
       case 'traceability':
       case 'tracking': return t('nav.traceability', undefined, 'Traceability');
       case 'settlement': return t('nav.settlement', undefined, 'Settlement & Payouts');
+      case 'cost-simulator': return t('nav.costSimulator', undefined, 'Cost Simulator');
       case 'profile': return t('nav.profile', undefined, 'My Profile');
       case 'notifications': return t('nav.alerts', undefined, 'Notifications & Alerts');
       case 'create-demand': return t('nav.createDemand', undefined, 'Create Demand');
@@ -104,11 +106,20 @@ export const Header: React.FC = () => {
       case 'smart-matching': return t('nav.smartMatching', undefined, 'Smart Matching');
       case 'reverse-auction': return t('nav.reverseAuction', undefined, 'Reverse Auction');
       case 'bulk-demand': return t('nav.bulkAggregation', undefined, 'Bulk Demand');
+      case 'bulk-buyer': return t('nav.bulkProcurement', undefined, 'Bulk Procurement Console');
+      case 'fpo-members': return t('nav.fpoMembers', undefined, 'Members');
+      case 'fpo-produce': return t('nav.fpoProduce', undefined, 'Produce');
       case 'shipments': return t('nav.shipments', undefined, 'Shipments');
+      case 'pickup-requests': return t('nav.pickupRequests', undefined, 'Pickup Requests');
+      case 'routes': return t('nav.routes', undefined, 'Routes');
       case 'route-optimization': return t('nav.routeOptimization', undefined, 'Route Optimization');
+      case 'delivery': return t('nav.delivery', undefined, 'Delivery');
       case 'reports':
       case 'impact-kpis': return t('nav.reports', undefined, 'Reports & KPIs');
-      default: return PAGE_TITLES[tab] || t('nav.dashboard', undefined, 'Dashboard');
+      case 'schemes': return t('nav.schemes', undefined, 'Govt Schemes');
+      case 'subsidy': return t('nav.subsidy', undefined, 'Subsidy');
+      case 'support': return t('nav.support', undefined, 'Support & Assistance');
+      default: return t('nav.' + tab, undefined, PAGE_TITLES[tab] || t('nav.dashboard', undefined, 'Dashboard'));
     }
   };
 
@@ -144,8 +155,8 @@ export const Header: React.FC = () => {
           {searchValue.trim() && (
             <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-forest-lg border border-[#ccd5ae]/60 z-50 overflow-hidden py-1.5 animate-in fade-in duration-150 max-h-72 overflow-y-auto">
               <div className="px-3.5 py-1.5 text-[10px] font-semibold text-[#5c7065] uppercase tracking-wider flex items-center justify-between border-b border-[#ccd5ae]/30 bg-[#faf9f5]">
-                <span>Verified Files ({matchingDocs.length})</span>
-                <span className="text-emerald-700 font-semibold lowercase">1 file = 1 result</span>
+                <span>{t('files.verifiedFiles', { count: matchingDocs.length }, `Verified Files (${matchingDocs.length})`)}</span>
+                <span className="text-emerald-700 font-semibold lowercase">{t('files.oneToOne', undefined, '1 file = 1 result')}</span>
               </div>
               {matchingDocs.length > 0 ? (
                 <div className="py-1">
@@ -165,13 +176,13 @@ export const Header: React.FC = () => {
                           <p className="text-[10px] text-[#5c7065]">{doc.category} • {(doc.size / 1024).toFixed(1)} KB</p>
                         </div>
                       </div>
-                      <span className="text-[10px] text-emerald-700 font-medium shrink-0 group-hover:underline">Open Vault →</span>
+                      <span className="text-[10px] text-emerald-700 font-medium shrink-0 group-hover:underline">{t('files.openVault', undefined, 'Open Vault →')}</span>
                     </button>
                   ))}
                 </div>
               ) : (
                 <div className="p-3 text-center text-xs text-[#5c7065]">
-                  No documents matching "{searchValue}"
+                  {t('files.noDocsMatching', { query: searchValue }, `No documents matching "${searchValue}"`)}
                 </div>
               )}
             </div>
@@ -188,8 +199,8 @@ export const Header: React.FC = () => {
             title="Offline Field Mode: Changes are saved locally on device. Click to retry synchronization."
           >
             <WifiOff className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-            <span className="hidden sm:inline">Offline (Field Mode)</span>
-            <span className="sm:hidden">Offline</span>
+            <span className="hidden sm:inline">{t('common.offlineFieldMode', undefined, 'Offline (Field Mode)')}</span>
+            <span className="sm:hidden">{t('common.offline', undefined, 'Offline')}</span>
             {pendingSyncCount > 0 && (
               <span className="bg-amber-700 text-white rounded-full text-[9px] px-1.5 py-0.2 font-mono">
                 {pendingSyncCount} saved
@@ -200,8 +211,8 @@ export const Header: React.FC = () => {
         {isOnline && syncStatus === 'syncing' && (
           <div className="flex items-center gap-1.5 bg-blue-50 text-blue-900 border border-blue-200 px-3.5 py-1.5 rounded-2xl text-[11px] font-medium animate-pulse">
             <RefreshCw className="w-3.5 h-3.5 text-blue-600 animate-spin shrink-0" />
-            <span className="hidden sm:inline">Syncing changes...</span>
-            <span className="sm:hidden">Syncing</span>
+            <span className="hidden sm:inline">{t('common.syncingChanges', undefined, 'Syncing changes...')}</span>
+            <span className="sm:hidden">{t('common.syncing', undefined, 'Syncing')}</span>
           </div>
         )}
 
@@ -226,7 +237,7 @@ export const Header: React.FC = () => {
           title="Document Vault & Verified Files (Idempotent 1:1 Storage)"
         >
           <FileText className="w-3.5 h-3.5 text-[#01472e] shrink-0" />
-          <span className="hidden sm:inline">Vault</span>
+          <span className="hidden sm:inline">{t('nav.vault', undefined, 'Vault')}</span>
         </button>
 
         {/* Centralized Notifications & Operational Alerts Bell */}
@@ -240,7 +251,7 @@ export const Header: React.FC = () => {
             title="Install UZHAVAN Connect to your home screen or desktop for fast offline field access"
           >
             <Download className="w-3.5 h-3.5 text-[#ccd5ae]" />
-            <span>Install App</span>
+            <span>{t('common.download', undefined, 'Install App')}</span>
           </button>
         )}
 
@@ -285,7 +296,7 @@ export const Header: React.FC = () => {
                 className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-[#01472e] hover:bg-[#eef2e1]/50 transition text-left cursor-pointer"
               >
                 <FileText className="w-4 h-4 text-[#788c80]" />
-                <span>Document Vault & Invoices</span>
+                <span>{t('nav.documentVault', undefined, 'Document Vault & Invoices')}</span>
               </button>
 
               <button
