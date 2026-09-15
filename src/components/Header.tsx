@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Menu, Search, ChevronDown, LogOut, User, Wifi, WifiOff, RefreshCw, Download, CheckCircle2, Globe2, Bell } from 'lucide-react';
+import { Menu, Search, ChevronDown, LogOut, User, WifiOff, RefreshCw, Download, Globe2, Bell } from 'lucide-react';
 import { NotificationBell } from './NotificationBell';
 
 // Maps tab ids to human-readable page titles
@@ -125,8 +125,8 @@ export const Header: React.FC = () => {
       </div>
 
       <div className="flex items-center gap-2.5 ml-auto">
-        {/* Network Connectivity & Offline Sync Status Pill */}
-        {!isOnline ? (
+        {/* Offline sync alert button only when offline */}
+        {!isOnline && (
           <button
             onClick={syncOfflineQueue}
             className="flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 px-3.5 py-1.5 rounded-2xl text-[11px] font-medium shadow-2xs transition cursor-pointer"
@@ -141,25 +141,12 @@ export const Header: React.FC = () => {
               </span>
             )}
           </button>
-        ) : syncStatus === 'syncing' ? (
+        )}
+        {isOnline && syncStatus === 'syncing' && (
           <div className="flex items-center gap-1.5 bg-blue-50 text-blue-900 border border-blue-200 px-3.5 py-1.5 rounded-2xl text-[11px] font-medium animate-pulse">
             <RefreshCw className="w-3.5 h-3.5 text-blue-600 animate-spin shrink-0" />
             <span className="hidden sm:inline">Syncing changes...</span>
             <span className="sm:hidden">Syncing</span>
-          </div>
-        ) : syncStatus === 'synced' ? (
-          <div className="flex items-center gap-1.5 bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40 px-3.5 py-1.5 rounded-2xl text-[11px] font-medium shadow-2xs">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#01472e] shrink-0" />
-            <span className="hidden sm:inline">All changes synced</span>
-            <span className="sm:hidden">Synced</span>
-          </div>
-        ) : (
-          <div
-            className="hidden sm:flex items-center gap-1.5 text-[#01472e] bg-[#eaf4ec] border border-[#a3b18a]/40 px-3 py-1.5 rounded-2xl text-[11px] font-medium shadow-2xs"
-            title="Connected to network. Field data synchronized."
-          >
-            <span className="w-2 h-2 rounded-full bg-[#01472e] animate-pulse" />
-            <span>Online</span>
           </div>
         )}
 

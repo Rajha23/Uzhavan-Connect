@@ -130,7 +130,7 @@ export const LogisticsDashboard: React.FC = () => {
               </span>
               <span className="inline-flex items-center gap-1.5 bg-[#e9edc9]/20 border border-[#e9edc9]/30 px-3 py-1 rounded-full text-[11px] text-[#fefae0]">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
-                <span>{t('logistics.activeReeferSensor', 'Active Reefer Sensor Telemetry:')} <strong>{t('logistics.connected', 'Connected')}</strong></span>
+                <span>{t('logistics.reeferTelemetry', 'Cold-Chain Sensor Telemetry')}</span>
               </span>
             </div>
           </div>

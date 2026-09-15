@@ -642,7 +642,7 @@ export const ProfilePage: React.FC = () => {
             </div>
             <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40">
               <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">{t('profile.networkHealth', 'Network Health')}</span>
-              <strong className="text-emerald-700 font-mono text-sm font-bold">ONLINE (100%)</strong>
+              <strong className="text-emerald-700 font-mono text-sm font-bold">100% Operational</strong>
             </div>
             <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40">
               <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">{t('profile.managedHubs', 'Managed FPO Hubs')}</span>
