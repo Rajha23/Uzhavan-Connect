@@ -154,7 +154,30 @@ export const BulkBuyerDashboard: React.FC = () => {
     );
   }, [orders, currentUser]);
 
-  const activeShipment = bulkOrders.find((o) => o.status === 'In Transit' || o.lifecycleStage === 'IN_TRANSIT') || bulkOrders[0] || orders[0];
+  const activeShipment = bulkOrders.find((o) => o.status === 'In Transit' || o.lifecycleStage === 'IN_TRANSIT') || bulkOrders[0] || orders[0] || {
+    id: 'AWAITING-ORDERS',
+    buyerId: currentUser.id,
+    farmerId: 'N/A',
+    crop: 'No Active Orders',
+    quantityKg: 0,
+    pricePerKg: 0,
+    totalValue: 0,
+    status: 'Pending',
+    date: new Date().toISOString(),
+    batchId: 'N/A',
+    farmerName: 'N/A',
+    buyerName: currentUser.name,
+    produceListingId: 'N/A',
+    demandRequestId: 'N/A',
+    deliveryLocation: 'N/A',
+    farmerLocation: 'N/A',
+    fpoName: 'N/A',
+    qualityGrade: 'N/A',
+    timeline: [],
+    remainingCollectionKg: 0,
+    collectedQuantityKg: 0,
+    collectionStatus: 'Collection Pending'
+  } as any;
 
   // Bulk demands
   const bulkDemands = useMemo(() => {
