@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 
 export const DynamicMicroHubMap: React.FC = () => {
-  const [selectedHubId, setSelectedHubId] = useState<string>('HUB-01');
+  const [selectedHubId, setSelectedHubId] = useState<string>('HUB-TN-01');
 
   const selectedHub = CANDIDATE_MICRO_HUBS.find((h) => h.id === selectedHubId) || CANDIDATE_MICRO_HUBS[0];
 
@@ -36,7 +36,7 @@ export const DynamicMicroHubMap: React.FC = () => {
 
         <div className="text-right shrink-0">
           <span className="text-[11px] font-mono bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 font-medium">
-            Corridor: Chennai - Sriperumbudur - Kanchipuram
+            Corridor: Chennai - Kallakurichi - Salem
           </span>
         </div>
       </div>
@@ -115,31 +115,31 @@ export const DynamicMicroHubMap: React.FC = () => {
               <text x="480" y="85" fill="#93c5fd" fontSize="11" fontWeight="bold">Chennai Koyambedu</text>
               <text x="495" y="148" fill="#cbd5e1" fontSize="9">Pooled Demand: 3,000 kg</text>
 
-              {/* Candidate Hub 1: Sriperumbudur Rural Hub (RECOMMENDED) */}
-              <g className="cursor-pointer" onClick={() => setSelectedHubId('HUB-01')}>
+              {/* Candidate Hub 1: Chinnasalem Agro Hub (RECOMMENDED) */}
+              <g className="cursor-pointer" onClick={() => setSelectedHubId('HUB-TN-01')}>
                 {/* Pulse Ring for Recommended Hub */}
                 <circle cx="250" cy="180" r="32" fill="#10b981" fillOpacity="0.25" className="animate-ping" />
                 <circle cx="250" cy="180" r="16" fill="#047857" stroke="#34d399" strokeWidth="3" />
                 <text x="244" y="184" fill="#ffffff" fontSize="11" fontWeight="bold">★</text>
-                <text x="215" y="215" fill="#34d399" fontSize="11" fontWeight="bold">HUB 1: Sriperumbudur</text>
+                <text x="200" y="215" fill="#34d399" fontSize="11" fontWeight="bold">HUB 1: Chinnasalem</text>
                 <text x="235" y="228" fill="#a7f3d0" fontSize="9 font-mono">(RECOMMENDED)</text>
 
                 {/* Direct transit ray to Chennai */}
                 <line x1="250" y1="180" x2="530" y2="110" stroke="#10b981" strokeWidth="2.5" strokeDasharray="5 3" />
               </g>
 
-              {/* Candidate Hub 2: Poonamallee */}
-              <g className="cursor-pointer" onClick={() => setSelectedHubId('HUB-02')}>
+              {/* Candidate Hub 2: Valapadi */}
+              <g className="cursor-pointer" onClick={() => setSelectedHubId('HUB-TN-02')}>
                 <circle cx="410" cy="150" r="12" fill="#475569" stroke="#94a3b8" strokeWidth="2" />
                 <text x="406" y="154" fill="#ffffff" fontSize="10">2</text>
-                <text x="375" y="175" fill="#cbd5e1" fontSize="10">HUB 2: Poonamallee</text>
+                <text x="375" y="175" fill="#cbd5e1" fontSize="10">HUB 2: Valapadi</text>
               </g>
 
-              {/* Candidate Hub 3: Tiruvallur */}
-              <g className="cursor-pointer" onClick={() => setSelectedHubId('HUB-03')}>
+              {/* Candidate Hub 3: Thiruvaiyaru */}
+              <g className="cursor-pointer" onClick={() => setSelectedHubId('HUB-TN-03')}>
                 <circle cx="270" cy="90" r="12" fill="#475569" stroke="#94a3b8" strokeWidth="2" />
                 <text x="266" y="94" fill="#ffffff" fontSize="10">3</text>
-                <text x="250" y="75" fill="#cbd5e1" fontSize="10">HUB 3: Tiruvallur</text>
+                <text x="240" y="75" fill="#cbd5e1" fontSize="10">HUB 3: Thiruvaiyaru</text>
               </g>
             </svg>
           </div>

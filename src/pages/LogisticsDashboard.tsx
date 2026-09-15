@@ -40,12 +40,12 @@ export const LogisticsDashboard: React.FC = () => {
   const [selectedOrderForTransport, setSelectedOrderForTransport] = useState<string | null>(null);
 
   // Vehicle Assignment Form State
-  const [carrierName, setCarrierName] = useState<string>('Sundar Logistics Co.');
-  const [vehicleNumber, setVehicleNumber] = useState<string>('TN-11-AGRI-4402');
-  const [driverName, setDriverName] = useState<string>('Karthik S.');
+  const [carrierName, setCarrierName] = useState<string>('Sundar Transport & Cold Chain');
+  const [vehicleNumber, setVehicleNumber] = useState<string>('TN-15-AGRI-5510');
+  const [driverName, setDriverName] = useState<string>('Karthik Subramanian');
   const [driverPhone, setDriverPhone] = useState<string>('+91 98410 44021');
-  const [vehicleType, setVehicleType] = useState<string>('CoolReefer EV 3.5T');
-  const [eta, setEta] = useState<string>('Today, 06:30 AM');
+  const [vehicleType, setVehicleType] = useState<string>('Tata Ace CoolReefer EV 5.5T');
+  const [eta, setEta] = useState<string>('Today, 07:15 AM');
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
   // Transport readiness gate: Only orders that have completed collection, quality, and packing

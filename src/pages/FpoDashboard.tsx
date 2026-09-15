@@ -134,7 +134,7 @@ export const FpoDashboard: React.FC = () => {
   const [moisture, setMoisture] = useState<string>('91.5%');
   const [grade, setGrade] = useState<'Grade A' | 'Grade B' | 'Standard' | 'Premium'>('Grade A');
   const [inspectorName, setInspectorName] = useState<string>('Dr. R. Malathi (FPO QA Officer)');
-  const [hubLocation, setHubLocation] = useState<string>('Sriperumbudur Rural Aggregation Hub');
+  const [hubLocation, setHubLocation] = useState<string>('Chinnasalem Agro Consolidation Hub');
   const [acceptedKg, setAcceptedKg] = useState<number>(1000);
   const [rejectedKg, setRejectedKg] = useState<number>(0);
   const [rejectionReason, setRejectionReason] = useState<string>('');
@@ -147,11 +147,11 @@ export const FpoDashboard: React.FC = () => {
 
   // Stage 8: Transport Modal State
   const [transportModalOrder, setTransportModalOrder] = useState<WorkflowOrder | null>(null);
-  const [carrierName, setCarrierName] = useState('Kaveri Agro Cold-Chain Logistics');
-  const [vehicleNumber, setVehicleNumber] = useState('TN-09-CB-4812');
-  const [driverName, setDriverName] = useState('Murugan S.');
-  const [driverPhone, setDriverPhone] = useState('+91 98401 23456');
-  const [vehicleType, setVehicleType] = useState('Reefer Cold-Chain Truck (4.5°C Active)');
+  const [carrierName, setCarrierName] = useState('Sundar Transport & Cold Chain');
+  const [vehicleNumber, setVehicleNumber] = useState('TN-15-AGRI-5510');
+  const [driverName, setDriverName] = useState('Karthik Subramanian');
+  const [driverPhone, setDriverPhone] = useState('+91 98410 44021');
+  const [vehicleType, setVehicleType] = useState('Tata Ace CoolReefer EV 5.5T (4.2°C Active)');
 
   // Universal Feedback Message
   const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);

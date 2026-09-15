@@ -118,6 +118,12 @@ export const seedDemoAccounts = async (): Promise<void> => {
   const demoAccounts = [
     {
       user: DEMO_USERS.FARMER,
+      email: DEMO_USERS.FARMER.email,
+      mobile: '9442188301',
+      passwords: ['Farmer@2026', 'SecurePass@2026', 'farmer123']
+    },
+    {
+      user: DEMO_USERS.FARMER,
       email: 'rajesh.kumar@uzhavanconnect.gov.in',
       mobile: '9840123456',
       passwords: ['Farmer@2026', 'SecurePass@2026']

@@ -236,6 +236,27 @@ const GUEST_USER: UserProfile = {
   organization: ''
 };
 
+const UZHAVAN_DATASET_VERSION_KEY = 'uzhavan_dataset_version';
+const CURRENT_DATASET_VERSION = 'sih2026_tn_connected_v3';
+
+// Ensure localStorage gets upgraded to the clean connected SIH2026 dataset
+if (typeof window !== 'undefined') {
+  try {
+    const cachedVersion = localStorage.getItem(UZHAVAN_DATASET_VERSION_KEY);
+    if (cachedVersion !== CURRENT_DATASET_VERSION) {
+      localStorage.removeItem('uzhavan_produce_listings');
+      localStorage.removeItem('uzhavan_demand_requests');
+      localStorage.removeItem('uzhavan_orders');
+      localStorage.removeItem('uzhavan_agreements');
+      localStorage.removeItem('uzhavan_passports');
+      localStorage.removeItem('uzhavan_settlements');
+      localStorage.setItem(UZHAVAN_DATASET_VERSION_KEY, CURRENT_DATASET_VERSION);
+    }
+  } catch (e) {
+    console.warn('Dataset version check skipped:', e);
+  }
+}
+
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -256,7 +277,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [notificationPreferences, setNotificationPreferences] = useState<NotificationPreferences>(() => loadNotificationPreferences());
   const [eventNotifications, setEventNotifications] = useState<AppNotification[]>([]);
   const [isPassportModalOpen, setIsPassportModalOpen] = useState<boolean>(false);
-  const [selectedPassportBatchId, setSelectedPassportBatchId] = useState<string>('AGP-TOM-2026-001');
+  const [selectedPassportBatchId, setSelectedPassportBatchId] = useState<string>('AGP-TOM-2026-101');
   const [isDemoModeOpen, setIsDemoModeOpen] = useState<boolean>(false);
   const [demoStep, setDemoStepState] = useState<number>(1);
   const [marketPrices, setMarketPrices] = useState<MarketPriceItem[]>(MARKET_PRICES_DATA);

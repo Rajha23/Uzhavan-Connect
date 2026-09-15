@@ -38,37 +38,37 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
   const [activeSpeed, setActiveSpeed] = useState<number>(54);
   const [reeferTemp, setReeferTemp] = useState<number>(4.2);
 
-  // Waypoints along corridor (Tamil Nadu NH-48 Agro Corridor)
+  // Waypoints along corridor (Tamil Nadu NH-48 / NH-79 Agro Corridor)
   const defaultWaypoints = [
     {
       id: 'wp-1',
-      title: 'Farmer Cluster A (Sunguvarchatram)',
+      title: 'Farmer Cluster 1 (Chinnasalem Farm Gate)',
       type: 'PICKUP' as const,
       lat: 12.9675,
       lng: 79.9431,
-      quantityKg: 1000,
+      quantityKg: 1200,
       crop: order.crop || 'Tomato',
-      farmer: 'Rajesh Kumar'
+      farmer: 'Subramaniam Ramasamy'
     },
     {
       id: 'wp-2',
-      title: 'Farmer Cluster B (Kanchipuram North)',
+      title: 'Farmer Cluster 2 (Pennagaram Farm Fields)',
       type: 'PICKUP' as const,
       lat: 12.8342,
       lng: 79.7036,
-      quantityKg: 800,
+      quantityKg: 1000,
       crop: order.crop || 'Tomato',
-      farmer: 'K. Selvam'
+      farmer: 'K. Velusamy'
     },
     {
       id: 'wp-3',
-      title: 'Sriperumbudur Rural Micro-Hub (Pre-Cooling & QC)',
+      title: 'Chinnasalem Agro Consolidation Hub (QC & Pre-Cooling)',
       type: 'HUB' as const,
       lat: 12.9712,
       lng: 79.9488,
       quantityKg: 5000,
       crop: order.crop || 'Tomato',
-      farmer: 'Villupuram Collective & Agro Alliance'
+      farmer: 'Kallakurichi Pasumai FPO Collective'
     },
     {
       id: 'wp-4',
@@ -78,17 +78,17 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
       lng: 80.0912,
       quantityKg: 5000,
       crop: order.crop || 'Tomato',
-      farmer: 'Sundar Logistics EV Fleet'
+      farmer: 'Sundar Transport EV Fleet'
     },
     {
       id: 'wp-5',
-      title: 'Bulk Buyer: Metro Agri Processing Terminal (Ambattur)',
+      title: 'Bulk Buyer: WayCool Food Processing Terminal (Ambattur)',
       type: 'DESTINATION' as const,
       lat: 13.1143,
       lng: 80.1548,
       quantityKg: 5000,
       crop: order.crop || 'Tomato',
-      farmer: order.buyerName || 'Metro Agri Processors'
+      farmer: order.buyerName || 'WayCool Agri Processors'
     }
   ];
 

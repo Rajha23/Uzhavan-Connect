@@ -186,8 +186,8 @@ export const FarmerDashboard: React.FC = () => {
   const [price, setPrice] = useState<number>(25.0);
   const [harvestDate, setHarvestDate] = useState('2026-09-14');
   const [quality, setQuality] = useState<'Grade A' | 'Grade B' | 'Standard' | 'Premium'>('Grade A');
-  const [location, setLocation] = useState('Salem Mandi Hub');
-  const [fpoName, setFpoName] = useState('GreenHarvest FPO');
+  const [location, setLocation] = useState(currentUser.location || 'Chinnasalem Agro Hub, Kallakurichi');
+  const [fpoName, setFpoName] = useState(currentUser.fpoName || 'Kallakurichi Pasumai Farmers Producer Co.');
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'COMPLETED'>('ALL');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);

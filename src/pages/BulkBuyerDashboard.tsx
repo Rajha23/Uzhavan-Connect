@@ -112,10 +112,10 @@ export const BulkBuyerDashboard: React.FC = () => {
   // Aggregation Engine State: Multi-Supplier Allocation
   const [selectedDemandId, setSelectedDemandId] = useState<string>('DEM-BULK-2026-01');
   const [allocations, setAllocations] = useState<Record<string, number>>({
-    'LST-001': 1000,   // Rajesh Kumar
-    'LST-002': 800,    // K. Selvam
-    'LST-FPO-01': 2000,// Villupuram FPO
-    'LST-003': 1200    // Murugesan P.
+    'LST-TN-101': 1200, // Subramaniam Ramasamy (Chinnasalem)
+    'LST-TN-102': 1000, // K. Velusamy (Pennagaram)
+    'LST-TN-103': 1800, // Meenakshi Sundaram (Valapadi)
+    'LST-TN-112': 1000  // Vijayakumar Nachimuthu (Annur)
   });
   const [allocationSuccessNotice, setAllocationSuccessNotice] = useState<string | null>(null);
 
@@ -146,6 +146,7 @@ export const BulkBuyerDashboard: React.FC = () => {
         o.isBulkOrder ||
         o.buyerId === currentUser.id ||
         o.buyerName.toLowerCase().includes('bulk') ||
+        o.buyerName.toLowerCase().includes('waycool') ||
         o.buyerName.toLowerCase().includes('metro') ||
         o.quantityKg >= 3000
     );
@@ -164,13 +165,13 @@ export const BulkBuyerDashboard: React.FC = () => {
     );
   }, [demandRequests, currentUser]);
 
-  // Aggregate Metrics
-  const activeDemandCount = bulkDemands.length > 0 ? bulkDemands.length : 3;
-  const totalRequiredQuantityKg = bulkDemands.reduce((sum, d) => sum + (d.initialQuantityKg || d.quantityKg), 0) || 15000;
-  const confirmedSupplyKg = bulkOrders.reduce((sum, o) => sum + o.quantityKg, 0) || 12800;
-  const inTransitCount = bulkOrders.filter((o) => o.status === 'In Transit').length || 1;
-  const completedDeliveriesCount = bulkOrders.filter((o) => o.status === 'Delivered' || o.status === 'Buyer Confirmed' || o.status === 'Completed').length || 14;
-  const activeSuppliersCount = 4; // 3 smallholder farmers + 1 FPO collective
+  // Aggregate Metrics computed from dataset
+  const activeDemandCount = bulkDemands.length > 0 ? bulkDemands.length : 1;
+  const totalRequiredQuantityKg = bulkDemands.reduce((sum, d) => sum + (d.initialQuantityKg || d.quantityKg), 0);
+  const confirmedSupplyKg = bulkOrders.reduce((sum, o) => sum + o.quantityKg, 0);
+  const inTransitCount = bulkOrders.filter((o) => o.status === 'In Transit' || o.lifecycleStage === 'IN_TRANSIT').length;
+  const completedDeliveriesCount = orders.filter((o) => o.status === 'Delivered' || o.status === 'Buyer Confirmed' || o.status === 'Completed').length;
+  const activeSuppliersCount = 4; // 4 smallholder farmers in active Tamil Nadu supply pool
 
   // Create Bulk Demand Handler
   const handleCreateBulkDemand = (e: React.FormEvent) => {
@@ -634,52 +635,52 @@ export const BulkBuyerDashboard: React.FC = () => {
               <div className="divide-y divide-[#ccd5ae]/20 text-xs">
                 {[
                   {
-                    id: 'LST-001',
-                    name: 'Rajesh Kumar (Sunguvarchatram Farm Gate)',
+                    id: 'LST-TN-101',
+                    name: 'Subramaniam Ramasamy (Chinnasalem Farm Gate)',
                     type: 'FARMER',
-                    location: 'Sunguvarchatram, Kanchipuram',
+                    location: 'Chinnasalem, Kallakurichi',
                     crop: 'Tomato (Sivam Hybrid)',
-                    availableKg: 1000,
-                    price: 30.0,
-                    distanceKm: 42,
-                    grade: 'Grade A',
-                    rating: 4.9
-                  },
-                  {
-                    id: 'LST-002',
-                    name: 'K. Selvam (Kanchipuram North Farms)',
-                    type: 'FARMER',
-                    location: 'Kanchipuram North',
-                    crop: 'Tomato (Sivam Hybrid)',
-                    availableKg: 800,
-                    price: 29.5,
-                    distanceKm: 65,
-                    grade: 'Grade A',
-                    rating: 4.85
-                  },
-                  {
-                    id: 'LST-FPO-01',
-                    name: 'Villupuram Farmer Collective (FPO Consolidation Hub)',
-                    type: 'FPO',
-                    location: 'Villupuram Agro Hub',
-                    crop: 'Tomato (Sivam Hybrid)',
-                    availableKg: 2500,
+                    availableKg: 1200,
                     price: 30.5,
-                    distanceKm: 135,
+                    distanceKm: 42,
                     grade: 'Grade A',
                     rating: 4.92
                   },
                   {
-                    id: 'LST-003',
-                    name: 'Murugesan P. (Sriperumbudur Rural Hub)',
+                    id: 'LST-TN-102',
+                    name: 'K. Velusamy (Pennagaram Farm Fields)',
                     type: 'FARMER',
-                    location: 'Sriperumbudur Rural',
-                    crop: 'Tomato (Sivam Hybrid)',
-                    availableKg: 1200,
+                    location: 'Pennagaram, Villupuram',
+                    crop: 'Tomato (Pusa Ruby)',
+                    availableKg: 1000,
                     price: 30.0,
-                    distanceKm: 36,
+                    distanceKm: 58,
                     grade: 'Grade A',
                     rating: 4.88
+                  },
+                  {
+                    id: 'LST-TN-103',
+                    name: 'Meenakshi Sundaram (Valapadi Orchards)',
+                    type: 'FARMER',
+                    location: 'Valapadi, Salem',
+                    crop: 'Tomato (Vaishnavi)',
+                    availableKg: 1800,
+                    price: 30.5,
+                    distanceKm: 68,
+                    grade: 'Grade A',
+                    rating: 4.95
+                  },
+                  {
+                    id: 'LST-TN-112',
+                    name: 'Vijayakumar Nachimuthu (Annur Agro Cluster)',
+                    type: 'FARMER',
+                    location: 'Annur, Coimbatore',
+                    crop: 'Tomato (Shivam Hybrid)',
+                    availableKg: 1000,
+                    price: 30.5,
+                    distanceKm: 110,
+                    grade: 'Grade A',
+                    rating: 4.89
                   }
                 ].map((sup) => {
                   const currentAlloc = allocations[sup.id] || 0;
