@@ -144,8 +144,6 @@ export const DemandIntelligencePage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2 text-[#fefae0] text-xs font-semibold uppercase tracking-wider mb-2">
               <Cpu className="w-4 h-4 text-[#fefae0]" />
               <span>{t('demandIntelligence.architectureDisclosure', undefined, 'Predictive Demand Intelligence Architecture')}</span>
-              <span className="text-white/40">•</span>
-              <span>{t('demandIntelligence.regressorPipeline', undefined, 'Scikit-Learn & XGBoost Regressor Pipeline')}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
               {t('demandIntelligence.mainTitle', undefined, 'Demand Intelligence & Predictive Sourcing')}
