@@ -80,7 +80,7 @@ export const LandingPage: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-6 max-w-4xl mx-auto">
               {[
                 { icon: Sprout, title: t('landing.directMarket', undefined, 'Direct Market'), desc: t('landing.directMarketDesc', undefined, 'Direct contracts without APMC middlemen'), bg: 'bg-white border-[#ccd5ae]/60' },
-                { icon: TrendingUp, title: t('landing.demandForecast', undefined, 'Demand Forecast'), desc: t('landing.demandForecastDesc', undefined, 'FastAPI XGBoost ML demand spikes'), bg: 'bg-white border-[#ccd5ae]/60' },
+                { icon: TrendingUp, title: t('landing.demandForecast', undefined, 'Demand Forecast'), desc: t('landing.demandForecastDesc', undefined, 'Predictive AI demand spikes'), bg: 'bg-white border-[#ccd5ae]/60' },
                 { icon: Sparkles, title: t('landing.autonomousEscrow', undefined, 'Autonomous Escrow'), desc: t('landing.autonomousEscrowDesc', undefined, 'Zero credit risk, transparent direct payout'), bg: 'bg-white border-[#ccd5ae]/60' },
                 { icon: Truck, title: t('landing.coldChainVrp', undefined, 'Cold Chain VRP'), desc: t('landing.coldChainVrpDesc', undefined, 'Sensor-monitored multi-stop routes'), bg: 'bg-white border-[#ccd5ae]/60' },
               ].map((b) => (

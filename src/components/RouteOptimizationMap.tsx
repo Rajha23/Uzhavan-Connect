@@ -257,18 +257,6 @@ export const RouteOptimizationMap: React.FC = () => {
               <Sparkles className="w-3.5 h-3.5" />
               <span>Google OR-Tools VRP Solver Architecture</span>
             </span>
-
-            {routePlan?.solver_engine === 'GOOGLE_OR_TOOLS_LIVE' ? (
-              <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-emerald-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Live FastAPI Solver Connected
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-800 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-amber-300">
-                <Info className="w-3 h-3 text-amber-600" />
-                Demo Simulation Solver (FastAPI Microservice API Ready)
-              </span>
-            )}
           </div>
 
           <h3 className="text-xl font-medium tracking-tight text-slate-900">

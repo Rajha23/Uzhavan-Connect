@@ -139,11 +139,11 @@ export const DemandIntelligencePage: React.FC = () => {
         <div className="absolute -right-16 -top-16 w-80 h-80 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -left-12 -bottom-12 w-64 h-64 bg-[#e9edc9]/10 rounded-full blur-2xl pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="relative z-10">
           <div>
             <div className="flex flex-wrap items-center gap-2 text-[#fefae0] text-xs font-semibold uppercase tracking-wider mb-2">
               <Cpu className="w-4 h-4 text-[#fefae0]" />
-              <span>{t('demandIntelligence.architectureDisclosure', undefined, 'Python / FastAPI Machine Learning Architecture')}</span>
+              <span>{t('demandIntelligence.architectureDisclosure', undefined, 'Predictive Demand Intelligence Architecture')}</span>
               <span className="text-white/40">•</span>
               <span>{t('demandIntelligence.regressorPipeline', undefined, 'Scikit-Learn & XGBoost Regressor Pipeline')}</span>
             </div>
@@ -153,20 +153,6 @@ export const DemandIntelligencePage: React.FC = () => {
             <p className="text-sm text-emerald-100/80 mt-2 max-w-2xl leading-relaxed font-normal">
               {t('demandIntelligence.mainSubtitle', undefined, 'Near-term predictive demand signals calculated from institutional buyer procurement commitments, APMC Mandi price elasticity, and agricultural seasonality indices.')}
             </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 relative z-10">
-            {forecastResult?.source === 'FASTAPI_XGBOOST_MODEL' ? (
-              <span className="text-xs bg-[#fefae0]/15 text-[#fefae0] px-4 py-2 rounded-full border border-[#fefae0]/25 font-semibold uppercase tracking-wider flex items-center gap-2 shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
-                {t('demandIntelligence.liveFastApi', undefined, 'Live FastAPI XGBoost Model')}
-              </span>
-            ) : (
-              <span className="text-xs bg-white/10 text-[#fefae0] px-4 py-2 rounded-full border border-white/20 font-semibold uppercase tracking-wider flex items-center gap-2 shadow-xs" title="Live FastAPI microservice offline. Running deterministic APMC baseline benchmark simulation.">
-                <span className="w-2 h-2 rounded-full bg-amber-400" />
-                {t('demandIntelligence.deterministicMandi', undefined, 'Deterministic Mandi Benchmark (FastAPI Ready)')}
-              </span>
-            )}
           </div>
         </div>
       </div>
