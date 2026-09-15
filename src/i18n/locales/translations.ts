@@ -315,6 +315,20 @@ const SHARED_TRANSLATIONS: Record<string, TranslationMap> = {
   ur: { noData: 'کوئی ڈیٹا دستیاب نہیں', viewDetails: 'تفصیلات دیکھیں', submit: 'جمع کریں', download: 'ڈاؤن لوڈ کریں', share: 'شیئر کریں', retry: 'دوبارہ کوشش کریں', yes: 'ہاں', no: 'نہیں', processing: 'کارروائی جاری ہے...' }
 };
 
+const TRANSLATION_KEY_ALIASES: Record<string, string> = {
+  'logistics.fleetControlBadge': 'logisticsDashboard.title',
+  'logistics.fleetSubtitle': 'logisticsDashboard.subtitle',
+  'logistics.activeInTransitShipments': 'logisticsDashboard.activeInTransit',
+  'logistics.destinationDeliveriesTitle': 'logisticsDashboard.completedDeliveries',
+  'logistics.assignVehicleBtn': 'logisticsDashboard.assignTransport',
+  'logistics.dispatchShipmentNow': 'logisticsDashboard.departureDispatch',
+  'logistics.arriveHandoverBtn': 'logisticsDashboard.markDelivered',
+  'logistics.vehicleLabel': 'logistics.vehicleNumber',
+  'logistics.driverLabel': 'logistics.driverName',
+  'logistics.qrPassportBtn': 'logisticsDashboard.viewPassport',
+  'logistics.noShipmentsEnRoute': 'logisticsDashboard.noShipments'
+};
+
 /**
  * Resolves a translation key with deep fallback:
  * Selected Language -> English Dictionary -> Fallback Text -> Raw Key
@@ -373,6 +387,12 @@ export const getTranslation = (
 
   if (!translated && parts.length >= 2) {
     translated = resolve(targetDict, parts);
+    if (!translated) {
+      const aliasKey = TRANSLATION_KEY_ALIASES[key];
+      if (aliasKey) {
+        translated = resolve(targetDict, aliasKey.split('.'));
+      }
+    }
     if (!translated && langCode !== 'en') {
       translated = resolve(enTranslations, parts);
     }
