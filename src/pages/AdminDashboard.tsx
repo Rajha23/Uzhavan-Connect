@@ -1,3 +1,4 @@
+import { getCropImageUrl } from "../utils/cropImages";
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -358,7 +359,10 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">{t(`crops.${passport.crop}`, passport.crop)} ({passport.variety || 'Hybrid'})</h4>
+                  <div className="flex items-center gap-2">
+                    <img src={getCropImageUrl(passport.crop)} alt={passport.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                    <h4 className="text-sm font-bold text-slate-900">{t(`crops.${passport.crop}`, passport.crop)} ({passport.variety || 'Hybrid'})</h4>
+                  </div>
                   <p className="text-xs text-slate-600 mt-1">
                     {t('admin.originLabel', 'Origin:')} <strong>{passport.farmLocation}</strong> • {t('admin.harvestLabel', 'Harvest:')} {passport.harvestDate}
                   </p>
@@ -468,7 +472,10 @@ export const AdminDashboard: React.FC = () => {
               <div key={o.id} className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs flex items-center justify-between">
                 <div>
                   <span className="text-xs font-semibold text-[#01472e] font-mono">{o.id}</span>
-                  <span className="text-[10px] text-[#5c7065] block">{o.crop} • {o.farmerName} → {o.buyerName}</span>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <img src={getCropImageUrl(o.crop)} alt={o.crop} className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                    <span className="text-[10px] text-[#5c7065] block">{o.crop} • {o.farmerName} → {o.buyerName}</span>
+                  </div>
                 </div>
                 <div className="text-right">
                   <span className="text-xs font-bold text-[#01472e]">{o.quantityKg.toLocaleString()} kg</span>
@@ -536,8 +543,9 @@ export const AdminDashboard: React.FC = () => {
                   <span className="text-xs font-semibold text-[#01472e] font-mono">{p.batchId}</span>
                   <QrCode className="w-3.5 h-3.5 text-[#01472e]" />
                 </div>
-                <div className="text-[10px] text-[#5c7065]">
-                  {p.crop} • {p.farmerOrFpo} • {p.quantityKg.toLocaleString()} kg
+                <div className="flex items-center gap-2 text-xs text-slate-700 font-medium">
+                  <img src={getCropImageUrl(p.crop)} alt={p.crop} className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                  <span>{p.crop} • {p.farmerOrFpo} • {p.quantityKg.toLocaleString()} kg</span>
                 </div>
               </button>
             ))}

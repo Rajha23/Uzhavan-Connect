@@ -1,3 +1,4 @@
+import { getCropImageUrl } from "../utils/cropImages";
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { QrCode, Search, CheckCircle2, Clock, Package, Truck, MapPin, ExternalLink, ShieldCheck, Sparkles, Droplet, Gauge, FlaskConical, Award, Sprout, Users, Scale, Calendar } from 'lucide-react';
@@ -197,12 +198,12 @@ export const TraceabilityPage: React.FC = () => {
                       {b.qualityGrade || t('common.gradeA', 'Grade A')}
                     </span>
                   </div>
-                  <p className="font-bold text-slate-900 text-base mt-2 tracking-tight flex items-center gap-1.5">
-                    <Sprout className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <div className="font-bold text-slate-900 text-base mt-2 tracking-tight flex items-center gap-2 flex-wrap">
+                    <img src={getCropImageUrl(b.crop)} alt={b.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
                     <span>{b.crop} {b.variety ? `(${b.variety})` : ''}</span>
                     <span className="text-slate-400 font-normal">—</span>
                     <span className="font-mono text-[#01472e]">{b.quantityKg.toLocaleString()} kg</span>
-                  </p>
+                  </div>
                   <p className="text-xs font-medium text-slate-500 mt-0.5 flex items-center gap-1">
                     <Users className="w-3 h-3 text-slate-400" />
                     <span>{b.farmerOrFpo}</span>
@@ -235,10 +236,12 @@ export const TraceabilityPage: React.FC = () => {
                       {selectedBatch.qualityGrade || t('traceability.certifiedGradeA', 'Certified Grade A')}
                     </span>
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-900 mt-2 tracking-tight flex items-center gap-2">
-                    <Sprout className="w-6 h-6 text-emerald-600" />
-                    <span>{selectedBatch.crop} {t('traceability.batch', 'Batch')}</span>
-                  </h2>
+                  <div className="flex items-center gap-2.5 mt-2">
+                    <img src={getCropImageUrl(selectedBatch.crop)} alt={selectedBatch.crop} className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                    <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+                      {selectedBatch.crop} {t('traceability.batch', 'Batch')}
+                    </h2>
+                  </div>
                   <p className="text-xs font-mono font-semibold text-slate-500 mt-1">
                     {selectedBatch.batchId} {selectedBatch.orderId ? `• ${t('orders.orderId', 'Order')}: ${selectedBatch.orderId}` : ''}
                   </p>

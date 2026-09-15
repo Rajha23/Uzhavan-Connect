@@ -4,6 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { INITIAL_DEMAND_REQUESTS, SMART_MATCH_SUPPLIERS } from '../data/mockData';
 import { DemandRequest, WorkflowOrder, BuyerDeliveryConfirmation } from '../types';
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
+import { getCropImageUrl } from '../utils/cropImages';
 import {
   ShoppingBag,
   Plus,
@@ -314,8 +315,13 @@ export const BuyerDashboard: React.FC = () => {
                       <span className="text-[11px] text-[#01472e]/60 font-normal">{dem.buyerType}</span>
                     </td>
                     <td className="p-4">
-                      <span className="font-semibold text-[#01472e] block">{dem.crop}</span>
-                      <span className="text-[11px] text-[#01472e]/60 font-normal">{dem.variety || 'Certified Hybrid'}</span>
+                      <div className="flex items-center gap-3">
+                        <img src={getCropImageUrl(dem.crop)} alt={dem.crop} className="w-8 h-8 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                        <div>
+                          <span className="font-semibold text-[#01472e] block">{dem.crop}</span>
+                          <span className="text-[11px] text-[#01472e]/60 font-normal">{dem.variety || 'Certified Hybrid'}</span>
+                        </div>
+                      </div>
                     </td>
                     <td className="p-4">
                       <span className="font-semibold text-[#01472e] text-sm block">
@@ -465,9 +471,12 @@ export const BuyerDashboard: React.FC = () => {
                         <span className="text-[10px] text-[#ccd5ae]">•</span>
                         <span className="text-xs text-[#01472e]/60 font-medium">{order.date}</span>
                       </div>
-                      <h4 className="text-lg font-semibold text-[#01472e] tracking-tight mt-0.5">
-                        {order.crop} <span className="text-xs font-normal text-[#01472e]/60">({order.variety || 'Hybrid'})</span>
-                      </h4>
+                      <div className="flex items-center gap-3 mt-1.5 mb-1">
+                        <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-10 h-10 rounded-lg object-cover shadow-sm border border-[#ccd5ae]/40" />
+                        <h4 className="text-lg font-semibold text-[#01472e] tracking-tight">
+                          {order.crop} <span className="text-xs font-normal text-[#01472e]/60">({order.variety || 'Hybrid'})</span>
+                        </h4>
+                      </div>
                       <p className="text-xs text-[#01472e]/70 mt-0.5">
                         {t('buyer.origin', 'Origin')}: <strong className="text-[#01472e] font-semibold">{order.fpoName || 'GreenHarvest FPO'}</strong> ({order.farmerLocation})
                       </p>
@@ -866,10 +875,13 @@ export const BuyerDashboard: React.FC = () => {
 
             {/* Shipment Summary Strip */}
             <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div>
-                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.produce', 'Produce')}</span>
-                <strong className="text-[#01472e] text-sm font-semibold">{deliveryReceiptOrder.crop}</strong>
-                <span className="text-[11px] text-[#01472e]/70 block">({deliveryReceiptOrder.variety})</span>
+              <div className="flex items-center gap-2">
+                <img src={getCropImageUrl(deliveryReceiptOrder.crop)} alt={deliveryReceiptOrder.crop} className="w-8 h-8 rounded-full object-cover shadow-sm border border-[#ccd5ae]/40" />
+                <div>
+                  <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.produce', 'Produce')}</span>
+                  <strong className="text-[#01472e] text-sm font-semibold">{deliveryReceiptOrder.crop}</strong>
+                  <span className="text-[11px] text-[#01472e]/70 block">({deliveryReceiptOrder.variety})</span>
+                </div>
               </div>
               <div>
                 <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.deliveredVolume', 'Delivered Volume')}</span>
@@ -1218,10 +1230,13 @@ export const BuyerDashboard: React.FC = () => {
                     {dem.status}
                   </span>
                 </div>
-                <div className="flex items-baseline justify-between">
-                  <div>
-                    <h3 className="text-base font-bold text-[#01472e]">{dem.crop}</h3>
-                    <p className="text-xs text-[#5c7065]">{dem.variety || 'Certified Regional Hybrid'}</p>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
+                    <img src={getCropImageUrl(dem.crop)} alt={dem.crop} className="w-10 h-10 rounded-lg object-cover shadow-sm shrink-0 border border-[#ccd5ae]/40" />
+                    <div>
+                      <h3 className="text-base font-bold text-[#01472e]">{dem.crop}</h3>
+                      <p className="text-xs text-[#5c7065]">{dem.variety || 'Certified Regional Hybrid'}</p>
+                    </div>
                   </div>
                   <div className="text-right">
                     <span className="text-lg font-bold text-[#01472e]">₹{dem.maxTargetPricePerKg}</span>
@@ -1341,10 +1356,13 @@ export const BuyerDashboard: React.FC = () => {
                     {order.status}
                   </span>
                 </div>
-                <div className="flex items-baseline justify-between">
-                  <div>
-                    <h3 className="text-base font-bold text-[#01472e]">{order.crop}</h3>
-                    <p className="text-xs text-[#5c7065]">{order.variety || 'Hybrid Fresh Lot'} • Batch: <span className="font-mono text-[#01472e] font-semibold">{order.batchId}</span></p>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
+                    <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-10 h-10 rounded-lg object-cover shadow-sm shrink-0 border border-[#ccd5ae]/40" />
+                    <div>
+                      <h3 className="text-base font-bold text-[#01472e]">{order.crop}</h3>
+                      <p className="text-xs text-[#5c7065]">{order.variety || 'Hybrid Fresh Lot'} • Batch: <span className="font-mono text-[#01472e] font-semibold">{order.batchId}</span></p>
+                    </div>
                   </div>
                   <div className="text-right">
                     <span className="text-lg font-bold text-[#01472e]">₹{order.totalValue.toLocaleString()}</span>
@@ -1443,7 +1461,10 @@ export const BuyerDashboard: React.FC = () => {
                     <span className="text-[10px] font-semibold bg-[#eaf4ec] text-[#01472e] px-2 py-0.5 rounded-full border border-[#a3b18a]/30">{dem.status}</span>
                   </div>
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-xs font-bold text-[#01472e]">{dem.crop}</span>
+                    <div className="flex items-center gap-1.5">
+                      <img src={getCropImageUrl(dem.crop)} alt={dem.crop} className="w-5 h-5 rounded-full object-cover shadow-sm border border-[#ccd5ae]/40" />
+                      <span className="text-xs font-bold text-[#01472e]">{dem.crop}</span>
+                    </div>
                     <span className="text-xs font-semibold text-[#01472e]">{dem.quantityKg.toLocaleString()} kg</span>
                   </div>
                   <div className="flex items-center justify-between text-[10px] text-[#788c80]">
@@ -1470,7 +1491,7 @@ export const BuyerDashboard: React.FC = () => {
                 return (
                   <div key={cropName} className="p-3 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Sprout className="w-4 h-4 text-[#01472e]" />
+                      <img src={getCropImageUrl(cropName)} alt={cropName} className="w-6 h-6 rounded-full object-cover shadow-sm border border-[#ccd5ae]/40" />
                       <span className="text-xs font-bold text-[#01472e]">{cropName}</span>
                     </div>
                     <span className="text-xs font-bold text-[#01472e]">{totalCropKg.toLocaleString()} kg</span>

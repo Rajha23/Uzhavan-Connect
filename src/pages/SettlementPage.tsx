@@ -1,3 +1,4 @@
+import { getCropImageUrl } from "../utils/cropImages";
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import {
@@ -332,9 +333,10 @@ Verified Authenticity Fingerprint: Cryptographically Indexed
                       {t('orderStatus.' + s.status, s.status)}
                     </span>
                   </div>
-                  <h4 className="font-bold text-lg text-slate-900 tracking-tight">
-                    {s.crop} • <span className="font-mono text-[#01472e]">{s.quantityKg.toLocaleString()} kg</span>
-                  </h4>
+                  <p className="font-semibold text-slate-900 mt-2 flex items-center gap-2">
+                    <img src={getCropImageUrl(s.crop)} alt={s.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-slate-200" />
+                    <span>{s.crop} • <span className="font-mono text-[#01472e]">{s.quantityKg.toLocaleString()} kg</span></span>
+                  </p>
                   <p className="text-xs text-slate-600 mt-1 font-medium">
                     {t('settlement.beneficiary', 'Beneficiary')}: <strong className="text-slate-900 font-bold">{s.farmerOrFpoName}</strong>
                   </p>
@@ -393,9 +395,10 @@ Verified Authenticity Fingerprint: Cryptographically Indexed
                   {t('settlement.escrow', 'ESCROW')}: {t('orderStatus.' + activeSettlement.status, activeSettlement.status)}
                 </span>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mt-2">
-                {activeSettlement.crop} • <span className="font-mono text-[#01472e]">{activeSettlement.quantityKg.toLocaleString()} kg</span>
-              </h3>
+              <div className="font-bold text-slate-900 text-sm flex items-center gap-2 mt-1">
+                <img src={getCropImageUrl(activeSettlement.crop)} alt={activeSettlement.crop} className="w-6 h-6 rounded-full object-cover shadow-sm border border-slate-200" />
+                <span>{activeSettlement.crop} • <span className="font-mono text-[#01472e]">{activeSettlement.quantityKg.toLocaleString()} kg</span></span>
+              </div>
               <p className="text-xs sm:text-sm font-medium text-slate-500 mt-1">
                 {t('orders.buyer', 'Buyer')}: <strong className="text-slate-800">{activeSettlement.buyerName}</strong> ➔ {t('settlement.beneficiary', 'Beneficiary')}: <strong className="text-slate-800">{activeSettlement.farmerOrFpoName}</strong>
               </p>
