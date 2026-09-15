@@ -246,7 +246,7 @@ export const enTranslations: TranslationDictionary = {
   },
 
   buyer: {
-    createDemand: 'Post Forward Demand',
+    createDemand: 'Create Demand',
     demandRequirement: 'Procurement Specifications',
     requiredQuantity: 'Required Volume (kg)',
     maxBudgetPrice: 'Target Gate Price (₹/kg)',
