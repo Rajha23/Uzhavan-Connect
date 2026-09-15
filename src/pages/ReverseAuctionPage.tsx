@@ -28,7 +28,6 @@ export const ReverseAuctionPage: React.FC = () => {
   const { setActiveTab } = useApp();
 
   const [offers, setOffers] = useState<ReverseAuctionOffer[]>(INITIAL_AUCTION_OFFERS);
-  const [acceptedOfferId, setAcceptedOfferId] = useState<string>('OFF-001');
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
   // New bid form state
@@ -40,8 +39,9 @@ export const ReverseAuctionPage: React.FC = () => {
   const [reliabilityScore, setReliabilityScore] = useState<number>(90);
 
   const handleAcceptOffer = (id: string) => {
-    setAcceptedOfferId(id);
-    setOffers(offers.map((o) => (o.id === id ? { ...o, status: 'ACCEPTED' } : { ...o, status: 'SUBMITTED' })));
+    setOffers((currentOffers) => currentOffers.map((offer) => (
+      offer.id === id ? { ...offer, status: 'ACCEPTED' } : offer
+    )));
     confetti({
       particleCount: 50,
       spread: 60,
@@ -291,7 +291,7 @@ export const ReverseAuctionPage: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {offers.map((offer) => {
-                const isAccepted = offer.id === acceptedOfferId;
+                const isAccepted = offer.status === 'ACCEPTED';
 
                 return (
                   <tr key={offer.id} className="hover:bg-emerald-50/30 transition">
