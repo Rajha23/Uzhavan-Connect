@@ -185,13 +185,13 @@ export const Sidebar: React.FC = () => {
 
       {/* Main Left Sidebar */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#f8faf8]/95 backdrop-blur-md text-[#16333a] border-r border-[#7f9f94]/30 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 shadow-soft ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#e5f0ea]/95 backdrop-blur-md text-[#16333a] border-r border-[#6f9789]/35 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 shadow-soft ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Sidebar Brand Header */}
         <div>
-          <div className="p-4 border-b border-[#7f9f94]/25 flex items-center justify-between bg-white/60">
+          <div className="p-4 border-b border-[#6f9789]/30 flex items-center justify-between bg-[#eef6f1]/70">
             <button
               onClick={() => setActiveTab('landing')}
               className="flex items-center gap-3 group text-left cursor-pointer"
@@ -273,7 +273,7 @@ export const Sidebar: React.FC = () => {
         </div>
 
         {/* Sidebar Footer: User & Sign Out */}
-        <div className="p-3 border-t border-[#7f9f94]/25 bg-[#eef4f0]/80 space-y-2">
+        <div className="p-3 border-t border-[#6f9789]/30 bg-[#dcebe3]/85 space-y-2">
           <div
             onClick={() => handleSelect('profile')}
             className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white border border-transparent hover:border-[#7f9f94]/40 cursor-pointer transition"
