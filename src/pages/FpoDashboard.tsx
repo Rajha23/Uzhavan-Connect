@@ -364,12 +364,12 @@ export const FpoDashboard: React.FC = () => {
   };
 
   // Stage 3: FPO Authorizes & Locks Match
-  const handleApproveMatchSubmit = () => {
+  const handleApproveMatchSubmit = async () => {
     if (!pendingApprovalMatch) return;
 
     const { listing, demand, agreedPrice, agreedQty } = pendingApprovalMatch;
 
-    const order = confirmMatchAndCreateOrder(
+    const order = await confirmMatchAndCreateOrder(
       listing.id,
       demand.id,
       agreedPrice,
