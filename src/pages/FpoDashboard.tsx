@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
+import { getCropImageUrl } from '../utils/cropImages';
 import {
   Users,
   Package,
@@ -10,6 +11,7 @@ import {
   QrCode,
   Truck,
   MapPin,
+
   Clock,
   ArrowRight,
   Filter,
@@ -2208,12 +2210,18 @@ export const FpoDashboard: React.FC = () => {
                       </span>
                     </div>
 
-                    <div>
-                      <h4 className="font-semibold text-[#01472e] text-sm">
-                        {t(`crops.${listing.crop}`, listing.crop)}
-                        {listing.variety && <span className="text-[#01472e]/60 font-normal ml-1">({listing.variety})</span>}
-                      </h4>
-                      <p className="text-xs text-[#01472e]/70 mt-0.5 flex items-center gap-1">
+                    <div className="flex items-start gap-3">
+                      <img 
+                        src={getCropImageUrl(listing.crop)} 
+                        alt={listing.crop} 
+                        className="w-10 h-10 object-cover rounded-lg shadow-sm shrink-0 border border-[#ccd5ae]/40"
+                      />
+                      <div>
+                        <h4 className="font-semibold text-[#01472e] text-sm">
+                          {t(`crops.${listing.crop}`, listing.crop)}
+                          {listing.variety && <span className="text-[#01472e]/60 font-normal ml-1">({listing.variety})</span>}
+                        </h4>
+                        <p className="text-xs text-[#01472e]/70 mt-0.5 flex items-center gap-1">
                         <Users className="w-3.5 h-3.5 text-[#a3b18a]" />
                         <span>Farmer: <strong className="text-[#01472e]">{listing.farmerName}</strong></span>
                       </p>
@@ -2221,6 +2229,7 @@ export const FpoDashboard: React.FC = () => {
                         <MapPin className="w-3.5 h-3.5 text-[#a3b18a]" />
                         <span>{listing.location}</span>
                       </p>
+                    </div>
                     </div>
 
                     <div className="bg-white/80 p-3 rounded-xl border border-[#ccd5ae]/30 space-y-1.5">

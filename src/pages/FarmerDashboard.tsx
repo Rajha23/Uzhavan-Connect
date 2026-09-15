@@ -3,6 +3,8 @@ import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import { CHENNAI_TOMATO_FORECAST } from '../data/mockData';
 import { ProduceListing, WorkflowOrder, WorkflowAgreement } from '../types';
+import { getCropImageUrl } from "../utils/cropImages";
+
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 import { DetailDrawer } from '../components/DetailDrawer';
 import {
@@ -634,10 +636,12 @@ export const FarmerDashboard: React.FC = () => {
                   {/* Row 1: Crop Header, Variety, FPO, and Real-Time Lifecycle Status Badge */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#ccd5ae]/30 pb-4">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center shrink-0">
-                          <Sprout className="w-4 h-4" />
-                        </div>
+                      <div className="flex items-center gap-3">
+                        <img 
+                          src={getCropImageUrl(item.crop)} 
+                          alt={item.crop} 
+                          className="w-12 h-12 object-cover rounded-xl shadow-sm shrink-0 border border-[#ccd5ae]/40"
+                        />
                         <h4 className="text-xl font-medium tracking-tight text-[#01472e]">
                           {item.crop}
                         </h4>
@@ -1121,7 +1125,7 @@ export const FarmerDashboard: React.FC = () => {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Sprout className="w-3.5 h-3.5 text-[#01472e]" />
+                        <img src={getCropImageUrl(item.crop)} alt={item.crop} className="w-6 h-6 rounded-full object-cover shadow-sm border border-[#ccd5ae]/40" />
                         <span className="text-xs font-semibold text-[#01472e]">{item.crop}</span>
                         {item.variety && <span className="text-[10px] bg-[#fefae0] text-[#01472e] border border-[#ccd5ae] px-2 py-0.5 rounded-full">{item.variety}</span>}
                       </div>

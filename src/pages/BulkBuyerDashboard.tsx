@@ -10,6 +10,8 @@ import {
   ShipmentLifecycleStage
 } from '../types';
 import { BulkShipmentMap } from '../components/BulkShipmentMap';
+import { getCropImageUrl } from "../utils/cropImages";
+
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 import { DetailDrawer } from '../components/DetailDrawer';
 import confetti from 'canvas-confetti';
@@ -1330,8 +1332,11 @@ export const BulkBuyerDashboard: React.FC = () => {
             </div>
             {produceListings.filter(l => l.quantityKg > 0).slice(0, 6).map((l) => (
               <div key={l.id} className="p-3.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[#01472e]">{l.farmerName}</span>
+                <div className="flex items-center gap-3 justify-between">
+                  <div className="flex items-center gap-2">
+                    <img src={getCropImageUrl(l.crop)} alt={l.crop} className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                    <span className="text-xs font-semibold text-[#01472e]">{l.farmerName}</span>
+                  </div>
                   <span className="text-[10px] text-[#01472e] bg-[#eaf4ec] px-2 py-0.5 rounded-full border border-[#a3b18a]/30 font-medium">{l.fpoName}</span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-[10px] text-[#5c7065]">

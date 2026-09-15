@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import { INITIAL_DEMAND_POOL } from '../data/mockData';
 import { DemandRequest, ProduceListing } from '../types';
+import { getCropImageUrl } from '../utils/cropImages';
 import {
   Layers,
   ShoppingBag,
@@ -115,7 +116,8 @@ export const DemandPoolPage: React.FC = () => {
                       : 'bg-slate-50/70 hover:bg-emerald-50/40 border-slate-200/80 text-slate-900'
                   }`}
                 >
-                  <div>
+                  <div className="flex items-center gap-3">
+                    <img src={getCropImageUrl(grp.crop)} alt={grp.crop} className="w-8 h-8 rounded-full object-cover shrink-0 shadow-sm border border-emerald-500/20" />
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-base tracking-tight">{grp.crop}</span>
                       <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full uppercase tracking-wider ${
