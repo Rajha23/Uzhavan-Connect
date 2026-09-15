@@ -24,7 +24,6 @@ import {
   Settings
 } from 'lucide-react';
 import { AppNotification, NotificationCategory, NotificationPriority } from '../types';
-import { ROLE_DISPLAY_LABELS, ROLE_BADGE_STYLES } from '../services/routeGuard';
 import { useLanguage } from '../context/LanguageContext';
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 
@@ -44,9 +43,6 @@ export const NotificationsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [selectedPriority, setSelectedPriority] = useState<string>('ALL');
-
-  const displayRole = ROLE_DISPLAY_LABELS[currentRole] || currentRole;
-  const badgeStyle = ROLE_BADGE_STYLES[currentRole] || ROLE_BADGE_STYLES.FARMER;
 
   // Compute category counts
   const stats = useMemo(() => {
@@ -200,12 +196,6 @@ export const NotificationsPage: React.FC = () => {
               <span className="text-[11px] font-bold text-[#01472e] uppercase tracking-wider bg-[#eaf4ec] px-3 py-1 rounded-full border border-[#a3b18a]/40">
                 {t('notifications.tag', 'Operational Intelligence')}
               </span>
-              <div
-                className={`flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-medium border ${badgeStyle.bg} ${badgeStyle.border} ${badgeStyle.text}`}
-              >
-                <span className={`w-2 h-2 rounded-full ${badgeStyle.dot} animate-pulse`} />
-                <span>{t('roles.' + currentRole, displayRole)}</span>
-              </div>
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#01472e] tracking-tight">

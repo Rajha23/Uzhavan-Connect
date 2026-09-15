@@ -640,9 +640,6 @@ export const FpoDashboard: React.FC = () => {
           <div className="flex items-center gap-2 text-[#ccd5ae] text-xs font-semibold uppercase tracking-wider mb-2">
             <Users className="w-4 h-4" />
             <span>{t('fpo.hubFacility', 'FPO Aggregator & Regional Micro-Hub Facility')}</span>
-            <span className="bg-[#e9edc9]/20 text-[#fefae0] text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-[#e9edc9]/30">
-              SIH 2026 Live Node
-            </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
             {currentUser.organization || 'Uzhavan GreenHarvest FPO Federation'}

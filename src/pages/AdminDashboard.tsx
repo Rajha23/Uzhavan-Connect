@@ -94,7 +94,7 @@ export const AdminDashboard: React.FC = () => {
               </span>
               <span className="inline-flex items-center gap-1.5 bg-[#e9edc9]/20 border border-[#e9edc9]/30 px-3 py-1 rounded-full text-[11px] text-[#fefae0]">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
-                <span>{t('admin.activeNodes', 'Active Nodes:')} <strong>{t('admin.allClustersOperational', 'All State Clusters Operational')}</strong></span>
+                <span>{t('admin.allClustersOperational', 'All State Clusters Operational')}</span>
               </span>
             </div>
           </div>

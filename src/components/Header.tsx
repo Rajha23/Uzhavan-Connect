@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Menu, Search, ChevronDown, LogOut, User, Wifi, WifiOff, RefreshCw, Download, CheckCircle2, Globe2, Bell } from 'lucide-react';
-import { ROLE_DISPLAY_LABELS, ROLE_BADGE_STYLES } from '../services/routeGuard';
 import { NotificationBell } from './NotificationBell';
 
 // Maps tab ids to human-readable page titles
@@ -45,22 +44,11 @@ const PAGE_TITLES: Record<string, string> = {
   'impact-kpis': 'Impact & KPIs',
 };
 
-const ROLE_COLORS: Record<string, string> = {
-  FPO: 'bg-amber-100 text-amber-800',
-  LOGISTICS: 'bg-orange-100 text-orange-800',
-};
-
-const ROLE_LABELS: Record<string, string> = {
-  FPO: 'FPO',
-  LOGISTICS: 'Logistics',
-};
-
 export const Header: React.FC = () => {
   const {
     toggleSidebar,
     activeTab,
     currentUser,
-    currentRole,
     setActiveTab,
     logout,
     unreadNotificationsCount,
@@ -76,9 +64,6 @@ export const Header: React.FC = () => {
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-
-  const displayRole = ROLE_DISPLAY_LABELS[currentRole] || currentRole;
-  const badgeStyle = ROLE_BADGE_STYLES[currentRole] || ROLE_BADGE_STYLES.FARMER;
 
   const getLocalizedTitle = (tab: string): string => {
     switch (tab) {
@@ -206,16 +191,6 @@ export const Header: React.FC = () => {
           </button>
         )}
 
-        {/* Authenticated Role Indicator Badge (Informational, Non-Clickable, No Dropdown) */}
-        <div
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl text-xs font-medium tracking-wider select-none shadow-2xs border ${badgeStyle.bg} ${badgeStyle.border} ${badgeStyle.text}`}
-          title={`Authenticated Account Role: ${displayRole} (Enforced by backend session)`}
-          aria-label={`Current Role: ${displayRole}`}
-        >
-          <span className={`w-2 h-2 rounded-full ${badgeStyle.dot} animate-pulse shrink-0`} />
-          <span>{displayRole}</span>
-        </div>
-
         {/* User Profile Pill */}
         <div className="relative">
           <button
@@ -239,9 +214,9 @@ export const Header: React.FC = () => {
               <div className="px-4 py-3 border-b border-[#ccd5ae]/30 bg-[#faf9f5]">
                 <p className="text-xs font-medium text-[#01472e]">{currentUser.name || 'User'}</p>
                 <p className="text-[10px] text-[#5c7065] truncate">{currentUser.email || 'user@uzhavanconnect.gov.in'}</p>
-                <span className="mt-1.5 inline-block text-[9px] font-medium px-2 py-0.5 rounded-full bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40">
-                  {ROLE_LABELS[currentRole] || currentRole}
-                </span>
+                {currentUser.organization && (
+                  <p className="text-[10px] text-[#01472e]/70 truncate font-medium mt-0.5">{currentUser.organization}</p>
+                )}
               </div>
 
               <button

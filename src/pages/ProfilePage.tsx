@@ -124,24 +124,6 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  const getRoleIcon = () => {
-    switch (currentRole) {
-      case 'FARMER':
-        return <Sprout className="w-5 h-5 text-[#fefae0]" />;
-      case 'FPO_AGGREGATOR':
-        return <Building2 className="w-5 h-5 text-[#fefae0]" />;
-      case 'BULK_BUYER':
-      case 'RETAIL_BUYER':
-        return <Building2 className="w-5 h-5 text-[#fefae0]" />;
-      case 'LOGISTICS':
-        return <Truck className="w-5 h-5 text-[#fefae0]" />;
-      case 'ADMIN':
-        return <ShieldCheck className="w-5 h-5 text-[#fefae0]" />;
-      default:
-        return <User className="w-5 h-5 text-[#fefae0]" />;
-    }
-  };
-
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Success Notification */}
@@ -195,10 +177,6 @@ export const ProfilePage: React.FC = () => {
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
                   {currentUser.name || 'Member'}
                 </h1>
-                <span className="inline-flex items-center gap-1.5 bg-[#fefae0]/20 backdrop-blur-md text-[#fefae0] text-xs font-semibold px-3 py-1 rounded-full border border-[#fefae0]/30">
-                  {getRoleIcon()}
-                  <span>{t('roles.' + currentRole, currentRole.replace('_', ' '))}</span>
-                </span>
                 <span className="inline-flex items-center gap-1 bg-emerald-400/20 text-emerald-200 text-[11px] font-medium px-2.5 py-0.5 rounded-full border border-emerald-400/30">
                   <Check className="w-3 h-3" />
                   <span>{t('profile.aadhaarVerified', 'Aadhaar / e-KYC Verified')}</span>
@@ -369,7 +347,7 @@ export const ProfilePage: React.FC = () => {
 
                 <div>
                   <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                    {t('profile.registeredFpo', 'Registered FPO Node')}
+                    {t('profile.registeredFpo', 'Registered FPO')}
                   </label>
                   <input
                     type="text"

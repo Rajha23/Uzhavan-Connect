@@ -1,7 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { UserRole } from '../types';
-import { ROLE_DISPLAY_LABELS } from '../services/routeGuard';
 import {
   Sprout,
   LayoutDashboard,
@@ -216,19 +215,8 @@ export const Sidebar: React.FC = () => {
             </button>
           </div>
 
-          {/* Active Role Indicator Pill */}
-          <div className="px-4 py-2 bg-[#fefae0]/70 border-b border-[#ccd5ae]/30 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs">
-              <span className="w-2 h-2 rounded-full bg-[#01472e] animate-pulse" />
-              <span className="font-medium text-[#01472e] uppercase tracking-wider text-[10px]">
-                {t('roles.' + currentRole, ROLE_DISPLAY_LABELS[currentRole] || currentRole.replace('_', ' '))}
-              </span>
-            </div>
-            <span className="text-[10px] text-[#5c7065] font-mono font-medium">{t('common.liveNode', 'Live Node')}</span>
-          </div>
-
           {/* Sidebar Menu Groups */}
-          <nav className="p-3 space-y-4 max-h-[calc(100vh-215px)] overflow-y-auto">
+          <nav className="p-3 space-y-4 max-h-[calc(100vh-175px)] overflow-y-auto">
             {sections.map((secName) => {
               const secLabel =
                 secName === 'MAIN' ? t('nav.sectionMain', 'MAIN') :
@@ -288,8 +276,8 @@ export const Sidebar: React.FC = () => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium text-[#01472e] truncate">{currentUser.name}</p>
-              <p className="text-[10px] text-[#5c7065] truncate uppercase tracking-wider font-normal">
-                {t('roles.' + currentUser.role, currentUser.role.replace('_', ' '))}
+              <p className="text-[10px] text-[#5c7065] truncate font-normal">
+                {currentUser.organization || currentUser.email || 'Member'}
               </p>
             </div>
           </div>

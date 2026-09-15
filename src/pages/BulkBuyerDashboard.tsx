@@ -359,7 +359,7 @@ export const BulkBuyerDashboard: React.FC = () => {
           },
           {
             label: t('bulkBuyer.activeSuppliers', 'Active Suppliers'),
-            value: `${activeSuppliersCount} Nodes`,
+            value: `${activeSuppliersCount} Suppliers`,
             sub: t('bulkBuyer.suppliersBreakdown', '3 Farmers + 1 FPO'),
             icon: Users,
             badgeColor: 'text-[#01472e] bg-[#e9edc9]/50 border-[#ccd5ae]/50'

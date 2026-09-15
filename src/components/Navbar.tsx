@@ -2,20 +2,15 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Sprout, Globe2 } from 'lucide-react';
-import { ROLE_DISPLAY_LABELS, ROLE_BADGE_STYLES } from '../services/routeGuard';
 
 export const Navbar: React.FC = () => {
   const {
     isAuthenticated,
-    currentRole,
     currentUser,
     setActiveTab
   } = useApp();
 
   const { currentLanguageDef, openLanguageSelector, t } = useLanguage();
-
-  const displayRole = ROLE_DISPLAY_LABELS[currentRole] || currentRole;
-  const badgeStyle = ROLE_BADGE_STYLES[currentRole] || ROLE_BADGE_STYLES.FARMER;
 
   return (
     <header className="sticky top-0 z-40 bg-[#faf9f5]/90 backdrop-blur-md border-b border-[#ccd5ae]/40 shadow-soft">
@@ -71,15 +66,6 @@ export const Navbar: React.FC = () => {
                 >
                   <span>{t('nav.dashboard', undefined, 'Dashboard')}</span>
                 </button>
-                {/* Authenticated Role Indicator Badge (Informational, Non-Clickable) */}
-                <div
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl text-xs font-medium tracking-wider select-none shadow-2xs border ${badgeStyle.bg} ${badgeStyle.border} ${badgeStyle.text}`}
-                  title={`Authenticated Role: ${displayRole} (Enforced by backend session)`}
-                  aria-label={`Current Role: ${displayRole}`}
-                >
-                  <span className={`w-2 h-2 rounded-full ${badgeStyle.dot} animate-pulse shrink-0`} />
-                  <span>{displayRole}</span>
-                </div>
               </div>
             ) : (
               <div className="flex items-center gap-2.5">
