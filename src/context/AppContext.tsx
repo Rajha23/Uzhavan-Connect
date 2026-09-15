@@ -474,7 +474,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
 
   // Persistent Settlements
-  const [settlements, setSettlements] = useState<SettlementRecord[]>([]);
+  const [settlements, setSettlements] = useState<SettlementRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem('uzhavan_settlements');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved settlements from localStorage', e);
+    }
+    return INITIAL_SETTLEMENTS;
+  });
 
   // Automatically sync orders to localStorage
   useEffect(() => {
@@ -636,7 +647,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             settlementDate: s.settlement_date,
             utrNumber: 'N/A'
           }));
-          setSettlements(mappedSettlements);
+          if (mappedSettlements.length > 0) {
+            setSettlements(mappedSettlements);
+          }
         } catch (e) {
           console.error("Failed to fetch initial data", e);
         }
