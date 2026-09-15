@@ -42,7 +42,8 @@ import { ProfilePage } from './pages/ProfilePage';
 import { TraceabilityPage } from './pages/TraceabilityPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { NotificationsPage } from './pages/NotificationsPage';
-import { SchemesPage } from './pages/SchemesPage';
+import { SchemesPage } from "./pages/SchemesPage";
+import { NewsPage } from './pages/NewsPage';
 import { SubsidyPage } from './pages/SubsidyPage';
 import { SupportPage } from './pages/SupportPage';
 
@@ -254,6 +255,8 @@ const PageContent: React.FC = () => {
     // ── Notifications & Operational Alerts Center ────
     case 'notifications':
       return <NotificationsPage />;
+    case 'news':
+      return <NewsPage />;
 
     case 'schemes':
       return <SchemesPage />;

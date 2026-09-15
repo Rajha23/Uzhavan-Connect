@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
-import { CHENNAI_TOMATO_FORECAST, AGRICULTURE_NEWS } from '../data/mockData';
+import { CHENNAI_TOMATO_FORECAST } from '../data/mockData';
 import { ProduceListing, WorkflowOrder, WorkflowAgreement } from '../types';
-import { NewsTicker } from '../components/NewsTicker';
-import { NewsCard } from '../components/NewsCard';
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 import { DetailDrawer } from '../components/DetailDrawer';
 import {
@@ -260,7 +258,6 @@ export const FarmerDashboard: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full">
-      <NewsTicker news={AGRICULTURE_NEWS} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-7 w-full">
         {/* 1. Agricultural Hero Card */}
       <div className="relative overflow-hidden bg-gradient-to-br from-[#01472e] via-[#025235] to-[#013823] text-[#fefae0] rounded-[32px] p-6 sm:p-9 border border-[#a3b18a]/30 shadow-forest">
@@ -421,26 +418,6 @@ export const FarmerDashboard: React.FC = () => {
         />
       </KPIGrid>
 
-      {/* Agriculture News Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-medium tracking-tight text-[#01472e]">
-            {t('farmer.newsTitle', 'Agriculture News & Updates')}
-          </h2>
-          <button onClick={() => setDrawerState({ type: 'all-news' })} className="text-xs font-medium text-emerald-700 hover:text-emerald-800 transition-colors cursor-pointer">
-            View all
-          </button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {AGRICULTURE_NEWS.slice(0, 4).map((article) => (
-            <NewsCard 
-              key={article.id} 
-              article={article} 
-              onClick={() => setDrawerState({ type: 'news-article', data: article })}
-            />
-          ))}
-        </div>
-      </div>
       {successMessage && (
         <div className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-medium flex items-center gap-2 animate-in fade-in duration-200">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -947,8 +924,6 @@ export const FarmerDashboard: React.FC = () => {
           drawerState?.type === 'buyer-demand' ? 'Active Buyer Demand' :
           drawerState?.type === 'payout-share' ? 'Direct Payout Share' :
           drawerState?.type === 'cold-chain' ? 'Assigned Cold-Chain' :
-          drawerState?.type === 'all-news' ? 'Agriculture News & Updates' :
-          drawerState?.type === 'news-article' ? drawerState.data?.title || 'News Article' :
           drawerState?.type === 'ai-mentor' ? 'AI Farmer Mentor & Demand Forecast' :
           'Details'
         }
@@ -958,7 +933,6 @@ export const FarmerDashboard: React.FC = () => {
           drawerState?.type === 'buyer-demand' ? 'Current demand matching your produce' :
           drawerState?.type === 'payout-share' ? 'Earnings breakdown comparison' :
           drawerState?.type === 'cold-chain' ? 'Cold-chain transport assignment details' :
-          drawerState?.type === 'all-news' ? 'Latest agriculture news and updates' :
           drawerState?.type === 'ai-mentor' ? 'Predictive intelligence, Brix advisory & 7-day forecast' :
           undefined
         }
@@ -1284,48 +1258,6 @@ export const FarmerDashboard: React.FC = () => {
             {orders.filter(o => o.transportDetails).length === 0 && (
               <div className="p-4 text-center text-xs text-[#5c7065]">No active transport assignments.</div>
             )}
-          </div>
-        )}
-
-        {/* All News Drawer */}
-        {drawerState?.type === 'all-news' && (
-          <div className="space-y-3">
-            {AGRICULTURE_NEWS.map((article) => (
-              <button
-                key={article.id}
-                onClick={() => setDrawerState({ type: 'news-article', data: article })}
-                className="w-full text-left p-4 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs hover:border-[#a3b18a]/60 transition-all cursor-pointer space-y-2"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/30">{article.category}</span>
-                  <span className="text-[10px] text-[#788c80]">{article.source}</span>
-                </div>
-                <h4 className="text-xs font-semibold text-[#01472e] leading-snug">{article.title}</h4>
-                <p className="text-[10px] text-[#5c7065] line-clamp-2">{article.summary}</p>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Single News Article Drawer */}
-        {drawerState?.type === 'news-article' && drawerState.data && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/30">{drawerState.data.category}</span>
-              <span className="text-[10px] text-[#788c80]">{drawerState.data.source}</span>
-            </div>
-            {drawerState.data.imageUrl && (
-              <img src={drawerState.data.imageUrl} alt={drawerState.data.title} className="w-full h-44 object-cover rounded-xl border border-[#ccd5ae]/30" />
-            )}
-            <h3 className="text-sm font-semibold text-[#01472e] leading-snug">{drawerState.data.title}</h3>
-            <p className="text-xs text-[#5c7065] leading-relaxed">{drawerState.data.summary}</p>
-            <p className="text-xs text-[#01472e] leading-relaxed">{drawerState.data.content}</p>
-            <button
-              onClick={() => setDrawerState({ type: 'all-news' })}
-              className="text-xs font-medium text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
-            >
-              ← Back to all news
-            </button>
           </div>
         )}
 

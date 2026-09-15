@@ -32,6 +32,7 @@ import {
   HandCoins,
   Globe2,
   Headphones
+, Newspaper
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -68,6 +69,7 @@ export const Sidebar: React.FC = () => {
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'settlement', label: t('nav.settlement'), icon: Scale, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'news', label: t('nav.news', 'News & Updates'), icon: Newspaper, section: 'SUPPORT' },
           { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
           { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },
           { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
@@ -84,6 +86,7 @@ export const Sidebar: React.FC = () => {
           { id: 'reverse-auction', label: t('nav.reverseAuction'), icon: Gavel, section: 'MARKET' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'news', label: t('nav.news', 'News & Updates'), icon: Newspaper, section: 'SUPPORT' },
           { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
           { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },
           { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
@@ -99,6 +102,7 @@ export const Sidebar: React.FC = () => {
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
           { id: 'settlement', label: t('nav.settlement'), icon: Scale, section: 'OPERATIONS' },
+          { id: 'news', label: t('nav.news', 'News & Updates'), icon: Newspaper, section: 'SUPPORT' },
           { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
           { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },
           { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
@@ -113,6 +117,7 @@ export const Sidebar: React.FC = () => {
           { id: 'demand-forecast', label: t('nav.demandForecast'), icon: TrendingUp, section: 'MAIN' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'news', label: t('nav.news', 'News & Updates'), icon: Newspaper, section: 'SUPPORT' },
           { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
           { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },
           { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
@@ -126,6 +131,7 @@ export const Sidebar: React.FC = () => {
           { id: 'shipments', label: t('nav.shipments'), icon: Truck, section: 'LOGISTICS' },
           { id: 'route-optimization', label: t('nav.routeOptimization'), icon: Navigation, section: 'LOGISTICS' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
+          { id: 'news', label: t('nav.news', 'News & Updates'), icon: Newspaper, section: 'SUPPORT' },
           { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
           { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },
           { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
@@ -142,6 +148,7 @@ export const Sidebar: React.FC = () => {
           { id: 'route-optimization', label: t('nav.routeOptimization'), icon: Navigation, section: 'LOGISTICS' },
           { id: 'shipments', label: t('nav.shipments'), icon: Truck, section: 'LOGISTICS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'news', label: t('nav.news', 'News & Updates'), icon: Newspaper, section: 'SUPPORT' },
           { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
           { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },
           { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
