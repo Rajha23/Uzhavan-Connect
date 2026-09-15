@@ -140,10 +140,6 @@ export const TraceabilityPage: React.FC = () => {
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 bg-[#fefae0]/15 border border-[#fefae0]/25 px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-[#fefae0]">
-              <QrCode className="w-3.5 h-3.5 text-[#fefae0]" />
-              <span>{t('traceability.provenanceBadge', 'Immutable Produce Provenance & Traceability Ledger')}</span>
-            </div>
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
               {t('traceability.producePassport', 'Produce Traceability & Passports')}
             </h1>
