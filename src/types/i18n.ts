@@ -38,6 +38,7 @@ export interface TranslationDictionary {
   modals: TranslationMap;
   stages: TranslationMap;
   footer: TranslationMap;
+  support?: TranslationMap;
   [section: string]: TranslationMap | any;
 }
 

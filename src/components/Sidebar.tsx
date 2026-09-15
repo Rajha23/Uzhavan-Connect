@@ -31,7 +31,8 @@ import {
   Bell,
   Landmark,
   HandCoins,
-  Globe2
+  Globe2,
+  Headphones
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -70,6 +71,7 @@ export const Sidebar: React.FC = () => {
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
           { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
           { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },
+          { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
           { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
@@ -85,6 +87,7 @@ export const Sidebar: React.FC = () => {
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
           { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
           { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },
+          { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
           { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
@@ -99,6 +102,7 @@ export const Sidebar: React.FC = () => {
           { id: 'settlement', label: t('nav.settlement'), icon: Scale, section: 'OPERATIONS' },
           { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
           { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },
+          { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
           { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
@@ -112,6 +116,7 @@ export const Sidebar: React.FC = () => {
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
           { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
           { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },
+          { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
           { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
@@ -124,6 +129,7 @@ export const Sidebar: React.FC = () => {
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
           { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },
+          { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
           { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }
         ];
@@ -137,6 +143,9 @@ export const Sidebar: React.FC = () => {
           { id: 'route-optimization', label: t('nav.routeOptimization'), icon: Navigation, section: 'LOGISTICS' },
           { id: 'shipments', label: t('nav.shipments'), icon: Truck, section: 'LOGISTICS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
+          { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },
+          { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
           { id: 'reports', label: t('nav.reports'), icon: FileText, section: 'OPERATIONS' },
           { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' }

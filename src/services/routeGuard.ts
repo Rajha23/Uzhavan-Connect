@@ -6,7 +6,8 @@ export const PUBLIC_TABS: readonly string[] = [
   'login',
   'register',
   'traceability',
-  'tracking'
+  'tracking',
+  'support'
 ] as const;
 
 /**
@@ -74,6 +75,7 @@ export const PATH_TO_TAB: Record<string, string> = {
   '/notifications': 'notifications',
   '/schemes': 'schemes',
   '/subsidy': 'subsidy',
+  '/support': 'support',
   '/access-denied': 'access-denied'
 };
 
@@ -118,6 +120,7 @@ export const TAB_TO_PATH: Record<string, string> = {
   'system-monitoring': '/admin/monitoring',
   schemes: '/schemes',
   subsidy: '/subsidy',
+  support: '/support',
   'access-denied': '/access-denied'
 };
 
@@ -291,7 +294,8 @@ export const TAB_FEATURE_NAMES: Record<string, string> = {
   settlement: 'Automated Instant Farmer Settlement',
   'demand-intel': 'Demand Forecasting & Market Intelligence',
   schemes: 'Government Schemes & Support',
-  subsidy: 'Subsidies & Benefits Framework'
+  subsidy: 'Subsidies & Benefits Framework',
+  support: 'Support & Assistance'
 };
 
 /**

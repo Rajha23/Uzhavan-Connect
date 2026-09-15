@@ -44,6 +44,7 @@ import { OrdersPage } from './pages/OrdersPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { SchemesPage } from './pages/SchemesPage';
 import { SubsidyPage } from './pages/SubsidyPage';
+import { SupportPage } from './pages/SupportPage';
 
 // Inline components for simple stubs
 import { MiddlemanSimulator } from './components/MiddlemanSimulator';
@@ -52,12 +53,13 @@ import { SmartMatchingEngine } from './components/SmartMatchingEngine';
 
 // ─── Public and Role-Guarded Route Definitions ──────────────────────────────
 
-const PUBLIC_TABS = ['home', 'landing', 'login', 'register', 'traceability', 'tracking'];
+const PUBLIC_TABS = ['home', 'landing', 'login', 'register', 'traceability', 'tracking', 'support'];
 
 // Role definitions for protected features
 const FARMER_ALLOWED_ROLES: UserRole[] = ['FARMER', 'FPO_AGGREGATOR', 'ADMIN'];
 const BUYER_ALLOWED_ROLES: UserRole[] = ['RETAIL_BUYER', 'BULK_BUYER', 'ADMIN'];
 const BULK_BUYER_ALLOWED_ROLES: UserRole[] = ['BULK_BUYER', 'ADMIN'];
+const MATCHING_ALLOWED_ROLES: UserRole[] = ['RETAIL_BUYER', 'BULK_BUYER', 'FPO_AGGREGATOR', 'ADMIN'];
 const LOGISTICS_ALLOWED_ROLES: UserRole[] = ['LOGISTICS', 'ADMIN'];
 const REPORTS_ALLOWED_ROLES: UserRole[] = ['ADMIN', 'FPO_AGGREGATOR'];
 
@@ -183,7 +185,7 @@ const PageContent: React.FC = () => {
       }
       return <ReverseAuctionPage />;
     case 'smart-matching':
-      if (!BUYER_ALLOWED_ROLES.includes(currentRole)) {
+      if (!MATCHING_ALLOWED_ROLES.includes(currentRole)) {
         return <AccessDenied attemptedFeature="Algorithmic Smart Matching" />;
       }
       return (
@@ -257,6 +259,9 @@ const PageContent: React.FC = () => {
 
     case 'subsidy':
       return <SubsidyPage />;
+
+    case 'support':
+      return <SupportPage />;
 
     default:
       if (currentRole === 'BULK_BUYER') return <BulkBuyerDashboard />;

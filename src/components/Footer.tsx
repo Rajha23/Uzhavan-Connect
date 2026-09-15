@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Sprout, ShieldCheck } from 'lucide-react';
+import { Sprout, ShieldCheck, Headphones } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { setActiveTab } = useApp();
@@ -137,12 +137,30 @@ export const Footer: React.FC = () => {
                 Integrated VRP route optimization, live telemetry, scannable QR produce passports, and multi-factor algorithmic matchmaking.
               </p>
             </div>
+            <div className="pt-1">
+              <button
+                type="button"
+                onClick={() => setActiveTab('support')}
+                className="w-full py-2.5 px-3 rounded-xl bg-emerald-950/70 hover:bg-emerald-900/80 border border-emerald-500/30 text-xs font-semibold text-emerald-300 hover:text-white transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+              >
+                <Headphones className="w-3.5 h-3.5 text-emerald-300" />
+                <span>{t('nav.support', 'Support & Assistance')}</span>
+              </button>
+            </div>
           </div>
         </div>
 
         <div className="mt-10 pt-6 border-t border-emerald-800/40 text-xs text-emerald-200/60 flex flex-col sm:flex-row items-center justify-between gap-3 font-normal">
           <p>© 2026 Uzhavan Connect. All rights reserved.</p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+            <button
+              type="button"
+              onClick={() => setActiveTab('support')}
+              className="text-emerald-300 hover:text-white transition cursor-pointer font-medium"
+            >
+              {t('nav.support', 'Support & Assistance')}
+            </button>
+            <span>•</span>
             <span>Theme: Agriculture, FoodTech & Rural Development</span>
             <span>•</span>
             <span className="text-emerald-400 font-mono text-[11px]">AI-Powered</span>

@@ -59,7 +59,9 @@ export const taTranslations: DeepPartial<TranslationDictionary> = {
     procurement: 'கொள்முதல் மையம்',
     reverseAuction: 'தலைகீழ் ஏலம்',
     smartMatching: 'சப்ளையர் பொருத்தங்கள்',
-    fleetTelematics: 'வாகன கண்காணிப்பு'
+    fleetTelematics: 'வாகன கண்காணிப்பு',
+    support: 'உதவி & ஆதரவு',
+    schemes: 'அரசு திட்டங்கள்'
   },
   farmer: {
     myCrops: 'என் அறுவடை பட்டியல்கள்',
@@ -112,6 +114,16 @@ export const taTranslations: DeepPartial<TranslationDictionary> = {
     searchPlaceholder: 'மொழியின் பெயர் அல்லது குறியீடு மூலம் தேடுக (எ.கா. தமிழ், ta)...',
     continueBtn: 'தளத்திற்குச் செல்லவும் →',
     currentSelection: 'தற்போதைய தேர்வு'
+  },
+  support: {
+    pageTitle: 'உதவி & ஆதரவு',
+    subtitle: 'உழவன் கனெக்ட் தொடர்பான உதவி தேவையா?',
+    description: 'கேள்விகள் உள்ளதா, சிக்கலை எதிர்கொள்கிறீர்களா அல்லது தளத்தில் உதவி தேவையா? எங்கள் ஆதரவுக் குழு உதவத் தயாராக உள்ளது.',
+    copyEmail: 'மின்னஞ்சல் முகவரியை நகலெடு',
+    copiedToast: 'மின்னஞ்சல் நகலெடுக்கப்பட்டது',
+    openEmailClient: 'மின்னஞ்சல் செயலியைத் திற',
+    returnPreviousPage: 'முந்தைய பக்கத்திற்குத் திரும்பு',
+    trustBadge: 'உழவன் கனெக்ட் உதவி மையம் • நேரடி உழவர் & வாங்குவோர் ஆதரவு'
   }
 };
 
@@ -164,7 +176,9 @@ export const hiTranslations: DeepPartial<TranslationDictionary> = {
     language: 'भाषा',
     reports: 'रिपोर्ट व आंकड़े',
     procurement: 'थोक खरीद कंसोल',
-    reverseAuction: 'रिवर्स नीलामी'
+    reverseAuction: 'रिवर्स नीलामी',
+    support: 'सहायता एवं समर्थन',
+    schemes: 'सरकारी योजनाएं'
   },
   farmer: {
     myCrops: 'मेरी फसल सूची',
@@ -216,6 +230,16 @@ export const hiTranslations: DeepPartial<TranslationDictionary> = {
     searchPlaceholder: 'भाषा नाम, लिपि या कोड से खोजें (उदा. हिन्दी, hi)...',
     continueBtn: 'मंच पर आगे बढ़ें →',
     currentSelection: 'वर्तमान चयन'
+  },
+  support: {
+    pageTitle: 'सहायता एवं समर्थन',
+    subtitle: 'क्या आपको उझवन कनेक्ट में सहायता चाहिए?',
+    description: 'कोई प्रश्न है, समस्या आ रही है, या प्लेटफ़ॉर्म पर सहायता चाहिए? हमारी सहायता टीम मदद के लिए तत्पर है।',
+    copyEmail: 'ईमेल पता कॉपी करें',
+    copiedToast: 'ईमेल कॉपी हो गया',
+    openEmailClient: 'ईमेल ऐप खोलें',
+    returnPreviousPage: 'पिछले पृष्ठ पर वापस जाएं',
+    trustBadge: 'उझवन कनेक्ट हेल्पडेस्क • सीधा किसान और खरीदार समर्थन'
   }
 };
 
@@ -249,7 +273,9 @@ export const teTranslations: DeepPartial<TranslationDictionary> = {
     settlement: 'ఆదాయం & చెల్లింపులు',
     profile: 'నా ప్రొఫైల్',
     settings: 'సెట్టింగ్‌లు',
-    language: 'భాష'
+    language: 'భాష',
+    support: 'సహాయం & మద్దతు',
+    schemes: 'ప్రభుత్వ పథకాలు'
   },
   farmer: {
     myCrops: 'నా పంట జాబితా',
@@ -272,6 +298,16 @@ export const teTranslations: DeepPartial<TranslationDictionary> = {
     changeAnytimeNote: 'మీరు ఎప్పుడైనా సెట్టింగ్‌ల నుండి భాషను మార్చుకోవచ్చు.',
     searchPlaceholder: 'భాషను శోధించండి (ఉదా. తెలుగు, te)...',
     continueBtn: 'కొనసాగించండి →'
+  },
+  support: {
+    pageTitle: 'సహాయం & మద్దతు',
+    subtitle: 'ఉళవన్ కనెక్ట్‌తో సహాయం కావాలా?',
+    description: 'సందేహాలు ఉన్నాయా, సమస్య ఎదురవుతోందా, లేదా ప్లాట్‌ఫారమ్‌లో సహాయం కావాలా? మా మద్దతు బృందం మీకు సహాయం చేయడానికి సిద్ధంగా ఉంది.',
+    copyEmail: 'ఇమెయిల్ చిరునామాను కాపీ చేయండి',
+    copiedToast: 'ఇమెయిల్ కాపీ చేయబడింది',
+    openEmailClient: 'ఇమెయిల్ యాప్ తెరవండి',
+    returnPreviousPage: 'మునుపటి పేజీకి తిరిగి వెళ్లండి',
+    trustBadge: 'ఉళవన్ కనెక్ట్ హెల్ప్‌డెస్క్ • ప్రత్యక్ష రైతు & కొనుగోలుదారుల మద్దతు'
   }
 };
 

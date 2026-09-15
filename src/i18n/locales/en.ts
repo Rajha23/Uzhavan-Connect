@@ -95,7 +95,9 @@ export const enTranslations: TranslationDictionary = {
     impactKPIs: 'Impact & KPIs',
     signin: 'Sign In',
     register: 'Register',
-    home: 'Home'
+    home: 'Home',
+    support: 'Support & Assistance',
+    schemes: 'Govt Schemes'
   },
 
   stages: {
@@ -1000,5 +1002,16 @@ export const enTranslations: TranslationDictionary = {
     privacyPolicy: 'Data Privacy & Farmer Rights',
     termsOfUse: 'Operating Standards',
     contactSupport: 'Toll-Free Agronomist Helpdesk: 1800-180-1551'
+  },
+
+  support: {
+    pageTitle: 'Support & Assistance',
+    subtitle: 'Need help with Uzhavan Connect?',
+    description: 'Have questions, facing an issue, or need assistance with the platform? Our support team is here to help.',
+    copyEmail: 'Copy email address',
+    copiedToast: 'Email copied',
+    openEmailClient: 'Open Email Client',
+    returnPreviousPage: 'Return to Previous Page',
+    trustBadge: 'Uzhavan Connect Helpdesk • Direct Farmer & Buyer Support'
   }
 };
