@@ -8,7 +8,6 @@ import {
 } from '../services/routeOptimizationService';
 import {
   Truck,
-  Sparkles,
   MapPin,
   Clock,
   Gauge,
@@ -252,13 +251,6 @@ export const RouteOptimizationMap: React.FC = () => {
       {/* Header Banner */}
       <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex flex-wrap items-center gap-2 mb-1.5">
-            <span className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Google OR-Tools VRP Solver Architecture</span>
-            </span>
-          </div>
-
           <h3 className="text-xl font-medium tracking-tight text-slate-900">
             Multi-Stop Route & Logistics Optimization
           </h3>
@@ -615,13 +607,6 @@ export const RouteOptimizationMap: React.FC = () => {
             })}
           </div>
 
-          <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs text-slate-600 flex items-center justify-between">
-            <span>Solver Engine:</span>
-            <span className="font-semibold text-emerald-700 flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>OR-Tools Topological Feasibility Solved</span>
-            </span>
-          </div>
         </div>
       </div>
     </div>

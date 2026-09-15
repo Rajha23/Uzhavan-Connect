@@ -10,13 +10,11 @@ import {
   CheckCircle2,
   ArrowRight,
   QrCode,
-  ShieldCheck,
   AlertCircle,
   Zap,
   Check,
   Building2,
   FileCheck2,
-  Info,
   ExternalLink,
   Sprout
 } from 'lucide-react';
@@ -126,16 +124,6 @@ export const LogisticsDashboard: React.FC = () => {
             <p className="text-sm text-emerald-100/80 font-normal max-w-2xl">
               {t('logistics.fleetSubtitle', 'Vehicle fleet assignment, cold-chain corridor tracking, and destination buyer dockside delivery handover.')}
             </p>
-            <div className="pt-2 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 bg-black/20 backdrop-blur-sm border border-white/15 px-3 py-1 rounded-full text-[11px] text-emerald-200">
-                <Info className="w-3.5 h-3.5 text-emerald-300" />
-                <span>{t('logistics.routeSolver', 'Route Solver:')} <strong>{t('logistics.topologicalHeuristic', 'Topological Heuristic (OR-Tools Architecture)')}</strong></span>
-              </span>
-              <span className="inline-flex items-center gap-1.5 bg-[#e9edc9]/20 border border-[#e9edc9]/30 px-3 py-1 rounded-full text-[11px] text-[#fefae0]">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
-                <span>{t('logistics.reeferTelemetry', 'Cold-Chain Sensor Telemetry')}</span>
-              </span>
-            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 relative z-10">
