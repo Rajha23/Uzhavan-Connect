@@ -73,6 +73,7 @@ export const PATH_TO_TAB: Record<string, string> = {
   '/demand-intel': 'demand-intel',
   '/demand-forecast': 'demand-forecast',
   '/notifications': 'notifications',
+  '/news': 'news',
   '/schemes': 'schemes',
   '/subsidy': 'subsidy',
   '/support': 'support',
@@ -118,6 +119,7 @@ export const TAB_TO_PATH: Record<string, string> = {
   'sys-users': '/admin/users',
   'roles-permissions': '/admin/roles',
   'system-monitoring': '/admin/monitoring',
+  news: '/news',
   schemes: '/schemes',
   subsidy: '/subsidy',
   support: '/support',
@@ -149,6 +151,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'notifications',
     'schemes',
     'subsidy',
+    'news',
     'access-denied'
   ],
   RETAIL_BUYER: [
@@ -169,6 +172,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'notifications',
     'schemes',
     'subsidy',
+    'news',
     'access-denied'
   ],
   BULK_BUYER: [
@@ -192,6 +196,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'notifications',
     'schemes',
     'subsidy',
+    'news',
     'access-denied'
   ],
   FPO_AGGREGATOR: [
@@ -213,6 +218,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'notifications',
     'schemes',
     'subsidy',
+    'news',
     'access-denied'
   ],
   LOGISTICS: [
@@ -233,6 +239,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'notifications',
     'schemes',
     'subsidy',
+    'news',
     'access-denied'
   ],
   ADMIN: [
@@ -260,6 +267,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'notifications',
     'schemes',
     'subsidy',
+    'news',
     'access-denied'
   ]
 };
@@ -293,6 +301,7 @@ export const TAB_FEATURE_NAMES: Record<string, string> = {
   reports: 'Executive Analytics & Impact Reports',
   settlement: 'Automated Instant Farmer Settlement',
   'demand-intel': 'Demand Forecasting & Market Intelligence',
+  news: 'Agriculture News & Updates',
   schemes: 'Government Schemes & Support',
   subsidy: 'Subsidies & Benefits Framework',
   support: 'Support & Assistance'
