@@ -286,15 +286,15 @@ const PageContent: React.FC = () => {
 const AgriAtmosphericGlow: React.FC = () => (
   <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10" aria-hidden="true">
     {/* Soft top-left sage/cream morning illumination */}
-    <div className="absolute -top-32 -left-32 w-[34rem] h-[34rem] rounded-full bg-gradient-to-br from-[#ccd5ae]/25 via-[#fefae0]/30 to-transparent blur-3xl" />
+    <div className="absolute -top-32 -left-32 w-[34rem] h-[34rem] rounded-full bg-gradient-to-br from-[#7f9f94]/20 via-[#dff1ed]/35 to-transparent blur-3xl" />
     {/* Soft top-right olive/mint ambient illumination */}
-    <div className="absolute top-16 -right-32 w-[30rem] h-[30rem] rounded-full bg-gradient-to-bl from-[#e9edc9]/30 via-[#eaf4ec]/25 to-transparent blur-3xl" />
+    <div className="absolute top-16 -right-32 w-[30rem] h-[30rem] rounded-full bg-gradient-to-bl from-[#f0c982]/18 via-[#e7f3ef]/30 to-transparent blur-3xl" />
     {/* Subtle central clearing */}
-    <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[44rem] h-[28rem] rounded-full bg-[#fefae0]/20 blur-[100px]" />
+    <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[44rem] h-[28rem] rounded-full bg-[#fffaf0]/35 blur-[100px]" />
     {/* Subtle bottom-right moss glow */}
-    <div className="absolute -bottom-32 right-8 w-[32rem] h-[32rem] rounded-full bg-gradient-to-tl from-[#a3b18a]/20 via-[#eaf4ec]/25 to-transparent blur-3xl" />
+    <div className="absolute -bottom-32 right-8 w-[32rem] h-[32rem] rounded-full bg-gradient-to-tl from-[#147d78]/14 via-[#e7f3ef]/30 to-transparent blur-3xl" />
     {/* Subtle bottom-left warm earth hint */}
-    <div className="absolute -bottom-16 -left-16 w-[26rem] h-[26rem] rounded-full bg-[#fefae0]/30 blur-3xl" />
+    <div className="absolute -bottom-16 -left-16 w-[26rem] h-[26rem] rounded-full bg-[#f0c982]/12 blur-3xl" />
   </div>
 );
 

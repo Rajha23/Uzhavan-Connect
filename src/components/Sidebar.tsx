@@ -185,30 +185,30 @@ export const Sidebar: React.FC = () => {
 
       {/* Main Left Sidebar */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#faf9f5]/95 backdrop-blur-md text-[#01472e] border-r border-[#ccd5ae]/40 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 shadow-soft ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#f8faf8]/95 backdrop-blur-md text-[#16333a] border-r border-[#7f9f94]/30 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 shadow-soft ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Sidebar Brand Header */}
         <div>
-          <div className="p-4 border-b border-[#ccd5ae]/30 flex items-center justify-between bg-white/40">
+          <div className="p-4 border-b border-[#7f9f94]/25 flex items-center justify-between bg-white/60">
             <button
               onClick={() => setActiveTab('landing')}
               className="flex items-center gap-3 group text-left cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-2xl bg-[#01472e] flex items-center justify-center text-[#fefae0] shadow-soft group-hover:bg-[#003b25] transition-colors">
-                <Sprout className="w-5 h-5 text-[#fefae0]" />
+              <div className="w-9 h-9 rounded-xl bg-[#16333a] flex items-center justify-center text-white shadow-soft group-hover:bg-[#147d78] transition-colors">
+                <Sprout className="w-5 h-5 text-[#dff1ed]" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-base font-medium tracking-tight text-[#01472e] group-hover:text-[#003b25] transition-colors">
+                  <span className="text-base font-semibold tracking-tight text-[#16333a] group-hover:text-[#147d78] transition-colors">
                     Uzhavan Connect
                   </span>
-                  <span className="text-[9px] bg-[#eaf4ec] text-[#01472e] font-medium px-1.5 py-0.5 rounded-full border border-[#a3b18a]/40">
+                  <span className="text-[9px] bg-[#dff1ed] text-[#147d78] font-semibold px-1.5 py-0.5 rounded-full border border-[#7f9f94]/40">
                     AI
                   </span>
                 </div>
-                <p className="text-[10px] text-[#5c7065] font-normal tracking-normal -mt-0.5">
+                <p className="text-[10px] text-[#6d817c] font-normal tracking-normal -mt-0.5">
                   {t('landing.tagline', 'Agricultural Intelligence')}
                 </p>
               </div>
@@ -234,7 +234,7 @@ export const Sidebar: React.FC = () => {
 
               return (
                 <div key={secName} className="space-y-1">
-                  <div className="px-3 text-[10px] font-medium uppercase tracking-wider text-[#788c80] mb-1.5 mt-2">
+                  <div className="px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8a9b96] mb-1.5 mt-2">
                     {secLabel}
                   </div>
                   {menuItems
@@ -248,17 +248,17 @@ export const Sidebar: React.FC = () => {
                           onClick={() => handleSelect(item.id)}
                           className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-medium transition cursor-pointer ${
                             isActive
-                              ? 'bg-[#01472e] text-[#fefae0] shadow-soft font-medium'
-                              : 'text-[#5c7065] hover:bg-[#ccd5ae]/20 hover:text-[#01472e]'
+                              ? 'bg-[#16333a] text-white shadow-soft font-semibold'
+                              : 'text-[#60736f] hover:bg-[#dff1ed]/70 hover:text-[#147d78]'
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <Icon className={`w-4 h-4 ${isActive ? 'text-[#fefae0]' : 'text-[#788c80]'}`} />
+                            <Icon className={`w-4 h-4 ${isActive ? 'text-[#dff1ed]' : 'text-[#8a9b96]'}`} />
                             <span>{item.label}</span>
                           </div>
                           {item.id === 'notifications' && unreadNotificationsCount > 0 && (
                             <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-full transition-colors ${
-                              isActive ? 'bg-[#fefae0] text-[#01472e]' : 'bg-[#01472e] text-[#fefae0]'
+                              isActive ? 'bg-[#dff1ed] text-[#16333a]' : 'bg-[#147d78] text-white'
                             } leading-none`}>
                               {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
                             </span>
@@ -273,17 +273,17 @@ export const Sidebar: React.FC = () => {
         </div>
 
         {/* Sidebar Footer: User & Sign Out */}
-        <div className="p-3 border-t border-[#ccd5ae]/30 bg-[#fefae0]/40 space-y-2">
+        <div className="p-3 border-t border-[#7f9f94]/25 bg-[#eef4f0]/80 space-y-2">
           <div
             onClick={() => handleSelect('profile')}
-            className="flex items-center gap-2.5 p-2 rounded-2xl hover:bg-white/80 border border-transparent hover:border-[#ccd5ae]/60 cursor-pointer transition"
+            className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white border border-transparent hover:border-[#7f9f94]/40 cursor-pointer transition"
           >
-            <div className="w-8 h-8 rounded-full bg-[#eaf4ec] border border-[#a3b18a]/40 flex items-center justify-center text-sm font-medium text-[#01472e] shadow-2xs">
+            <div className="w-8 h-8 rounded-full bg-[#dff1ed] border border-[#7f9f94]/40 flex items-center justify-center text-sm font-medium text-[#147d78] shadow-2xs">
               {currentUser.avatar || '👨‍🌾'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-[#01472e] truncate">{currentUser.name}</p>
-              <p className="text-[10px] text-[#5c7065] truncate font-normal">
+              <p className="text-xs font-semibold text-[#16333a] truncate">{currentUser.name}</p>
+              <p className="text-[10px] text-[#6d817c] truncate font-normal">
                 {currentUser.organization || currentUser.email || 'Member'}
               </p>
             </div>
@@ -293,11 +293,11 @@ export const Sidebar: React.FC = () => {
           <button
             type="button"
             onClick={openLanguageSelector}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-semibold bg-white/70 hover:bg-white text-[#01472e] border border-[#ccd5ae]/60 shadow-2xs hover:border-[#01472e]/50 transition cursor-pointer"
+            className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold bg-white/80 hover:bg-white text-[#16333a] border border-[#7f9f94]/35 shadow-2xs hover:border-[#147d78]/50 transition cursor-pointer"
             title={t('nav.changeLanguage', 'Change platform language (22 Constitutional Languages)')}
           >
             <div className="flex items-center gap-2">
-              <Globe2 className="w-3.5 h-3.5 text-[#01472e]" />
+              <Globe2 className="w-3.5 h-3.5 text-[#147d78]" />
               <span className="font-bold">{currentLanguageDef.nativeName}</span>
             </div>
             <span className="text-[10px] text-slate-500 font-normal">22</span>

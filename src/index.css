@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 @import 'leaflet/dist/leaflet.css';
 @tailwind base;
 @tailwind components;
@@ -5,30 +6,35 @@
 
 @layer base {
   :root {
-    --forest: #01472e;
-    --sage: #ccd5ae;
-    --olive: #e9edc9;
-    --cream: #fefae0;
-    --moss: #a3b18a;
-    --mint: #eaf4ec;
-    --canvas: #faf9f5;
+    --forest: #123f3a;
+    --ink: #16333a;
+    --teal: #147d78;
+    --teal-soft: #dff1ed;
+    --gold: #d89b42;
+    --coral: #c86654;
+    --sage: #b9cfc5;
+    --olive: #e7eee6;
+    --cream: #fffaf0;
+    --moss: #7f9f94;
+    --mint: #e7f3ef;
+    --canvas: #f3f6f3;
     --surface: #ffffff;
-    --surface-cream: #fdfbf7;
-    --border-agri-subtle: rgba(1, 71, 46, 0.08);
-    --border-agri-medium: rgba(204, 213, 174, 0.60);
-    --border-agri-focus: rgba(1, 71, 46, 0.35);
-    --indic-font-stack: 'Plus Jakarta Sans', 'Inter', 'Noto Sans Tamil', 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Noto Sans Bengali', 'Noto Sans Kannada', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Gujarati', 'Noto Sans Oriya', 'Noto Sans Arabic', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --surface-cream: #fbfcf9;
+    --border-agri-subtle: rgba(22, 51, 58, 0.10);
+    --border-agri-medium: rgba(127, 159, 148, 0.38);
+    --border-agri-focus: rgba(20, 125, 120, 0.45);
+    --indic-font-stack: 'DM Sans', 'Noto Sans Tamil', 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Noto Sans Bengali', 'Noto Sans Kannada', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Gujarati', 'Noto Sans Oriya', 'Noto Sans Arabic', system-ui, sans-serif;
+    --heading-font-stack: 'Space Grotesk', 'DM Sans', 'Noto Sans Tamil', 'Noto Sans Devanagari', sans-serif;
   }
 
   body {
-    @apply bg-[#faf9f5] text-[#01472e] font-normal;
+    @apply bg-[#f3f6f3] text-[#16333a] font-normal;
     font-family: var(--indic-font-stack);
     background-image: 
-      radial-gradient(ellipse at 10% 0%, rgba(204, 213, 174, 0.35) 0%, transparent 45%),
-      radial-gradient(ellipse at 90% 12%, rgba(233, 237, 201, 0.30) 0%, transparent 42%),
-      radial-gradient(ellipse at 50% 50%, rgba(254, 250, 224, 0.35) 0%, transparent 55%),
-      radial-gradient(ellipse at 85% 85%, rgba(163, 177, 138, 0.20) 0%, transparent 45%),
-      radial-gradient(ellipse at 15% 95%, rgba(234, 244, 236, 0.50) 0%, transparent 50%);
+      radial-gradient(ellipse at 0% 0%, rgba(20, 125, 120, 0.12) 0%, transparent 38%),
+      radial-gradient(ellipse at 100% 12%, rgba(216, 155, 66, 0.10) 0%, transparent 34%),
+      radial-gradient(ellipse at 50% 55%, rgba(255, 250, 240, 0.72) 0%, transparent 54%),
+      radial-gradient(ellipse at 90% 100%, rgba(127, 159, 148, 0.16) 0%, transparent 42%);
     background-attachment: fixed;
     background-size: 100% 100%;
     -webkit-font-smoothing: antialiased;
@@ -97,19 +103,23 @@
 
 
   h1 {
-    @apply font-heading font-medium tracking-tight text-[#01472e];
+    @apply font-heading font-semibold tracking-tight text-[#16333a];
+    font-family: var(--heading-font-stack);
   }
 
   h2 {
-    @apply font-heading font-medium tracking-tight text-[#01472e];
+    @apply font-heading font-semibold tracking-tight text-[#16333a];
+    font-family: var(--heading-font-stack);
   }
 
   h3 {
-    @apply font-heading font-medium tracking-normal text-[#01472e];
+    @apply font-heading font-semibold tracking-normal text-[#16333a];
+    font-family: var(--heading-font-stack);
   }
 
   h4, h5, h6 {
-    @apply font-heading font-medium tracking-normal text-[#01472e];
+    @apply font-heading font-semibold tracking-normal text-[#16333a];
+    font-family: var(--heading-font-stack);
   }
 }
 
@@ -117,29 +127,28 @@
 @layer components {
   /* Reusable Application Background & Surface Tokens */
   .agri-canvas {
-    @apply min-h-screen text-[#01472e] font-sans relative;
-    background-color: #faf9f5;
+    @apply min-h-screen text-[#16333a] font-sans relative;
+    background-color: #f3f6f3;
     background-image: 
-      radial-gradient(ellipse at 10% 0%, rgba(204, 213, 174, 0.35) 0%, transparent 45%),
-      radial-gradient(ellipse at 90% 12%, rgba(233, 237, 201, 0.30) 0%, transparent 42%),
-      radial-gradient(ellipse at 50% 50%, rgba(254, 250, 224, 0.35) 0%, transparent 55%),
-      radial-gradient(ellipse at 85% 85%, rgba(163, 177, 138, 0.20) 0%, transparent 45%),
-      radial-gradient(ellipse at 15% 95%, rgba(234, 244, 236, 0.50) 0%, transparent 50%);
+      radial-gradient(ellipse at 0% 0%, rgba(20, 125, 120, 0.12) 0%, transparent 38%),
+      radial-gradient(ellipse at 100% 12%, rgba(216, 155, 66, 0.10) 0%, transparent 34%),
+      radial-gradient(ellipse at 50% 55%, rgba(255, 250, 240, 0.72) 0%, transparent 54%),
+      radial-gradient(ellipse at 90% 100%, rgba(127, 159, 148, 0.16) 0%, transparent 42%);
     background-attachment: fixed;
     background-size: 100% 100%;
   }
 
   /* 24px - 36px Organic Agricultural Cards */
   .agri-card {
-    @apply bg-white/95 rounded-[28px] border border-[#ccd5ae]/50 shadow-soft hover:border-[#a3b18a]/60 hover:shadow-forest transition-all duration-200;
+    @apply bg-white/95 rounded-2xl border border-[#7f9f94]/30 shadow-soft hover:border-[#147d78]/45 hover:shadow-forest transition-all duration-200;
   }
 
   .agri-card-elevated {
-    @apply bg-white rounded-[32px] border border-[#ccd5ae]/60 shadow-forest hover:shadow-forest-lg transition-all duration-200;
+    @apply bg-white rounded-2xl border border-[#7f9f94]/35 shadow-forest hover:shadow-forest-lg transition-all duration-200;
   }
 
   .agri-card-subtle {
-    @apply bg-[#fdfbf7] rounded-[28px] border border-[#e9edc9] shadow-2xs hover:border-[#ccd5ae] transition-all duration-200;
+    @apply bg-[#fbfcf9] rounded-2xl border border-[#b9cfc5]/45 shadow-2xs hover:border-[#147d78]/35 transition-all duration-200;
   }
 
   .agri-surface-pale {
@@ -147,29 +156,29 @@
   }
 
   .agri-banner {
-    @apply bg-gradient-to-r from-[#01472e] via-[#025a3a] to-[#013b26] text-white rounded-[32px] border border-[#a3b18a]/30 shadow-forest;
+    @apply bg-gradient-to-r from-[#16333a] via-[#145c5a] to-[#147d78] text-white rounded-2xl border border-[#7f9f94]/35 shadow-forest;
   }
 
   .agri-nav-surface {
-    @apply bg-white/90 backdrop-blur-md border-b border-[#ccd5ae]/40 shadow-2xs;
+    @apply bg-[#fbfcf9]/90 backdrop-blur-md border-b border-[#7f9f94]/30 shadow-2xs;
   }
 
   .agri-sidebar-surface {
-    @apply bg-[#faf9f5]/95 backdrop-blur-md border-r border-[#ccd5ae]/40 shadow-soft;
+    @apply bg-[#f8faf8]/95 backdrop-blur-md border-r border-[#7f9f94]/30 shadow-soft;
   }
 
   /* AI Card Standard */
   .ai-card {
-    @apply bg-white/95 rounded-[28px] border border-[#ccd5ae]/50 shadow-soft hover:border-[#a3b18a]/70 hover:shadow-ai-hover transition-all duration-200;
+    @apply bg-white/95 rounded-2xl border border-[#7f9f94]/30 shadow-soft hover:border-[#147d78]/45 hover:shadow-ai-hover transition-all duration-200;
   }
 
   .ai-card-active {
-    @apply bg-white rounded-[28px] border-2 border-[#01472e] shadow-forest ring-4 ring-[#01472e]/10;
+    @apply bg-white rounded-2xl border-2 border-[#147d78] shadow-forest ring-4 ring-[#147d78]/10;
   }
 
   /* Metric Stat Card */
   .metric-card {
-    @apply bg-white/95 p-5 sm:p-6 rounded-[28px] border border-[#ccd5ae]/45 shadow-soft hover:border-[#a3b18a]/70 hover:shadow-forest transition-all duration-200;
+    @apply bg-white/95 p-5 sm:p-6 rounded-2xl border border-[#7f9f94]/30 shadow-soft hover:border-[#147d78]/45 hover:shadow-forest transition-all duration-200;
   }
 
   /* AI Pill & Badges */

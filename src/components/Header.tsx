@@ -126,7 +126,7 @@ export const Header: React.FC = () => {
   const pageTitle = getLocalizedTitle(activeTab);
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-[#faf9f5]/90 backdrop-blur-md border-b border-[#ccd5ae]/40 flex items-center px-4 sm:px-6 gap-3 shadow-soft">
+    <header className="sticky top-0 z-30 h-[4.5rem] bg-[#f8faf8]/88 backdrop-blur-xl border-b border-[#7f9f94]/30 flex items-center px-4 sm:px-7 gap-3 shadow-soft">
       {/* Mobile hamburger */}
       <button
         onClick={toggleSidebar}
@@ -220,11 +220,11 @@ export const Header: React.FC = () => {
         <button
           type="button"
           onClick={openLanguageSelector}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-semibold bg-white/90 hover:bg-white text-[#01472e] border border-[#ccd5ae]/80 shadow-2xs hover:border-[#01472e]/60 transition hover:scale-[1.02] cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/90 hover:bg-white text-[#16333a] border border-[#7f9f94]/45 shadow-2xs hover:border-[#147d78]/60 transition hover:scale-[1.02] cursor-pointer"
           title="Change platform language (22 Constitutional Languages supported)"
           aria-label="Change Language"
         >
-          <Globe2 className="w-3.5 h-3.5 text-[#01472e] shrink-0" />
+          <Globe2 className="w-3.5 h-3.5 text-[#147d78] shrink-0" />
           <span className="font-bold tracking-tight">{currentLanguageDef.nativeName}</span>
           <span className="hidden xl:inline text-[10px] text-slate-500 font-normal">({currentLanguageDef.name})</span>
         </button>
@@ -233,10 +233,10 @@ export const Header: React.FC = () => {
         <button
           type="button"
           onClick={() => openDocumentManager()}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-semibold bg-white/90 hover:bg-white text-[#01472e] border border-[#ccd5ae]/80 shadow-2xs hover:border-[#01472e]/60 transition hover:scale-[1.02] cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/90 hover:bg-white text-[#16333a] border border-[#7f9f94]/45 shadow-2xs hover:border-[#147d78]/60 transition hover:scale-[1.02] cursor-pointer"
           title="Document Vault & Verified Files (Idempotent 1:1 Storage)"
         >
-          <FileText className="w-3.5 h-3.5 text-[#01472e] shrink-0" />
+          <FileText className="w-3.5 h-3.5 text-[#147d78] shrink-0" />
           <span className="hidden sm:inline">{t('nav.vault', undefined, 'Vault')}</span>
         </button>
 
@@ -247,10 +247,10 @@ export const Header: React.FC = () => {
         {isInstallable && (
           <button
             onClick={promptInstall}
-            className="hidden md:flex items-center gap-1.5 bg-[#01472e] hover:bg-[#003b25] text-[#fefae0] px-3.5 py-1.5 rounded-2xl text-xs font-medium transition shadow-soft cursor-pointer"
+            className="hidden md:flex items-center gap-1.5 bg-[#16333a] hover:bg-[#147d78] text-white px-3.5 py-1.5 rounded-xl text-xs font-medium transition shadow-soft cursor-pointer"
             title="Install UZHAVAN Connect to your home screen or desktop for fast offline field access"
           >
-            <Download className="w-3.5 h-3.5 text-[#ccd5ae]" />
+            <Download className="w-3.5 h-3.5 text-[#dff1ed]" />
             <span>{t('common.download', undefined, 'Install App')}</span>
           </button>
         )}
@@ -259,10 +259,10 @@ export const Header: React.FC = () => {
         <div className="relative">
           <button
             onClick={() => { setIsUserMenuOpen(!isUserMenuOpen); }}
-            className="flex items-center gap-2.5 pl-1.5 pr-2.5 py-1 rounded-2xl hover:bg-white/80 transition border border-[#ccd5ae]/50 bg-white/60 shadow-2xs cursor-pointer"
+            className="flex items-center gap-2.5 pl-1.5 pr-2.5 py-1 rounded-xl hover:bg-white transition border border-[#7f9f94]/35 bg-white/70 shadow-2xs cursor-pointer"
           >
             {/* Avatar */}
-            <div className="w-7 h-7 rounded-xl bg-[#01472e] flex items-center justify-center text-xs font-medium text-[#fefae0] shadow-2xs shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-[#16333a] flex items-center justify-center text-xs font-medium text-[#dff1ed] shadow-2xs shrink-0">
               {currentUser.avatar || '👤'}
             </div>
             <div className="hidden sm:block text-left">
