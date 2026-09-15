@@ -49,7 +49,7 @@ export interface UserProfile {
   serviceArea?: string;
 }
 
-export type NetworkSyncStatus = 'idle' | 'offline_saved' | 'syncing' | 'synced';
+export type NetworkSyncStatus = 'idle' | 'pending' | 'syncing' | 'synced' | 'error';
 
 export type ProduceStatus =
   | 'Listed'

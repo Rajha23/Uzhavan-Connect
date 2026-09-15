@@ -13,6 +13,7 @@ import { ProducePassportModal } from './components/ProducePassportModal';
 import { LanguageSelectorModal } from './components/LanguageSelectorModal';
 import { LanguageOnboardingModal } from './components/LanguageOnboardingModal';
 import { ChatbotWidget } from './components/ChatbotWidget';
+import { SyncStatusIndicator } from './components/SyncStatusIndicator';
 
 // Public pages (no sidebar)
 import { LandingPage } from './pages/LandingPage';
@@ -308,6 +309,7 @@ const PublicShell: React.FC = () => (
     <LanguageSelectorModal />
     <LanguageOnboardingModal />
     <ChatbotWidget />
+    <SyncStatusIndicator />
   </div>
 );
 
@@ -335,6 +337,7 @@ const AuthenticatedShell: React.FC = () => {
       <LanguageSelectorModal />
       <LanguageOnboardingModal />
       <ChatbotWidget />
+      <SyncStatusIndicator />
     </div>
   );
 };

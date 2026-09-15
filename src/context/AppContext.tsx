@@ -71,6 +71,8 @@ import {
   deleteFile,
   cleanupExistingDuplicates
 } from '../services/fileService';
+import { syncManager } from '../services/syncManager';
+import { addToSyncQueue } from '../services/offlineStorage';
 
 interface AppContextType {
   files: FileRecord[];
@@ -529,35 +531,27 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     });
   }, []);
 
+  // Listen to SyncManager status
+  useEffect(() => {
+    const unsubscribe = syncManager.subscribe((status, msg) => {
+      setSyncStatus(status);
+      if (status === 'synced') {
+        // Mark UI items as synced
+        setProduceListings((prev) =>
+          prev.map((item) => (item.syncStatus === 'PENDING_SYNC' ? { ...item, syncStatus: 'SYNCED' } : item))
+        );
+        setDemandRequests((prev) =>
+          prev.map((item) => (item.syncStatus === 'PENDING_SYNC' ? { ...item, syncStatus: 'SYNCED' } : item))
+        );
+      }
+    });
+    return unsubscribe;
+  }, []);
+
   // Flush offline queue and synchronize with persistent layer
   const syncOfflineQueue = useCallback(async () => {
     if (typeof navigator !== 'undefined' && !navigator.onLine) return;
-
-    setSyncStatus('syncing');
-    console.log('[UZHAVAN SYNC] Synchronizing offline queued field updates to persistent layer...');
-
-    // Small delay for natural UI feedback
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    // Mark all pending sync items as SYNCED
-    setProduceListings((prev) =>
-      prev.map((item) => (item.syncStatus === 'PENDING_SYNC' ? { ...item, syncStatus: 'SYNCED' } : item))
-    );
-    setDemandRequests((prev) =>
-      prev.map((item) => (item.syncStatus === 'PENDING_SYNC' ? { ...item, syncStatus: 'SYNCED' } : item))
-    );
-
-    // Clear local offline sync action log
-    try {
-      localStorage.removeItem('uzhavan_offline_sync_queue');
-    } catch {}
-
-    setSyncStatus('synced');
-    console.log('[UZHAVAN SYNC] All field updates successfully synchronized.');
-
-    setTimeout(() => {
-      setSyncStatus('idle');
-    }, 3500);
+    await syncManager.syncAll();
   }, []);
 
   // Monitor network online / offline events
@@ -570,7 +564,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const handleOffline = () => {
       setIsOnline(false);
-      setSyncStatus('offline_saved');
+      setSyncStatus('pending');
       console.log('[UZHAVAN PWA] Network unavailable. Entering Field Offline Mode.');
     };
 
@@ -777,20 +771,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (isCurrentlyOnline) {
       try {
         const result = await apiService.createProduceListing(listing);
-        // The real-time subscription will catch this, but we can optimistically update
         setProduceListings((prev) => [result, ...prev.filter(l => l.id !== result.id)]);
       } catch (err) {
-        console.error("Failed to create listing", err);
+        console.error("Failed to create listing online, falling back to offline queue", err);
+        await addToSyncQueue({ id: listing.id || Date.now().toString(), type: 'ADD_PRODUCE', payload: listing });
+        setProduceListings((prev) => [listing, ...prev]);
+        setSyncStatus('pending');
       }
     } else {
       // Offline fallback
-      setSyncStatus('offline_saved');
       try {
-        const queue = JSON.parse(localStorage.getItem('uzhavan_offline_sync_queue') || '[]');
-        queue.push({ type: 'ADD_PRODUCE', payload: listing, timestamp: Date.now() });
-        localStorage.setItem('uzhavan_offline_sync_queue', JSON.stringify(queue));
-      } catch {}
+        await addToSyncQueue({ id: listing.id || Date.now().toString(), type: 'ADD_PRODUCE', payload: listing });
+      } catch (err) {
+        console.error("Failed to add to offline queue", err);
+      }
       setProduceListings((prev) => [listing, ...prev]);
+      setSyncStatus('pending');
     }
   };
 
@@ -810,7 +806,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         console.error("Failed to create demand", err);
       }
     } else {
-      setSyncStatus('offline_saved');
+      setSyncStatus('pending');
       try {
         const queue = JSON.parse(localStorage.getItem('uzhavan_offline_sync_queue') || '[]');
         queue.push({ type: 'ADD_DEMAND', payload: demand, timestamp: Date.now() });

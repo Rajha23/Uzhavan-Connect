@@ -7,7 +7,6 @@
     "dev": "vite",
     "build": "node --max-old-space-size=4096 ./node_modules/typescript/lib/tsc.js && node --max-old-space-size=4096 ./node_modules/vite/bin/vite.js build",
     "preview": "vite preview"
-
   },
   "dependencies": {
     "@google/genai": "^2.22.0",
@@ -15,6 +14,7 @@
     "@types/leaflet": "^1.9.22",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
+    "idb": "^8.0.3",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.475.0",
     "react": "^18.3.1",
