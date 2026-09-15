@@ -130,23 +130,32 @@ export const ChatbotWidget: React.FC = () => {
 
   return (
     <>
-      {/* Voice Assistant Floating Button */}
-      <button
-        onClick={startListening}
-        className={`fixed bottom-6 right-24 p-4 bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-xl transition-all duration-300 z-50 flex items-center justify-center ${isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'} ${isListening ? 'animate-pulse bg-red-500 hover:bg-red-600' : ''}`}
-        aria-label="Start Voice Assistant"
-      >
-        <Mic className="w-6 h-6" />
-      </button>
+      {/* Floating Action Buttons Group */}
+      <div className={`fixed bottom-6 right-6 flex items-end gap-4 transition-all duration-300 z-50 ${isOpen ? 'scale-0 opacity-0 pointer-events-none' : 'scale-100 opacity-100'}`}>
+        {/* Voice Assistant */}
+        <div className="flex flex-col items-center gap-1.5">
+          <button
+            onClick={startListening}
+            className={`p-4 bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-xl flex items-center justify-center ${isListening ? 'animate-pulse bg-red-500 hover:bg-red-600' : ''}`}
+            aria-label="Start Voice Assistant"
+          >
+            <Mic className="w-6 h-6" />
+          </button>
+          <span className="text-[10px] font-bold text-teal-900 bg-white/90 px-2 py-0.5 rounded-full shadow-sm border border-teal-100 backdrop-blur-sm whitespace-nowrap">Voice Assistant</span>
+        </div>
 
-      {/* Floating Action Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 p-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-xl transition-all duration-300 z-50 flex items-center justify-center ${isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`}
-        aria-label="Open Chatbot"
-      >
-        <MessageSquare className="w-6 h-6" />
-      </button>
+        {/* Chatbot */}
+        <div className="flex flex-col items-center gap-1.5">
+          <button
+            onClick={() => setIsOpen(true)}
+            className="p-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-xl flex items-center justify-center"
+            aria-label="Open Chatbot"
+          >
+            <MessageSquare className="w-6 h-6" />
+          </button>
+          <span className="text-[10px] font-bold text-emerald-900 bg-white/90 px-2 py-0.5 rounded-full shadow-sm border border-emerald-100 backdrop-blur-sm whitespace-nowrap">Chatbot</span>
+        </div>
+      </div>
 
       {/* Chat Window */}
       <div 
