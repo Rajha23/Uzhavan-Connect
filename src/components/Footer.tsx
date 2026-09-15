@@ -160,10 +160,6 @@ export const Footer: React.FC = () => {
             >
               {t('nav.support', 'Support & Assistance')}
             </button>
-            <span>•</span>
-            <span>Theme: Agriculture, FoodTech & Rural Development</span>
-            <span>•</span>
-            <span className="text-emerald-400 font-mono text-[11px]">AI-Powered</span>
           </div>
         </div>
       </div>
