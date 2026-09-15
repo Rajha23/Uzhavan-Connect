@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -31,14 +30,14 @@ public class LogisticsController {
 
     @GetMapping("/shipments/{id}")
     @Operation(summary = "Get shipment details by ID")
-    public ResponseEntity<Shipment> getShipmentById(@PathVariable UUID id) {
+    public ResponseEntity<Shipment> getShipmentById(@PathVariable String id) {
         return ResponseEntity.ok(logisticsService.getShipmentById(id));
     }
 
     @PostMapping("/shipments")
     @Operation(summary = "Create shipment from matched demand")
     public ResponseEntity<Shipment> createShipment(@RequestBody Map<String, String> body) {
-        UUID matchId = UUID.fromString(body.get("matchId"));
+        String matchId = String.fromString(body.get("matchId"));
         String vehicle = body.get("vehicle");
         String pickup = body.get("pickupLocation");
         String delivery = body.get("deliveryLocation");
@@ -47,7 +46,7 @@ public class LogisticsController {
 
     @PutMapping("/shipments/{id}/status")
     @Operation(summary = "Update shipment status (triggers settlement on DELIVERED)")
-    public ResponseEntity<Shipment> updateStatus(@PathVariable UUID id, @RequestBody Map<String, String> body) {
+    public ResponseEntity<Shipment> updateStatus(@PathVariable String id, @RequestBody Map<String, String> body) {
         String status = body.get("status");
         return ResponseEntity.ok(logisticsService.updateShipmentStatus(id, status));
     }
@@ -55,13 +54,13 @@ public class LogisticsController {
     @PostMapping("/routes/optimize")
     @Operation(summary = "Optimize delivery route using OR-Tools algorithm")
     public ResponseEntity<Route> optimizeRoute(@RequestBody Map<String, String> body) {
-        UUID shipmentId = UUID.fromString(body.get("shipmentId"));
+        String shipmentId = String.fromString(body.get("shipmentId"));
         return ResponseEntity.ok(logisticsService.optimizeRoute(shipmentId));
     }
 
     @GetMapping("/routes/{id}")
     @Operation(summary = "Get route details by ID")
-    public ResponseEntity<Route> getRouteById(@PathVariable UUID id) {
+    public ResponseEntity<Route> getRouteById(@PathVariable String id) {
         return ResponseEntity.ok(logisticsService.getRouteById(id));
     }
 }

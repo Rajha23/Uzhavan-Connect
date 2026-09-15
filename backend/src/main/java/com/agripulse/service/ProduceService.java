@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ProduceService {
@@ -30,12 +29,12 @@ public class ProduceService {
         return produceRepository.findAll();
     }
 
-    public List<ProduceListing> getFarmerProduce(UUID farmerId) {
+    public List<ProduceListing> getFarmerProduce(String farmerId) {
         return produceRepository.findByFarmerId(farmerId);
     }
 
     @Transactional
-    public ProduceListing createProduce(ProduceDTO dto, UUID authenticatedUserId) {
+    public ProduceListing createProduce(ProduceDTO dto, String authenticatedUserId) {
         ProduceListing listing = new ProduceListing();
         User user = userRepository.findById(authenticatedUserId)
             .orElseThrow(() -> new IllegalArgumentException("User not found: " + authenticatedUserId));
@@ -54,7 +53,7 @@ public class ProduceService {
     }
 
     @Transactional
-    public ProduceListing updateProduce(UUID id, ProduceDTO dto) {
+    public ProduceListing updateProduce(String id, ProduceDTO dto) {
         ProduceListing listing = produceRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Produce not found: " + id));
 
@@ -68,7 +67,7 @@ public class ProduceService {
     }
 
     @Transactional
-    public void deleteProduce(UUID id) {
+    public void deleteProduce(String id) {
         produceRepository.deleteById(id);
     }
 }

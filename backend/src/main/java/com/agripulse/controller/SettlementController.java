@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/settlements")
@@ -29,7 +28,7 @@ public class SettlementController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get settlement record by ID")
-    public ResponseEntity<Settlement> getSettlementById(@PathVariable UUID id) {
+    public ResponseEntity<Settlement> getSettlementById(@PathVariable String id) {
         return ResponseEntity.ok(settlementService.getSettlementById(id));
     }
 }

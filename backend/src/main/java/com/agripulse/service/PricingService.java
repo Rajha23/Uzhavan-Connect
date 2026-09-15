@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class PricingService {
@@ -31,7 +30,7 @@ public class PricingService {
         this.userRepository = userRepository;
     }
 
-    public List<PriceOffer> getOffersForDemand(UUID demandId) {
+    public List<PriceOffer> getOffersForDemand(String demandId) {
         return priceOfferRepository.findByDemandId(demandId);
     }
 
@@ -40,7 +39,7 @@ public class PricingService {
     }
 
     @Transactional
-    public PriceOffer submitOffer(PriceOfferDTO dto, UUID farmerId) {
+    public PriceOffer submitOffer(PriceOfferDTO dto, String farmerId) {
         DemandRequest demand = demandRequestRepository.findById(dto.demandId())
             .orElseThrow(() -> new IllegalArgumentException("Demand not found: " + dto.demandId()));
 
@@ -53,7 +52,7 @@ public class PricingService {
         offer.setQuantity(dto.quantity());
         offer.setPricePerKg(dto.pricePerKg());
         offer.setQuality(dto.quality() != null ? dto.quality() : "Grade A");
-        offer.setReadinessDate(dto.readinessDate());
+        offer.setReadinessDate(dto.readinessDate() != null ? dto.readinessDate().atStartOfDay() : null);
         offer.setStatus("SUBMITTED");
         offer.setCreatedAt(LocalDateTime.now());
 
@@ -61,7 +60,7 @@ public class PricingService {
     }
 
     @Transactional
-    public PriceOffer acceptOffer(UUID offerId) {
+    public PriceOffer acceptOffer(String offerId) {
         PriceOffer offer = priceOfferRepository.findById(offerId)
             .orElseThrow(() -> new IllegalArgumentException("Offer not found: " + offerId));
 

@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/demands")
@@ -36,7 +35,7 @@ public class DemandController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get demand by ID")
-    public ResponseEntity<DemandRequest> getDemandById(@PathVariable UUID id) {
+    public ResponseEntity<DemandRequest> getDemandById(@PathVariable String id) {
         return ResponseEntity.ok(demandService.getDemandById(id));
     }
 

@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class SettlementService {
@@ -25,7 +24,7 @@ public class SettlementService {
         return settlementRepository.findAll();
     }
 
-    public Settlement getSettlementById(UUID id) {
+    public Settlement getSettlementById(String id) {
         return settlementRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Settlement not found: " + id));
     }

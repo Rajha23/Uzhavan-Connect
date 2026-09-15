@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Service
 public class TraceabilityService {
@@ -28,11 +27,11 @@ public class TraceabilityService {
     }
 
     @Transactional
-    public ProduceBatch createBatch(BatchDTO dto, UUID farmerId) {
+    public ProduceBatch createBatch(BatchDTO dto, String farmerId) {
         User farmer = userRepository.findById(farmerId)
             .orElseThrow(() -> new IllegalArgumentException("Farmer not found: " + farmerId));
 
-        String generatedCode = "BATCH-2026-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String generatedCode = "BATCH-2026-" + String.randomString().toString().substring(0, 8).toUpperCase();
 
         ProduceBatch batch = new ProduceBatch();
         batch.setBatchCode(generatedCode);

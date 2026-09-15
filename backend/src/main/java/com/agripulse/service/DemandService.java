@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class DemandService {
@@ -30,17 +29,17 @@ public class DemandService {
         return demandRepository.findAll();
     }
 
-    public List<DemandRequest> getBuyerDemands(UUID buyerId) {
+    public List<DemandRequest> getBuyerDemands(String buyerId) {
         return demandRepository.findByBuyerId(buyerId);
     }
 
-    public DemandRequest getDemandById(UUID id) {
+    public DemandRequest getDemandById(String id) {
         return demandRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Demand not found: " + id));
     }
 
     @Transactional
-    public DemandRequest createDemand(DemandDTO dto, UUID buyerId) {
+    public DemandRequest createDemand(DemandDTO dto, String buyerId) {
         User buyer = userRepository.findById(buyerId)
             .orElseThrow(() -> new IllegalArgumentException("Buyer not found: " + buyerId));
 

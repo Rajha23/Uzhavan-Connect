@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class LogisticsService {
@@ -49,13 +48,13 @@ public class LogisticsService {
         return shipmentRepository.findAll();
     }
 
-    public Shipment getShipmentById(UUID id) {
+    public Shipment getShipmentById(String id) {
         return shipmentRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Shipment not found: " + id));
     }
 
     @Transactional
-    public Shipment createShipmentFromMatch(UUID matchId, String vehicle, String pickupLocation, String deliveryLocation) {
+    public Shipment createShipmentFromMatch(String matchId, String vehicle, String pickupLocation, String deliveryLocation) {
         Match match = matchRepository.findById(matchId)
             .orElseThrow(() -> new IllegalArgumentException("Match not found: " + matchId));
 
@@ -73,7 +72,7 @@ public class LogisticsService {
     }
 
     @Transactional
-    public Route optimizeRoute(UUID shipmentId) {
+    public Route optimizeRoute(String shipmentId) {
         Shipment shipment = getShipmentById(shipmentId);
 
         // Try calling Python FastAPI OR-Tools endpoint
@@ -106,7 +105,7 @@ public class LogisticsService {
         Route route = new Route();
         route.setShipment(shipment);
         route.setDistance(BigDecimal.valueOf(distance));
-        route.setEstimatedTime(BigDecimal.valueOf(travelTimeMin));
+        route.setEstimatedTime(travelTimeMin + " mins");
         route.setVehicleUtilization(BigDecimal.valueOf(vehicleUtilization));
         route.setRouteSequence(sequence);
         route.setStatus("OPTIMIZED");
@@ -114,13 +113,13 @@ public class LogisticsService {
         return routeRepository.save(route);
     }
 
-    public Route getRouteById(UUID id) {
+    public Route getRouteById(String id) {
         return routeRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Route not found: " + id));
     }
 
     @Transactional
-    public Shipment updateShipmentStatus(UUID id, String status) {
+    public Shipment updateShipmentStatus(String id, String status) {
         Shipment shipment = getShipmentById(id);
         shipment.setStatus(status);
 

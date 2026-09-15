@@ -32,7 +32,7 @@ public class ForecastService {
     }
 
     public List<Forecast> getForecastsByProduct(String product) {
-        return forecastRepository.findByProduct(product);
+        return forecastRepository.findByProductIgnoreCase(product);
     }
 
     @Transactional

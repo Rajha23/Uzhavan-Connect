@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -78,11 +77,11 @@ public class AuthService {
             profile.setState(request.state() != null ? request.state() : "Not Specified");
             profile.setPincode(request.pincode() != null ? request.pincode() : "000000");
             profile.setMainCrop(request.mainCrop() != null ? request.mainCrop() : "Mixed Crops");
-            profile.setFarmSize(request.farmSize() != null ? request.farmSize() : 2.5);
+            profile.setFarmSize(request.farmSize() != null ? request.farmSize() : java.math.BigDecimal.valueOf(2.5));
             farmerProfileRepository.save(profile);
         }
 
-        String token = jwtService.generateToken(savedUser.getEmail(), savedUser.getRole().name(), savedUser.getId());
+        String token = jwtService.generateToken(savedUser);
         return new AuthResponse(token, savedUser.getId(), savedUser.getName(), savedUser.getEmail(), savedUser.getMobile(), savedUser.getRole(), savedUser.getStatus());
     }
 
@@ -99,11 +98,11 @@ public class AuthService {
             new UsernamePasswordAuthenticationToken(user.getEmail(), request.password())
         );
 
-        String token = jwtService.generateToken(user.getEmail(), user.getRole().name(), user.getId());
+        String token = jwtService.generateToken(user);
         return new AuthResponse(token, user.getId(), user.getName(), user.getEmail(), user.getMobile(), user.getRole(), user.getStatus());
     }
 
-    public User getMe(UUID userId) {
+    public User getMe(String userId) {
         return userRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
     }

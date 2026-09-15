@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/produce")
@@ -47,7 +46,7 @@ public class ProduceController {
     @PutMapping("/{id}")
     @Operation(summary = "Update an existing produce listing")
     public ResponseEntity<ProduceListing> updateProduce(
-        @PathVariable UUID id,
+        @PathVariable String id,
         @RequestBody ProduceDTO dto
     ) {
         return ResponseEntity.ok(produceService.updateProduce(id, dto));
@@ -55,7 +54,7 @@ public class ProduceController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a produce listing")
-    public ResponseEntity<Void> deleteProduce(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteProduce(@PathVariable String id) {
         produceService.deleteProduce(id);
         return ResponseEntity.noContent().build();
     }

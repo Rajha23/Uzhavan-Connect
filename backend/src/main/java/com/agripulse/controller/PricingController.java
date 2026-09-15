@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/offers")
@@ -30,7 +29,7 @@ public class PricingController {
 
     @GetMapping
     @Operation(summary = "Get all offers or filter by demand ID")
-    public ResponseEntity<List<PriceOffer>> getOffers(@RequestParam(required = false) UUID demandId) {
+    public ResponseEntity<List<PriceOffer>> getOffers(@RequestParam(required = false) String demandId) {
         if (demandId != null) {
             return ResponseEntity.ok(pricingService.getOffersForDemand(demandId));
         }
@@ -49,7 +48,7 @@ public class PricingController {
 
     @PostMapping("/{id}/accept")
     @Operation(summary = "Buyer accepts a farmer price offer")
-    public ResponseEntity<PriceOffer> acceptOffer(@PathVariable UUID id) {
+    public ResponseEntity<PriceOffer> acceptOffer(@PathVariable String id) {
         return ResponseEntity.ok(pricingService.acceptOffer(id));
     }
 }

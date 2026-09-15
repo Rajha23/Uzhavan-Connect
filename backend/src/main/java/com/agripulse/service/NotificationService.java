@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class NotificationService {
@@ -22,12 +21,12 @@ public class NotificationService {
         this.userRepository = userRepository;
     }
 
-    public List<Notification> getUserNotifications(UUID userId) {
-        return notificationRepository.findByUserId(userId);
+    public List<Notification> getUserNotifications(String userId) {
+        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
     }
 
     @Transactional
-    public Notification sendNotification(UUID userId, String title, String message, String type) {
+    public Notification sendNotification(String userId, String title, String message, String type) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
@@ -43,7 +42,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public void markAsRead(UUID notificationId) {
+    public void markAsRead(String notificationId) {
         notificationRepository.findById(notificationId).ifPresent(n -> {
             n.setIsRead(true);
             notificationRepository.save(n);

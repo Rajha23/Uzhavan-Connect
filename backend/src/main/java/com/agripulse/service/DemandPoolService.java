@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class DemandPoolService {
@@ -40,7 +39,7 @@ public class DemandPoolService {
     }
 
     @Transactional
-    public DemandPool joinPool(UUID poolId, UUID demandRequestId) {
+    public DemandPool joinPool(String poolId, String demandRequestId) {
         DemandPool pool = demandPoolRepository.findById(poolId)
             .orElseThrow(() -> new IllegalArgumentException("Demand pool not found: " + poolId));
 
@@ -48,7 +47,7 @@ public class DemandPoolService {
             .orElseThrow(() -> new IllegalArgumentException("Demand request not found: " + demandRequestId));
 
         DemandPoolMember member = new DemandPoolMember();
-        member.setDemandPool(pool);
+        member.setPool(pool);
         member.setDemandRequest(req);
         pool.getMembers().add(member);
 

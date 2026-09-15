@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class MatchingService {
@@ -32,7 +31,7 @@ public class MatchingService {
         this.produceListingRepository = produceListingRepository;
     }
 
-    public List<Match> getMatchesForDemand(UUID demandId) {
+    public List<Match> getMatchesForDemand(String demandId) {
         return matchRepository.findByDemandId(demandId);
     }
 
@@ -41,7 +40,7 @@ public class MatchingService {
     }
 
     @Transactional
-    public List<Match> runMatching(UUID demandId) {
+    public List<Match> runMatching(String demandId) {
         DemandRequest demand = demandRequestRepository.findById(demandId)
             .orElseThrow(() -> new IllegalArgumentException("Demand not found: " + demandId));
 

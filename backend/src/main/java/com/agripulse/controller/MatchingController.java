@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/matches")
@@ -24,7 +23,7 @@ public class MatchingController {
 
     @GetMapping
     @Operation(summary = "Get all matches or matches for a specific demand")
-    public ResponseEntity<List<Match>> getMatches(@RequestParam(required = false) UUID demandId) {
+    public ResponseEntity<List<Match>> getMatches(@RequestParam(required = false) String demandId) {
         if (demandId != null) {
             return ResponseEntity.ok(matchingService.getMatchesForDemand(demandId));
         }
@@ -34,7 +33,7 @@ public class MatchingController {
     @PostMapping("/run")
     @Operation(summary = "Run multi-attribute matching algorithm for a given demand request")
     public ResponseEntity<List<Match>> runMatching(@RequestBody Map<String, String> body) {
-        UUID demandId = UUID.fromString(body.get("demandId"));
+        String demandId = String.fromString(body.get("demandId"));
         return ResponseEntity.ok(matchingService.runMatching(demandId));
     }
 }

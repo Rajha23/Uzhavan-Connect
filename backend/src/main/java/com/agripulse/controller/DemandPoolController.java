@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/demand-pools")
@@ -40,8 +39,8 @@ public class DemandPoolController {
 
     @PostMapping("/{id}/join")
     @Operation(summary = "Join an existing demand pool with a demand request")
-    public ResponseEntity<DemandPool> joinPool(@PathVariable UUID id, @RequestBody Map<String, String> body) {
-        UUID demandId = UUID.fromString(body.get("demandRequestId"));
+    public ResponseEntity<DemandPool> joinPool(@PathVariable String id, @RequestBody Map<String, String> body) {
+        String demandId = String.fromString(body.get("demandRequestId"));
         return ResponseEntity.ok(poolService.joinPool(id, demandId));
     }
 }
