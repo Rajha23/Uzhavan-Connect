@@ -1,3 +1,5 @@
+export * from './task';
+
 export type UserRole =
   | 'FARMER'
   | 'RETAIL_BUYER'

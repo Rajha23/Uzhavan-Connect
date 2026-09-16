@@ -4,15 +4,13 @@ import { useLanguage } from '../context/LanguageContext';
 import { AiService, ForecastResponseDto } from '../services/aiService';
 import {
   TrendingUp,
-  Sparkles,
-  Calendar,
+
   Filter,
   BarChart3,
   LineChart as LineChartIcon,
   ShieldCheck,
   AlertCircle,
   Layers,
-  Cpu,
   RefreshCw,
   Info,
   CheckCircle2,
@@ -141,12 +139,7 @@ export const DemandIntelligencePage: React.FC = () => {
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="flex flex-wrap items-center gap-2 text-[#fefae0] text-xs font-semibold uppercase tracking-wider mb-2">
-              <Cpu className="w-4 h-4 text-[#fefae0]" />
-              <span>{t('demandIntelligence.architectureDisclosure', undefined, 'Python / FastAPI Machine Learning Architecture')}</span>
-              <span className="text-white/40">•</span>
-              <span>{t('demandIntelligence.regressorPipeline', undefined, 'Scikit-Learn & XGBoost Regressor Pipeline')}</span>
-            </div>
+
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
               {t('demandIntelligence.mainTitle', undefined, 'Demand Intelligence & Predictive Sourcing')}
             </h1>
@@ -155,19 +148,7 @@ export const DemandIntelligencePage: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 relative z-10">
-            {forecastResult?.source === 'FASTAPI_XGBOOST_MODEL' ? (
-              <span className="text-xs bg-[#fefae0]/15 text-[#fefae0] px-4 py-2 rounded-full border border-[#fefae0]/25 font-semibold uppercase tracking-wider flex items-center gap-2 shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
-                {t('demandIntelligence.liveFastApi', undefined, 'Live FastAPI XGBoost Model')}
-              </span>
-            ) : (
-              <span className="text-xs bg-white/10 text-[#fefae0] px-4 py-2 rounded-full border border-white/20 font-semibold uppercase tracking-wider flex items-center gap-2 shadow-xs" title="Live FastAPI microservice offline. Running deterministic APMC baseline benchmark simulation.">
-                <span className="w-2 h-2 rounded-full bg-amber-400" />
-                {t('demandIntelligence.deterministicMandi', undefined, 'Deterministic Mandi Benchmark (FastAPI Ready)')}
-              </span>
-            )}
-          </div>
+
         </div>
       </div>
 
@@ -183,10 +164,7 @@ export const DemandIntelligencePage: React.FC = () => {
               {t('demandIntelligence.section1Subtitle', undefined, 'Select commodity variety, target logistics hub, and evaluation forecasting horizon.')}
             </p>
           </div>
-          <span className="text-xs text-[#01472e] bg-[#eaf4ec] px-3 py-1 rounded-full border border-[#a3b18a]/40 font-bold flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#01472e]" />
-            <span>{t('demandIntelligence.dynamicMlQuery', undefined, 'Dynamic ML Query')}</span>
-          </span>
+
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

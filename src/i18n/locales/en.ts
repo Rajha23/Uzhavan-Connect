@@ -1013,5 +1013,49 @@ export const enTranslations: TranslationDictionary = {
     openEmailClient: 'Open Email Client',
     returnPreviousPage: 'Return to Previous Page',
     trustBadge: 'Uzhavan Connect Helpdesk • Direct Farmer & Buyer Support'
+  },
+
+  tasks: {
+    title: 'Task Management',
+    subtitle: 'Plan, assign and track agricultural operations efficiently.',
+    createTask: 'Create Task',
+    totalTasks: 'Total Tasks',
+    pending: 'Pending',
+    inProgress: 'In Progress',
+    completed: 'Completed',
+    blocked: 'Blocked',
+    overdue: 'Overdue',
+    myTasks: 'My Tasks',
+    
+    fields: {
+      taskTitle: 'Task Title',
+      description: 'Description',
+      taskType: 'Task Type',
+      priority: 'Priority',
+      status: 'Status',
+      assignedTo: 'Assigned To',
+      assignedRole: 'Assigned Role',
+      dueDate: 'Due Date',
+      relatedEntity: 'Related Entity'
+    },
+    
+    priority: {
+      low: 'Low',
+      medium: 'Medium',
+      high: 'High',
+      urgent: 'Urgent'
+    },
+    
+    actions: {
+      edit: 'Edit',
+      delete: 'Delete',
+      addComment: 'Add Comment',
+      changeStatus: 'Change Status',
+      markCompleted: 'Mark Completed',
+      save: 'Save Task',
+      cancel: 'Cancel'
+    },
+    
+    emptyState: 'No tasks found matching your criteria.'
   }
 };
