@@ -1102,7 +1102,7 @@ export const FpoDashboard: React.FC = () => {
               >
                 {demandRequests.map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.id} — {d.crop} ({d.quantityKg.toLocaleString()} kg)
+                    {d.id} — {d.crop} ({d.quantityKg.toLocaleString()} kg @ ₹{d.maxTargetPricePerKg}/kg)
                   </option>
                 ))}
               </select>
@@ -1302,7 +1302,7 @@ export const FpoDashboard: React.FC = () => {
                   </div>
                   <p className="font-semibold text-[#01472e] text-sm">{pendingApprovalMatch.demand.buyerName}</p>
                   <div className="space-y-1 text-[#01472e]/80">
-                    <div className="flex items-center gap-1.5"><p>Crop: </p><img src={getCropImageUrl(pendingApprovalMatch.demand.crop)} alt={pendingApprovalMatch.demand.crop} className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" /><strong>{pendingApprovalMatch.demand.crop}</strong> ({pendingApprovalMatch.demand.variety || 'Hybrid'})</div>
+                    <p>Crop: <strong>{pendingApprovalMatch.demand.crop}</strong> ({pendingApprovalMatch.demand.variety || 'Hybrid'})</p>
                     <p>Required Grade: <strong>{pendingApprovalMatch.demand.qualityRequirement}</strong></p>
                     <p>Destination: <strong>{pendingApprovalMatch.demand.location}</strong></p>
                     <p>Max Target Price: <strong>₹{pendingApprovalMatch.demand.maxTargetPricePerKg}/kg</strong></p>
@@ -1317,7 +1317,7 @@ export const FpoDashboard: React.FC = () => {
                   </div>
                   <p className="font-semibold text-[#01472e] text-sm">{pendingApprovalMatch.listing.farmerName}</p>
                   <div className="space-y-1 text-[#01472e]/80">
-                    <div className="flex items-center gap-1.5"><p>Crop: </p><img src={getCropImageUrl(pendingApprovalMatch.listing.crop)} alt={pendingApprovalMatch.listing.crop} className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" /><strong>{pendingApprovalMatch.listing.crop}</strong></div>
+                    <p>Crop: <strong>{pendingApprovalMatch.listing.crop}</strong></p>
                     <p>Farm Location: <strong>{pendingApprovalMatch.listing.location}</strong></p>
                     <p>Certified Grade: <strong>{pendingApprovalMatch.listing.grade}</strong></p>
                     <p>Available Supply: <strong>{pendingApprovalMatch.listing.quantityKg.toLocaleString()} kg</strong></p>
