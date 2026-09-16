@@ -25,12 +25,14 @@ import {
   FarmerContribution,
   FarmerSettlementItem,
   SettlementStatus,
-  BuyerDeliveryConfirmation
+  BuyerDeliveryConfirmation,
+  NewsArticle
 } from '../types';
 import {
   DEMO_USERS,
   ROLE_PERMISSIONS,
   INITIAL_NOTIFICATIONS,
+  AGRICULTURE_NEWS,
   MARKET_PRICES_DATA,
   SYSTEM_USERS_DATA,
   INITIAL_FARMER_LISTINGS,
@@ -113,6 +115,8 @@ interface AppContextType {
   updateNotificationPreferences: (updates: Partial<NotificationPreferences>) => void;
   resetNotificationPreferences: () => void;
   addNotificationEvent: (notification: Omit<AppNotification, 'id' | 'read' | 'timestamp'> & { id?: string }) => void;
+  newsArticles: NewsArticle[];
+  addNewsArticle: (article: NewsArticle) => void;
   isPassportModalOpen: boolean;
   selectedPassportBatchId: string;
   openPassportModal: (batchId?: string) => void;
@@ -310,6 +314,33 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [produceListings, setProduceListings] = useState<ProduceListing[]>([]);
 
   const [demandRequests, setDemandRequests] = useState<DemandRequest[]>([]);
+
+  // Dynamic News Articles across all network users
+  const [newsArticles, setNewsArticles] = useState<NewsArticle[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('uzhavan_news_articles');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch {}
+    }
+    return AGRICULTURE_NEWS;
+  });
+
+  const addNewsArticle = useCallback((article: NewsArticle) => {
+    setNewsArticles((prev) => {
+      const filtered = prev.filter((a) => a.id !== article.id);
+      const updated = [article, ...filtered];
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('uzhavan_news_articles', JSON.stringify(updated));
+        } catch {}
+      }
+      return updated;
+    });
+  }, []);
 
   // ── IDEMPOTENT FILE & DOCUMENT STORAGE ──────────────────────────────────────
   const [files, setFiles] = useState<FileRecord[]>([]);
@@ -2323,6 +2354,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updateNotificationPreferences,
         resetNotificationPreferences,
         addNotificationEvent,
+        newsArticles,
+        addNewsArticle,
         isPassportModalOpen,
         selectedPassportBatchId,
         openPassportModal,

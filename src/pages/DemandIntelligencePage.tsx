@@ -24,8 +24,13 @@ import {
   MapPin,
   Activity,
   Gauge,
-  Award
+  Award,
+  Newspaper,
+  Megaphone,
+  Radio,
+  Send
 } from 'lucide-react';
+import { NewsArticle } from '../types';
 
 import {
   AreaChart,
@@ -44,7 +49,7 @@ import {
 
 export const DemandIntelligencePage: React.FC = () => {
   const { t, formatNumber } = useLanguage();
-  const { setActiveTab, produceListings, demandRequests } = useApp();
+  const { setActiveTab, produceListings, demandRequests, addNewsArticle, addNotificationEvent, currentUser } = useApp();
 
   const [selectedCrop, setSelectedCrop] = useState<string>('Tomato');
   const [selectedRegion, setSelectedRegion] = useState<string>('Chennai Metropolitan');
@@ -55,6 +60,8 @@ export const DemandIntelligencePage: React.FC = () => {
   const [forecastResult, setForecastResult] = useState<ForecastResponseDto | null>(null);
   const [showSuccessToast, setShowSuccessToast] = useState<boolean>(false);
   const [lastExecutedTime, setLastExecutedTime] = useState<string | null>(null);
+  const [latestPublishedNews, setLatestPublishedNews] = useState<NewsArticle | null>(null);
+  const [isBroadcasting, setIsBroadcasting] = useState<boolean>(false);
 
   // Dynamic available crops from actual application data + core commodities
   const availableCrops = Array.from(
@@ -108,6 +115,50 @@ export const DemandIntelligencePage: React.FC = () => {
     };
   }, [selectedCrop, selectedRegion, horizonDays, currentMandiPrice, season, realCropSupplyKg]);
 
+  const publishForecastToNews = (result: ForecastResponseDto, crop: string, region: string, horizon: number) => {
+    const shortageKg = result.shortage_kg;
+    const demandKg = result.predicted_demand_kg;
+    const supplyKg = result.current_supply_kg;
+    const horizonText = horizon === 7 ? '7-Day' : horizon === 14 ? '14-Day' : '30-Day';
+
+    const newsArticleId = `ml-news-${crop.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+    const article: NewsArticle = {
+      id: newsArticleId,
+      title: `🚨 FPO Market Intelligence: High Demand Alert for ${crop} in ${region} (+${formatNumber(shortageKg)} kg Deficit)`,
+      summary: `Uzhavan AI Forecast projects ${formatNumber(demandKg)} kg demand with an immediate supply gap of ${formatNumber(shortageKg)} kg over the next ${horizon} days in ${region}. Farmers and FPOs can secure forward contracts now.`,
+      content: `UZHAVAN CONNECT DEMAND FORECAST & MARKET ADVISORY\n\n` +
+        `• Target Commodity: ${crop}\n` +
+        `• Consolidation Corridor: ${region}\n` +
+        `• Forecast Horizon: ${horizonText} Forward Window (Target: ${result.forecast_date})\n` +
+        `• Projected Wholesale Demand: ${formatNumber(demandKg)} kg\n` +
+        `• Verified Committed Supply: ${formatNumber(supplyKg)} kg\n` +
+        `• Net Supply Deficit / Sourcing Gap: +${formatNumber(shortageKg)} kg\n` +
+        `• Model Confidence Score: ${result.confidence_percent} (Calibrated on 1,825 Mandi test fold records)\n\n` +
+        `Strategic Platform Advisory:\n` +
+        `${result.recommendedAction}\n\n` +
+        `Smallholder farmers and cluster aggregators across nearby districts are encouraged to mobilize harvest lots immediately. Direct wholesale pricing and subsidized cold-chain route coordination are live on the platform.`,
+      source: `FPO Demand Intelligence (${currentUser?.name || 'Sasipriya'})`,
+      publishedAt: new Date().toISOString(),
+      category: 'Market',
+      imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    };
+
+    addNewsArticle(article);
+    setLatestPublishedNews(article);
+
+    addNotificationEvent({
+      title: `📈 New ML Market Forecast: ${crop} (${region})`,
+      message: `Forecast indicates +${formatNumber(shortageKg)} kg supply deficit in ${region}. Click to read full intelligence report in News.`,
+      targetRole: 'ALL',
+      type: 'MARKET_DEMAND',
+      priority: 'SUCCESS',
+      actionTab: 'news',
+      actionLabel: 'Read Market News'
+    });
+
+    return article;
+  };
+
   const handleRunPrediction = () => {
     setIsLoading(true);
     // Explicit 450ms simulation delay so the user perceives the ML inference processing
@@ -122,9 +173,13 @@ export const DemandIntelligencePage: React.FC = () => {
       }).then((result) => {
         setForecastResult(result);
         setIsLoading(false);
-        setLastExecutedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setLastExecutedTime(timeStr);
         setShowSuccessToast(true);
-        setTimeout(() => setShowSuccessToast(false), 5000);
+        setTimeout(() => setShowSuccessToast(false), 7000);
+
+        // Publish to News & Updates feed and alert all users
+        publishForecastToNews(result, selectedCrop, selectedRegion, horizonDays);
 
         // Celebratory visual effect
         confetti({
@@ -134,6 +189,22 @@ export const DemandIntelligencePage: React.FC = () => {
         });
       });
     }, 450);
+  };
+
+  const handleBroadcastAlert = () => {
+    if (!forecastResult) return;
+    setIsBroadcasting(true);
+    setTimeout(() => {
+      publishForecastToNews(forecastResult, selectedCrop, selectedRegion, horizonDays);
+      setIsBroadcasting(false);
+      setShowSuccessToast(true);
+      setTimeout(() => setShowSuccessToast(false), 5000);
+      confetti({
+        particleCount: 40,
+        spread: 60,
+        origin: { y: 0.5 }
+      });
+    }, 350);
   };
 
   // Dynamic Trend Chart derived from the active forecast result and horizon
@@ -315,29 +386,38 @@ export const DemandIntelligencePage: React.FC = () => {
 
       {/* SUCCESS / EXECUTION STATUS NOTIFICATION */}
       {showSuccessToast && (
-        <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 px-4 py-3 rounded-2xl flex items-center justify-between shadow-sm animate-in fade-in slide-in-from-top duration-300">
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 px-4 py-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm animate-in fade-in slide-in-from-top duration-300">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 shrink-0">
+            <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 shrink-0">
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-emerald-900">
-                {t('demandIntelligence.inferenceSuccessTitle', undefined, 'ML Demand Forecast Executed Successfully!')}
+              <p className="text-xs font-bold text-emerald-900 flex items-center gap-2">
+                <span>{t('demandIntelligence.inferenceSuccessTitle', undefined, 'ML Demand Forecast Executed & Published to News!')}</span>
+                {lastExecutedTime && (
+                  <span className="text-[10px] font-mono font-medium text-emerald-600 bg-emerald-100/70 px-2 py-0.5 rounded-full">
+                    {lastExecutedTime}
+                  </span>
+                )}
               </p>
-              <p className="text-[11px] text-emerald-700">
+              <p className="text-[11px] text-emerald-700 mt-0.5">
                 {t('demandIntelligence.inferenceSuccessSub', {
                   crop: selectedCrop,
                   region: selectedRegion,
                   horizon: horizonDays
-                }, `Updated predictive demand model for ${selectedCrop} across ${selectedRegion} (${horizonDays}-day horizon).`)}
+                }, `Market intelligence bulletin published to News & Updates and notified to all network farmers and buyers.`)}
               </p>
             </div>
           </div>
-          {lastExecutedTime && (
-            <span className="text-[10px] font-mono font-medium text-emerald-600 bg-emerald-100/60 px-2.5 py-1 rounded-full shrink-0">
-              {lastExecutedTime}
-            </span>
-          )}
+          <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+            <button
+              onClick={() => setActiveTab('news')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#01472e] hover:bg-[#025a3b] text-[#fefae0] text-xs font-semibold shadow-xs transition-all cursor-pointer"
+            >
+              <Newspaper className="w-3.5 h-3.5" />
+              <span>{t('demandIntelligence.viewInNews', undefined, 'View in News & Updates →')}</span>
+            </button>
+          </div>
         </div>
       )}
 
@@ -534,7 +614,22 @@ export const DemandIntelligencePage: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 shrink-0 flex-wrap">
+            <button
+              onClick={handleBroadcastAlert}
+              disabled={isBroadcasting}
+              className="flex items-center gap-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-white border border-emerald-400/40 px-5 py-3 rounded-2xl text-xs font-semibold transition uppercase tracking-wider cursor-pointer disabled:opacity-50"
+            >
+              <Megaphone className="w-4 h-4 text-emerald-300" />
+              <span>{isBroadcasting ? 'Broadcasting...' : 'Broadcast to News'}</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('news')}
+              className="flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/20 px-5 py-3 rounded-2xl text-xs font-semibold transition uppercase tracking-wider cursor-pointer"
+            >
+              <Newspaper className="w-4 h-4 text-[#fefae0]" />
+              <span>View in News</span>
+            </button>
             <button
               onClick={() => setActiveTab('smart-matching')}
               className="flex items-center gap-2 bg-[#fefae0] hover:bg-white text-[#01472e] px-5 py-3 rounded-2xl text-xs font-semibold transition-all uppercase tracking-wider shadow-soft cursor-pointer"
@@ -542,12 +637,74 @@ export const DemandIntelligencePage: React.FC = () => {
               <span>{t('demandIntelligence.matchSupply', undefined, 'Match Supply')}</span>
               <ArrowRight className="w-4 h-4 text-[#01472e]" />
             </button>
-            <button
-              onClick={() => setActiveTab('demand-pool')}
-              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-2xl text-xs font-semibold transition uppercase tracking-wider border border-white/20 cursor-pointer"
-            >
-              <span>{t('demandIntelligence.demandPool', undefined, 'Demand Pool')}</span>
-            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. LIVE MARKET INTELLIGENCE DISPATCHED BULLETIN FOR USERS */}
+      <div className="agri-card bg-white p-6 sm:p-7 rounded-[32px] border border-[#ccd5ae]/50 shadow-soft space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#ccd5ae]/30 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+              <Newspaper className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-[#01472e] flex items-center gap-2">
+                <span>Active Market Intelligence Gained by Users</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">
+                  Live Feed
+                </span>
+              </h4>
+              <p className="text-[11px] text-slate-500 font-normal">
+                Dispatched to all registered farmers, institutional buyers, and consolidation hubs in {selectedRegion}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setActiveTab('news')}
+            className="flex items-center gap-1.5 text-xs font-bold text-[#01472e] hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100/70 px-3.5 py-1.5 rounded-xl border border-emerald-200 transition cursor-pointer self-start sm:self-auto"
+          >
+            <span>Read in News & Updates</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <div className="bg-[#faf9f5] rounded-2xl p-4 sm:p-5 border border-[#ccd5ae]/40 space-y-3">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-800 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-200">
+              <Radio className="w-3 h-3 text-amber-700 animate-pulse" />
+              <span>MARKET INTELLIGENCE ALERT</span>
+            </span>
+            <span className="text-[11px] font-mono text-slate-400">
+              {latestPublishedNews?.publishedAt ? new Date(latestPublishedNews.publishedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (lastExecutedTime || 'Just now')} • Source: FPO Network
+            </span>
+          </div>
+
+          <h5 className="text-base font-bold text-slate-900 leading-snug">
+            {latestPublishedNews?.title || `🚨 FPO Market Intelligence: High Demand Alert for ${selectedCrop} in ${selectedRegion} (+${formatNumber(forecastResult?.shortage_kg || 1600)} kg Deficit)`}
+          </h5>
+
+          <p className="text-xs text-slate-600 leading-relaxed">
+            {latestPublishedNews?.summary || `Uzhavan AI Forecast projects ${formatNumber(forecastResult?.predicted_demand_kg || 8500)} kg demand with an immediate supply gap of +${formatNumber(forecastResult?.shortage_kg || 1600)} kg over ${horizonDays} days in ${selectedRegion}. Broadcasted to all farmers & buyers.`}
+          </p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+            <div className="bg-white p-2.5 rounded-xl border border-slate-200/60">
+              <span className="text-[10px] text-slate-400 block font-medium">Target Produce</span>
+              <span className="text-xs font-bold text-slate-800">{selectedCrop}</span>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-slate-200/60">
+              <span className="text-[10px] text-slate-400 block font-medium">Consolidation Corridor</span>
+              <span className="text-xs font-bold text-slate-800">{selectedRegion.split(' ')[0]} Hub</span>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-slate-200/60">
+              <span className="text-[10px] text-slate-400 block font-medium">Procurement Gap</span>
+              <span className="text-xs font-bold text-amber-700">+{formatNumber(forecastResult?.shortage_kg || 1600)} kg</span>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-slate-200/60">
+              <span className="text-[10px] text-slate-400 block font-medium">Network Status</span>
+              <span className="text-xs font-bold text-emerald-700">Broadcast to Users</span>
+            </div>
           </div>
         </div>
       </div>

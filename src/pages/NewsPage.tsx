@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { AGRICULTURE_NEWS } from '../data/mockData';
+import { useApp } from '../context/AppContext';
 import { NewsTicker } from '../components/NewsTicker';
 import { NewsCard } from '../components/NewsCard';
 import { DetailDrawer } from '../components/DetailDrawer';
@@ -8,11 +8,12 @@ import { Newspaper } from 'lucide-react';
 
 export const NewsPage: React.FC = () => {
   const { t } = useLanguage();
+  const { newsArticles } = useApp();
   const [drawerState, setDrawerState] = useState<{ type: string; data?: any } | null>(null);
 
   return (
     <div className="flex flex-col w-full min-h-screen">
-      <NewsTicker news={AGRICULTURE_NEWS} />
+      <NewsTicker news={newsArticles} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-7 w-full">
         <div className="flex items-center gap-3 mb-2">
@@ -25,7 +26,7 @@ export const NewsPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {AGRICULTURE_NEWS.map((article) => (
+          {newsArticles.map((article) => (
             <NewsCard 
               key={article.id} 
               article={article} 
