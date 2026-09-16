@@ -1,3 +1,4 @@
+import { getCropImageUrl } from '../utils/cropImages';
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -181,8 +182,8 @@ export const FindBuyersPage: React.FC = () => {
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-slate-600 mt-1 font-medium">
-                    <span className="flex items-center gap-1">
-                      <Sprout className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="flex items-center gap-1.5">
+                      <img src={getCropImageUrl(off.crop)} alt={off.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-slate-200" />
                       <span>{off.crop}</span>
                     </span>
                     <span>•</span>
@@ -263,9 +264,12 @@ export const FindBuyersPage: React.FC = () => {
                   </span>
                 </div>
 
-                <div>
-                  <h4 className="text-xl font-bold text-slate-900 tracking-tight">{opp.crop}</h4>
-                  <p className="text-xs text-slate-600 mt-1">{t('roles.RETAIL_BUYER', 'Buyer')}: <strong className="text-slate-800">{opp.buyerName}</strong></p>
+                <div className="flex items-center gap-3">
+                  <img src={getCropImageUrl(opp.crop)} alt={opp.crop} className="w-10 h-10 rounded-lg object-cover shadow-sm shrink-0 border border-slate-200" />
+                  <div>
+                    <h4 className="text-xl font-bold text-slate-900 tracking-tight">{opp.crop}</h4>
+                    <p className="text-xs text-slate-600 mt-1">{t('roles.RETAIL_BUYER', 'Buyer')}: <strong className="text-slate-800">{opp.buyerName}</strong></p>
+                  </div>
                 </div>
 
                 <div className="space-y-2 text-xs text-slate-700 bg-[#faf9f5] p-4 rounded-2xl border border-[#ccd5ae]/40 font-medium">

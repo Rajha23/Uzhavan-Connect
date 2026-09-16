@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { NewsCard } from '../components/NewsCard';
 import { Newspaper } from 'lucide-react';

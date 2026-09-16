@@ -1,3 +1,4 @@
+import { getCropImageUrl } from '../utils/cropImages';
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -505,7 +506,7 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">{t(`crops.${passport.crop}`, passport.crop)} ({passport.variety || 'Hybrid'})</h4>
+                  <div className="flex items-center gap-2"><img src={getCropImageUrl(passport.crop)} alt={passport.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" /><h4 className="text-sm font-bold text-slate-900">{t(`crops.${passport.crop}`, passport.crop)} ({passport.variety || 'Hybrid'})</h4></div>
                   <p className="text-xs text-slate-600 mt-1">
                     {t('admin.originLabel', 'Origin:')} <strong>{passport.farmLocation}</strong> • {t('admin.harvestLabel', 'Harvest:')} {passport.harvestDate}
                   </p>

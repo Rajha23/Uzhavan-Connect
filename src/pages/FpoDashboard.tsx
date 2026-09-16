@@ -1,3 +1,4 @@
+import { getCropImageUrl } from '../utils/cropImages';
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -1005,10 +1006,13 @@ export const FpoDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-[#01472e] text-sm">
-                        {t(`crops.${demand.crop}`, demand.crop)}
-                        {demand.variety && <span className="text-[#01472e]/60 font-normal ml-1">({demand.variety})</span>}
-                      </h4>
+                      <div className="flex items-center gap-2">
+                        <img src={getCropImageUrl(demand.crop)} alt={demand.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                        <h4 className="font-semibold text-[#01472e] text-sm">
+                          {t(`crops.${demand.crop}`, demand.crop)}
+                          {demand.variety && <span className="text-[#01472e]/60 font-normal ml-1">({demand.variety})</span>}
+                        </h4>
+                      </div>
                       <p className="text-xs text-[#01472e]/80 mt-0.5 flex items-center gap-1">
                         <Users className="w-3.5 h-3.5 text-[#a3b18a]" />
                         <span>Buyer: <strong className="text-[#01472e]">{demand.buyerName}</strong></span>
@@ -1098,7 +1102,7 @@ export const FpoDashboard: React.FC = () => {
               >
                 {demandRequests.map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.id} — {d.crop} ({d.quantityKg.toLocaleString()} kg @ ₹{d.maxTargetPricePerKg}/kg)
+                    {d.id} — {d.crop} ({d.quantityKg.toLocaleString()} kg)
                   </option>
                 ))}
               </select>
@@ -1115,8 +1119,9 @@ export const FpoDashboard: React.FC = () => {
                   </span>
                   <span className="text-xs font-semibold text-[#01472e]">{activeMatchingDemand.buyerName}</span>
                 </div>
-                <h4 className="text-base font-bold text-[#01472e]">
-                  Procuring {activeMatchingDemand.quantityKg.toLocaleString()} kg of {activeMatchingDemand.crop} ({activeMatchingDemand.variety || 'Hybrid'})
+                <h4 className="text-base font-bold text-[#01472e] flex items-center gap-2">
+                  <img src={getCropImageUrl(activeMatchingDemand.crop)} alt={activeMatchingDemand.crop} className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                  <span>Procuring {activeMatchingDemand.quantityKg.toLocaleString()} kg of {activeMatchingDemand.crop} ({activeMatchingDemand.variety || 'Hybrid'})</span>
                 </h4>
                 <p className="text-xs text-[#01472e]/70">
                   Required Grade: <strong className="text-[#01472e]">{activeMatchingDemand.qualityRequirement}</strong> • Max Price: <strong className="text-[#01472e]">₹{activeMatchingDemand.maxTargetPricePerKg}/kg</strong> • Delivery: {activeMatchingDemand.location}
@@ -1297,7 +1302,7 @@ export const FpoDashboard: React.FC = () => {
                   </div>
                   <p className="font-semibold text-[#01472e] text-sm">{pendingApprovalMatch.demand.buyerName}</p>
                   <div className="space-y-1 text-[#01472e]/80">
-                    <p>Crop: <strong>{pendingApprovalMatch.demand.crop}</strong> ({pendingApprovalMatch.demand.variety || 'Hybrid'})</p>
+                    <div className="flex items-center gap-1.5"><p>Crop: </p><img src={getCropImageUrl(pendingApprovalMatch.demand.crop)} alt={pendingApprovalMatch.demand.crop} className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" /><strong>{pendingApprovalMatch.demand.crop}</strong> ({pendingApprovalMatch.demand.variety || 'Hybrid'})</div>
                     <p>Required Grade: <strong>{pendingApprovalMatch.demand.qualityRequirement}</strong></p>
                     <p>Destination: <strong>{pendingApprovalMatch.demand.location}</strong></p>
                     <p>Max Target Price: <strong>₹{pendingApprovalMatch.demand.maxTargetPricePerKg}/kg</strong></p>
@@ -1312,7 +1317,7 @@ export const FpoDashboard: React.FC = () => {
                   </div>
                   <p className="font-semibold text-[#01472e] text-sm">{pendingApprovalMatch.listing.farmerName}</p>
                   <div className="space-y-1 text-[#01472e]/80">
-                    <p>Crop: <strong>{pendingApprovalMatch.listing.crop}</strong></p>
+                    <div className="flex items-center gap-1.5"><p>Crop: </p><img src={getCropImageUrl(pendingApprovalMatch.listing.crop)} alt={pendingApprovalMatch.listing.crop} className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" /><strong>{pendingApprovalMatch.listing.crop}</strong></div>
                     <p>Farm Location: <strong>{pendingApprovalMatch.listing.location}</strong></p>
                     <p>Certified Grade: <strong>{pendingApprovalMatch.listing.grade}</strong></p>
                     <p>Available Supply: <strong>{pendingApprovalMatch.listing.quantityKg.toLocaleString()} kg</strong></p>
@@ -1439,9 +1444,12 @@ export const FpoDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h4 className="font-bold text-sm text-[#01472e]">
-                        {t(`crops.${order.crop}`, order.crop)} ({order.variety || 'Hybrid'})
-                      </h4>
+                      <div className="flex items-center gap-2">
+                        <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                        <h4 className="font-bold text-sm text-[#01472e]">
+                          {t(`crops.${order.crop}`, order.crop)} ({order.variety || 'Hybrid'})
+                        </h4>
+                      </div>
                       <p className="text-xs text-[#01472e]/80 mt-0.5">
                         Contracted Buyer: <strong className="text-[#01472e]">{order.buyerName}</strong> ({order.deliveryLocation})
                       </p>
@@ -1549,7 +1557,10 @@ export const FpoDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-[#01472e] text-sm">{t(`crops.${order.crop}`, order.crop)} ({order.variety || 'Hybrid'})</h4>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                        <h4 className="font-semibold text-[#01472e] text-sm">{t(`crops.${order.crop}`, order.crop)} ({order.variety || 'Hybrid'})</h4>
+                      </div>
                       <p className="text-xs text-[#01472e]/70 mt-0.5">
                         Buyer: <strong className="text-[#01472e]">{order.buyerName}</strong> ({order.deliveryLocation})
                       </p>
@@ -1663,8 +1674,9 @@ export const FpoDashboard: React.FC = () => {
                             Collected ({totalCollected.toLocaleString()} kg)
                           </span>
                         </div>
-                        <h4 className="text-sm font-semibold text-[#01472e] mt-1">
-                          {order.crop} ({order.variety || 'Hybrid'}) — {totalCollected.toLocaleString()} kg from {order.farmerName}
+                        <h4 className="text-sm font-semibold text-[#01472e] mt-2 flex items-center gap-2">
+                          <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                          <span>{order.crop} ({order.variety || 'Hybrid'}) — {totalCollected.toLocaleString()} kg from {order.farmerName}</span>
                         </h4>
                       </div>
 
@@ -1879,7 +1891,10 @@ export const FpoDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-[#01472e] text-sm">{order.crop} ({order.variety || 'Hybrid'})</h4>
+                      <div className="flex items-center gap-2 mb-1">
+                        <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                        <h4 className="font-semibold text-[#01472e] text-sm">{order.crop} ({order.variety || 'Hybrid'})</h4>
+                      </div>
                       <p className="text-xs text-[#01472e]/80 mt-1">
                         Accepted Volume: <strong className="font-mono text-[#01472e]">{acceptedVolume.toLocaleString()} kg</strong> (~{estimatedCrates} crates)
                       </p>
@@ -1967,8 +1982,9 @@ export const FpoDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-sm text-[#01472e]">
-                        {order.crop} — {order.packedQuantityKg || order.quantityKg} kg ({order.crateCount || Math.ceil((order.packedQuantityKg || order.quantityKg) / 25)} Crates)
+                      <h4 className="font-semibold text-sm text-[#01472e] flex items-center gap-2">
+                        <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                        <span>{order.crop} — {order.packedQuantityKg || order.quantityKg} kg ({order.crateCount || Math.ceil((order.packedQuantityKg || order.quantityKg) / 25)} Crates)</span>
                       </h4>
                       <p className="text-xs text-[#01472e]/70 mt-0.5">
                         Route: {order.farmerLocation} ➔ <strong>{order.deliveryLocation}</strong>
@@ -2079,8 +2095,9 @@ export const FpoDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-sm text-[#01472e]">
-                        {order.crop} ({order.packedQuantityKg || order.quantityKg} kg)
+                      <h4 className="font-semibold text-sm text-[#01472e] flex items-center gap-2">
+                        <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                        <span>{order.crop} ({order.packedQuantityKg || order.quantityKg} kg)</span>
                       </h4>
                       <p className="text-xs text-[#01472e]/80 mt-0.5">
                         Receiving Facility: <strong className="text-[#01472e]">{order.buyerName}</strong> ({order.deliveryLocation})
@@ -2361,10 +2378,13 @@ export const FpoDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-[#01472e] text-sm">
-                        {t(`crops.${listing.crop}`, listing.crop)}
-                        {listing.variety && <span className="text-[#01472e]/60 font-normal ml-1">({listing.variety})</span>}
-                      </h4>
+                      <div className="flex items-center gap-3 mb-1">
+                        <img src={getCropImageUrl(listing.crop)} alt={listing.crop} className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                        <h4 className="font-semibold text-[#01472e] text-sm">
+                          {t(`crops.${listing.crop}`, listing.crop)}
+                          {listing.variety && <span className="text-[#01472e]/60 font-normal ml-1">({listing.variety})</span>}
+                        </h4>
+                      </div>
                       <p className="text-xs text-[#01472e]/70 mt-0.5 flex items-center gap-1">
                         <Users className="w-3.5 h-3.5 text-[#a3b18a]" />
                         <span>Farmer: <strong className="text-[#01472e]">{listing.farmerName}</strong></span>
@@ -2556,8 +2576,9 @@ export const FpoDashboard: React.FC = () => {
                         {order.status}
                       </span>
                     </div>
-                    <p className="text-xs font-semibold text-[#01472e] mt-1">
-                      {order.crop} — {order.quantityKg.toLocaleString()} kg @ ₹{order.pricePerKg}/kg (Total: ₹{order.totalValue.toLocaleString()})
+                    <p className="text-xs font-semibold text-[#01472e] mt-2 flex items-center gap-2">
+                      <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                      <span>{order.crop} — {order.quantityKg.toLocaleString()} kg @ ₹{order.pricePerKg}/kg (Total: ₹{order.totalValue.toLocaleString()})</span>
                     </p>
                     <p className="text-[11px] text-[#01472e]/70">
                       Farmer: {order.farmerName} ➔ Buyer: {order.buyerName} ({order.deliveryLocation})
@@ -2760,8 +2781,9 @@ export const FpoDashboard: React.FC = () => {
                 <span className="font-mono text-[11px] text-[#01472e]/70 font-semibold">
                   Order: {collectionModalOrder.id} • Batch: {collectionModalOrder.batchId}
                 </span>
-                <p className="font-semibold text-[#01472e] text-sm">
-                  {collectionModalOrder.crop} ({collectionModalOrder.variety || 'Hybrid'})
+                <p className="font-semibold text-[#01472e] text-sm flex items-center gap-2">
+                  <img src={getCropImageUrl(collectionModalOrder.crop)} alt={collectionModalOrder.crop} className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                  <span>{collectionModalOrder.crop} ({collectionModalOrder.variety || 'Hybrid'})</span>
                 </p>
                 <div className="flex justify-between text-[#01472e]/70 pt-1">
                   <span>Total Contract: <strong>{collectionModalOrder.quantityKg.toLocaleString()} kg</strong></span>
@@ -2876,7 +2898,10 @@ export const FpoDashboard: React.FC = () => {
                 <span className="font-mono text-[11px] text-[#01472e]/70 font-semibold">
                   Order: {packingModalOrder.id} • Batch: {packingModalOrder.batchId}
                 </span>
-                <p className="font-semibold text-[#01472e] text-sm">{packingModalOrder.crop} ({packingModalOrder.variety || 'Hybrid'})</p>
+                <p className="font-semibold text-[#01472e] text-sm flex items-center gap-2">
+                  <img src={getCropImageUrl(packingModalOrder.crop)} alt={packingModalOrder.crop} className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                  <span>{packingModalOrder.crop} ({packingModalOrder.variety || 'Hybrid'})</span>
+                </p>
                 <div className="flex justify-between text-[#01472e]/70 pt-1">
                   <span>Quality Grade: <strong className="text-[#01472e]">{packingModalOrder.qualityGrade}</strong></span>
                   <span>Accepted Quantity: <strong className="text-[#01472e] font-mono">{packingModalOrder.acceptedQuantityKg || packingModalOrder.quantityKg} kg</strong></span>
@@ -2971,8 +2996,9 @@ export const FpoDashboard: React.FC = () => {
                 <span className="font-mono text-[11px] text-[#01472e]/70 font-semibold">
                   Order: {transportModalOrder.id} • Destination: {transportModalOrder.deliveryLocation}
                 </span>
-                <p className="font-semibold text-[#01472e] text-sm">
-                  {transportModalOrder.crop} — {transportModalOrder.packedQuantityKg || transportModalOrder.quantityKg} kg ({transportModalOrder.crateCount || Math.ceil((transportModalOrder.packedQuantityKg || transportModalOrder.quantityKg) / 25)} Crates)
+                <p className="font-semibold text-[#01472e] text-sm flex items-center gap-2">
+                  <img src={getCropImageUrl(transportModalOrder.crop)} alt={transportModalOrder.crop} className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                  <span>{transportModalOrder.crop} — {transportModalOrder.packedQuantityKg || transportModalOrder.quantityKg} kg ({transportModalOrder.crateCount || Math.ceil((transportModalOrder.packedQuantityKg || transportModalOrder.quantityKg) / 25)} Crates)</span>
                 </p>
               </div>
 

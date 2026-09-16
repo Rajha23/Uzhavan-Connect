@@ -1,3 +1,4 @@
+import { getCropImageUrl } from '../utils/cropImages';
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { WorkflowOrder, BuyerDeliveryConfirmation } from '../types';
@@ -542,7 +543,10 @@ export const OrdersPage: React.FC = () => {
             <div className="p-4 sm:p-5 bg-[#faf9f5] rounded-3xl border border-[#ccd5ae]/50 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs shadow-xs">
               <div>
                 <span className="text-[10px] text-slate-400 font-semibold uppercase block">{t('farmer.cropName', 'Produce')}</span>
-                <strong className="text-slate-800 text-sm font-bold">{verifyOrder.crop}</strong>
+                <div className="flex items-center gap-2 mt-1">
+                  <img src={getCropImageUrl(verifyOrder.crop)} alt={verifyOrder.crop} className="w-6 h-6 rounded-full object-cover shadow-sm border border-slate-200" />
+                  <strong className="text-slate-800 text-sm font-bold">{verifyOrder.crop}</strong>
+                </div>
                 <span className="text-[10px] text-slate-500 block font-medium">({verifyOrder.variety})</span>
               </div>
               <div>

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import { CHENNAI_TOMATO_FORECAST, AGRICULTURE_NEWS } from '../data/mockData';
+import { getCropImageUrl } from "../utils/cropImages";
+
 import { ProduceListing, WorkflowOrder, WorkflowAgreement } from '../types';
 import { NewsTicker } from '../components/NewsTicker';
 import { NewsCard } from '../components/NewsCard';

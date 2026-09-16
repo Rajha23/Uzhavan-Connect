@@ -1,3 +1,4 @@
+import { getCropImageUrl } from "../utils/cropImages";
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -509,8 +510,8 @@ export const BulkBuyerDashboard: React.FC = () => {
                     }}
                   >
                     <div className="flex items-center justify-between mb-1 text-xs">
-                      <span className="font-semibold text-[#01472e] flex items-center gap-1.5">
-                        <Sprout className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span className="font-semibold text-[#01472e] flex items-center gap-2">
+                        <img src={getCropImageUrl(d.crop)} alt={d.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
                         <span>{d.crop} • {d.variety || 'Hybrid'}</span>
                       </span>
                       <span className="text-[10px] font-mono font-semibold bg-[#eaf4ec] text-[#01472e] px-2.5 py-0.5 rounded-full border border-[#a3b18a]/40">
@@ -757,7 +758,10 @@ export const BulkBuyerDashboard: React.FC = () => {
               <span className="text-[10px] font-semibold text-[#01472e]/60 uppercase tracking-wider">
                 {t('bulkBuyer.consignmentIdentity', 'Consignment Identity')}
               </span>
-              <h4 className="text-base font-semibold text-[#01472e]">{activeShipment?.crop || 'Tomato'} Bulk Batch</h4>
+              <div className="flex items-center gap-2 mb-2">
+                <img src={getCropImageUrl(activeShipment?.crop || 'Tomato')} alt={activeShipment?.crop || 'Tomato'} className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                <h4 className="text-base font-semibold text-[#01472e]">{activeShipment?.crop || 'Tomato'} Bulk Batch</h4>
+              </div>
               <div className="text-xs text-[#01472e]/80 space-y-1">
                 <p><b>{t('buyer.shipmentId', 'Shipment ID')}:</b> {activeShipment?.id || 'ORD-BULK-01'}</p>
                 <p><b>{t('buyer.producePassport', 'Produce Passport')}:</b> {activeShipment?.batchId || 'N/A'}</p>
@@ -825,7 +829,7 @@ export const BulkBuyerDashboard: React.FC = () => {
                 <div key={o.id} className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <Sprout className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <img src={getCropImageUrl(o.crop)} alt={o.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
                       <span className="font-semibold text-[#01472e] text-sm">{o.crop}</span>
                       <span className="text-[10px] font-mono bg-[#faf9f5] border border-[#ccd5ae]/40 text-[#01472e]/80 px-2 py-0.5 rounded font-semibold">
                         {o.id}
@@ -1031,9 +1035,12 @@ export const BulkBuyerDashboard: React.FC = () => {
                 <div className="w-11 h-11 rounded-2xl bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/30 flex items-center justify-center font-medium">
                   <FileCheck2 className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-[#01472e]">{t('bulkBuyer.goodsReceivingTitle', 'Goods Receiving & Verification')}</h3>
-                  <p className="text-xs text-[#01472e]/70">{t('bulkBuyer.orderSubtitle', 'Order #{id} • {crop}', { id: selectedOrderForDelivery.id, crop: selectedOrderForDelivery.crop })}</p>
+                <div className="flex items-center gap-3">
+                  <img src={getCropImageUrl(selectedOrderForDelivery.crop)} alt={selectedOrderForDelivery.crop} className="w-10 h-10 rounded-lg object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#01472e]">{t('bulkBuyer.goodsReceivingTitle', 'Goods Receiving & Verification')}</h3>
+                    <p className="text-xs text-[#01472e]/70">{t('bulkBuyer.orderSubtitle', 'Order #{id} • {crop}', { id: selectedOrderForDelivery.id, crop: selectedOrderForDelivery.crop })}</p>
+                  </div>
                 </div>
               </div>
               <button

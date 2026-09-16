@@ -1,3 +1,4 @@
+import { getCropImageUrl } from '../utils/cropImages';
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -256,8 +257,8 @@ export const LogisticsDashboard: React.FC = () => {
                             {order.crateCount ? t('logistics.packedCrates', 'Packed ({count} Crates)', { count: order.crateCount }) : t('logistics.packedCrated', 'Packed (Crated)')}
                           </span>
                         </div>
-                        <h4 className="text-base font-bold text-slate-900 mt-2 flex items-center gap-1.5">
-                          <Sprout className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <h4 className="text-base font-bold text-slate-900 mt-2 flex items-center gap-2">
+                          <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm border border-slate-200" />
                           <span>{t(`crops.${order.crop}`, order.crop)} ({order.variety || 'Hybrid'})</span>
                           <span className="text-slate-400 font-normal">—</span>
                           <span className="font-mono text-[#01472e]">{cargoVolume.toLocaleString()} kg</span>
@@ -410,8 +411,8 @@ export const LogisticsDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h5 className="font-bold text-slate-900 text-base flex items-center gap-1.5">
-                        <Sprout className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <h5 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm border border-slate-200" />
                         <span>{t(`crops.${order.crop}`, order.crop)}</span>
                         <span className="text-slate-400 font-normal">—</span>
                         <span className="font-mono text-[#01472e]">{(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg</span>
@@ -486,7 +487,10 @@ export const LogisticsDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <h5 className="font-bold text-slate-900 text-base">{t(`crops.${order.crop}`, order.crop)} ({(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg)</h5>
+                      <div className="flex items-center gap-2">
+                        <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm border border-slate-200" />
+                        <h5 className="font-bold text-slate-900 text-base">{t(`crops.${order.crop}`, order.crop)} ({(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg)</h5>
+                      </div>
                       <p className="text-xs text-slate-700 mt-1.5">
                         {t('logistics.vehicleLabel', 'Vehicle:')} <strong className="font-mono text-slate-900">{order.transportDetails?.vehicleNumber || 'Reefer EV'}</strong> • {t('logistics.driverLabel', 'Driver:')} {order.transportDetails?.driverName || 'Karthik S.'}
                       </p>
@@ -558,9 +562,12 @@ export const LogisticsDashboard: React.FC = () => {
                           {isConfirmed ? t('stages.Buyer Confirmed.label', 'Buyer Confirmed') : t('stages.Delivered.label', 'Buyer Confirmation Pending')}
                         </span>
                       </div>
-                      <p className="text-sm font-bold text-slate-900 mt-1">
-                        {t(`crops.${order.crop}`, order.crop)} ({(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg) {t('logistics.deliveredTo', 'delivered to')} <strong>{order.buyerName}</strong>
-                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm border border-slate-200" />
+                        <p className="text-sm font-bold text-slate-900">
+                          {t(`crops.${order.crop}`, order.crop)} ({(order.packedQuantityKg || order.quantityKg).toLocaleString()} kg) {t('logistics.deliveredTo', 'delivered to')} <strong>{order.buyerName}</strong>
+                        </p>
+                      </div>
                       <p className="text-xs text-slate-500 mt-0.5">
                         {t('logistics.facilityLabel', 'Facility:')} {order.deliveryLocation} • {t('logistics.carrierLabel', 'Carrier:')} {order.transportDetails?.carrierName} ({order.transportDetails?.vehicleNumber})
                       </p>

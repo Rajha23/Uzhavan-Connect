@@ -1,3 +1,4 @@
+import { getCropImageUrl } from '../utils/cropImages';
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -117,6 +118,7 @@ export const DemandPoolPage: React.FC = () => {
                 >
                   <div>
                     <div className="flex items-center gap-2">
+                      <img src={getCropImageUrl(grp.crop)} alt={grp.crop} className="w-8 h-8 rounded-full object-cover shrink-0 shadow-sm border border-emerald-500/20" />
                       <span className="font-medium text-base tracking-tight">{grp.crop}</span>
                       <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full uppercase tracking-wider ${
                         isSelected ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-800'

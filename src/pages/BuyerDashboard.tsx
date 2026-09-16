@@ -1,3 +1,4 @@
+import { getCropImageUrl } from '../utils/cropImages';
 import React, { useState } from 'react';
 import { BuyerFeedbackForm } from './feedback/BuyerFeedbackForm';
 import { useApp } from '../context/AppContext';
@@ -345,8 +346,13 @@ export const BuyerDashboard: React.FC = () => {
                       <span className="text-[11px] text-[#01472e]/60 font-normal">{dem.buyerType}</span>
                     </td>
                     <td className="p-4">
-                      <span className="font-semibold text-[#01472e] block">{dem.crop}</span>
-                      <span className="text-[11px] text-[#01472e]/60 font-normal">{dem.variety || 'Certified Hybrid'}</span>
+                      <div className="flex items-center gap-3">
+                        <img src={getCropImageUrl(dem.crop)} alt={dem.crop} className="w-8 h-8 rounded-full object-cover shrink-0 shadow-sm border border-[#ccd5ae]/40" />
+                        <div>
+                          <span className="font-semibold text-[#01472e] block">{dem.crop}</span>
+                          <span className="text-[11px] text-[#01472e]/60 font-normal">{dem.variety || 'Certified Hybrid'}</span>
+                        </div>
+                      </div>
                     </td>
                     <td className="p-4">
                       <span className="font-semibold text-[#01472e] text-sm block">
@@ -487,9 +493,12 @@ export const BuyerDashboard: React.FC = () => {
                         <span className="text-[10px] text-[#ccd5ae]">•</span>
                         <span className="text-xs text-[#01472e]/60 font-medium">{order.date}</span>
                       </div>
-                      <h4 className="text-lg font-semibold text-[#01472e] tracking-tight mt-0.5">
-                        {order.crop} <span className="text-xs font-normal text-[#01472e]/60">({order.variety || 'Hybrid'})</span>
-                      </h4>
+                      <div className="flex items-center gap-3 mt-1.5 mb-1">
+                        <img src={getCropImageUrl(order.crop)} alt={order.crop} className="w-10 h-10 rounded-lg object-cover shadow-sm border border-[#ccd5ae]/40" />
+                        <h4 className="text-lg font-semibold text-[#01472e] tracking-tight">
+                          {order.crop} <span className="text-xs font-normal text-[#01472e]/60">({order.variety || 'Hybrid'})</span>
+                        </h4>
+                      </div>
                       <p className="text-xs text-[#01472e]/70 mt-0.5">
                         {t('buyer.origin', 'Origin')}: <strong className="text-[#01472e] font-semibold">{order.fpoName || 'GreenHarvest FPO'}</strong> ({order.farmerLocation})
                       </p>
@@ -888,10 +897,13 @@ export const BuyerDashboard: React.FC = () => {
 
             {/* Shipment Summary Strip */}
             <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div>
-                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.produce', 'Produce')}</span>
-                <strong className="text-[#01472e] text-sm font-semibold">{deliveryReceiptOrder.crop}</strong>
-                <span className="text-[11px] text-[#01472e]/70 block">({deliveryReceiptOrder.variety})</span>
+              <div className="flex items-center gap-2">
+                <img src={getCropImageUrl(deliveryReceiptOrder.crop)} alt={deliveryReceiptOrder.crop} className="w-8 h-8 rounded-full object-cover shadow-sm border border-[#ccd5ae]/40" />
+                <div>
+                  <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.produce', 'Produce')}</span>
+                  <strong className="text-[#01472e] text-sm font-semibold">{deliveryReceiptOrder.crop}</strong>
+                  <span className="text-[11px] text-[#01472e]/70 block">({deliveryReceiptOrder.variety})</span>
+                </div>
               </div>
               <div>
                 <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.deliveredVolume', 'Delivered Volume')}</span>
