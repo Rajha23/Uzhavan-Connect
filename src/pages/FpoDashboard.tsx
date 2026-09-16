@@ -7,6 +7,8 @@ import {
   Package,
   Sprout,
   CheckCircle2,
+  User,
+  Phone,
   ShieldCheck,
   QrCode,
   Truck,
@@ -48,6 +50,11 @@ import {
   TransportAssignment
 } from '../types';
 
+const AVAILABLE_TRANSPORTS = [
+  { id: 'T1', carrierName: 'Sundar Transport & Cold Chain', vehicleNumber: 'TN-45-AT-9080', vehicleType: 'Reefer Truck (4-8°C)', driverName: 'Murugan', driverPhone: '+91 98765 43210', distanceKm: 2.4, status: 'Nearest Available', rating: 4.8 },
+  { id: 'T2', carrierName: 'Vayulogix Transport', vehicleNumber: 'TN-09-CB-4812', vehicleType: 'Insulated Van', driverName: 'Velu', driverPhone: '+91 87654 32109', distanceKm: 5.1, status: 'Available', rating: 4.5 },
+  { id: 'T3', carrierName: 'Kisan Cold Express', vehicleNumber: 'TN-38-XY-1122', vehicleType: 'Heavy Reefer', driverName: 'Selvam', driverPhone: '+91 76543 21098', distanceKm: 8.7, status: 'Available', rating: 4.9 },
+];
 export const FpoDashboard: React.FC = () => {
   const { t } = useLanguage();
   const {
@@ -152,10 +159,7 @@ export const FpoDashboard: React.FC = () => {
 
   // Stage 8: Transport Modal State
   const [transportModalOrder, setTransportModalOrder] = useState<WorkflowOrder | null>(null);
-  const [carrierName, setCarrierName] = useState('Sundar Transport & Cold Chain');
-  const [vehicleNumber, setVehicleNumber] = useState('TN-15-AGRI-5510');
-  const [driverName, setDriverName] = useState('Karthik Subramanian');
-  const [driverPhone, setDriverPhone] = useState('+91 98410 44021');
+  const [selectedTransportId, setSelectedTransportId] = useState<string>('T1');
   const [vehicleType, setVehicleType] = useState('Tata Ace CoolReefer EV 5.5T (4.2°C Active)');
 
   // Universal Feedback Message
@@ -499,12 +503,14 @@ export const FpoDashboard: React.FC = () => {
     e.preventDefault();
     if (!transportModalOrder) return;
 
+    const selectedTransport = AVAILABLE_TRANSPORTS.find(t => t.id === selectedTransportId) || AVAILABLE_TRANSPORTS[0];
+
     const assignment: TransportAssignment = {
-      carrierName,
-      vehicleNumber,
-      driverName,
-      driverPhone,
-      vehicleType,
+      carrierName: selectedTransport.carrierName,
+      vehicleNumber: selectedTransport.vehicleNumber,
+      driverName: selectedTransport.driverName,
+      driverPhone: selectedTransport.driverPhone,
+      vehicleType: selectedTransport.vehicleType,
       assignedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
       departureTime: 'Immediate',
       estimatedArrival: 'In 3.5 hrs (NH-48 Cold Corridor)',
@@ -515,7 +521,7 @@ export const FpoDashboard: React.FC = () => {
     dispatchShipment(transportModalOrder.id);
     setTransportModalOrder(null);
     showNotification(
-      `Order ${transportModalOrder.id} dispatched via ${carrierName} (${vehicleNumber})! Reefer temp stabilized at 4.2°C.`
+      `Order ${transportModalOrder.id} dispatched via ${selectedTransport.carrierName} (${selectedTransport.vehicleNumber})! Reefer temp stabilized at 4.2°C.`
     );
     confetti({ particleCount: 40, origin: { y: 0.6 } });
     setActiveStage('STAGE_9_DELIVERY');
@@ -2141,13 +2147,10 @@ export const FpoDashboard: React.FC = () => {
                           Mark Arrived
                         </button>
                       ) : !confirmation ? (
-                        <button
-                          onClick={() => handleBuyerDeliverySignoff(order.id)}
-                          className="btn-primary text-xs py-2 px-4 rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer font-semibold"
-                        >
-                          <Check className="w-3.5 h-3.5" />
-                          <span>Confirm Buyer Quality Sign-off →</span>
-                        </button>
+                        <div className="text-xs py-2 px-4 rounded-xl border border-amber-200 bg-amber-50 text-amber-800 flex items-center gap-1.5 font-semibold">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>Awaiting Buyer Sign-off</span>
+                        </div>
                       ) : (
                         <button
                           onClick={() => setActiveStage('STAGE_10_PAYMENT')}
@@ -3002,60 +3005,49 @@ export const FpoDashboard: React.FC = () => {
                 </p>
               </div>
 
-              <div>
-                <label className="block text-[#01472e] font-semibold mb-1">Carrier Provider Name</label>
-                <input
-                  type="text"
-                  value={carrierName}
-                  onChange={(e) => setCarrierName(e.target.value)}
-                  className="input-modern font-semibold"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[#01472e] font-semibold mb-1">Vehicle Registration Number</label>
-                  <input
-                    type="text"
-                    value={vehicleNumber}
-                    onChange={(e) => setVehicleNumber(e.target.value)}
-                    className="input-modern font-mono font-semibold"
-                    required
-                  />
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between pb-1">
+                  <label className="text-[#01472e] font-semibold flex items-center gap-2">
+                    Available Transport Drivers
+                    <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px] font-bold tracking-wide uppercase">Auto-assigning Nearest</span>
+                  </label>
+                  <span className="text-xs text-[#01472e]/60">{AVAILABLE_TRANSPORTS.length} nearby</span>
                 </div>
-                <div>
-                  <label className="block text-[#01472e] font-semibold mb-1">Vehicle Type / Cold-Spec</label>
-                  <input
-                    type="text"
-                    value={vehicleType}
-                    onChange={(e) => setVehicleType(e.target.value)}
-                    className="input-modern"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[#01472e] font-semibold mb-1">Driver Name</label>
-                  <input
-                    type="text"
-                    value={driverName}
-                    onChange={(e) => setDriverName(e.target.value)}
-                    className="input-modern"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-[#01472e] font-semibold mb-1">Driver Contact Phone</label>
-                  <input
-                    type="text"
-                    value={driverPhone}
-                    onChange={(e) => setDriverPhone(e.target.value)}
-                    className="input-modern font-mono"
-                    required
-                  />
+                
+                <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1 custom-scrollbar">
+                  {AVAILABLE_TRANSPORTS.map((transport) => (
+                    <div 
+                      key={transport.id}
+                      onClick={() => setSelectedTransportId(transport.id)}
+                      className={`flex flex-col gap-2 p-3 rounded-2xl border-2 transition-all cursor-pointer ${selectedTransportId === transport.id ? 'border-[#01472e] bg-[#f0fdf4] shadow-sm' : 'border-[#ccd5ae]/30 hover:border-[#ccd5ae] bg-white'}`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="font-bold text-[#01472e] flex items-center gap-1.5">
+                            {transport.carrierName}
+                            <span className="text-[10px] bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded flex items-center">⭐ {transport.rating}</span>
+                          </div>
+                          <div className="text-[11px] text-[#01472e]/70 font-semibold mt-0.5">
+                            {transport.vehicleType} • <span className="font-mono">{transport.vehicleNumber}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${transport.status === 'Nearest Available' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                            {transport.status}
+                          </span>
+                          <span className="text-[10px] font-medium text-[#01472e]/60 flex items-center gap-1"><MapPin className="w-3 h-3" /> {transport.distanceKm} km away</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between pt-2 border-t border-black/5">
+                        <div className="text-[11px] font-semibold text-[#01472e]/80 flex items-center gap-1.5">
+                          <User className="w-3.5 h-3.5" /> Driver: {transport.driverName}
+                        </div>
+                        <div className="text-[11px] font-mono font-medium text-[#01472e]/70 flex items-center gap-1.5">
+                          <Phone className="w-3 h-3" /> {transport.driverPhone}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
