@@ -1,16 +1,22 @@
-import { Task, TaskStatus, TaskComment, TaskActivity, UserRole } from '../types';
+import { Task, TaskStatus, TaskComment, TaskActivity, UserRole, isTaskOverdue } from '../types';
 import { INITIAL_TASKS } from '../data/mockTasks';
 
-const UZHAVAN_TASKS_KEY = 'uzhavan_tasks';
+const UZHAVAN_TASKS_KEY = 'uzhavan_tasks_v2';
 
-// In-memory store
 let tasksStore: Task[] = [...INITIAL_TASKS];
 
-// Try to hydrate from localStorage
 try {
   const cached = localStorage.getItem(UZHAVAN_TASKS_KEY);
   if (cached) {
-    tasksStore = JSON.parse(cached);
+    const parsed = JSON.parse(cached) as Task[];
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      tasksStore = parsed.map((task) => ({
+        ...task,
+        recurrence: task.recurrence || 'none',
+        comments: task.comments || [],
+        activity: task.activity || []
+      }));
+    }
   } else {
     localStorage.setItem(UZHAVAN_TASKS_KEY, JSON.stringify(tasksStore));
   }
@@ -26,38 +32,49 @@ const persistTasks = () => {
   }
 };
 
+const canViewTask = (
+  task: Task,
+  role: UserRole,
+  userId?: string,
+  organizationId?: string
+): boolean => {
+  if (role === 'ADMIN') return true;
+  if (userId && (task.assignedTo === userId || task.createdBy === userId)) return true;
+  if (
+    role === 'FPO_AGGREGATOR' &&
+    organizationId &&
+    task.organizationId === organizationId
+  ) {
+    return true;
+  }
+  return false;
+};
+
 export const taskService = {
   getTasks: async (): Promise<Task[]> => {
     return [...tasksStore];
   },
 
-  getTasksByRoleOrUser: async (role: UserRole, userId?: string, organizationId?: string): Promise<Task[]> => {
-    // Basic RBAC/Isolation logic
-    // Admin sees all
-    if (role === 'ADMIN') return [...tasksStore];
-
-    return tasksStore.filter(task => {
-      // If a task is assigned to the specific user, they can see it
-      if (userId && task.assignedTo === userId) return true;
-      // If a task is assigned to the organization, users in the org might see it (depending on exact business logic)
-      if (organizationId && task.organizationId === organizationId) return true;
-      // If the user created the task, they can see it
-      if (userId && task.createdBy === userId) return true;
-      
-      // Fallback: match by role as a simple demo filter if no user/org strictly matches
-      return task.assignedRole === role;
-    });
+  getTasksByRoleOrUser: async (
+    role: UserRole,
+    userId?: string,
+    organizationId?: string
+  ): Promise<Task[]> => {
+    return tasksStore.filter((task) => canViewTask(task, role, userId, organizationId));
   },
 
-  createTask: async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'comments' | 'activity'>): Promise<Task> => {
+  createTask: async (
+    taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'comments' | 'activity'>
+  ): Promise<Task> => {
     const newTask: Task = {
       ...taskData,
+      recurrence: taskData.recurrence || 'none',
       id: `tsk-${Date.now()}`,
       comments: [],
       activity: [
         {
           id: `act-${Date.now()}`,
-          taskId: '', // set below
+          taskId: '',
           userId: taskData.createdBy,
           userName: taskData.createdByName,
           action: 'Task created',
@@ -74,18 +91,26 @@ export const taskService = {
     return newTask;
   },
 
-  updateTaskStatus: async (taskId: string, newStatus: TaskStatus, userId: string, userName: string): Promise<Task> => {
-    const taskIndex = tasksStore.findIndex(t => t.id === taskId);
+  updateTaskStatus: async (
+    taskId: string,
+    newStatus: TaskStatus,
+    userId: string,
+    userName: string
+  ): Promise<Task> => {
+    const taskIndex = tasksStore.findIndex((t) => t.id === taskId);
     if (taskIndex === -1) throw new Error('Task not found');
 
     const task = tasksStore[taskIndex];
     const oldStatus = task.status;
-    
+
     if (oldStatus === newStatus) return task;
 
     task.status = newStatus;
     task.updatedAt = new Date().toISOString();
-    
+    if (newStatus === 'Completed') {
+      task.completedAt = new Date().toISOString();
+    }
+
     const activity: TaskActivity = {
       id: `act-${Date.now()}`,
       taskId,
@@ -94,20 +119,26 @@ export const taskService = {
       action: `Status changed from ${oldStatus} to ${newStatus}`,
       timestamp: new Date().toISOString()
     };
-    
+
     task.activity.push(activity);
-    
+
     tasksStore = [...tasksStore];
     persistTasks();
     return task;
   },
 
-  addComment: async (taskId: string, userId: string, userName: string, userRole: UserRole, text: string): Promise<Task> => {
-    const taskIndex = tasksStore.findIndex(t => t.id === taskId);
+  addComment: async (
+    taskId: string,
+    userId: string,
+    userName: string,
+    userRole: UserRole,
+    text: string
+  ): Promise<Task> => {
+    const taskIndex = tasksStore.findIndex((t) => t.id === taskId);
     if (taskIndex === -1) throw new Error('Task not found');
 
     const task = tasksStore[taskIndex];
-    
+
     const comment: TaskComment = {
       id: `cmt-${Date.now()}`,
       taskId,
@@ -117,9 +148,9 @@ export const taskService = {
       text,
       createdAt: new Date().toISOString()
     };
-    
+
     task.comments.push(comment);
-    
+
     const activity: TaskActivity = {
       id: `act-${Date.now()}`,
       taskId,
@@ -128,22 +159,24 @@ export const taskService = {
       action: 'Comment added',
       timestamp: new Date().toISOString()
     };
-    
+
     task.activity.push(activity);
     task.updatedAt = new Date().toISOString();
-    
+
     tasksStore = [...tasksStore];
     persistTasks();
     return task;
   },
-  
+
   deleteTask: async (taskId: string): Promise<boolean> => {
     const initialLength = tasksStore.length;
-    tasksStore = tasksStore.filter(t => t.id !== taskId);
+    tasksStore = tasksStore.filter((t) => t.id !== taskId);
     if (tasksStore.length !== initialLength) {
       persistTasks();
       return true;
     }
     return false;
-  }
+  },
+
+  isOverdue: isTaskOverdue
 };

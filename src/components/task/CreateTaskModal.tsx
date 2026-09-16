@@ -41,6 +41,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ onClose, onTas
         taskType: formData.taskType,
         priority: formData.priority,
         status: formData.status,
+        recurrence: 'none',
         createdBy: currentUser.id,
         createdByName: currentUser.name,
         assignedTo: `usr-${Date.now()}`, // simple mock assignment ID

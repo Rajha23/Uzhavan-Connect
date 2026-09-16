@@ -41,6 +41,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { UpcomingTasksWidget } from '../components/task';
 import {
   QualityInspectionData,
   WorkflowOrder,
@@ -691,6 +692,9 @@ export const FpoDashboard: React.FC = () => {
           <p className="text-xs font-semibold text-[#01472e]">{actionSuccessMessage}</p>
         </div>
       )}
+
+      {/* Upcoming Tasks Widget */}
+      <UpcomingTasksWidget limit={5} />
 
       {/* ── PRODUCE QUALITY & BUYER FEEDBACK CENTER ────────────────────────── */}
       <div className="rounded-[32px] border border-[#a3b18a]/40 bg-white/95 backdrop-blur-md shadow-soft p-6 sm:p-8 space-y-6">

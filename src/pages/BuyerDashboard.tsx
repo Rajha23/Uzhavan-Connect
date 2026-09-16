@@ -31,6 +31,7 @@ import {
   Gavel
 } from 'lucide-react';
 import { AiInsightCard } from '../components/AiInsightCard';
+import { UpcomingTasksWidget } from '../components/task';
 import confetti from 'canvas-confetti';
 
 export const BuyerDashboard: React.FC = () => {
@@ -251,6 +252,9 @@ export const BuyerDashboard: React.FC = () => {
           icon={TrendingUp}
         />
       </KPIGrid>
+
+      {/* Upcoming Tasks Widget */}
+      <UpcomingTasksWidget limit={4} />
 
       {/* ─── Feedback Call-to-Action Banner ─────────────────────────────────── */}
       {orders.filter((o) => ['DELIVERED', 'RECEIPT_CONFIRMED'].includes(o.status) && !o.feedbackSubmitted).length > 0 && (

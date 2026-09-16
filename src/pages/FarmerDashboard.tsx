@@ -7,6 +7,7 @@ import { ProduceListing, WorkflowOrder, WorkflowAgreement } from '../types';
 import { DetailDrawer } from "../components/DetailDrawer";
 
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
+import { UpcomingTasksWidget } from '../components/task';
 import {
   Sprout,
   TrendingUp,
@@ -416,6 +417,9 @@ export const FarmerDashboard: React.FC = () => {
           <span>{successMessage}</span>
         </div>
       )}
+
+      {/* Upcoming Tasks Widget */}
+      <UpcomingTasksWidget limit={4} />
 
       {/* 5. My Crops Section with Connected Lifecycle Tracker */}
       <div className="bg-white rounded-[32px] border border-[#ccd5ae]/50 shadow-soft overflow-hidden">

@@ -54,7 +54,7 @@ export const UpcomingTasksWidget: React.FC<Props> = ({ limit = 5 }) => {
         // Show only active (non-completed) tasks, sorted by due date
         const active = data
           .filter((t) => t.status !== 'Completed')
-          .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+          .sort((a, b) => new Date(a.dueDate ?? 0).getTime() - new Date(b.dueDate ?? 0).getTime())
           .slice(0, limit);
         setTasks(active);
       })
@@ -63,7 +63,7 @@ export const UpcomingTasksWidget: React.FC<Props> = ({ limit = 5 }) => {
   }, [currentRole, currentUser, limit]);
 
   const overdue = tasks.filter(
-    (t) => new Date(t.dueDate) < new Date() && t.status !== 'Completed'
+    (t) => t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'Completed'
   ).length;
 
   return (
@@ -111,7 +111,7 @@ export const UpcomingTasksWidget: React.FC<Props> = ({ limit = 5 }) => {
           {tasks.map((task) => {
             const style = STATUS_STYLES[task.status];
             const isOverdue =
-              new Date(task.dueDate) < new Date() && task.status !== 'Completed';
+              task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'Completed';
             return (
               <li
                 key={task.id}
@@ -135,10 +135,12 @@ export const UpcomingTasksWidget: React.FC<Props> = ({ limit = 5 }) => {
                     isOverdue ? 'text-red-500' : 'text-slate-400'
                   }`}
                 >
-                  {new Date(task.dueDate).toLocaleDateString('en-IN', {
-                    day: 'numeric',
-                    month: 'short',
-                  })}
+                  {task.dueDate
+                    ? new Date(task.dueDate).toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'short',
+                      })
+                    : '—'}
                 </span>
               </li>
             );

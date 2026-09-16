@@ -4,7 +4,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { AiService, ForecastResponseDto } from '../services/aiService';
 import {
   TrendingUp,
-
+  Calendar,
+  Sparkles,
   Filter,
   BarChart3,
   LineChart as LineChartIcon,
