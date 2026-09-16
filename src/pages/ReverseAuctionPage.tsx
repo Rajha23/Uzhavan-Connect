@@ -27,7 +27,18 @@ export const ReverseAuctionPage: React.FC = () => {
   const { t, formatNumber } = useLanguage();
   const { setActiveTab, addOrder, addNotificationEvent, currentUser } = useApp();
 
-  const [offers, setOffers] = useState<ReverseAuctionOffer[]>(INITIAL_AUCTION_OFFERS);
+  const [offers, setOffers] = useState<ReverseAuctionOffer[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('uzhavan_auction_offers');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+    }
+    return INITIAL_AUCTION_OFFERS;
+  });
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [acceptingOfferId, setAcceptingOfferId] = useState<string | null>(null);
   const [acceptedBannerInfo, setAcceptedBannerInfo] = useState<{ fpoName: string; quantityKg: number; pricePerKg: number } | null>(null);
@@ -48,7 +59,7 @@ export const ReverseAuctionPage: React.FC = () => {
     const targetOffer = offers.find((o) => o.id === id) || offers[0];
     if (!targetOffer) return;
 
-    // 1. Immediately show ACCEPTED on button with celebratory confetti
+    // 1. Immediately show ACCEPTED on button with celebratory confetti & banner
     setAcceptingOfferId(targetOffer.id);
     setOffers((currentOffers) =>
       currentOffers.map((offer) =>
@@ -56,7 +67,7 @@ export const ReverseAuctionPage: React.FC = () => {
       )
     );
     confetti({
-      particleCount: 60,
+      particleCount: 75,
       spread: 70,
       origin: { y: 0.6 }
     });
@@ -67,11 +78,14 @@ export const ReverseAuctionPage: React.FC = () => {
       pricePerKg: targetOffer.pricePerKg
     });
 
-    // 2. After showing accepted feedback, remove the offer, generate platform order, and redirect to orders!
+    // 2. After showing accepted feedback (1100ms), remove the offer, generate platform order, and redirect to orders!
     setTimeout(() => {
       const orderId = `ORD-AUC-${Date.now().toString().slice(-5)}`;
       const batchId = `AGP-AUC-${Date.now().toString().slice(-4)}`;
       const totalVal = targetOffer.quantityKg * targetOffer.pricePerKg;
+
+      const buyerId = currentUser?.id || 'usr-buyer-01';
+      const buyerName = currentUser?.name || 'Anita Sharma (ABC Retail Stores)';
 
       const newOrder: WorkflowOrder = {
         id: orderId,
@@ -81,8 +95,8 @@ export const ReverseAuctionPage: React.FC = () => {
         farmerId: targetOffer.fpoId || 'fpo-01',
         farmerName: targetOffer.fpoName,
         fpoName: targetOffer.fpoName,
-        buyerId: currentUser?.id || 'buyer-dem-01',
-        buyerName: currentUser?.role === 'FPO_AGGREGATOR' ? 'Chennai Distribution Terminal' : (currentUser?.name || 'Chennai Wholesale Terminal'),
+        buyerId: buyerId,
+        buyerName: buyerName,
         crop: 'Tomato',
         variety: 'Commercial Hybrid Grade A',
         quantityKg: targetOffer.quantityKg,
@@ -136,14 +150,23 @@ export const ReverseAuctionPage: React.FC = () => {
         actionLabel: 'View Order'
       });
 
-      // Remove the accepted offer from active list
-      setOffers((prev) => prev.filter((o) => o.id !== targetOffer.id));
+      // Remove the accepted offer from active list and persist to localStorage
+      setOffers((prev) => {
+        const remaining = prev.filter((o) => o.id !== targetOffer.id);
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem('uzhavan_auction_offers', JSON.stringify(remaining));
+          } catch (e) {}
+        }
+        return remaining;
+      });
+
       setAcceptingOfferId(null);
       setAcceptedBannerInfo(null);
 
       // Redirect to Orders tab
       setActiveTab('orders');
-    }, 950);
+    }, 1100);
   };
 
   const handleAddOffer = (e: React.FormEvent) => {
@@ -319,9 +342,9 @@ export const ReverseAuctionPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleAcceptOffer(offers[0]?.id || 'OFF-TN-01')}
-              disabled={acceptingOfferId !== null}
+              disabled={acceptingOfferId !== null || offers.length === 0}
               className={`px-5 py-2.5 font-medium text-xs rounded-xl shadow-xs transition uppercase tracking-wider cursor-pointer ${
-                acceptingOfferId
+                acceptingOfferId || offers.length === 0
                   ? 'bg-emerald-600 text-white flex items-center gap-1.5'
                   : 'bg-slate-900 hover:bg-emerald-950 text-white'
               }`}
@@ -331,6 +354,8 @@ export const ReverseAuctionPage: React.FC = () => {
                   <CheckCircle2 className="w-4 h-4" />
                   <span>{t('reverseAuction.accepted', undefined, 'Accepted')}</span>
                 </>
+              ) : offers.length === 0 ? (
+                <span>{t('reverseAuction.allAccepted', undefined, 'All Offers Accepted')}</span>
               ) : (
                 t('reverseAuction.acceptOffer', undefined, 'Accept Offer')
               )}
@@ -349,10 +374,14 @@ export const ReverseAuctionPage: React.FC = () => {
               <span className="text-xl font-semibold text-slate-900 tracking-tight">₹27 <span className="text-xs font-normal text-slate-500">/ {t('common.kg', undefined, 'kg')}</span></span>
               <button
                 onClick={() => handleAcceptOffer('OFF-TN-04')}
-                disabled={acceptingOfferId !== null}
-                className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mt-1 hover:text-slate-900 transition cursor-pointer"
+                disabled={acceptingOfferId !== null || !offers.some(o => o.id === 'OFF-TN-04')}
+                className={`text-[10px] font-medium uppercase tracking-wider block mt-1 transition cursor-pointer ${
+                  acceptingOfferId === 'OFF-TN-04' || !offers.some(o => o.id === 'OFF-TN-04')
+                    ? 'text-emerald-700 font-bold'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
               >
-                {acceptingOfferId === 'OFF-TN-04' ? '✓ Accepted' : t('reverseAuction.selectOffer', undefined, 'Select Offer')}
+                {acceptingOfferId === 'OFF-TN-04' || !offers.some(o => o.id === 'OFF-TN-04') ? '✓ Accepted' : t('reverseAuction.selectOffer', undefined, 'Select Offer')}
               </button>
             </div>
           </div>
@@ -366,10 +395,14 @@ export const ReverseAuctionPage: React.FC = () => {
               <span className="text-xl font-semibold text-slate-900 tracking-tight">₹26 <span className="text-xs font-normal text-slate-500">/ {t('common.kg', undefined, 'kg')}</span></span>
               <button
                 onClick={() => handleAcceptOffer('OFF-TN-03')}
-                disabled={acceptingOfferId !== null}
-                className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mt-1 hover:text-slate-900 transition cursor-pointer"
+                disabled={acceptingOfferId !== null || !offers.some(o => o.id === 'OFF-TN-03')}
+                className={`text-[10px] font-medium uppercase tracking-wider block mt-1 transition cursor-pointer ${
+                  acceptingOfferId === 'OFF-TN-03' || !offers.some(o => o.id === 'OFF-TN-03')
+                    ? 'text-emerald-700 font-bold'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
               >
-                {acceptingOfferId === 'OFF-TN-03' ? '✓ Accepted' : t('reverseAuction.selectOffer', undefined, 'Select Offer')}
+                {acceptingOfferId === 'OFF-TN-03' || !offers.some(o => o.id === 'OFF-TN-03') ? '✓ Accepted' : t('reverseAuction.selectOffer', undefined, 'Select Offer')}
               </button>
             </div>
           </div>
@@ -386,10 +419,14 @@ export const ReverseAuctionPage: React.FC = () => {
               <span className="text-xl font-semibold text-emerald-900 tracking-tight">₹25 <span className="text-xs font-normal text-emerald-700">/ {t('common.kg', undefined, 'kg')}</span></span>
               <button
                 onClick={() => handleAcceptOffer('OFF-TN-01')}
-                disabled={acceptingOfferId !== null}
-                className="text-[10px] text-emerald-800 font-medium uppercase tracking-wider block mt-1 hover:opacity-80 transition cursor-pointer"
+                disabled={acceptingOfferId !== null || !offers.some(o => o.id === 'OFF-TN-01')}
+                className={`text-[10px] font-medium uppercase tracking-wider block mt-1 transition cursor-pointer ${
+                  acceptingOfferId === 'OFF-TN-01' || !offers.some(o => o.id === 'OFF-TN-01')
+                    ? 'text-emerald-700 font-bold'
+                    : 'text-emerald-800 hover:opacity-80'
+                }`}
               >
-                {acceptingOfferId === 'OFF-TN-01' ? '✓ Accepted' : t('reverseAuction.viewOffers', undefined, 'Accept Offer →')}
+                {acceptingOfferId === 'OFF-TN-01' || !offers.some(o => o.id === 'OFF-TN-01') ? '✓ Accepted' : t('reverseAuction.viewOffers', undefined, 'Accept Offer →')}
               </button>
             </div>
           </div>

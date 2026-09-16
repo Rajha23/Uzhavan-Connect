@@ -110,7 +110,9 @@ export const OrdersPage: React.FC = () => {
         (currentUser.id && o.buyerId === currentUser.id) ||
         (currentUser.name && o.buyerName.toLowerCase().includes(currentUser.name.toLowerCase().split(' ')[0])) ||
         o.buyerName.toLowerCase().includes('retail') ||
-        o.buyerName.toLowerCase().includes('anita')
+        o.buyerName.toLowerCase().includes('anita') ||
+        Boolean(o.demandRequestId?.startsWith('AUC-')) ||
+        Boolean(o.id.startsWith('ORD-AUC-'))
       );
     }
     if (currentRole === 'BULK_BUYER') {
