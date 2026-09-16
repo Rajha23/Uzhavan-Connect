@@ -114,6 +114,7 @@ interface AppContextType {
   addDemandRequest: (demand: DemandRequest) => void;
   deleteDemandRequest: (id: string) => void;
   orders: WorkflowOrder[];
+  addOrder: (order: WorkflowOrder) => void;
   agreements: WorkflowAgreement[];
   producePassports: ProducePassport[];
   settlements: SettlementRecord[];
@@ -410,6 +411,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
     return INITIAL_ORDERS;
   });
+
+  const addOrder = useCallback((order: WorkflowOrder) => {
+    setOrders((prev) => [order, ...prev.filter((o) => o.id !== order.id)]);
+  }, []);
 
   // Persistent Agreements
   const [agreements, setAgreements] = useState<WorkflowAgreement[]>(() => {
@@ -2315,6 +2320,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addDemandRequest: (demand) => { addDemandRequest(demand); },
         deleteDemandRequest,
         orders,
+        addOrder,
         agreements,
         producePassports,
         settlements,
