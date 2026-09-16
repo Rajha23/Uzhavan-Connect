@@ -426,7 +426,7 @@ export const ReverseAuctionPage: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {offers.map((offer) => {
-                const isAccepted = offer.id === acceptedOfferId;
+                const isAccepted = offer.status === 'ACCEPTED' || offer.id === acceptingOfferId;
 
                 return (
                   <tr key={offer.id} className="hover:bg-emerald-50/30 transition">

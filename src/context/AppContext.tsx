@@ -27,12 +27,14 @@ import {
   FarmerContribution,
   FarmerSettlementItem,
   SettlementStatus,
-  BuyerDeliveryConfirmation
+  BuyerDeliveryConfirmation,
+  NewsArticle
 } from '../types';
 import {
   DEMO_USERS,
   ROLE_PERMISSIONS,
   INITIAL_NOTIFICATIONS,
+  AGRICULTURE_NEWS,
   MARKET_PRICES_DATA,
   SYSTEM_USERS_DATA,
   INITIAL_FARMER_LISTINGS,
@@ -42,6 +44,17 @@ import {
   INITIAL_PASSPORTS,
   INITIAL_SETTLEMENTS
 } from '../data/mockData';
+import {
+  FileRecord,
+  FileCategory,
+  UploadResult,
+  CleanupReport,
+  getFiles,
+  uploadFile,
+  searchFiles,
+  deleteFile,
+  cleanupExistingDuplicates
+} from '../services/fileService';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { authVault, normalizeRole, seedDemoAccounts } from '../services/authVault';
 import { apiService } from '../services/apiService';
@@ -151,6 +164,20 @@ interface AppContextType {
   feedbackItems: FeedbackItem[];
   submitFeedback: (feedback: Omit<FeedbackItem, 'feedbackId' | 'createdAt' | 'updatedAt'>) => FeedbackItem;
   updateComplaintStatus: (feedbackId: string, newStatus: string, adminResponse?: string, resolution?: string) => void;
+  // ─── Document Management ──────────────────────────────────────────────────
+  files: FileRecord[];
+  uploadDocument: (file: File, category?: FileCategory, metadata?: Record<string, any>) => Promise<UploadResult>;
+  searchDocuments: (query: string, category?: FileCategory) => Promise<FileRecord[]>;
+  deleteDocument: (fileId: string) => Promise<boolean>;
+  cleanupDuplicateDocuments: () => Promise<CleanupReport>;
+  refreshDocuments: () => Promise<void>;
+  isDocumentManagerOpen: boolean;
+  documentManagerCategory: FileCategory | undefined;
+  openDocumentManager: (category?: FileCategory) => void;
+  closeDocumentManager: () => void;
+  // ─── News ─────────────────────────────────────────────────────────────────
+  newsArticles: NewsArticle[];
+  addNewsArticle: (article: NewsArticle) => void;
 }
 
 export const identifyCompatibleDemandGroups = (demands: DemandRequest[]): AggregatedDemandGroup[] => {
@@ -340,6 +367,107 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [produceListings, setProduceListings] = useState<ProduceListing[]>([]);
 
   const [demandRequests, setDemandRequests] = useState<DemandRequest[]>([]);
+
+  // Dynamic News Articles across all network users
+  const [newsArticles, setNewsArticles] = useState<NewsArticle[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('uzhavan_news_articles');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch {}
+    }
+    return AGRICULTURE_NEWS;
+  });
+
+  const addNewsArticle = useCallback((article: NewsArticle) => {
+    setNewsArticles((prev) => {
+      const filtered = prev.filter((a) => a.id !== article.id);
+      const updated = [article, ...filtered];
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('uzhavan_news_articles', JSON.stringify(updated));
+        } catch {}
+      }
+      return updated;
+    });
+  }, []);
+
+  // ── IDEMPOTENT FILE & DOCUMENT STORAGE ──────────────────────────────────────
+  const [files, setFiles] = useState<FileRecord[]>([]);
+  const [isDocumentManagerOpen, setIsDocumentManagerOpen] = useState<boolean>(false);
+  const [documentManagerCategory, setDocumentManagerCategory] = useState<FileCategory | undefined>(undefined);
+
+  const refreshDocuments = useCallback(async () => {
+    try {
+      const records = await getFiles(currentUser?.id || 'demo-user-1');
+      setFiles(records);
+    } catch (err) {
+      console.warn('Failed to refresh files', err);
+    }
+  }, [currentUser?.id]);
+
+  useEffect(() => {
+    refreshDocuments();
+  }, [refreshDocuments]);
+
+  const uploadDocument = useCallback(
+    async (file: File, category: FileCategory = 'GENERAL', metadata: Record<string, any> = {}) => {
+      const result = await uploadFile(file, file.name, {
+        userId: currentUser?.id || 'demo-user-1',
+        category,
+        metadata,
+      });
+
+      // Update state without duplicating
+      setFiles((prev) => {
+        const exists = prev.some((f) => f.id === result.file.id || f.fileHash === result.file.fileHash);
+        if (exists) {
+          return prev.map((f) => (f.id === result.file.id ? result.file : f));
+        }
+        return [result.file, ...prev];
+      });
+
+      return result;
+    },
+    [currentUser?.id]
+  );
+
+  const searchDocuments = useCallback(
+    async (query: string, category?: FileCategory) => {
+      return searchFiles(query, {
+        userId: currentUser?.id,
+        category,
+      });
+    },
+    [currentUser?.id]
+  );
+
+  const deleteDocument = useCallback(async (fileId: string) => {
+    const success = await deleteFile(fileId);
+    if (success) {
+      setFiles((prev) => prev.filter((f) => f.id !== fileId));
+    }
+    return success;
+  }, []);
+
+  const cleanupDuplicateDocuments = useCallback(async () => {
+    const report = await cleanupExistingDuplicates(currentUser?.id);
+    await refreshDocuments();
+    return report;
+  }, [currentUser?.id, refreshDocuments]);
+
+  const openDocumentManager = useCallback((category?: FileCategory) => {
+    setDocumentManagerCategory(category);
+    setIsDocumentManagerOpen(true);
+  }, []);
+
+  const closeDocumentManager = useCallback(() => {
+    setIsDocumentManagerOpen(false);
+    setDocumentManagerCategory(undefined);
+  }, []);
 
   // Automatically sync produce listings to localStorage
   useEffect(() => {
@@ -2349,7 +2477,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         promptInstall: promptAppInstall,
         feedbackItems,
         submitFeedback,
-        updateComplaintStatus
+        updateComplaintStatus,
+        files,
+        uploadDocument,
+        searchDocuments,
+        deleteDocument,
+        cleanupDuplicateDocuments,
+        refreshDocuments,
+        isDocumentManagerOpen,
+        documentManagerCategory,
+        openDocumentManager,
+        closeDocumentManager,
+        newsArticles,
+        addNewsArticle
       }}
     >
       {children}

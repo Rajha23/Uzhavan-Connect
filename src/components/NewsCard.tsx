@@ -4,9 +4,10 @@ import { NewsArticle } from '../types';
 
 interface NewsCardProps {
   article: NewsArticle;
+  onClick?: () => void;
 }
 
-export const NewsCard: React.FC<NewsCardProps> = ({ article }) => {
+export const NewsCard: React.FC<NewsCardProps> = ({ article, onClick }) => {
   const timeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -18,7 +19,10 @@ export const NewsCard: React.FC<NewsCardProps> = ({ article }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow group cursor-pointer flex flex-col h-full">
+    <div 
+      onClick={onClick}
+      className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow group cursor-pointer flex flex-col h-full"
+    >
       {article.imageUrl && (
         <div className="h-48 overflow-hidden relative">
           <img 

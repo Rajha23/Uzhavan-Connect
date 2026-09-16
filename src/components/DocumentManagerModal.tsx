@@ -129,12 +129,12 @@ export const DocumentManagerModal: React.FC<DocumentManagerModalProps> = ({
     let list = searchResults !== null ? searchResults : files;
 
     if (selectedCategory !== 'ALL' && searchResults === null) {
-      list = list.filter((f) => f.category === selectedCategory);
+      list = list.filter((f: FileRecord) => f.category === selectedCategory);
     }
 
     // Defensive deduplication: 1 card per unique fileHash
     const uniqueMap = new Map<string, FileRecord>();
-    list.forEach((f) => {
+    list.forEach((f: FileRecord) => {
       if (!uniqueMap.has(f.fileHash)) {
         uniqueMap.set(f.fileHash, f);
       }
