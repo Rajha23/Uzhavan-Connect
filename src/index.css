@@ -1,0 +1,275 @@
+@import 'leaflet/dist/leaflet.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --forest: #01472e;
+    --sage: #ccd5ae;
+    --olive: #e9edc9;
+    --cream: #fefae0;
+    --moss: #a3b18a;
+    --mint: #eaf4ec;
+    --canvas: #faf9f5;
+    --surface: #ffffff;
+    --surface-cream: #fdfbf7;
+    --border-agri-subtle: rgba(1, 71, 46, 0.08);
+    --border-agri-medium: rgba(204, 213, 174, 0.60);
+    --border-agri-focus: rgba(1, 71, 46, 0.35);
+    --indic-font-stack: 'Plus Jakarta Sans', 'Inter', 'Noto Sans Tamil', 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Noto Sans Bengali', 'Noto Sans Kannada', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Gujarati', 'Noto Sans Oriya', 'Noto Sans Arabic', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  body {
+    @apply bg-[#faf9f5] text-[#01472e] font-normal;
+    font-family: var(--indic-font-stack);
+    background-image: 
+      radial-gradient(ellipse at 10% 0%, rgba(204, 213, 174, 0.35) 0%, transparent 45%),
+      radial-gradient(ellipse at 90% 12%, rgba(233, 237, 201, 0.30) 0%, transparent 42%),
+      radial-gradient(ellipse at 50% 50%, rgba(254, 250, 224, 0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 85%, rgba(163, 177, 138, 0.20) 0%, transparent 45%),
+      radial-gradient(ellipse at 15% 95%, rgba(234, 244, 236, 0.50) 0%, transparent 50%);
+    background-attachment: fixed;
+    background-size: 100% 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* RTL Support for Urdu, Kashmiri, Sindhi */
+  [dir="rtl"],
+  .rtl-layout {
+    text-align: right;
+    direction: rtl;
+  }
+
+  [dir="rtl"] aside,
+  .rtl-layout aside {
+    right: 0 !important;
+    left: auto !important;
+    border-left-width: 1px !important;
+    border-right-width: 0 !important;
+  }
+
+  @media (min-width: 1024px) {
+    [dir="rtl"] .lg\:pl-64,
+    .rtl-layout .lg\:pl-64 {
+      padding-left: 0 !important;
+      padding-right: 16rem !important;
+    }
+  }
+
+  [dir="rtl"] .text-left,
+  .rtl-layout .text-left {
+    text-align: right !important;
+  }
+
+  [dir="rtl"] .text-right,
+  .rtl-layout .text-right {
+    text-align: left !important;
+  }
+
+  [dir="rtl"] input:not([type="checkbox"]):not([type="radio"]),
+  [dir="rtl"] textarea,
+  [dir="rtl"] select,
+  .rtl-layout input:not([type="checkbox"]):not([type="radio"]),
+  .rtl-layout textarea,
+  .rtl-layout select {
+    text-align: right;
+    direction: rtl;
+  }
+
+  [dir="rtl"] .font-mono,
+  [dir="rtl"] code,
+  [dir="rtl"] pre,
+  .rtl-layout .font-mono,
+  .rtl-layout code,
+  .rtl-layout pre {
+    direction: ltr !important;
+    text-align: left !important;
+    display: inline-block;
+  }
+
+  [dir="rtl"] .rtl-flip,
+  .rtl-layout .rtl-flip {
+    transform: scaleX(-1);
+  }
+
+
+  h1 {
+    @apply font-heading font-medium tracking-tight text-[#01472e];
+  }
+
+  h2 {
+    @apply font-heading font-medium tracking-tight text-[#01472e];
+  }
+
+  h3 {
+    @apply font-heading font-medium tracking-normal text-[#01472e];
+  }
+
+  h4, h5, h6 {
+    @apply font-heading font-medium tracking-normal text-[#01472e];
+  }
+}
+
+/* Centralized Agricultural Design System Components */
+@layer components {
+  /* Reusable Application Background & Surface Tokens */
+  .agri-canvas {
+    @apply min-h-screen text-[#01472e] font-sans relative;
+    background-color: #faf9f5;
+    background-image: 
+      radial-gradient(ellipse at 10% 0%, rgba(204, 213, 174, 0.35) 0%, transparent 45%),
+      radial-gradient(ellipse at 90% 12%, rgba(233, 237, 201, 0.30) 0%, transparent 42%),
+      radial-gradient(ellipse at 50% 50%, rgba(254, 250, 224, 0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 85%, rgba(163, 177, 138, 0.20) 0%, transparent 45%),
+      radial-gradient(ellipse at 15% 95%, rgba(234, 244, 236, 0.50) 0%, transparent 50%);
+    background-attachment: fixed;
+    background-size: 100% 100%;
+  }
+
+  /* 24px - 36px Organic Agricultural Cards */
+  .agri-card {
+    @apply bg-white/95 rounded-[28px] border border-[#ccd5ae]/50 shadow-soft hover:border-[#a3b18a]/60 hover:shadow-forest transition-all duration-200;
+  }
+
+  .agri-card-elevated {
+    @apply bg-white rounded-[32px] border border-[#ccd5ae]/60 shadow-forest hover:shadow-forest-lg transition-all duration-200;
+  }
+
+  .agri-card-subtle {
+    @apply bg-[#fdfbf7] rounded-[28px] border border-[#e9edc9] shadow-2xs hover:border-[#ccd5ae] transition-all duration-200;
+  }
+
+  .agri-surface-pale {
+    @apply bg-[#f7f9f2] rounded-[28px] border border-[#ccd5ae]/60;
+  }
+
+  .agri-banner {
+    @apply bg-gradient-to-r from-[#01472e] via-[#025a3a] to-[#013b26] text-white rounded-[32px] border border-[#a3b18a]/30 shadow-forest;
+  }
+
+  .agri-nav-surface {
+    @apply bg-white/90 backdrop-blur-md border-b border-[#ccd5ae]/40 shadow-2xs;
+  }
+
+  .agri-sidebar-surface {
+    @apply bg-[#faf9f5]/95 backdrop-blur-md border-r border-[#ccd5ae]/40 shadow-soft;
+  }
+
+  /* AI Card Standard */
+  .ai-card {
+    @apply bg-white/95 rounded-[28px] border border-[#ccd5ae]/50 shadow-soft hover:border-[#a3b18a]/70 hover:shadow-ai-hover transition-all duration-200;
+  }
+
+  .ai-card-active {
+    @apply bg-white rounded-[28px] border-2 border-[#01472e] shadow-forest ring-4 ring-[#01472e]/10;
+  }
+
+  /* Metric Stat Card */
+  .metric-card {
+    @apply bg-white/95 p-5 sm:p-6 rounded-[28px] border border-[#ccd5ae]/45 shadow-soft hover:border-[#a3b18a]/70 hover:shadow-forest transition-all duration-200;
+  }
+
+  /* AI Pill & Badges */
+  .ai-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium tracking-wide bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40;
+  }
+
+  .ai-badge-purple {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium tracking-wide bg-purple-50 text-purple-800 border border-purple-200;
+  }
+
+  .ai-badge-blue {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium tracking-wide bg-blue-50 text-blue-800 border border-blue-200;
+  }
+
+  /* Standard Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl font-medium text-xs tracking-wide bg-[#01472e] hover:bg-[#003b25] text-[#fefae0] shadow-soft hover:shadow-forest transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl font-medium text-xs tracking-wide bg-[#fefae0] hover:bg-[#fcf4be] text-[#01472e] border border-[#ccd5ae] shadow-2xs hover:shadow-soft transition-all duration-150 cursor-pointer;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-xs tracking-wide bg-white hover:bg-[#eef2e1]/60 text-[#01472e] border border-[#ccd5ae] shadow-2xs transition-all duration-150 cursor-pointer;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-2xl font-medium text-xs text-[#5c7065] hover:text-[#01472e] hover:bg-[#ccd5ae]/20 transition-all duration-150 cursor-pointer;
+  }
+
+  /* Modern Inputs */
+  .input-modern {
+    @apply w-full px-4 py-2.5 text-xs bg-white border border-[#ccd5ae] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#01472e]/20 focus:border-[#01472e] placeholder-[#5c7065]/50 text-[#01472e] transition-all duration-150;
+  }
+}
+
+@layer utilities {
+  /* Subtle agricultural sage borders for standard cards and dividers */
+  .border-slate-200\/80,
+  .border-slate-200\/90,
+  .border-slate-200\/70,
+  .border-slate-200 {
+    border-color: rgba(204, 213, 174, 0.50);
+  }
+  .border-slate-100 {
+    border-color: rgba(204, 213, 174, 0.35);
+  }
+
+  /* Subtle agricultural soft cream/mint tint for sub-panels and stat boxes */
+  .bg-slate-50\/80,
+  .bg-slate-50\/70,
+  .bg-slate-50\/60,
+  .bg-slate-50\/50,
+  .bg-slate-50 {
+    background-color: rgba(254, 250, 224, 0.40);
+  }
+}
+
+/* Custom sleek scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #faf9f5;
+}
+::-webkit-scrollbar-thumb {
+  background: #ccd5ae;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a3b18a;
+}
+
+/* Subtle modern grain (ultra-faint 0.012 opacity) */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.012;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Base Card with Organic Shape */
+.card-organic {
+  @apply bg-white rounded-[28px] border border-[#ccd5ae]/50 shadow-soft overflow-hidden transition-all duration-300;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-organic:hover {
+  transform: translateY(-2px);
+  @apply shadow-forest border-[#a3b18a]/70;
+}
+
+/* Section Radius */
+.section-rounded {
+  border-radius: 2rem;
+}
