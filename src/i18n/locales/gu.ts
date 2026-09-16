@@ -171,7 +171,7 @@ export const guTranslations: Partial<TranslationDictionary> = {
   "landing": {
     "heroTitle": "જ્યાં ખેડૂતો, ટેકનોલોજી અને તકો જોડાય છે.",
     "heroSubtitle": "Uzhavan Connect unifies smallholder farmers directly with institutional food processors and retailers using ML demand forecasting, algorithmic matching, fair price discovery, and cold-chain route coordination.",
-    "earnRealization": "Sell Directly",
+    "earnRealization": "Earn More.",
     "login": "લૉગિન કરો",
     "launchConsole": "Launch Operational Console",
     "registerAccount": "Register Direct Account",
@@ -1802,3 +1802,4 @@ export const guTranslations: Partial<TranslationDictionary> = {
     "failed": "સમન્વયન નિષ્ફળ થયું"
   }
 };
+

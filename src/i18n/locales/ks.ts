@@ -171,7 +171,7 @@ export const ksTranslations: Partial<TranslationDictionary> = {
   "landing": {
     "heroTitle": "یَتھ جایہِ کِسان، ٹیکنالوجی تہٕ مۄقع جڑان چھِ۔",
     "heroSubtitle": "Uzhavan Connect unifies smallholder farmers directly with institutional food processors and retailers using ML demand forecasting, algorithmic matching, fair price discovery, and cold-chain route coordination.",
-    "earnRealization": "Sell Directly",
+    "earnRealization": "Earn More.",
     "login": "لاگ ان",
     "launchConsole": "Launch Operational Console",
     "registerAccount": "Register Direct Account",
@@ -1802,3 +1802,4 @@ export const ksTranslations: Partial<TranslationDictionary> = {
     "failed": "مطابقت پذیری ناکام ہوگئی"
   }
 };
+

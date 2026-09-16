@@ -49,7 +49,7 @@ export const LandingPage: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto space-y-6">
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#01472e] tracking-tight leading-[1.12]">
-              {t('landing.heroTitle', undefined, 'Sell Directly.')}
+              {t('landing.heroTitle', undefined, 'Uzhavan Connect.')}
             </h1>
 
             {/* Subheading */}

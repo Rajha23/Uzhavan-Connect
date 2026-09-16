@@ -171,7 +171,7 @@ export const teTranslations: Partial<TranslationDictionary> = {
   "landing": {
     "heroTitle": "రైతులు, సాంకేతికత మరియు అవకాశాలు ఎక్కడ కనెక్ట్ అవుతాయి.",
     "heroSubtitle": "Uzhavan Connect unifies smallholder farmers directly with institutional food processors and retailers using ML demand forecasting, algorithmic matching, fair price discovery, and cold-chain route coordination.",
-    "earnRealization": "Sell Directly",
+    "earnRealization": "Earn More.",
     "login": "లాగిన్ చేయండి",
     "launchConsole": "Launch Operational Console",
     "registerAccount": "Register Direct Account",
@@ -1802,3 +1802,4 @@ export const teTranslations: Partial<TranslationDictionary> = {
     "failed": "సమకాలీకరణ విఫలమైంది"
   }
 };
+

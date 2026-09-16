@@ -171,7 +171,7 @@ export const saTranslations: Partial<TranslationDictionary> = {
   "landing": {
     "heroTitle": "यत्र कृषकाः, प्रौद्योगिकी, अवसरः च सम्बद्धाः भवन्ति।",
     "heroSubtitle": "Uzhavan Connect unifies smallholder farmers directly with institutional food processors and retailers using ML demand forecasting, algorithmic matching, fair price discovery, and cold-chain route coordination.",
-    "earnRealization": "Sell Directly",
+    "earnRealization": "Earn More.",
     "login": "प्रवेशः",
     "launchConsole": "Launch Operational Console",
     "registerAccount": "Register Direct Account",
@@ -1802,3 +1802,4 @@ export const saTranslations: Partial<TranslationDictionary> = {
     "failed": "समन्वयनं विफलम्"
   }
 };
+

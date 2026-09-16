@@ -171,7 +171,7 @@ export const neTranslations: Partial<TranslationDictionary> = {
   "landing": {
     "heroTitle": "जहाँ किसान, प्रविधि र अवसर जडान हुन्छ।",
     "heroSubtitle": "Uzhavan Connect unifies smallholder farmers directly with institutional food processors and retailers using ML demand forecasting, algorithmic matching, fair price discovery, and cold-chain route coordination.",
-    "earnRealization": "Sell Directly",
+    "earnRealization": "Earn More.",
     "login": "लगइन गर्नुहोस्",
     "launchConsole": "Launch Operational Console",
     "registerAccount": "Register Direct Account",
@@ -1802,3 +1802,4 @@ export const neTranslations: Partial<TranslationDictionary> = {
     "failed": "सिंक असफल भयो"
   }
 };
+

@@ -171,7 +171,7 @@ export const kokTranslations: Partial<TranslationDictionary> = {
   "landing": {
     "heroTitle": "जंय शेतकार, तंत्रगिन्यान आनी संद जोडटात.",
     "heroSubtitle": "Uzhavan Connect unifies smallholder farmers directly with institutional food processors and retailers using ML demand forecasting, algorithmic matching, fair price discovery, and cold-chain route coordination.",
-    "earnRealization": "Sell Directly",
+    "earnRealization": "Earn More.",
     "login": "लॉगिन करचें",
     "launchConsole": "Launch Operational Console",
     "registerAccount": "Register Direct Account",
@@ -1802,3 +1802,4 @@ export const kokTranslations: Partial<TranslationDictionary> = {
     "failed": "समक्रमण अपयशी थारलें"
   }
 };
+
