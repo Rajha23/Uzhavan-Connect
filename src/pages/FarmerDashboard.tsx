@@ -4,6 +4,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { CHENNAI_TOMATO_FORECAST } from '../data/mockData';
 import { getCropImageUrl } from '../utils/cropImages';
 import { ProduceListing, WorkflowOrder, WorkflowAgreement } from '../types';
+import { DetailDrawer } from "../components/DetailDrawer";
+
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 import {
   Sprout,
@@ -165,6 +167,7 @@ const getFarmerProduceLifecycle = (
 
 export const FarmerDashboard: React.FC = () => {
   const { t } = useLanguage();
+  const [drawerState, setDrawerState] = useState<{ type: string; data?: any } | null>(null);
   const {
     currentUser,
     setActiveTab,
@@ -1304,7 +1307,6 @@ export const FarmerDashboard: React.FC = () => {
           </div>
         )}
       </DetailDrawer>
->>>>>>> d9dd3a1 (feat: move agricultural news and updates to a separate page)
     </div>
   );
 };
