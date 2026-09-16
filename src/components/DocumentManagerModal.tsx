@@ -5,7 +5,12 @@ import {
   FileCategory,
   FileRecord,
   UploadResult,
-  calculateFileHash
+  uploadFile,
+  getFiles,
+  deleteFile,
+  searchFiles,
+  cleanupExistingDuplicates,
+  CleanupReport,
 } from '../services/fileService';
 import {
   FileText,
@@ -18,14 +23,9 @@ import {
   AlertCircle,
   FileSpreadsheet,
   FileImage,
-  FileCode,
   ShieldCheck,
   RefreshCw,
-  Clock,
   Sparkles,
-  ExternalLink,
-  Layers,
-  Filter
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -40,45 +40,67 @@ const CATEGORIES: { id: FileCategory | 'ALL'; label: string }[] = [
   { id: 'GENERAL', label: 'Other' },
 ];
 
-export const DocumentManagerModal: React.FC = () => {
-  const {
-    isDocumentManagerOpen,
-    documentManagerCategory,
-    closeDocumentManager,
-    files,
-    uploadDocument,
-    searchDocuments,
-    deleteDocument,
-    cleanupDuplicateDocuments,
-    refreshDocuments,
-  } = useApp();
+interface DocumentManagerModalProps {
+  isOpen?: boolean;
+  defaultCategory?: FileCategory;
+  onClose?: () => void;
+}
 
+export const DocumentManagerModal: React.FC<DocumentManagerModalProps> = ({
+  isOpen,
+  defaultCategory,
+  onClose,
+}) => {
+  const { currentUser } = useApp();
   const { t } = useLanguage();
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const userId = currentUser?.id || 'guest';
+
+  const [files, setFiles] = useState<FileRecord[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<FileCategory | 'ALL'>(
-    documentManagerCategory || 'ALL'
+    defaultCategory || 'ALL'
   );
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoadingFiles, setIsLoadingFiles] = useState(false);
   const [uploadNotice, setUploadNotice] = useState<{
     type: 'success' | 'info' | 'error';
     text: string;
   } | null>(null);
   const [selectedFileForPreview, setSelectedFileForPreview] = useState<FileRecord | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<FileRecord[] | null>(null);
   const [isSearching, setIsSearching] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Sync category when opened with specific category filter
-  useEffect(() => {
-    if (documentManagerCategory) {
-      setSelectedCategory(documentManagerCategory);
+  // Load files on open
+  const loadFiles = useCallback(async () => {
+    setIsLoadingFiles(true);
+    try {
+      const loaded = await getFiles(userId);
+      setFiles(loaded);
+    } catch (err) {
+      console.warn('[DocumentManagerModal] Failed to load files', err);
+    } finally {
+      setIsLoadingFiles(false);
     }
-  }, [documentManagerCategory]);
+  }, [userId]);
 
-  // Execute live search with debouncing
+  useEffect(() => {
+    if (isOpen !== false) {
+      loadFiles();
+    }
+  }, [isOpen, loadFiles]);
+
+  // Sync category when opened with a specific filter
+  useEffect(() => {
+    if (defaultCategory) {
+      setSelectedCategory(defaultCategory);
+    }
+  }, [defaultCategory]);
+
+  // Debounced live search
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults(null);
@@ -90,7 +112,7 @@ export const DocumentManagerModal: React.FC = () => {
     const timer = setTimeout(async () => {
       try {
         const cat = selectedCategory === 'ALL' ? undefined : selectedCategory;
-        const res = await searchDocuments(searchQuery, cat);
+        const res = await searchFiles(searchQuery, { userId, category: cat });
         setSearchResults(res);
       } catch (err) {
         console.warn('Search failed', err);
@@ -100,7 +122,7 @@ export const DocumentManagerModal: React.FC = () => {
     }, 150);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, selectedCategory, searchDocuments]);
+  }, [searchQuery, selectedCategory, userId]);
 
   // Active files to display
   const displayedFiles = useMemo(() => {
@@ -110,7 +132,7 @@ export const DocumentManagerModal: React.FC = () => {
       list = list.filter((f) => f.category === selectedCategory);
     }
 
-    // Defensive Deduplication: Strictly ensure 1 card per unique fileHash / id
+    // Defensive deduplication: 1 card per unique fileHash
     const uniqueMap = new Map<string, FileRecord>();
     list.forEach((f) => {
       if (!uniqueMap.has(f.fileHash)) {
@@ -121,7 +143,6 @@ export const DocumentManagerModal: React.FC = () => {
     return Array.from(uniqueMap.values());
   }, [searchResults, files, selectedCategory]);
 
-  // Format file size
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 B';
     const k = 1024;
@@ -130,7 +151,6 @@ export const DocumentManagerModal: React.FC = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   };
 
-  // Get appropriate icon for mime type
   const getFileIcon = (mimeType: string, category: FileCategory) => {
     if (mimeType.includes('pdf')) return FileText;
     if (mimeType.includes('sheet') || mimeType.includes('excel') || mimeType.includes('csv')) return FileSpreadsheet;
@@ -139,7 +159,6 @@ export const DocumentManagerModal: React.FC = () => {
     return FileText;
   };
 
-  // Handle file upload
   const handleUploadFiles = async (fileList: FileList | File[]) => {
     if (!fileList || fileList.length === 0) return;
 
@@ -153,14 +172,15 @@ export const DocumentManagerModal: React.FC = () => {
       try {
         const cat: FileCategory =
           selectedCategory !== 'ALL' ? selectedCategory : 'GENERAL';
-        const res = await uploadDocument(file, cat);
+        const res = await uploadFile(file, file.name, { userId, category: cat });
         results.push(res);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Upload failed for', file.name, err);
       }
     }
 
     setIsUploading(false);
+    await loadFiles(); // Refresh file list
 
     if (results.length === 1) {
       const single = results[0];
@@ -199,7 +219,6 @@ export const DocumentManagerModal: React.FC = () => {
       }
     }
 
-    // Reset input so re-uploading the exact same file in input triggers onChange properly
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -228,7 +247,7 @@ export const DocumentManagerModal: React.FC = () => {
 
   const handleDelete = async (fileId: string, fileName: string) => {
     if (window.confirm(`Are you sure you want to delete "${fileName}"? This will remove its storage object and search index record.`)) {
-      await deleteDocument(fileId);
+      await deleteFile(fileId);
       if (selectedFileForPreview?.id === fileId) {
         setSelectedFileForPreview(null);
       }
@@ -236,23 +255,29 @@ export const DocumentManagerModal: React.FC = () => {
         type: 'info',
         text: `File "${fileName}" and its search index record have been removed.`,
       });
+      await loadFiles();
     }
   };
 
   const handleRunCleanup = async () => {
-    const report = await cleanupDuplicateDocuments();
+    const report: CleanupReport = await cleanupExistingDuplicates(userId);
     setUploadNotice({
       type: 'info',
       text: `Deduplication scan complete: ${report.totalFilesScanned} scanned, ${report.uniqueFilesKept} unique files preserved, ${report.duplicatesRemoved} duplicate records purged.`,
     });
+    await loadFiles();
   };
 
-  if (!isDocumentManagerOpen) return null;
+  const handleClose = () => {
+    if (onClose) onClose();
+  };
+
+  if (isOpen === false) return null;
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-sm animate-fadeIn"
-      onClick={closeDocumentManager}
+      onClick={handleClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="doc-manager-title"
@@ -261,7 +286,7 @@ export const DocumentManagerModal: React.FC = () => {
         className="relative w-full max-w-5xl bg-[#faf9f5] rounded-[32px] border border-[#ccd5ae]/60 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] text-[#01472e]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ── HEADER ────────────────────────────────────────────────────────── */}
+        {/* ── HEADER ─────────────────────────────────────────────────────────── */}
         <div className="shrink-0 px-6 py-5 bg-white/90 border-b border-[#ccd5ae]/40 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center border border-[#a3b18a]/40 shadow-2xs">
@@ -288,7 +313,7 @@ export const DocumentManagerModal: React.FC = () => {
               <span>{t('docManager.deduplicateVault', 'Deduplicate Vault')}</span>
             </button>
             <button
-              onClick={closeDocumentManager}
+              onClick={handleClose}
               className="w-9 h-9 rounded-2xl flex items-center justify-center text-[#5c7065] hover:text-[#01472e] hover:bg-[#eaf4ec] transition-colors cursor-pointer"
               aria-label={t('common.close', 'Close')}
             >
@@ -297,7 +322,7 @@ export const DocumentManagerModal: React.FC = () => {
           </div>
         </div>
 
-        {/* ── NOTICE BANNER ─────────────────────────────────────────────────── */}
+        {/* ── NOTICE BANNER ──────────────────────────────────────────────────── */}
         {uploadNotice && (
           <div
             className={`px-6 py-3 text-xs flex items-center justify-between border-b ${
@@ -323,7 +348,7 @@ export const DocumentManagerModal: React.FC = () => {
           </div>
         )}
 
-        {/* ── MAIN CONTENT AREA (Scrollable) ─────────────────────────────────── */}
+        {/* ── MAIN CONTENT AREA ──────────────────────────────────────────────── */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* 1. UPLOAD DROP ZONE */}
           <div
@@ -380,7 +405,6 @@ export const DocumentManagerModal: React.FC = () => {
           {/* 2. SEARCH & FILTER TOOLBAR */}
           <div className="space-y-3">
             <div className="flex flex-col sm:flex-row gap-3">
-              {/* Search Bar */}
               <div className="relative flex-1">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#788c80]" />
                 <input
@@ -400,10 +424,9 @@ export const DocumentManagerModal: React.FC = () => {
                 )}
               </div>
 
-              {/* Status summary */}
               <div className="flex items-center gap-2 shrink-0">
                 <span className="text-xs font-semibold text-[#01472e] bg-white px-3.5 py-2.5 rounded-2xl border border-[#ccd5ae]/50 shadow-2xs">
-                  {displayedFiles.length} Unique File{displayedFiles.length === 1 ? '' : 's'}
+                  {isLoadingFiles ? 'Loading...' : `${displayedFiles.length} Unique File${displayedFiles.length === 1 ? '' : 's'}`}
                 </span>
               </div>
             </div>
@@ -426,7 +449,7 @@ export const DocumentManagerModal: React.FC = () => {
             </div>
           </div>
 
-          {/* 3. FILE GRID (Guaranteed 1 card per unique file) */}
+          {/* 3. FILE GRID */}
           {displayedFiles.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
               {displayedFiles.map((file) => {
@@ -437,10 +460,9 @@ export const DocumentManagerModal: React.FC = () => {
                     className="agri-card p-4 rounded-2xl bg-white border border-[#ccd5ae]/50 shadow-soft hover:shadow-forest transition-all flex flex-col justify-between group"
                   >
                     <div>
-                      {/* Top row: Icon + Category Badge + Delete */}
                       <div className="flex items-start justify-between gap-2">
                         <div className="w-9 h-9 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center border border-[#a3b18a]/30 shrink-0">
-                          <IconComponent className="w-4.5 h-4.5" />
+                          <IconComponent className="w-4 h-4" />
                         </div>
                         <div className="flex items-center gap-1">
                           <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#fefae0] text-[#01472e] border border-[#ccd5ae]/60">
@@ -456,7 +478,6 @@ export const DocumentManagerModal: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* File Name */}
                       <h4
                         className="text-xs font-semibold text-[#01472e] mt-2.5 truncate leading-tight"
                         title={file.name}
@@ -464,7 +485,6 @@ export const DocumentManagerModal: React.FC = () => {
                         {file.name}
                       </h4>
 
-                      {/* Meta: Size + Date */}
                       <div className="flex items-center gap-2 text-[10px] text-[#788c80] mt-1">
                         <span>{formatFileSize(file.size)}</span>
                         <span>•</span>
@@ -477,7 +497,6 @@ export const DocumentManagerModal: React.FC = () => {
                         </span>
                       </div>
 
-                      {/* Cryptographic SHA-256 Fingerprint */}
                       <div
                         className="mt-2 text-[9px] font-mono text-[#5c7065] bg-[#faf9f5] px-2 py-1 rounded-lg border border-[#ccd5ae]/30 truncate"
                         title={`SHA-256 Content Fingerprint:\n${file.fileHash}`}
@@ -486,7 +505,6 @@ export const DocumentManagerModal: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Card Actions */}
                     <div className="mt-3 pt-2.5 border-t border-[#ccd5ae]/30 flex items-center justify-between gap-2">
                       <button
                         onClick={() => setSelectedFileForPreview(file)}
@@ -526,21 +544,21 @@ export const DocumentManagerModal: React.FC = () => {
           )}
         </div>
 
-        {/* ── FOOTER ────────────────────────────────────────────────────────── */}
+        {/* ── FOOTER ─────────────────────────────────────────────────────────── */}
         <div className="shrink-0 px-6 py-4 bg-[#faf9f5]/90 border-t border-[#ccd5ae]/40 flex items-center justify-between gap-3 text-xs">
           <div className="text-[#5c7065] text-[11px] flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>{t('docManager.strictEnforcement', 'Strict 1-to-1 Index Enforcement Active')}</span>
           </div>
           <button
-            onClick={closeDocumentManager}
+            onClick={handleClose}
             className="btn-primary text-xs px-5 py-2"
           >
             {t('common.done', 'Done')}
           </button>
         </div>
 
-        {/* ── FILE DETAIL DRAWER / POPUP ────────────────────────────────────── */}
+        {/* ── FILE DETAIL DRAWER ─────────────────────────────────────────────── */}
         {selectedFileForPreview && (
           <div
             className="absolute inset-0 z-20 bg-black/40 backdrop-blur-xs flex justify-end"
@@ -563,7 +581,6 @@ export const DocumentManagerModal: React.FC = () => {
                   </button>
                 </div>
 
-                {/* File Header */}
                 <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 space-y-2">
                   <div className="flex items-center gap-2 text-xs font-semibold text-[#01472e]">
                     <FileText className="w-4 h-4 text-emerald-800" />
@@ -597,7 +614,6 @@ export const DocumentManagerModal: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Cryptographic Verification */}
                 <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-2 text-xs">
                   <div className="flex items-center gap-1.5 text-emerald-950 font-semibold">
                     <ShieldCheck className="w-4 h-4 text-emerald-700" />
@@ -611,7 +627,6 @@ export const DocumentManagerModal: React.FC = () => {
                   </div>
                 </div>
 
-                {/* IDs & Storage Key */}
                 <div className="space-y-2 text-[11px] text-[#5c7065]">
                   <div>
                     <span className="block text-[#788c80] text-[10px]">Canonical File ID</span>
@@ -630,7 +645,6 @@ export const DocumentManagerModal: React.FC = () => {
                 </div>
               </div>
 
-              {/* Actions */}
               <div className="pt-4 border-t border-[#ccd5ae]/40 flex gap-2">
                 {selectedFileForPreview.blobDataUrl || selectedFileForPreview.url ? (
                   <a

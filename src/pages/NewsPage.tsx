@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { useApp } from '../context/AppContext';
-import { NewsTicker } from '../components/NewsTicker';
 import { NewsCard } from '../components/NewsCard';
-import { DetailDrawer } from '../components/DetailDrawer';
 import { Newspaper } from 'lucide-react';
+import { NewsArticle } from '../types';
+
+// Static fallback news data — replace with API call or context data when available
+const FALLBACK_NEWS: NewsArticle[] = [];
 
 export const NewsPage: React.FC = () => {
   const { t } = useLanguage();
-  const { newsArticles } = useApp();
-  const [drawerState, setDrawerState] = useState<{ type: string; data?: any } | null>(null);
+  const newsArticles: NewsArticle[] = FALLBACK_NEWS;
 
   return (
     <div className="flex flex-col w-full min-h-screen">
-      <NewsTicker news={newsArticles} />
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-7 w-full">
         <div className="flex items-center gap-3 mb-2">
           <div className="bg-emerald-100 p-2.5 rounded-xl text-emerald-700">
@@ -25,48 +23,25 @@ export const NewsPage: React.FC = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {newsArticles.map((article) => (
-            <NewsCard 
-              key={article.id} 
-              article={article} 
-              onClick={() => setDrawerState({ type: 'news-article', data: article })}
-            />
-          ))}
-        </div>
-      </div>
-
-      <DetailDrawer
-        isOpen={drawerState !== null}
-        onClose={() => setDrawerState(null)}
-        title={drawerState?.data?.title || 'News Article'}
-      >
-        {drawerState?.type === 'news-article' && drawerState.data && (
-          <div className="space-y-4">
-            <img 
-              src={drawerState.data.imageUrl} 
-              alt={drawerState.data.title}
-              className="w-full h-48 object-cover rounded-xl border border-[#ccd5ae]/30"
-            />
-            <div className="flex items-center gap-2 mt-4 text-xs">
-              <span className="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-medium">
-                {drawerState.data.category}
-              </span>
-              <span className="text-slate-500">{drawerState.data.date}</span>
-            </div>
-            <p className="text-sm text-slate-700 leading-relaxed">
-              {drawerState.data.summary}
+        {newsArticles.length === 0 ? (
+          <div className="p-10 bg-white rounded-2xl border border-[#ccd5ae]/40 text-center space-y-2">
+            <Newspaper className="w-10 h-10 mx-auto text-[#a3b18a]" />
+            <h4 className="text-sm font-semibold text-[#01472e]">No news articles yet</h4>
+            <p className="text-xs text-[#5c7065] max-w-sm mx-auto">
+              Agriculture news and updates will appear here once connected to the live feed.
             </p>
-            {drawerState.data.content && (
-              <div className="text-sm text-slate-600 leading-relaxed mt-4 space-y-3">
-                {drawerState.data.content.split('\n\n').map((paragraph: string, i: number) => (
-                  <p key={i}>{paragraph}</p>
-                ))}
-              </div>
-            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {newsArticles.map((article: NewsArticle) => (
+              <NewsCard
+                key={article.id}
+                article={article}
+              />
+            ))}
           </div>
         )}
-      </DetailDrawer>
+      </div>
     </div>
   );
 };
