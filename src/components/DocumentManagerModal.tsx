@@ -269,11 +269,11 @@ export const DocumentManagerModal: React.FC = () => {
             </div>
             <div>
               <h2 id="doc-manager-title" className="text-base sm:text-lg font-semibold text-[#01472e] tracking-tight">
-                Document Vault & Verified Files
+                {t('docManager.title', 'Document Vault & Verified Files')}
               </h2>
               <p className="text-xs text-[#5c7065] flex items-center gap-1.5 mt-0.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-                <span>SHA-256 Cryptographic Idempotency • 1 File = 1 Record</span>
+                <span>{t('docManager.shaNotice', 'SHA-256 Cryptographic Idempotency • 1 File = 1 Record')}</span>
               </p>
             </div>
           </div>
@@ -285,12 +285,12 @@ export const DocumentManagerModal: React.FC = () => {
               title="Scan and purge any duplicate file entries"
             >
               <RefreshCw className="w-3 h-3 text-[#01472e]" />
-              <span>Deduplicate Vault</span>
+              <span>{t('docManager.deduplicateVault', 'Deduplicate Vault')}</span>
             </button>
             <button
               onClick={closeDocumentManager}
               className="w-9 h-9 rounded-2xl flex items-center justify-center text-[#5c7065] hover:text-[#01472e] hover:bg-[#eaf4ec] transition-colors cursor-pointer"
-              aria-label="Close document vault"
+              aria-label={t('common.close', 'Close')}
             >
               <X className="w-5 h-5" />
             </button>
@@ -492,7 +492,7 @@ export const DocumentManagerModal: React.FC = () => {
                         onClick={() => setSelectedFileForPreview(file)}
                         className="text-[11px] font-medium text-emerald-800 hover:text-emerald-950 flex items-center gap-1 cursor-pointer"
                       >
-                        <span>Inspect Record →</span>
+                        <span>{t('docManager.inspectRecord', 'Inspect Record →')}</span>
                       </button>
                       {file.blobDataUrl || file.url ? (
                         <a
@@ -530,13 +530,13 @@ export const DocumentManagerModal: React.FC = () => {
         <div className="shrink-0 px-6 py-4 bg-[#faf9f5]/90 border-t border-[#ccd5ae]/40 flex items-center justify-between gap-3 text-xs">
           <div className="text-[#5c7065] text-[11px] flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Strict 1-to-1 Index Enforcement Active</span>
+            <span>{t('docManager.strictEnforcement', 'Strict 1-to-1 Index Enforcement Active')}</span>
           </div>
           <button
             onClick={closeDocumentManager}
             className="btn-primary text-xs px-5 py-2"
           >
-            Done
+            {t('common.done', 'Done')}
           </button>
         </div>
 
@@ -553,7 +553,7 @@ export const DocumentManagerModal: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-[#ccd5ae]/40">
                   <h3 className="text-sm font-semibold text-[#01472e]">
-                    Verified File Metadata
+                    {t('docManager.fileMetadata', 'Verified File Metadata')}
                   </h3>
                   <button
                     onClick={() => setSelectedFileForPreview(null)}
@@ -571,25 +571,25 @@ export const DocumentManagerModal: React.FC = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-[10px] text-[#5c7065] pt-1">
                     <div>
-                      <span className="block text-[#788c80]">Size</span>
+                      <span className="block text-[#788c80]">{t('docManager.size', 'Size')}</span>
                       <span className="font-semibold text-[#01472e]">
                         {formatFileSize(selectedFileForPreview.size)}
                       </span>
                     </div>
                     <div>
-                      <span className="block text-[#788c80]">Category</span>
+                      <span className="block text-[#788c80]">{t('docManager.category', 'Category')}</span>
                       <span className="font-semibold text-[#01472e]">
                         {selectedFileForPreview.category}
                       </span>
                     </div>
                     <div>
-                      <span className="block text-[#788c80]">MIME Type</span>
+                      <span className="block text-[#788c80]">{t('docManager.mimeType', 'MIME Type')}</span>
                       <span className="font-semibold text-[#01472e] truncate block">
                         {selectedFileForPreview.mimeType}
                       </span>
                     </div>
                     <div>
-                      <span className="block text-[#788c80]">Status</span>
+                      <span className="block text-[#788c80]">{t('common.status', 'Status')}</span>
                       <span className="font-semibold text-emerald-700">
                         {selectedFileForPreview.status}
                       </span>

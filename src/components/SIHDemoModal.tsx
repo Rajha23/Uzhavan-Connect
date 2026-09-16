@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   X,
   ChevronRight,
@@ -25,6 +26,7 @@ import {
 } from 'lucide-react';
 
 export const SIHDemoModal: React.FC = () => {
+  const { t } = useLanguage();
   const {
     isDemoModeOpen,
     closeDemoMode,
@@ -302,12 +304,12 @@ export const SIHDemoModal: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded font-mono font-semibold border border-amber-400/30">
-                   DEMO TOUR
+                   {t('demo.tourBadge', 'DEMO TOUR')}
                 </span>
-                <span className="text-xs text-slate-300 hidden sm:inline">Scenario: Tomato 3,000 kg (Chennai)</span>
+                <span className="text-xs text-slate-300 hidden sm:inline">{t('demo.scenarioTitle', 'Scenario: Tomato 3,000 kg (Chennai)')}</span>
               </div>
               <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-white">
-                Step {demoStep} of 13: {currentStepData.title}
+                {t('demo.stepCounter', 'Step {step} of 13: {title}', { step: demoStep, title: currentStepData.title })}
               </h2>
             </div>
           </div>
@@ -318,10 +320,10 @@ export const SIHDemoModal: React.FC = () => {
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                 isPlaying ? 'bg-amber-500 text-slate-950' : 'bg-emerald-600/80 text-white hover:bg-emerald-600'
               }`}
-              title={isPlaying ? 'Pause Auto Tour' : 'Auto Play Demo Tour (5.5s per step)'}
+              title={isPlaying ? t('demo.pauseTooltip', 'Pause Auto Tour') : t('demo.playTooltip', 'Auto Play Demo Tour (5.5s per step)')}
             >
               {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              <span className="hidden sm:inline">{isPlaying ? 'Pause' : 'Auto Play'}</span>
+              <span className="hidden sm:inline">{isPlaying ? t('demo.pause', 'Pause') : t('demo.autoPlay', 'Auto Play')}</span>
             </button>
 
             <button
@@ -375,7 +377,7 @@ export const SIHDemoModal: React.FC = () => {
               </div>
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  Responsible Entity: {currentStepData.role}
+                  {t('demo.responsibleEntity', 'Responsible Entity: {role}', { role: currentStepData.role })}
                 </span>
                 <p className="text-sm font-semibold text-slate-800 mt-1">
                   {currentStepData.tagline}
@@ -390,7 +392,7 @@ export const SIHDemoModal: React.FC = () => {
               onClick={handleNavigateToLiveView}
               className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-sm shrink-0 transition"
             >
-              <span>View Interactive Page</span>
+              <span>{t('demo.viewInteractivePage', 'View Interactive Page')}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -398,7 +400,7 @@ export const SIHDemoModal: React.FC = () => {
           {/* Key Data Grid */}
           <div>
             <h4 className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2.5">
-              Live System State & Parameters
+              {t('demo.liveStateHeading', 'Live System State & Parameters')}
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {currentStepData.keyData.map((d, idx) => (
@@ -416,7 +418,7 @@ export const SIHDemoModal: React.FC = () => {
               <Sparkles className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
               <div>
                 <h5 className="text-xs font-medium text-emerald-950 uppercase tracking-wider">
-                  Why This Solves  (Multiple Intermediaries)
+                  {t('demo.whyThisSolves', 'Why This Solves (Multiple Intermediaries)')}
                 </h5>
                 <p className="text-xs text-emerald-900 mt-1 leading-relaxed">
                   {currentStepData.insight}
@@ -438,11 +440,11 @@ export const SIHDemoModal: React.FC = () => {
             }`}
           >
             <ChevronLeft className="w-4 h-4" />
-            <span>Previous Step</span>
+            <span>{t('demo.previousStep', 'Previous Step')}</span>
           </button>
 
           <div className="text-xs text-slate-500 font-medium">
-            Step <span className="font-semibold text-slate-800">{demoStep}</span> of 13
+            {t('demo.stepProgress', 'Step {current} of 13', { current: demoStep })}
           </div>
 
           {demoStep < 13 ? (
@@ -450,7 +452,7 @@ export const SIHDemoModal: React.FC = () => {
               onClick={nextDemoStep}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 shadow transition"
             >
-              <span>Next Step</span>
+              <span>{t('demo.nextStep', 'Next Step')}</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           ) : (
@@ -461,7 +463,7 @@ export const SIHDemoModal: React.FC = () => {
               }}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-agri-900 hover:bg-agri-950 shadow transition"
             >
-              <span>Finish Demo & View KPIs</span>
+              <span>{t('demo.finishDemo', 'Finish Demo & View KPIs')}</span>
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             </button>
           )}

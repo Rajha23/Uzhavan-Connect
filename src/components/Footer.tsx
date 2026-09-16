@@ -27,16 +27,16 @@ export const Footer: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono text-[#fefae0]/90 bg-[#002214]/70 px-3.5 py-2 rounded-2xl border border-[#a3b18a]/30">
-            <span className="text-white font-semibold">DEMAND</span> →
-            <span className="text-[#ccd5ae] font-medium">FORECAST</span> →
-            <span className="text-[#e9edc9] font-medium">POOL</span> →
-            <span className="text-[#a3b18a] font-medium">MATCH</span> →
-            <span className="text-white font-medium">AGGREGATE</span> →
-            <span className="text-[#ccd5ae] font-medium">QUALITY</span> →
-            <span className="text-[#e9edc9] font-medium">ROUTE</span> →
-            <span className="text-[#a3b18a] font-medium">DELIVER</span> →
-            <span className="text-white font-medium">SETTLE</span> →
-            <span className="text-[#ccd5ae] font-medium">LEARN</span>
+            <span className="text-white font-semibold">{t('footer.cycleDemand', 'DEMAND')}</span> →
+            <span className="text-[#ccd5ae] font-medium">{t('footer.cycleForecast', 'FORECAST')}</span> →
+            <span className="text-[#e9edc9] font-medium">{t('footer.cyclePool', 'POOL')}</span> →
+            <span className="text-[#a3b18a] font-medium">{t('footer.cycleMatch', 'MATCH')}</span> →
+            <span className="text-white font-medium">{t('footer.cycleAggregate', 'AGGREGATE')}</span> →
+            <span className="text-[#ccd5ae] font-medium">{t('footer.cycleQuality', 'QUALITY')}</span> →
+            <span className="text-[#e9edc9] font-medium">{t('footer.cycleRoute', 'ROUTE')}</span> →
+            <span className="text-[#a3b18a] font-medium">{t('footer.cycleDeliver', 'DELIVER')}</span> →
+            <span className="text-white font-medium">{t('footer.cycleSettle', 'SETTLE')}</span> →
+            <span className="text-[#ccd5ae] font-medium">{t('footer.cycleLearn', 'LEARN')}</span>
           </div>
         </div>
       </div>
@@ -52,37 +52,37 @@ export const Footer: React.FC = () => {
               <span className="text-lg font-semibold tracking-tight text-white">Uzhavan Connect</span>
             </div>
             <p className="text-xs text-emerald-100/80 leading-relaxed font-normal">
-              Demand-Driven Agricultural Marketplace & Operating System unifies smallholder farmers directly with institutional buyers using real-time demand forecasting.
+              {t('footer.platformDescription', undefined, 'Demand-Driven Agricultural Marketplace & Operating System unifies smallholder farmers directly with institutional buyers using real-time demand forecasting.')}
             </p>
           </div>
 
           {/* Col 2: Modules & Dashboards */}
           <div>
-            <h4 className="text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-3">Role Dashboards</h4>
+            <h4 className="text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-3">{t('footer.roleDashboards', undefined, 'Role Dashboards')}</h4>
             <ul className="space-y-2 text-xs text-emerald-100/80 font-normal">
               <li>
                 <button onClick={() => setActiveTab('dashboard')} className="hover:text-white transition cursor-pointer">
-                  Farmer Demand Signals & Listings
+                  {t('footer.farmerListings', undefined, 'Farmer Demand Signals & Listings')}
                 </button>
               </li>
               <li>
                 <button onClick={() => setActiveTab('dashboard')} className="hover:text-white transition cursor-pointer">
-                  Bulk Buyer Demand & Procurement
+                  {t('footer.bulkBuyerDemand', undefined, 'Bulk Buyer Demand & Procurement')}
                 </button>
               </li>
               <li>
                 <button onClick={() => setActiveTab('dashboard')} className="hover:text-white transition cursor-pointer">
-                  FPO Aggregation & Hub Operations
+                  {t('footer.fpoOperations', undefined, 'FPO Aggregation & Hub Operations')}
                 </button>
               </li>
               <li>
                 <button onClick={() => setActiveTab('route-optimization')} className="hover:text-white transition cursor-pointer">
-                  Logistics & Dynamic Micro-Hubs
+                  {t('footer.logisticsHubs', undefined, 'Logistics & Dynamic Micro-Hubs')}
                 </button>
               </li>
               <li>
                 <button onClick={() => setActiveTab('settlement')} className="hover:text-white transition cursor-pointer">
-                  Transparent Escrow Settlement
+                  {t('footer.escrowSettlement', undefined, 'Transparent Escrow Settlement')}
                 </button>
               </li>
             </ul>
@@ -90,31 +90,31 @@ export const Footer: React.FC = () => {
 
           {/* Col 3: Innovation & Features */}
           <div>
-            <h4 className="text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-3">Core Innovations</h4>
+            <h4 className="text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-3">{t('footer.coreInnovations', undefined, 'Core Innovations')}</h4>
             <ul className="space-y-2 text-xs text-emerald-100/80 font-normal">
               <li>
                 <button onClick={() => setActiveTab('middleman-sim')} className="hover:text-white transition cursor-pointer">
-                  Middleman Cost Simulator ("Where Does ₹100 Go?")
+                  {t('footer.middlemanSimulator', undefined, 'Middleman Cost Simulator ("Where Does ₹100 Go?")')}
                 </button>
               </li>
               <li>
                 <button onClick={() => setActiveTab('demand-pool')} className="hover:text-white transition cursor-pointer">
-                  Demand Pooling Engine
+                  {t('footer.demandPooling', undefined, 'Demand Pooling Engine')}
                 </button>
               </li>
               <li>
                 <button onClick={() => setActiveTab('reverse-auction')} className="hover:text-white transition cursor-pointer">
-                  Smart Match Reverse Auctions
+                  {t('footer.reverseAuctions', undefined, 'Smart Match Reverse Auctions')}
                 </button>
               </li>
               <li>
                 <button onClick={() => setActiveTab('demand-intel')} className="hover:text-white transition cursor-pointer">
-                  7-Day Predictive ML Forecasts
+                  {t('footer.mlForecasts', undefined, '7-Day Predictive ML Forecasts')}
                 </button>
               </li>
               <li>
                 <button onClick={() => setActiveTab('impact-kpis')} className="hover:text-white transition cursor-pointer">
-                  10 Quantitative Impact KPIs
+                  {t('footer.impactKpis', undefined, '10 Quantitative Impact KPIs')}
                 </button>
               </li>
             </ul>
@@ -122,14 +122,14 @@ export const Footer: React.FC = () => {
 
           {/* Col 4: Platform Standards */}
           <div className="space-y-3">
-            <h4 className="text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-2">Platform Standards</h4>
+            <h4 className="text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-2">{t('footer.platformStandards', undefined, 'Platform Standards')}</h4>
             <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/20 text-[11px] text-emerald-100/80 leading-relaxed font-normal space-y-2">
               <div className="flex items-center gap-2 text-emerald-300 font-medium">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Operating Cycle Integrity</span>
+                <span>{t('footer.cycleIntegrity', undefined, 'Operating Cycle Integrity')}</span>
               </div>
               <p>
-                Integrated VRP route optimization, live telemetry, scannable QR produce passports, and multi-factor algorithmic matchmaking.
+                {t('footer.standardsDescription', undefined, 'Integrated VRP route optimization, live telemetry, scannable QR produce passports, and multi-factor algorithmic matchmaking.')}
               </p>
             </div>
             <div className="pt-1">
@@ -146,7 +146,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="mt-10 pt-6 border-t border-emerald-800/40 text-xs text-emerald-200/60 flex flex-col sm:flex-row items-center justify-between gap-3 font-normal">
-          <p>© 2026 Uzhavan Connect. All rights reserved.</p>
+          <p>{t('footer.allRightsReserved', undefined, '© 2026 Uzhavan Connect. All rights reserved.')}</p>
           <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
             <button
               type="button"

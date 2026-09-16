@@ -1,5 +1,6 @@
 import React from 'react';
 import { Sparkles, ArrowRight, TrendingUp, ShieldCheck, Zap } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export interface AiInsightProps {
   type?: 'recommendation' | 'insight' | 'warning' | 'market';
@@ -18,7 +19,7 @@ export interface AiInsightProps {
 
 export const AiInsightCard: React.FC<AiInsightProps> = ({
   type = 'insight',
-  badgeText = '✦ Smart AI Insight',
+  badgeText,
   title,
   description,
   subtitle,
@@ -30,6 +31,8 @@ export const AiInsightCard: React.FC<AiInsightProps> = ({
   variant = 'light',
   onClick
 }) => {
+  const { t } = useLanguage();
+  const effectiveBadgeText = badgeText || t('ai.smartInsightBadge', '✦ Smart AI Insight');
   const descText = description || [subtitle, recommendation].filter(Boolean).join(' ');
   const cardClick = onClick || onAction;
 
@@ -44,7 +47,7 @@ export const AiInsightCard: React.FC<AiInsightProps> = ({
           <div className="space-y-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#fefae0]/15 text-[#fefae0] border border-[#fefae0]/25">
               <Sparkles className="w-3.5 h-3.5 text-[#fefae0]" />
-              <span>{badgeText}</span>
+              <span>{effectiveBadgeText}</span>
             </div>
             <h4 className="text-base font-bold text-white tracking-tight">{title}</h4>
             {descText && <p className="text-xs text-emerald-100/85 leading-relaxed max-w-2xl font-normal">{descText}</p>}
@@ -84,7 +87,7 @@ export const AiInsightCard: React.FC<AiInsightProps> = ({
         <div className="space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/50">
             <Sparkles className="w-3.5 h-3.5 text-[#01472e]" />
-            <span>{badgeText}</span>
+            <span>{effectiveBadgeText}</span>
           </div>
           <h4 className="text-base font-bold text-[#01472e] tracking-tight">{title}</h4>
           {descText && <p className="text-xs text-slate-600 leading-relaxed max-w-2xl font-normal">{descText}</p>}

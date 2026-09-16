@@ -219,7 +219,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
               <CheckCircle2 className="w-5 h-5 text-[#01472e] shrink-0" />
               <div>
                 <p className="font-bold text-[#01472e]">{t('common.success', undefined, 'Account Created Successfully!')}</p>
-                <p className="text-slate-600 font-normal">Connecting to Uzhavan Connect network and redirecting to console...</p>
+                <p className="text-slate-600 font-normal">{t('auth.connectingNetwork', undefined, 'Connecting to Uzhavan Connect network and redirecting to console...')}</p>
               </div>
             </div>
           )}
@@ -252,12 +252,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                     onChange={(e) => setLoginRole(e.target.value as UserRole)}
                     className="w-full bg-[#faf9f5] border border-[#ccd5ae] rounded-2xl px-4 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-[#01472e] focus:bg-white transition"
                   >
-                    <option value="FARMER">Farmer (Producer)</option>
-                    <option value="RETAIL_BUYER">Retail Buyer</option>
-                    <option value="BULK_BUYER">Bulk Buyer</option>
-                    <option value="FPO_AGGREGATOR">FPO Aggregator</option>
-                    <option value="LOGISTICS">Logistics Carrier</option>
-                    <option value="ADMIN">Administrator</option>
+                    <option value="FARMER">{t('roles.farmer', undefined, 'Farmer (Producer)')}</option>
+                    <option value="RETAIL_BUYER">{t('roles.buyer', undefined, 'Retail Buyer')}</option>
+                    <option value="BULK_BUYER">{t('roles.bulk_buyer', undefined, 'Bulk Buyer')}</option>
+                    <option value="FPO_AGGREGATOR">{t('roles.fpo', undefined, 'FPO Aggregator')}</option>
+                    <option value="LOGISTICS">{t('roles.logistics', undefined, 'Logistics Carrier')}</option>
+                    <option value="ADMIN">{t('roles.admin', undefined, 'Administrator')}</option>
                   </select>
                 </div>
 
@@ -326,7 +326,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                     title="Procure bulk commodities and track 14-stage logistics"
                   >
                     <Building2 className="w-5 h-5 text-[#01472e] group-hover:scale-110 transition" />
-                    <span className="font-bold text-[10px] mt-1.5">Bulk Buyer</span>
+                    <span className="font-bold text-[10px] mt-1.5">{t('roles.bulk_buyer', undefined, 'Bulk Buyer')}</span>
                   </button>
                   <button
                     type="button"
@@ -334,7 +334,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                     className="p-2.5 rounded-2xl bg-[#faf9f5] hover:bg-[#eaf4ec] text-[#01472e] border border-[#ccd5ae]/60 font-semibold transition text-center cursor-pointer flex flex-col items-center group shadow-2xs"
                   >
                     <Sprout className="w-5 h-5 text-emerald-600 group-hover:scale-110 transition" />
-                    <span className="font-bold text-[10px] mt-1.5">Farmer</span>
+                    <span className="font-bold text-[10px] mt-1.5">{t('roles.farmer', undefined, 'Farmer')}</span>
                   </button>
                   <button
                     type="button"
@@ -342,7 +342,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                     className="p-2.5 rounded-2xl bg-[#faf9f5] hover:bg-[#eaf4ec] text-[#01472e] border border-[#ccd5ae]/60 font-semibold transition text-center cursor-pointer flex flex-col items-center group shadow-2xs"
                   >
                     <ShoppingBag className="w-5 h-5 text-amber-600 group-hover:scale-110 transition" />
-                    <span className="font-bold text-[10px] mt-1.5">Retail Buyer</span>
+                    <span className="font-bold text-[10px] mt-1.5">{t('roles.buyer', undefined, 'Retail Buyer')}</span>
                   </button>
                   <button
                     type="button"
@@ -350,7 +350,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                     className="p-2.5 rounded-2xl bg-[#faf9f5] hover:bg-[#eaf4ec] text-[#01472e] border border-[#ccd5ae]/60 font-semibold transition text-center cursor-pointer flex flex-col items-center group shadow-2xs"
                   >
                     <Users className="w-5 h-5 text-blue-600 group-hover:scale-110 transition" />
-                    <span className="font-bold text-[10px] mt-1.5">FPO Hub</span>
+                    <span className="font-bold text-[10px] mt-1.5">{t('roles.fpo', undefined, 'FPO Hub')}</span>
                   </button>
                   <button
                     type="button"
@@ -358,7 +358,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                     className="p-2.5 rounded-2xl bg-[#faf9f5] hover:bg-[#eaf4ec] text-[#01472e] border border-[#ccd5ae]/60 font-semibold transition text-center cursor-pointer flex flex-col items-center group shadow-2xs"
                   >
                     <Truck className="w-5 h-5 text-teal-600 group-hover:scale-110 transition" />
-                    <span className="font-bold text-[10px] mt-1.5">Logistics</span>
+                    <span className="font-bold text-[10px] mt-1.5">{t('roles.logistics', undefined, 'Logistics')}</span>
                   </button>
                   <button
                     type="button"
@@ -366,7 +366,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
                     className="p-2.5 rounded-2xl bg-[#faf9f5] hover:bg-[#eaf4ec] text-[#01472e] border border-[#ccd5ae]/60 font-semibold transition text-center cursor-pointer flex flex-col items-center group shadow-2xs"
                   >
                     <ShieldCheck className="w-5 h-5 text-[#01472e] group-hover:scale-110 transition" />
-                    <span className="font-bold text-[10px] mt-1.5">Admin</span>
+                    <span className="font-bold text-[10px] mt-1.5">{t('roles.admin', undefined, 'Admin')}</span>
                   </button>
                 </div>
               </div>
@@ -386,21 +386,21 @@ export const LoginPage: React.FC<LoginPageProps> = ({ initialMode = 'LOGIN' }) =
               <form onSubmit={handleRegister} className="space-y-3.5 text-xs">
                 <div>
                   <label className="font-bold text-slate-700 block mb-1">
-                    {t('auth.selectRole', undefined, 'Select Role (Public Registration)')}
+                    {t('auth.selectOperatingRole', undefined, 'Select Operating Role')}
                   </label>
                   <select
                     value={regRole}
                     onChange={(e) => setRegRole(e.target.value as UserRole)}
                     className="w-full bg-[#faf9f5] border border-[#ccd5ae] rounded-2xl p-2.5 text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#01472e]"
                   >
-                    <option value="FARMER">Farmer (Producer)</option>
-                    <option value="RETAIL_BUYER">Retail Buyer</option>
-                    <option value="BULK_BUYER">Bulk Buyer (Wholesaler / Processor / Institutional)</option>
-                    <option value="FPO_AGGREGATOR">FPO Aggregator</option>
-                    <option value="LOGISTICS">Logistics Carrier Transport</option>
+                    <option value="FARMER">{t('roles.farmer', undefined, 'Farmer (Producer)')}</option>
+                    <option value="RETAIL_BUYER">{t('roles.buyer', undefined, 'Retail Buyer')}</option>
+                    <option value="BULK_BUYER">{t('roles.bulk_buyer', undefined, 'Bulk Buyer (Wholesaler / Processor / Institutional)')}</option>
+                    <option value="FPO_AGGREGATOR">{t('roles.fpo', undefined, 'FPO Aggregator')}</option>
+                    <option value="LOGISTICS">{t('roles.logistics', undefined, 'Logistics Carrier Transport')}</option>
                   </select>
                   <p className="text-[10px] text-slate-400 mt-1 font-medium">
-                    * Apex Administrator accounts are provisioned by Ministry Platform Admin.
+                    {t('auth.adminProvisionNote', undefined, '* Apex Administrator accounts are provisioned by Ministry Platform Admin.')}
                   </p>
                 </div>
 

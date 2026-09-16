@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import L from 'leaflet';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   RouteOptimizationService,
   RouteOptimizationResponseDto,
@@ -30,6 +31,7 @@ import confetti from 'canvas-confetti';
 
 export const RouteOptimizationMap: React.FC = () => {
   const { produceListings, demandRequests } = useApp();
+  const { t } = useLanguage();
 
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [activeStop, setActiveStop] = useState<number>(1);
@@ -252,17 +254,17 @@ export const RouteOptimizationMap: React.FC = () => {
       <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h3 className="text-xl font-medium tracking-tight text-slate-900">
-            Multi-Stop Route & Logistics Optimization
+            {t('routeMap.title', undefined, 'Multi-Stop Route & Logistics Optimization')}
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            Consolidates active farmer listings into cold-chain collection runs and delivers directly to wholesale buyers.
+            {t('routeMap.subtitle', undefined, 'Consolidates active farmer listings into cold-chain collection runs and delivers directly to wholesale buyers.')}
           </p>
         </div>
 
         {/* Controls */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-1.5 text-xs text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
-            <span>Crop Filter:</span>
+            <span>{t('routeMap.cropFilter', undefined, 'Crop Filter:')}</span>
             <select
               value={selectedCrop}
               onChange={(e) => setSelectedCrop(e.target.value)}
@@ -282,12 +284,12 @@ export const RouteOptimizationMap: React.FC = () => {
             {isOptimizing ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin text-emerald-200" />
-                <span>Solving Constraints...</span>
+                <span>{t('routeMap.solving', undefined, 'Solving Constraints...')}</span>
               </>
             ) : (
               <>
                 <Navigation className="w-4 h-4 text-emerald-200" />
-                <span>Re-Solve Route</span>
+                <span>{t('routeMap.resolve', undefined, 'Re-Solve Route')}</span>
               </>
             )}
           </button>
@@ -312,33 +314,33 @@ export const RouteOptimizationMap: React.FC = () => {
         <div className="p-4">
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <MapPin className="w-3.5 h-3.5 text-blue-600" />
-            <span>Optimized Distance</span>
+            <span>{t('routeMap.optimizedDistance', undefined, 'Optimized Distance')}</span>
           </div>
           <p className="text-xl font-semibold font-mono text-slate-900 mt-1">
             {routePlan?.total_distance_km ?? 42.6} km
           </p>
           <span className="text-[11px] text-slate-500 font-medium">
-            Direct multi-farm link
+            {t('routeMap.directMultiFarm', undefined, 'Direct multi-farm link')}
           </span>
         </div>
 
         <div className="p-4">
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <Gauge className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Distance Saved</span>
+            <span>{t('routeMap.distanceSaved', undefined, 'Distance Saved')}</span>
           </div>
           <p className="text-xl font-semibold font-mono text-emerald-700 mt-1">
             {routePlan?.distance_saved_km ?? 16.4} km
           </p>
           <span className="text-[11px] text-emerald-700 font-medium">
-            38.4% shorter vs direct trips
+            {t('routeMap.shorterTrips', undefined, '38.4% shorter vs direct trips')}
           </span>
         </div>
 
         <div className="p-4">
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <Leaf className="w-3.5 h-3.5 text-purple-600" />
-            <span>Fuel & Cost Savings</span>
+            <span>{t('routeMap.fuelSavings', undefined, 'Fuel & Cost Savings')}</span>
           </div>
           <p className="text-xl font-semibold font-mono text-slate-900 mt-1">
             ₹{routePlan?.fuel_cost_savings_inr?.toLocaleString() ?? '1,850'} Saved
@@ -351,7 +353,7 @@ export const RouteOptimizationMap: React.FC = () => {
         <div className="p-4">
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <Clock className="w-3.5 h-3.5 text-amber-600" />
-            <span>Estimated Duration</span>
+            <span>{t('routeMap.estimatedDuration', undefined, 'Estimated Duration')}</span>
           </div>
           <p className="text-xl font-semibold font-mono text-slate-900 mt-1">
             {Math.floor((routePlan?.estimated_time_minutes ?? 135) / 60)}h {(routePlan?.estimated_time_minutes ?? 135) % 60}m
@@ -421,7 +423,7 @@ export const RouteOptimizationMap: React.FC = () => {
                   className={`flex items-center gap-1 px-2 py-1 rounded ${viewMode === 'MAP' ? 'bg-emerald-600 text-white font-medium shadow-xs' : 'text-slate-400 hover:text-white'}`}
                 >
                   <MapIcon className="w-3 h-3" />
-                  <span>GPS Map</span>
+                  <span>{t('routeMap.gpsMap', undefined, 'GPS Map')}</span>
                 </button>
                 <button
                   type="button"
@@ -429,7 +431,7 @@ export const RouteOptimizationMap: React.FC = () => {
                   className={`flex items-center gap-1 px-2 py-1 rounded ${viewMode === 'SCHEMATIC' ? 'bg-emerald-600 text-white font-medium shadow-xs' : 'text-slate-400 hover:text-white'}`}
                 >
                   <GitCommit className="w-3 h-3" />
-                  <span>Schematic</span>
+                  <span>{t('routeMap.schematic', undefined, 'Schematic')}</span>
                 </button>
               </div>
 
@@ -440,7 +442,7 @@ export const RouteOptimizationMap: React.FC = () => {
                 className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold bg-emerald-700 hover:bg-emerald-600 rounded-lg text-white transition-colors"
                 title="Open Standalone Fullscreen Live Map"
               >
-                <span>Fullscreen</span>
+                <span>{t('routeMap.fullscreen', undefined, 'Fullscreen')}</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
@@ -536,18 +538,18 @@ export const RouteOptimizationMap: React.FC = () => {
           <div className="z-10 flex flex-wrap items-center justify-between text-[11px] pt-3 border-t border-slate-800 text-slate-300 gap-2">
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-              <span>Farm Pick-Up Nodes</span>
+              <span>{t('routeMap.farmPickupNodes', undefined, 'Farm Pick-Up Nodes')}</span>
             </span>
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-teal-400" />
-              <span>Micro-Hub QC Aggregation</span>
+              <span>{t('routeMap.microHubQcAggregation', undefined, 'Micro-Hub QC Aggregation')}</span>
             </span>
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-blue-400" />
-              <span>Buyer Wholesale Drop</span>
+              <span>{t('routeMap.buyerWholesaleDrop', undefined, 'Buyer Wholesale Drop')}</span>
             </span>
             <span className="text-emerald-400 font-mono font-medium">
-              Payload: {totalConsolidatedCargoKg.toLocaleString()} / {vehicleCapacityKg.toLocaleString()} kg
+              {t('routeMap.payloadLabel', undefined, 'Payload:')} {totalConsolidatedCargoKg.toLocaleString()} / {vehicleCapacityKg.toLocaleString()} {t('common.kg', undefined, 'kg')}
             </span>
           </div>
         </div>

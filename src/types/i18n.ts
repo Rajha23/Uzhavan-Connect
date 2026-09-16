@@ -39,6 +39,31 @@ export interface TranslationDictionary {
   stages: TranslationMap;
   footer: TranslationMap;
   support?: TranslationMap;
+  roles?: TranslationMap;
+  crops?: TranslationMap;
+  grades?: TranslationMap;
+  units?: TranslationMap;
+  hubs?: TranslationMap;
+  demo?: TranslationMap;
+  docManager?: TranslationMap;
+  subsidies?: TranslationMap;
+  schemes?: TranslationMap;
+  files?: TranslationMap;
+  bulkMap?: TranslationMap;
+  routeMap?: TranslationMap;
+  demandIntelligence?: TranslationMap;
+  middlemanSimulator?: TranslationMap;
+  passport?: TranslationMap;
+  logisticsDashboard?: TranslationMap;
+  findBuyers?: TranslationMap;
+  reverseAuction?: TranslationMap;
+  impactKpi?: TranslationMap;
+  accessDenied?: TranslationMap;
+  sync?: TranslationMap;
+  news?: TranslationMap;
+  languageSelector?: TranslationMap;
+  microHub?: TranslationMap;
+  chatbot?: TranslationMap;
   [section: string]: TranslationMap | any;
 }
 

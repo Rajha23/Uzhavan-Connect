@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CANDIDATE_MICRO_HUBS } from '../data/mockData';
 import { MicroHub } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 import {
   MapPin,
   CheckCircle2,
@@ -13,6 +14,7 @@ import {
 } from 'lucide-react';
 
 export const DynamicMicroHubMap: React.FC = () => {
+  const { t } = useLanguage();
   const [selectedHubId, setSelectedHubId] = useState<string>('HUB-TN-01');
 
   const selectedHub = CANDIDATE_MICRO_HUBS.find((h) => h.id === selectedHubId) || CANDIDATE_MICRO_HUBS[0];
@@ -24,13 +26,13 @@ export const DynamicMicroHubMap: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-1">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>AI Dynamic Centroid Optimization</span>
+            <span>{t('microHub.aiOptimization', undefined, 'AI Dynamic Centroid Optimization')}</span>
           </div>
           <h3 className="text-xl font-semibold tracking-tight text-slate-900">
-            Dynamic Micro-Hub Selection Engine
+            {t('microHub.title', undefined, 'Dynamic Micro-Hub Selection Engine')}
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            Evaluates farmer cluster density, demand proximity, cold chain capacity, and road connectivity.
+            {t('microHub.subtitle', undefined, 'Evaluates farmer cluster density, demand proximity, cold chain capacity, and road connectivity.')}
           </p>
         </div>
 
@@ -47,7 +49,7 @@ export const DynamicMicroHubMap: React.FC = () => {
           {/* Map Title Overlay */}
           <div className="flex items-center justify-between z-10 text-xs">
             <span className="bg-slate-800/80 backdrop-blur px-3 py-1 rounded border border-slate-700 font-mono text-emerald-400">
-              Corridor Vector Topology (Tamil Nadu North-East)
+              {t('microHub.corridorTopology', undefined, 'Corridor Vector Topology (Tamil Nadu North-East)')}
             </span>
             <span className="text-[11px] text-slate-400">Coordinates: 12.97° N, 79.94° E</span>
           </div>
@@ -148,15 +150,15 @@ export const DynamicMicroHubMap: React.FC = () => {
           <div className="z-10 flex flex-wrap items-center gap-4 text-[11px] pt-3 border-t border-slate-800 text-slate-300">
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-              <span>Farmer Supply Clusters</span>
+              <span>{t('microHub.farmerClusters', undefined, 'Farmer Supply Clusters')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-full bg-emerald-700 border border-emerald-300" />
-              <span>Recommended Centroid Hub</span>
+              <span>{t('microHub.recommendedHub', undefined, 'Recommended Centroid Hub')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-blue-400" />
-              <span>Chennai Demand Terminals</span>
+              <span>{t('microHub.demandTerminals', undefined, 'Chennai Demand Terminals')}</span>
             </div>
           </div>
         </div>
@@ -165,7 +167,7 @@ export const DynamicMicroHubMap: React.FC = () => {
         <div className="lg:col-span-5 p-6 flex flex-col justify-between bg-slate-50 space-y-4">
           <div>
             <span className="text-xs font-medium uppercase tracking-wider text-slate-400">
-              Candidate Hub Analysis
+              {t('microHub.candidateAnalysis', undefined, 'Candidate Hub Analysis')}
             </span>
 
             {/* Hub Selector Cards */}
@@ -189,22 +191,22 @@ export const DynamicMicroHubMap: React.FC = () => {
                       </div>
                       {hub.isRecommended && (
                         <span className="text-[10px] bg-emerald-100 text-emerald-800 font-medium px-2 py-0.5 rounded border border-emerald-300">
-                          BEST CHOICE
+                          {t('microHub.bestChoice', undefined, 'BEST CHOICE')}
                         </span>
                       )}
                     </div>
 
                     <div className="grid grid-cols-3 gap-1 mt-2 text-[11px] text-slate-600 font-mono">
                       <div>
-                        Score: <strong className="text-slate-900">{hub.score}</strong>
+                        {t('microHub.score', undefined, 'Score')}: <strong className="text-slate-900">{hub.score}</strong>
                       </div>
                       <div>
-                        Producers: <strong className="text-slate-900">{hub.distanceToProducersKm} km</strong>
+                        {t('microHub.producers', undefined, 'Producers')}: <strong className="text-slate-900">{hub.distanceToProducersKm} km</strong>
                       </div>
                       <div>
-                        Cold-Room:{' '}
+                        {t('microHub.coldRoom', undefined, 'Cold-Room')}:{' '}
                         <strong className={hub.coldStorageAvailable ? 'text-emerald-700' : 'text-rose-600'}>
-                          {hub.coldStorageAvailable ? 'YES' : 'NO'}
+                          {hub.coldStorageAvailable ? t('common.yes', undefined, 'YES') : t('common.no', undefined, 'NO')}
                         </strong>
                       </div>
                     </div>
@@ -216,9 +218,9 @@ export const DynamicMicroHubMap: React.FC = () => {
             {/* Detailed Rationale for Selected Hub */}
             <div className="mt-4 p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-slate-900">Optimization Verdict</span>
+                <span className="text-xs font-medium text-slate-900">{t('microHub.verdict', undefined, 'Optimization Verdict')}</span>
                 <span className="text-xs font-mono font-semibold text-emerald-700">
-                  Confidence Score: {selectedHub.score}%
+                  {t('microHub.confidence', undefined, 'Confidence Score')}: {selectedHub.score}%
                 </span>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
@@ -228,11 +230,11 @@ export const DynamicMicroHubMap: React.FC = () => {
               <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
                 <div className="flex items-center gap-1.5 text-slate-700">
                   <ThermometerSnowflake className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Pre-cooling: <strong>{selectedHub.coldStorageAvailable ? '4°C Active' : 'Ambient'}</strong></span>
+                  <span>{t('microHub.preCooling', undefined, 'Pre-cooling')}: <strong>{selectedHub.coldStorageAvailable ? t('microHub.activeCooling', undefined, '4°C Active') : t('microHub.ambient', undefined, 'Ambient')}</strong></span>
                 </div>
                 <div className="flex items-center gap-1.5 text-slate-700">
                   <TrendingUp className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Capacity: <strong>{selectedHub.capacityTonnes} Tonnes</strong></span>
+                  <span>{t('microHub.capacity', undefined, 'Capacity')}: <strong>{selectedHub.capacityTonnes} Tonnes</strong></span>
                 </div>
               </div>
             </div>
@@ -241,7 +243,7 @@ export const DynamicMicroHubMap: React.FC = () => {
           <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-900 flex items-start gap-2">
             <Info className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
             <span>
-              Dynamic selection prevents fixed warehouse overhead. Temporary micro-hubs activate exactly where farm supply density coincides with forward demand pools.
+              {t('microHub.note', undefined, 'Dynamic selection prevents fixed warehouse overhead. Temporary micro-hubs activate exactly where farm supply density coincides with forward demand pools.')}
             </span>
           </div>
         </div>

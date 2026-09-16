@@ -413,8 +413,8 @@ export const ReverseAuctionPage: React.FC = () => {
                     onChange={(e) => setGrade(e.target.value as any)}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium text-slate-900 shadow-2xs focus:border-emerald-500 focus:bg-white focus:outline-none transition"
                   >
-                    <option value="Grade A">Grade A (Premium)</option>
-                    <option value="Grade B">Grade B (Standard)</option>
+                    <option value="Grade A">{t('grades.gradeAPremium', undefined, 'Grade A (Premium)')}</option>
+                    <option value="Grade B">{t('grades.gradeBStandard', undefined, 'Grade B (Standard)')}</option>
                   </select>
                 </div>
 

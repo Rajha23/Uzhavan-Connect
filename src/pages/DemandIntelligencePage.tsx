@@ -202,10 +202,10 @@ export const DemandIntelligencePage: React.FC = () => {
               onChange={(e) => setSelectedRegion(e.target.value)}
               className="input-modern w-full px-3.5 py-2.5 text-xs rounded-xl bg-white font-medium text-slate-800 cursor-pointer"
             >
-              <option value="Chennai Metropolitan">Chennai Metropolitan Hub</option>
-              <option value="Coimbatore Agro Hub">Coimbatore Agro Hub</option>
-              <option value="Madurai Corridor">Madurai Corridor</option>
-              <option value="Salem Distribution Center">Salem Distribution Center</option>
+              <option value="Chennai Metropolitan">{t('hubs.chennaiHub', undefined, 'Chennai Metropolitan Hub')}</option>
+              <option value="Coimbatore Agro Hub">{t('hubs.coimbatoreHub', undefined, 'Coimbatore Agro Hub')}</option>
+              <option value="Madurai Corridor">{t('hubs.maduraiCorridor', undefined, 'Madurai Corridor')}</option>
+              <option value="Salem Distribution Center">{t('hubs.salemHub', undefined, 'Salem Distribution Center')}</option>
             </select>
           </div>
 
@@ -346,7 +346,7 @@ export const DemandIntelligencePage: React.FC = () => {
               <div className="flex items-center justify-between gap-2 mb-2">
                 <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                   <Activity className="w-4 h-4 text-[#01472e]" />
-                  <span>Mean Absolute Error</span>
+                  <span>{t('demandIntelligence.maeTitle', undefined, 'Mean Absolute Error')}</span>
                 </span>
                 <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/30">
                   MAE
@@ -354,11 +354,11 @@ export const DemandIntelligencePage: React.FC = () => {
               </div>
               <div className="flex items-baseline gap-2 my-1">
                 <span className="text-3xl sm:text-4xl font-bold font-mono text-[#01472e]">{metrics.mae}%</span>
-                <span className="text-xs text-slate-500 font-medium">average variance</span>
+                <span className="text-xs text-slate-500 font-medium">{t('demandIntelligence.averageVariance', undefined, 'average variance')}</span>
               </div>
             </div>
             <p className="text-xs text-slate-500 font-normal leading-relaxed">
-              Measures average forecasting difference against historical mandi arrivals. Lower is better.
+              {t('demandIntelligence.maeDesc', undefined, 'Measures average forecasting difference against historical mandi arrivals. Lower is better.')}
             </p>
           </div>
 
@@ -368,7 +368,7 @@ export const DemandIntelligencePage: React.FC = () => {
               <div className="flex items-center justify-between gap-2 mb-2">
                 <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                   <Gauge className="w-4 h-4 text-[#01472e]" />
-                  <span>Root Mean Squared Error</span>
+                  <span>{t('demandIntelligence.rmseTitle', undefined, 'Root Mean Squared Error')}</span>
                 </span>
                 <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                   RMSE
@@ -376,11 +376,11 @@ export const DemandIntelligencePage: React.FC = () => {
               </div>
               <div className="flex items-baseline gap-2 my-1">
                 <span className="text-3xl sm:text-4xl font-bold font-mono text-slate-900">{formatNumber(metrics.rmse)}</span>
-                <span className="text-xs text-slate-500 font-medium">{t('common.kg', undefined, 'kg')} deviation</span>
+                <span className="text-xs text-slate-500 font-medium">{t('demandIntelligence.kgDeviation', { kg: t('common.kg', 'kg') }, '{kg} deviation')}</span>
               </div>
             </div>
             <p className="text-xs text-slate-500 font-normal leading-relaxed">
-              Reflects high stability against sudden weather disruptions and unannounced market holidays.
+              {t('demandIntelligence.rmseDesc', undefined, 'Reflects high stability against sudden weather disruptions and unannounced market holidays.')}
             </p>
           </div>
 
@@ -390,7 +390,7 @@ export const DemandIntelligencePage: React.FC = () => {
               <div className="flex items-center justify-between gap-2 mb-2">
                 <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                   <Award className="w-4 h-4 text-[#01472e]" />
-                  <span>Mean Absolute % Error</span>
+                  <span>{t('demandIntelligence.mapeTitle', undefined, 'Mean Absolute % Error')}</span>
                 </span>
                 <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/30">
                   MAPE

@@ -818,7 +818,7 @@ export const FpoDashboard: React.FC = () => {
                 className="btn-primary text-xs py-2 px-3.5 rounded-xl flex items-center gap-1.5 shadow-xs cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Contract</span>
+                <span>{t('fpo.addContract', 'Add Contract')}</span>
               </button>
             </div>
           </div>
@@ -861,7 +861,7 @@ export const FpoDashboard: React.FC = () => {
                       </h4>
                       <p className="text-xs text-[#01472e]/80 mt-0.5 flex items-center gap-1">
                         <Users className="w-3.5 h-3.5 text-[#a3b18a]" />
-                        <span>Buyer: <strong className="text-[#01472e]">{demand.buyerName}</strong></span>
+                        <span>{t('orders.buyer', 'Buyer:')} <strong className="text-[#01472e]">{demand.buyerName}</strong></span>
                       </p>
                       <p className="text-[11px] text-[#01472e]/60 flex items-center gap-1">
                         <MapPin className="w-3 h-3 text-[#a3b18a]" />
@@ -871,8 +871,8 @@ export const FpoDashboard: React.FC = () => {
 
                     <div className="bg-white p-3 rounded-xl border border-[#ccd5ae]/30 space-y-2 text-xs">
                       <div className="flex justify-between">
-                        <span className="text-[#01472e]/70">Required Volume:</span>
-                        <strong className="font-mono text-[#01472e]">{remaining.toLocaleString()} kg remaining</strong>
+                        <span className="text-[#01472e]/70">{t('fpo.requiredVolume', 'Required Volume:')}</span>
+                        <strong className="font-mono text-[#01472e]">{remaining.toLocaleString()} kg {t('common.remaining', 'remaining')}</strong>
                       </div>
                       <div className="w-full bg-[#e9edc9]/50 h-2 rounded-full overflow-hidden">
                         <div
@@ -881,26 +881,26 @@ export const FpoDashboard: React.FC = () => {
                         />
                       </div>
                       <div className="flex justify-between text-[10px] text-[#01472e]/60 font-mono">
-                        <span>Target: ₹{demand.maxTargetPricePerKg}/kg</span>
-                        <span>Spec: {demand.qualityRequirement}</span>
+                        <span>{t('common.target', 'Target')}: ₹{demand.maxTargetPricePerKg}/kg</span>
+                        <span>{t('common.spec', 'Spec')}: {demand.qualityRequirement}</span>
                       </div>
                     </div>
 
                     <div className="text-[11px] text-[#01472e]/70 space-y-0.5 pt-1">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3 text-[#a3b18a]" />
-                        <span>Delivery By: <strong className="text-[#01472e]">{demand.deliveryDate}</strong></span>
+                        <span>{t('fpo.deliveryBy', 'Delivery By:')} <strong className="text-[#01472e]">{demand.deliveryDate}</strong></span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Clock className="w-3 h-3 text-[#a3b18a]" />
-                        <span>Receiving Window: {demand.deliveryTimeWindow || 'Morning 06:00 - 09:00'}</span>
+                        <span>{t('fpo.receivingWindow', 'Receiving Window:')} {demand.deliveryTimeWindow || 'Morning 06:00 - 09:00'}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="pt-3 border-t border-[#ccd5ae]/30 flex items-center justify-between">
                     <span className="font-mono text-xs font-semibold text-[#01472e]">
-                      Total: ₹{(demand.quantityKg * demand.maxTargetPricePerKg).toLocaleString()}
+                      {t('common.total', 'Total')}: ₹{(demand.quantityKg * demand.maxTargetPricePerKg).toLocaleString()}
                     </span>
                     <button
                       onClick={() => {
@@ -910,7 +910,7 @@ export const FpoDashboard: React.FC = () => {
                       className="btn-primary text-xs py-2 px-3.5 rounded-xl shadow-xs flex items-center gap-1 cursor-pointer"
                     >
                       <Sparkles className="w-3 h-3 text-[#ccd5ae]" />
-                      <span>Run AI Match →</span>
+                      <span>{t('fpo.runAiMatch', 'Run AI Match →')}</span>
                     </button>
                   </div>
                 </div>
@@ -930,17 +930,17 @@ export const FpoDashboard: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-[#01472e]" />
                 <h3 className="text-lg font-semibold text-[#01472e] tracking-tight">
-                  Stage 2: Algorithmic AI Farmer Matching Engine
+                  {t('fpo.stage2Title', 'Stage 2: Algorithmic AI Farmer Matching Engine')}
                 </h3>
               </div>
               <p className="text-xs text-[#01472e]/70 mt-0.5">
-                AI matches confirmed buyer demand with available FPO member farmers based on harvest schedule, geographic proximity, certified quality, and price compatibility.
+                {t('fpo.stage2Subtitle', 'AI matches confirmed buyer demand with available FPO member farmers based on harvest schedule, geographic proximity, certified quality, and price compatibility.')}
               </p>
             </div>
 
             {/* Target Demand Selector Dropdown */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-[#01472e]/70">Target Contract:</span>
+              <span className="text-xs font-semibold text-[#01472e]/70">{t('fpo.targetContract', 'Target Contract:')}</span>
               <select
                 value={selectedDemandIdForMatching}
                 onChange={(e) => setSelectedDemandIdForMatching(e.target.value)}
@@ -948,7 +948,7 @@ export const FpoDashboard: React.FC = () => {
               >
                 {demandRequests.map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.id} — {d.crop} ({d.quantityKg.toLocaleString()} kg @ ₹{d.maxTargetPricePerKg}/kg)
+                    {d.id} — {t(`crops.${d.crop}`, d.crop)} ({d.quantityKg.toLocaleString()} kg @ ₹{d.maxTargetPricePerKg}/kg)
                   </option>
                 ))}
               </select>
@@ -966,15 +966,19 @@ export const FpoDashboard: React.FC = () => {
                   <span className="text-xs font-semibold text-[#01472e]">{activeMatchingDemand.buyerName}</span>
                 </div>
                 <h4 className="text-base font-bold text-[#01472e]">
-                  Procuring {activeMatchingDemand.quantityKg.toLocaleString()} kg of {activeMatchingDemand.crop} ({activeMatchingDemand.variety || 'Hybrid'})
+                  {t('fpo.procuringQuantityOfCrop', 'Procuring {qty} kg of {crop} ({variety})', {
+                    qty: activeMatchingDemand.quantityKg.toLocaleString(),
+                    crop: t(`crops.${activeMatchingDemand.crop}`, activeMatchingDemand.crop),
+                    variety: activeMatchingDemand.variety || 'Hybrid'
+                  })}
                 </h4>
                 <p className="text-xs text-[#01472e]/70">
-                  Required Grade: <strong className="text-[#01472e]">{activeMatchingDemand.qualityRequirement}</strong> • Max Price: <strong className="text-[#01472e]">₹{activeMatchingDemand.maxTargetPricePerKg}/kg</strong> • Delivery: {activeMatchingDemand.location}
+                  {t('fpo.requiredGrade', 'Required Grade:')} <strong className="text-[#01472e]">{activeMatchingDemand.qualityRequirement}</strong> • {t('fpo.maxPrice', 'Max Price:')} <strong className="text-[#01472e]">₹{activeMatchingDemand.maxTargetPricePerKg}/kg</strong> • {t('fpo.delivery', 'Delivery:')} {activeMatchingDemand.location}
                 </p>
               </div>
 
               <div className="text-right shrink-0">
-                <span className="text-xs text-[#01472e]/70 block">Total Contract Budget</span>
+                <span className="text-xs text-[#01472e]/70 block">{t('fpo.totalContractBudget', 'Total Contract Budget')}</span>
                 <strong className="text-xl font-bold font-mono text-[#01472e]">
                   ₹{(activeMatchingDemand.quantityKg * activeMatchingDemand.maxTargetPricePerKg).toLocaleString()}
                 </strong>

@@ -9,6 +9,7 @@ export const VoiceAssistant: React.FC = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [response, setResponse] = useState('');
+  const processingMessage = t('ai.processingQuery', undefined, 'Processing your query...');
   
   const recognitionRef = useRef<any>(null);
   const synthesisRef = useRef<SpeechSynthesis | null>(null);
@@ -104,7 +105,7 @@ export const VoiceAssistant: React.FC = () => {
   const handleUserQuery = async (query: string) => {
     // In a real app, this would call the Gemini API or a backend endpoint
     // For now, we simulate an AI response based on keywords
-    setResponse('Processing your query...');
+    setResponse(processingMessage);
     
     setTimeout(() => {
       const lowerQuery = query.toLowerCase();
@@ -142,7 +143,7 @@ export const VoiceAssistant: React.FC = () => {
         <div className="bg-gradient-to-r from-[#01472e] to-emerald-700 p-4 text-white flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-emerald-200" />
-            <h3 className="font-bold tracking-wide">Uzhavan AI</h3>
+            <h3 className="font-bold tracking-wide">{t('ai.assistantTitle', undefined, 'Uzhavan AI')}</h3>
           </div>
           <button 
             onClick={() => {
@@ -187,7 +188,7 @@ export const VoiceAssistant: React.FC = () => {
                 <Sparkles className="w-4 h-4 text-[#01472e]" />
               </div>
               <div className="bg-white p-3 rounded-2xl rounded-tl-none border border-emerald-100 shadow-sm text-sm text-slate-700">
-                {response === 'Processing your query...' ? (
+                {response === processingMessage ? (
                   <div className="flex space-x-1.5 items-center h-5">
                     <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"></div>
                     <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>

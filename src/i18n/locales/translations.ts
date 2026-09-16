@@ -339,6 +339,7 @@ export const getTranslation = (
   arg2?: Record<string, string | number> | string | any,
   arg3?: Record<string, string | number> | string | any
 ): string => {
+  const normalizedLangCode = (langCode || 'en').trim().toLowerCase();
   let params: Record<string, string | number> | undefined;
   let defaultText: string | undefined;
 
@@ -363,26 +364,50 @@ export const getTranslation = (
   if (!key) return defaultText || '';
 
   // Check if key is a raw status enum (e.g. READY, PENDING, IN_TRANSIT, etc.)
-  if (STATUS_TRANSLATIONS[langCode]?.[key]) {
-    return STATUS_TRANSLATIONS[langCode][key];
+  if (STATUS_TRANSLATIONS[normalizedLangCode]?.[key]) {
+    return STATUS_TRANSLATIONS[normalizedLangCode][key];
   }
 
-  const targetDict = TRANSLATIONS_REGISTRY[langCode] || TRANSLATIONS_REGISTRY.en;
+  const targetDict = TRANSLATIONS_REGISTRY[normalizedLangCode] || TRANSLATIONS_REGISTRY.en;
 
   const resolve = (dict: any, path: string[]): string | undefined => {
     let curr = dict;
     for (const seg of path) {
-      if (!curr || typeof curr !== 'object') return undefined;
+      if (!curr || typeof curr !== 'object') {
+        curr = undefined;
+        break;
+      }
       curr = curr[seg];
     }
-    return typeof curr === 'string' ? curr : undefined;
+    if (typeof curr === 'string') return curr;
+
+    // Check flat dot-notated subkey under section (e.g. dict['admin']['kpi.platformTradeVolume'])
+    if (path.length >= 2 && dict?.[path[0]]) {
+      const remainingKey = path.slice(1).join('.');
+      if (typeof dict[path[0]][remainingKey] === 'string') {
+        return dict[path[0]][remainingKey];
+      }
+      // Check underscore alias (e.g. dict['admin']['kpi_platformTradeVolume'])
+      const underscored = path.slice(1).join('_');
+      if (typeof dict[path[0]][underscored] === 'string') {
+        return dict[path[0]][underscored];
+      }
+    }
+
+    // Check full flat key on dict (e.g. dict['admin.kpi.platformTradeVolume'])
+    const fullKey = path.join('.');
+    if (typeof dict?.[fullKey] === 'string') {
+      return dict[fullKey];
+    }
+
+    return undefined;
   };
 
   const parts = key.split('.');
   let translated: string | undefined;
 
-  if (parts.length === 2 && parts[0] === 'common' && SHARED_TRANSLATIONS[langCode]?.[parts[1]]) {
-    translated = SHARED_TRANSLATIONS[langCode][parts[1]];
+  if (parts.length === 2 && parts[0] === 'common' && SHARED_TRANSLATIONS[normalizedLangCode]?.[parts[1]]) {
+    translated = SHARED_TRANSLATIONS[normalizedLangCode][parts[1]];
   }
 
   if (!translated && parts.length >= 2) {
@@ -393,7 +418,7 @@ export const getTranslation = (
         translated = resolve(targetDict, aliasKey.split('.'));
       }
     }
-    if (!translated && langCode !== 'en') {
+    if (!translated && normalizedLangCode !== 'en') {
       translated = resolve(enTranslations, parts);
     }
   } else {
@@ -402,7 +427,7 @@ export const getTranslation = (
     if (!translated) {
       translated = targetDict?.stages?.[key] || targetDict?.nav?.[key];
     }
-    if (!translated && langCode !== 'en') {
+    if (!translated && normalizedLangCode !== 'en') {
       translated = enTranslations?.common?.[key] || (enTranslations as any)?.[key];
     }
   }

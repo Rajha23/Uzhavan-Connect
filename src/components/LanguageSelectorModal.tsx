@@ -35,14 +35,14 @@ export const LanguageSelectorModal: React.FC = () => {
                 {t('onboarding.chooseLanguage', undefined, 'Choose Language / மொழி தேர்வு')}
               </h2>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                22 Eighth Schedule Indian Languages Supported
+                {t('languageSelector.supportedLanguages', undefined, '22 Eighth Schedule Indian Languages Supported')}
               </p>
             </div>
           </div>
           <button
             onClick={closeLanguageSelector}
             className="p-2.5 rounded-2xl text-slate-400 hover:text-[#01472e] hover:bg-[#faf9f5] border border-transparent hover:border-[#ccd5ae]/50 transition cursor-pointer"
-            aria-label="Close"
+            aria-label={t('common.close', undefined, 'Close')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -56,7 +56,7 @@ export const LanguageSelectorModal: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name, script, or ISO code (e.g. Tamil, தமிழ், hi, kn)..."
+              placeholder={t('languageSelector.searchPlaceholder', undefined, 'Search by name, script, or ISO code (e.g. Tamil, தமிழ், hi, kn)...')}
               className="w-full bg-white border border-[#ccd5ae] rounded-2xl pl-10 pr-4 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-[#01472e] shadow-2xs transition"
               autoFocus
             />
@@ -65,7 +65,7 @@ export const LanguageSelectorModal: React.FC = () => {
                 onClick={() => setSearchQuery('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
               >
-                Clear
+                {t('common.clear', undefined, 'Clear')}
               </button>
             )}
           </div>
@@ -123,19 +123,19 @@ export const LanguageSelectorModal: React.FC = () => {
             })
           ) : (
             <div className="col-span-2 py-10 text-center text-xs text-slate-500">
-              No language matches "{searchQuery}". Try searching by English name, native script, or ISO code.
+              {t('languageSelector.noMatches', { query: searchQuery }, 'No language matches "{query}". Try searching by English name, native script, or ISO code.')}
             </div>
           )}
         </div>
 
         {/* Footer */}
         <div className="p-4 sm:p-5 border-t border-[#ccd5ae]/40 bg-[#faf9f5] flex items-center justify-between text-xs text-slate-500">
-          <span>Current: <strong className="text-[#01472e] font-bold">{currentLanguage.nativeName} ({currentLanguage.nameEnglish})</strong></span>
+          <span>{t('languageSelector.current', undefined, 'Current')}: <strong className="text-[#01472e] font-bold">{currentLanguage.nativeName} ({currentLanguage.nameEnglish})</strong></span>
           <button
             onClick={closeLanguageSelector}
             className="px-5 py-2 bg-white hover:bg-slate-100 border border-[#ccd5ae] text-slate-700 font-semibold rounded-xl text-xs transition cursor-pointer"
           >
-            Done
+            {t('common.done', undefined, 'Done')}
           </button>
         </div>
       </div>

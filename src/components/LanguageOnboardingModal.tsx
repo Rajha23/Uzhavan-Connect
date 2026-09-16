@@ -43,7 +43,7 @@ export const LanguageOnboardingModal: React.FC = () => {
             <div>
               <div className="inline-flex items-center gap-1.5 bg-[#fefae0]/15 text-[#fefae0] px-3 py-0.5 rounded-full text-[11px] font-semibold mb-1">
                 <Globe className="w-3.5 h-3.5" />
-                <span>Multilingual Agricultural Operating System</span>
+                <span>{t('languageSelector.multilingualSystem', undefined, 'Multilingual Agricultural Operating System')}</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
                 {t('onboarding.welcomeTitle', undefined, 'Welcome to UZHAVAN Connect 🌱')}
@@ -59,7 +59,7 @@ export const LanguageOnboardingModal: React.FC = () => {
         <div className="px-7 py-3 bg-[#faf9f5] border-b border-[#ccd5ae]/40 flex items-center justify-between text-xs text-slate-600 font-medium">
           <span>{t('onboarding.changeAnytimeNote', undefined, 'You can change this anytime from Settings.')}</span>
           <span className="text-[11px] font-bold text-[#01472e] bg-[#eaf4ec] px-2.5 py-0.5 rounded-full border border-[#a3b18a]/40">
-            22 Languages Available
+            {t('languageSelector.languagesAvailable', undefined, '22 Languages Available')}
           </span>
         </div>
 
@@ -71,7 +71,7 @@ export const LanguageOnboardingModal: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search language (e.g. தமிழ், Telugu, हिन्दी, বাংলা, kn, ta)..."
+              placeholder={t('languageSelector.onboardingSearchPlaceholder', undefined, 'Search language (e.g. தமிழ், Telugu, हिन्दी, বাংলা, kn, ta)...')}
               className="w-full bg-[#faf9f5] border border-[#ccd5ae] rounded-2xl pl-10 pr-4 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-[#01472e] focus:bg-white transition"
               autoFocus
             />
@@ -129,7 +129,7 @@ export const LanguageOnboardingModal: React.FC = () => {
         {/* Action Footer */}
         <div className="p-6 border-t border-[#ccd5ae]/40 bg-[#faf9f5] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-xs text-slate-600 font-medium">
-            Selected:{' '}
+            {t('languageSelector.selected', undefined, 'Selected')}:{' '}
             <strong className="text-[#01472e] font-bold text-sm">
               {filteredLanguages.find((l) => l.code === selectedCode)?.nativeName || selectedCode} (
               {filteredLanguages.find((l) => l.code === selectedCode)?.nameEnglish}

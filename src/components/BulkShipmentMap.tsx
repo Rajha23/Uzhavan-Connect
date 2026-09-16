@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
+import { useLanguage } from '../context/LanguageContext';
 import {
   Truck,
   MapPin,
@@ -26,6 +27,7 @@ interface BulkShipmentMapProps {
 }
 
 export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, className = '' }) => {
+  const { t } = useLanguage();
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const vehicleMarkerRef = useRef<L.Marker | null>(null);
@@ -194,9 +196,9 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
       marker.bindPopup(`
         <div style="font-family: sans-serif; font-size: 12px; line-height: 1.4; color: #1e293b;">
           <strong style="color: #0f172a; font-size: 13px;">${wp.title}</strong><br/>
-          <span style="color: #64748b;">Type:</span> <b>${wp.type}</b><br/>
-          <span style="color: #64748b;">Produce:</span> ${wp.quantityKg.toLocaleString()} kg ${wp.crop}<br/>
-          <span style="color: #64748b;">Source / Party:</span> ${wp.farmer}
+          <span style="color: #64748b;">${t('common.type', 'Type')}:</span> <b>${wp.type}</b><br/>
+          <span style="color: #64748b;">${t('common.produce', 'Produce')}:</span> ${wp.quantityKg.toLocaleString()} kg ${wp.crop}<br/>
+          <span style="color: #64748b;">${t('bulkMap.sourceParty', 'Source / Party')}:</span> ${wp.farmer}
         </div>
       `);
     });
@@ -221,10 +223,10 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
     vehicleMarker.bindPopup(`
       <div style="font-family: sans-serif; font-size: 12px; line-height: 1.4; color: #1e293b;">
         <strong style="color: #064e3b; font-size: 13px;">CoolReefer EV 5.5T (TN-09-BK-9182)</strong><br/>
-        <b>Cargo:</b> 5,000 kg Tomato (Grade A)<br/>
-        <b>Reefer Temperature:</b> +4.2°C (Optimal)<br/>
-        <b>Speed:</b> 54 km/h | <b>Driver:</b> Karthik S.<br/>
-        <b>Carrier:</b> Sundar Logistics Cold-Chain
+        <b>${t('bulkMap.cargo', 'Cargo')}:</b> 5,000 kg ${t(`crops.${order.crop || 'Tomato'}`, order.crop || 'Tomato')} (${t('grades.gradeA', 'Grade A')})<br/>
+        <b>${t('bulkMap.reeferTemp', 'Reefer Temp')}:</b> +4.2°C (${t('common.optimal', 'Optimal')})<br/>
+        <b>${t('bulkMap.speed', 'Speed')}:</b> 54 km/h | <b>${t('logistics.driverName', 'Driver')}:</b> Karthik S.<br/>
+        <b>${t('bulkMap.carrier', 'Carrier')}:</b> Sundar Logistics Cold-Chain
       </div>
     `);
 
@@ -278,25 +280,25 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
               <Radio className="w-3.5 h-3.5 text-emerald-700 animate-pulse" />
-              <span>Real-Time Transportation Telematics</span>
+              <span>{t('bulkMap.telematics', undefined, 'Real-Time Transportation Telematics')}</span>
             </span>
 
             {/* Simulated vs Live GPS Indicator Badge */}
             {telemetryMode === 'SIMULATED' ? (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-300" title="Simulated hardware telemetry for demonstration">
                 <Info className="w-3.5 h-3.5 text-amber-600" />
-                <span>Simulated Demo Telemetry (Distinguished from Live GPS)</span>
+                <span>{t('bulkMap.simulated', undefined, 'Simulated Demo Telemetry (Distinguished from Live GPS)')}</span>
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-900 border border-blue-300">
                 <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
-                <span>Connected Live Hardware GPS Stream</span>
+                <span>{t('bulkMap.liveGps', undefined, 'Connected Live Hardware GPS Stream')}</span>
               </span>
             )}
           </div>
 
           <h3 className="text-lg font-semibold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>Multi-Supplier Inbound Route to Bulk Buyer Terminal</span>
+            <span>{t('bulkMap.title', undefined, 'Multi-Supplier Inbound Route to Bulk Buyer Terminal')}</span>
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
             OpenStreetMap geospatial tracking: 3 Farm Pickups → Sriperumbudur Consolidation Micro-Hub → Ambattur Receiving Dock.
@@ -314,7 +316,7 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
                   : 'text-slate-500 hover:text-slate-800'
               }`}
             >
-              Simulated Mode
+              {t('bulkMap.simulatedMode', undefined, 'Simulated Mode')}
             </button>
             <button
               onClick={() => setTelemetryMode('LIVE_GPS')}
@@ -324,7 +326,7 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
                   : 'text-slate-500 hover:text-slate-800'
               }`}
             >
-              Live GPS Feed
+              {t('bulkMap.liveFeed', undefined, 'Live GPS Feed')}
             </button>
           </div>
 
@@ -332,7 +334,7 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
             <button
               onClick={() => setIsPlaying(!isPlaying)}
               className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-700 transition cursor-pointer"
-              title={isPlaying ? 'Pause simulation' : 'Play simulation'}
+              title={isPlaying ? t('bulkMap.pause', undefined, 'Pause simulation') : t('bulkMap.play', undefined, 'Play simulation')}
             >
               {isPlaying ? <Pause className="w-4 h-4 text-emerald-700" /> : <Play className="w-4 h-4 text-slate-700" />}
             </button>
@@ -343,7 +345,7 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
                 if (vehicleMarkerRef.current) vehicleMarkerRef.current.setLatLng(pos);
               }}
               className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-800 transition cursor-pointer"
-              title="Reset to Micro-Hub Departure"
+              title={t('bulkMap.reset', undefined, 'Reset to Micro-Hub Departure')}
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -375,7 +377,7 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
             <div className="p-2 bg-slate-50 rounded-xl">
               <div className="flex items-center gap-1 text-[10px] text-slate-500 font-medium">
                 <Gauge className="w-3 h-3 text-emerald-600" />
-                <span>Speed</span>
+                <span>{t('bulkMap.speed', undefined, 'Speed')}</span>
               </div>
               <p className="text-sm font-semibold text-slate-900 mt-0.5">{activeSpeed} km/h</p>
             </div>
@@ -383,7 +385,7 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
             <div className="p-2 bg-slate-50 rounded-xl">
               <div className="flex items-center gap-1 text-[10px] text-slate-500 font-medium">
                 <Thermometer className="w-3 h-3 text-teal-600" />
-                <span>Reefer Temp</span>
+                <span>{t('bulkMap.reeferTemp', undefined, 'Reefer Temp')}</span>
               </div>
               <p className="text-sm font-semibold text-emerald-700 mt-0.5">+{reeferTemp}°C</p>
             </div>
@@ -391,7 +393,7 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
             <div className="p-2 bg-slate-50 rounded-xl">
               <div className="flex items-center gap-1 text-[10px] text-slate-500 font-medium">
                 <Navigation className="w-3 h-3 text-blue-600" />
-                <span>Covered</span>
+                <span>{t('bulkMap.covered', undefined, 'Covered')}</span>
               </div>
               <p className="text-sm font-semibold text-slate-900 mt-0.5">{distanceCoveredKm} km</p>
             </div>
@@ -399,14 +401,14 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
             <div className="p-2 bg-slate-50 rounded-xl">
               <div className="flex items-center gap-1 text-[10px] text-slate-500 font-medium">
                 <Clock className="w-3 h-3 text-amber-600" />
-                <span>Remaining</span>
+                <span>{t('bulkMap.remaining', undefined, 'Remaining')}</span>
               </div>
               <p className="text-sm font-semibold text-slate-900 mt-0.5">{remainingDistanceKm} km</p>
             </div>
           </div>
 
           <div className="mt-2.5 pt-2 border-t border-slate-100 text-[11px] text-slate-500 flex items-center justify-between">
-            <span>Estimated Arrival:</span>
+            <span>{t('bulkMap.estimatedArrival', undefined, 'Estimated Arrival:')}</span>
             <span className="font-semibold text-slate-900">Today, 06:45 AM</span>
           </div>
         </div>
@@ -432,7 +434,7 @@ export const BulkShipmentMap: React.FC<BulkShipmentMapProps> = ({ order, classNa
       <div className="p-5 sm:p-6 bg-slate-50 border-t border-emerald-900/10">
         <div className="flex items-center justify-between mb-2 text-xs">
           <span className="font-semibold text-slate-800">
-            Active Multi-Stop Inbound Transit Lifecycle
+            {t('bulkMap.lifecycle', undefined, 'Active Multi-Stop Inbound Transit Lifecycle')}
           </span>
           <span className="font-semibold text-emerald-800 font-mono">
             {distanceCoveredKm} km of {totalDistanceKm} km ({simProgress.toFixed(0)}%)

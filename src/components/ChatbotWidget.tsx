@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, Send, Bot, User, Loader2, Mic, Volume2, VolumeX } from 'lucide-react';
 import { ChatMessage, sendChatMessage } from '../lib/gemini';
+import { useLanguage } from '../context/LanguageContext';
 
 export const ChatbotWidget: React.FC = () => {
+  const { currentLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -20,11 +22,11 @@ export const ChatbotWidget: React.FC = () => {
       setMessages([
         {
           role: 'model',
-          content: 'Hello! I am the Uzhavan Connect AI Assistant. How can I help you today?'
+          content: t('chatbot.greeting', undefined, 'Hello! I am the Uzhavan Connect AI Assistant. How can I help you today?')
         }
       ]);
     }
-  }, [messages.length]);
+  }, [messages.length, t]);
 
   // Initialize Speech Recognition
   useEffect(() => {
@@ -34,7 +36,7 @@ export const ChatbotWidget: React.FC = () => {
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
-        recognition.lang = 'en-US';
+        recognition.lang = currentLanguage.code === 'en' ? 'en-IN' : `${currentLanguage.code}-IN`;
 
         recognition.onresult = (event: any) => {
           const transcript = event.results[0][0].transcript;
@@ -54,11 +56,11 @@ export const ChatbotWidget: React.FC = () => {
         recognitionRef.current = recognition;
       }
     }
-  }, []); // Run once on mount
+  }, [currentLanguage.code]);
 
   const startListening = () => {
     if (!recognitionRef.current) {
-      alert("Voice recognition is not supported in this browser.");
+      alert(t('chatbot.voiceUnsupported', undefined, 'Voice recognition is not supported in this browser.'));
       return;
     }
     setIsOpen(true);
@@ -83,7 +85,7 @@ export const ChatbotWidget: React.FC = () => {
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
-    utterance.lang = 'en-US';
+    utterance.lang = currentLanguage.code === 'en' ? 'en-IN' : `${currentLanguage.code}-IN`;
     
     window.speechSynthesis.speak(utterance);
   };
@@ -110,7 +112,7 @@ export const ChatbotWidget: React.FC = () => {
     } catch (error: any) {
       setMessages(prev => [
         ...prev, 
-        { role: 'model', content: `Sorry, I encountered an error: ${error.message}` }
+        { role: 'model', content: `${t('chatbot.errorPrefix', undefined, 'Sorry, I encountered an error')}: ${error.message}` }
       ]);
     } finally {
       setIsLoading(false);
@@ -137,11 +139,11 @@ export const ChatbotWidget: React.FC = () => {
           <button
             onClick={startListening}
             className={`p-4 bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-xl flex items-center justify-center ${isListening ? 'animate-pulse bg-red-500 hover:bg-red-600' : ''}`}
-            aria-label="Start Voice Assistant"
+            aria-label={t('chatbot.startVoice', undefined, 'Start Voice Assistant')}
           >
             <Mic className="w-6 h-6" />
           </button>
-          <span className="text-[10px] font-bold text-teal-900 bg-white/90 px-2 py-0.5 rounded-full shadow-sm border border-teal-100 backdrop-blur-sm whitespace-nowrap">Voice Assistant</span>
+          <span className="text-[10px] font-bold text-teal-900 bg-white/90 px-2 py-0.5 rounded-full shadow-sm border border-teal-100 backdrop-blur-sm whitespace-nowrap">{t('chatbot.voiceAssistant', undefined, 'Voice Assistant')}</span>
         </div>
 
         {/* Chatbot */}
@@ -149,11 +151,11 @@ export const ChatbotWidget: React.FC = () => {
           <button
             onClick={() => setIsOpen(true)}
             className="p-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-xl flex items-center justify-center"
-            aria-label="Open Chatbot"
+            aria-label={t('chatbot.open', undefined, 'Open Chatbot')}
           >
             <MessageSquare className="w-6 h-6" />
           </button>
-          <span className="text-[10px] font-bold text-emerald-900 bg-white/90 px-2 py-0.5 rounded-full shadow-sm border border-emerald-100 backdrop-blur-sm whitespace-nowrap">Chatbot</span>
+          <span className="text-[10px] font-bold text-emerald-900 bg-white/90 px-2 py-0.5 rounded-full shadow-sm border border-emerald-100 backdrop-blur-sm whitespace-nowrap">{t('chatbot.chatbot', undefined, 'Chatbot')}</span>
         </div>
       </div>
 
@@ -169,8 +171,8 @@ export const ChatbotWidget: React.FC = () => {
               <Bot className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm">Uzhavan AI Assistant</h3>
-              <p className="text-[10px] text-emerald-100 opacity-90">Powered by Google Gemini</p>
+              <h3 className="font-semibold text-sm">{t('chatbot.title', undefined, 'Uzhavan AI Assistant')}</h3>
+              <p className="text-[10px] text-emerald-100 opacity-90">{t('chatbot.poweredBy', undefined, 'Powered by Google Gemini')}</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
@@ -180,7 +182,7 @@ export const ChatbotWidget: React.FC = () => {
                 if (isVoiceEnabled) window.speechSynthesis.cancel();
               }}
               className="p-1 hover:bg-white/20 rounded-md transition-colors mr-1"
-              title={isVoiceEnabled ? "Mute AI Voice" : "Enable AI Voice"}
+              title={isVoiceEnabled ? t('chatbot.muteVoice', undefined, 'Mute AI Voice') : t('chatbot.enableVoice', undefined, 'Enable AI Voice')}
             >
               {isVoiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-emerald-300" />}
             </button>
@@ -215,12 +217,12 @@ export const ChatbotWidget: React.FC = () => {
           {/* FAQ Suggestions when only the greeting is present */}
           {messages.length === 1 && !isLoading && (
             <div className="pt-2 flex flex-col gap-2">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider ml-1">Suggested Questions</span>
+              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider ml-1">{t('chatbot.suggestedQuestions', undefined, 'Suggested Questions')}</span>
               <div className="flex flex-wrap gap-2">
                 {[
-                  "How do I list my crops?",
-                  "How does the reverse auction work?",
-                  "Can I trace the origin of a product?"
+                  t('chatbot.faqListCrops', undefined, 'How do I list my crops?'),
+                  t('chatbot.faqReverseAuction', undefined, 'How does the reverse auction work?'),
+                  t('chatbot.faqTraceOrigin', undefined, 'Can I trace the origin of a product?')
                 ].map((faq, i) => (
                   <button
                     key={i}
@@ -242,7 +244,7 @@ export const ChatbotWidget: React.FC = () => {
                 </div>
                 <div className="px-4 py-2.5 bg-white border border-slate-200 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-1.5">
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" />
-                  <span className="text-xs text-slate-500 font-medium">Thinking...</span>
+                  <span className="text-xs text-slate-500 font-medium">{t('chatbot.thinking', undefined, 'Thinking...')}</span>
                 </div>
               </div>
             </div>
@@ -257,7 +259,7 @@ export const ChatbotWidget: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={isListening ? "Listening..." : "Ask anything..."}
+              placeholder={isListening ? t('chatbot.listening', undefined, 'Listening...') : t('chatbot.askAnything', undefined, 'Ask anything...')}
               className={`w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-20 py-2.5 text-sm resize-none focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-shadow ${isListening ? 'bg-red-50 border-red-200 text-red-900 placeholder-red-400' : ''}`}
               rows={1}
               style={{ minHeight: '44px', maxHeight: '120px' }}
@@ -266,7 +268,7 @@ export const ChatbotWidget: React.FC = () => {
               <button 
                 onClick={isListening ? () => { recognitionRef.current?.stop(); setIsListening(false); } : startListening}
                 disabled={isLoading}
-                title={isListening ? "Stop Listening" : "Start Voice Typing"}
+                title={isListening ? t('chatbot.stopListening', undefined, 'Stop Listening') : t('chatbot.startVoiceTyping', undefined, 'Start Voice Typing')}
                 className={`p-1.5 rounded-lg transition-colors flex items-center justify-center ${isListening ? 'bg-red-100 text-red-600 hover:bg-red-200 animate-pulse' : 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50'}`}
               >
                 <Mic className="w-4 h-4" />
@@ -281,7 +283,7 @@ export const ChatbotWidget: React.FC = () => {
             </div>
           </div>
           <div className="text-center mt-1.5">
-            <span className="text-[9px] text-slate-400">Press Shift+Enter for new line</span>
+            <span className="text-[9px] text-slate-400">{t('chatbot.newLineHint', undefined, 'Press Shift+Enter for new line')}</span>
           </div>
         </div>
       </div>

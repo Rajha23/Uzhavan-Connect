@@ -306,9 +306,9 @@ export const LogisticsDashboard: React.FC = () => {
                               onChange={(e) => setVehicleType(e.target.value)}
                               className="input-modern w-full rounded-xl py-2 px-3 text-xs font-medium bg-white"
                             >
-                              <option value="CoolReefer EV 3.5T">CoolReefer EV 3.5T (Battery Electric, 4°C)</option>
-                              <option value="Electric Reefer Van 2T">Electric Reefer Van 2T</option>
-                              <option value="E-Truck Heavy 5T">E-Truck Heavy 5T</option>
+                              <option value="CoolReefer EV 3.5T">{t('logistics.vehicleCoolReefer', 'CoolReefer EV 3.5T (Battery Electric, 4°C)')}</option>
+                              <option value="Electric Reefer Van 2T">{t('logistics.vehicleReeferVan', 'Electric Reefer Van 2T')}</option>
+                              <option value="E-Truck Heavy 5T">{t('logistics.vehicleETruck', 'E-Truck Heavy 5T')}</option>
                             </select>
                           </div>
 
@@ -592,15 +592,15 @@ export const LogisticsDashboard: React.FC = () => {
       <DetailDrawer
         isOpen={!!drawerOrder}
         onClose={() => setDrawerOrder(null)}
-        title={drawerOrder ? `Order ${drawerOrder.id}` : 'Order Details'}
+        title={drawerOrder ? `${t('orders.order', 'Order')} ${drawerOrder.id}` : t('orders.orderDetails', 'Order Details')}
         description={drawerOrder ? `${drawerOrder.crop} — ${drawerOrder.quantityKg.toLocaleString()} kg` : undefined}
         icon={Package}
         width="md"
         footer={
           drawerOrder ? (
             <div className="flex gap-2">
-              <button onClick={() => { if (drawerOrder) openPassportModal(drawerOrder.batchId); }} className="btn-primary text-xs flex-1"><QrCode className="w-3.5 h-3.5" /> View Passport</button>
-              <button onClick={() => setDrawerOrder(null)} className="btn-ghost text-xs">Close</button>
+              <button onClick={() => { if (drawerOrder) openPassportModal(drawerOrder.batchId); }} className="btn-primary text-xs flex-1"><QrCode className="w-3.5 h-3.5" /> {t('passport.viewPassport', 'View Passport')}</button>
+              <button onClick={() => setDrawerOrder(null)} className="btn-ghost text-xs">{t('common.close', 'Close')}</button>
             </div>
           ) : undefined
         }
@@ -609,17 +609,17 @@ export const LogisticsDashboard: React.FC = () => {
           <div className="space-y-4">
             {/* Order Info */}
             <div className="space-y-2">
-              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Order Information</span>
+              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">{t('orders.orderInfo', 'Order Information')}</span>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: 'Order ID', value: drawerOrder.id },
-                  { label: 'Batch ID', value: drawerOrder.batchId },
-                  { label: 'Status', value: drawerOrder.status },
-                  { label: 'Crop', value: `${drawerOrder.crop} (${drawerOrder.variety || 'Hybrid'})` },
-                  { label: 'Quantity', value: `${drawerOrder.quantityKg.toLocaleString()} kg` },
-                  { label: 'Grade', value: drawerOrder.qualityGrade || drawerOrder.inspectionMetrics?.verifiedGrade || 'Pending' },
-                  { label: 'Price', value: `₹${drawerOrder.pricePerKg}/kg` },
-                  { label: 'Total Value', value: `₹${drawerOrder.totalValue.toLocaleString()}` },
+                  { label: t('orders.orderId', 'Order ID'), value: drawerOrder.id },
+                  { label: t('orders.batchId', 'Batch ID'), value: drawerOrder.batchId },
+                  { label: t('common.status', 'Status'), value: drawerOrder.status },
+                  { label: t('common.crop', 'Crop'), value: `${t(`crops.${drawerOrder.crop}`, drawerOrder.crop)} (${drawerOrder.variety || 'Hybrid'})` },
+                  { label: t('common.quantity', 'Quantity'), value: `${drawerOrder.quantityKg.toLocaleString()} kg` },
+                  { label: t('common.grade', 'Grade'), value: drawerOrder.qualityGrade || drawerOrder.inspectionMetrics?.verifiedGrade || t('common.pending', 'Pending') },
+                  { label: t('common.price', 'Price'), value: `₹${drawerOrder.pricePerKg}/kg` },
+                  { label: t('orders.totalValue', 'Total Value'), value: `₹${drawerOrder.totalValue.toLocaleString()}` },
                 ].map((r) => (
                   <div key={r.label} className="p-2.5 bg-white rounded-xl border border-[#ccd5ae]/40 shadow-2xs">
                     <span className="text-[10px] font-medium text-[#788c80] block">{r.label}</span>
@@ -631,7 +631,7 @@ export const LogisticsDashboard: React.FC = () => {
 
             {/* Route */}
             <div className="p-4 bg-[#faf9f5] rounded-xl border border-[#ccd5ae]/30 space-y-2">
-              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">Route</span>
+              <span className="text-[11px] font-semibold text-[#01472e] uppercase tracking-wider">{t('logistics.route', 'Route')}</span>
               <div className="flex items-center gap-2 text-xs text-[#01472e]">
                 <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span className="font-medium">{drawerOrder.farmerLocation}</span>
@@ -639,9 +639,9 @@ export const LogisticsDashboard: React.FC = () => {
                 <span className="font-medium">{drawerOrder.deliveryLocation}</span>
               </div>
               <div className="text-[10px] text-[#5c7065]">
-                <span>Farmer: <strong className="text-[#01472e]">{drawerOrder.farmerName}</strong></span>
+                <span>{t('orders.farmer', 'Farmer:')} <strong className="text-[#01472e]">{drawerOrder.farmerName}</strong></span>
                 <span className="mx-2">•</span>
-                <span>Buyer: <strong className="text-[#01472e]">{drawerOrder.buyerName}</strong></span>
+                <span>{t('orders.buyer', 'Buyer:')} <strong className="text-[#01472e]">{drawerOrder.buyerName}</strong></span>
               </div>
             </div>
 
