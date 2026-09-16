@@ -4,3 +4,4 @@ export * from './TaskBoard';
 export * from './TaskList';
 export * from './TaskModal';
 export * from './CreateTaskModal';
+export * from './UpcomingTasksWidget';

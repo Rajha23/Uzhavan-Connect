@@ -45,6 +45,7 @@ import { SchemesPage } from "./pages/SchemesPage";
 import { NewsPage } from './pages/NewsPage';
 import { SubsidyPage } from './pages/SubsidyPage';
 import { SupportPage } from './pages/SupportPage';
+import { TaskManagementPage } from './pages/TaskManagementPage';
 
 // Feedback Intelligence System
 import { FeedbackIntelligencePage } from './pages/FeedbackIntelligencePage';
@@ -250,6 +251,11 @@ const PageContent: React.FC = () => {
         return <AccessDenied attemptedFeature="Executive Analytics & Impact Reports" />;
       }
       return <ImpactKPIPage />;
+
+    // ── Task Management (All authenticated roles) ──────
+    case 'tasks':
+    case 'task-management':
+      return <TaskManagementPage />;
 
     // ── Orders (Role-filtered internally) ─────────────
     case 'orders':

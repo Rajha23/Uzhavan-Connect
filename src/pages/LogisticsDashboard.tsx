@@ -24,6 +24,7 @@ import {
 import confetti from 'canvas-confetti';
 import { TransportAssignment } from '../types';
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
+import { UpcomingTasksWidget } from '../components/task';
 
 export const LogisticsDashboard: React.FC = () => {
   const { t, formatNumber } = useLanguage();
@@ -190,6 +191,9 @@ export const LogisticsDashboard: React.FC = () => {
           />
         ))}
       </KPIGrid>
+
+      {/* Upcoming Tasks Widget */}
+      <UpcomingTasksWidget limit={4} />
 
       {/* Section Filter Pills */}
       <div className="flex gap-2.5 border-b border-[#ccd5ae]/40 pb-4 overflow-x-auto">
