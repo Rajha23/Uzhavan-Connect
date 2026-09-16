@@ -124,7 +124,7 @@ export const enTranslations: TranslationDictionary = {
   },
 
   landing: {
-    heroTitle: 'Uzhavan Connect.',
+    heroTitle: 'Where Farmers, Technology and Opportunity Connect.',
     heroSubtitle: 'Uzhavan Connect unifies smallholder farmers directly with institutional food processors and retailers using ML demand forecasting, algorithmic matching, fair price discovery, and cold-chain route coordination.',
     earnRealization: 'Earn More.',
     launchConsole: 'Login',

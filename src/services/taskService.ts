@@ -27,6 +27,7 @@ try {
 const persistTasks = () => {
   try {
     localStorage.setItem(UZHAVAN_TASKS_KEY, JSON.stringify(tasksStore));
+    window.dispatchEvent(new Event('tasks-updated'));
   } catch (e) {
     console.error('Failed to save tasks to localStorage', e);
   }

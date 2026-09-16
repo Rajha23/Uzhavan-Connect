@@ -47,19 +47,29 @@ export const UpcomingTasksWidget: React.FC<Props> = ({ limit = 5 }) => {
 
   useEffect(() => {
     if (!currentRole || !currentUser) return;
-    setLoading(true);
-    taskService
-      .getTasksByRoleOrUser(currentRole, currentUser.id, currentUser.organization)
-      .then((data) => {
-        // Show only active (non-completed) tasks, sorted by due date
-        const active = data
-          .filter((t) => t.status !== 'Completed')
-          .sort((a, b) => new Date(a.dueDate ?? 0).getTime() - new Date(b.dueDate ?? 0).getTime())
-          .slice(0, limit);
-        setTasks(active);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    
+    const fetchTasks = () => {
+      setLoading(true);
+      taskService
+        .getTasksByRoleOrUser(currentRole, currentUser.id, currentUser.organization)
+        .then((data) => {
+          // Show only active (non-completed) tasks, sorted by due date
+          const active = data
+            .filter((t) => t.status !== 'Completed')
+            .sort((a, b) => new Date(a.dueDate ?? 0).getTime() - new Date(b.dueDate ?? 0).getTime())
+            .slice(0, limit);
+          setTasks(active);
+        })
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    };
+
+    fetchTasks();
+    window.addEventListener('tasks-updated', fetchTasks);
+    
+    return () => {
+      window.removeEventListener('tasks-updated', fetchTasks);
+    };
   }, [currentRole, currentUser, limit]);
 
   const overdue = tasks.filter(

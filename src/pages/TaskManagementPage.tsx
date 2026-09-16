@@ -46,6 +46,14 @@ export const TaskManagementPage: React.FC = () => {
 
   useEffect(() => {
     fetchTasks();
+    
+    // Listen for global task updates to sync the UI across components
+    const handleTasksUpdated = () => fetchTasks();
+    window.addEventListener('tasks-updated', handleTasksUpdated);
+    
+    return () => {
+      window.removeEventListener('tasks-updated', handleTasksUpdated);
+    };
   }, [currentRole, currentUser]);
 
   const filteredTasks = useMemo(() => {
@@ -171,7 +179,7 @@ export const TaskManagementPage: React.FC = () => {
           task={selectedTask}
           onClose={() => setSelectedTask(null)}
           onTaskUpdated={(updated) => {
-            setTasks(tasks.map(t => t.id === updated.id ? updated : t));
+            // Re-fetch happens automatically via tasks-updated event
             setSelectedTask(updated);
           }}
         />

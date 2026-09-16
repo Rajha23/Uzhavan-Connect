@@ -10,8 +10,6 @@ import {
   BarChart3,
   LineChart as LineChartIcon,
   ShieldCheck,
-  Calendar,
-  Sparkles,
   AlertCircle,
   Layers,
   RefreshCw,
