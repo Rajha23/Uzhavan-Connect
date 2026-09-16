@@ -58,6 +58,7 @@ import {
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { authVault, normalizeRole, seedDemoAccounts } from '../services/authVault';
 import { apiService } from '../services/apiService';
+import * as supabaseService from '../services/supabaseService';
 import { onInstallableChange, promptAppInstall } from '../services/serviceWorkerRegistration';
 import {
   PUBLIC_TABS,
@@ -565,6 +566,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
 
   const addOrder = useCallback((order: WorkflowOrder) => {
+    supabaseService.insertOrder(order).catch(console.error);
     setOrders((prev) => [order, ...prev.filter((o) => o.id !== order.id)]);
   }, []);
 
@@ -724,63 +726,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       // Fetch initial data
       const fetchData = async () => {
         try {
-          const [listings, demands, dbOrders, dbSettlements] = await Promise.all([
-            apiService.getProduceListings(),
-            apiService.getDemandRequests(),
-            apiService.getOrders(),
-            apiService.getSettlements()
+          const [listings, demands, dbOrders, dbSettlements, passports] = await Promise.all([
+            supabaseService.fetchProduceListings(),
+            supabaseService.fetchDemandRequests(),
+            supabaseService.fetchOrders(),
+            supabaseService.fetchSettlements(),
+            supabaseService.fetchProducePassports()
           ]);
-          // Guard: only overwrite state when backend returns non-empty arrays
-          // to prevent wiping mock data when Supabase tables are empty
           if (listings.length > 0) setProduceListings(listings);
           if (demands.length > 0) setDemandRequests(demands);
-          
-          const mappedOrders: WorkflowOrder[] = dbOrders.map((o: any) => ({
-            id: o.id,
-            buyerId: o.buyer_id,
-            farmerId: o.farmer_id,
-            crop: o.crop,
-            quantityKg: o.quantity_kg,
-            pricePerKg: o.price_per_kg,
-            totalValue: o.total_value,
-            status: o.status,
-            date: o.created_at,
-            batchId: 'N/A',
-            farmerName: 'Unknown',
-            buyerName: 'Unknown',
-            produceListingId: '',
-            demandRequestId: '',
-            deliveryLocation: '',
-            farmerLocation: '',
-            fpoName: 'GreenHarvest FPO',
-            qualityGrade: 'Standard',
-            timeline: [],
-            remainingCollectionKg: o.quantity_kg,
-            collectedQuantityKg: 0,
-            collectionStatus: 'Collection Pending'
-          }));
-          setOrders(mappedOrders);
-
-          const mappedSettlements: SettlementRecord[] = dbSettlements.map((s: any) => ({
-            id: s.id,
-            orderId: s.order_id,
-            batchId: 'N/A',
-            crop: 'Unknown',
-            quantityKg: 0,
-            buyerName: 'Unknown',
-            farmerOrFpoName: 'Unknown',
-            totalOrderValue: s.total_order_value,
-            farmerAmount: s.farmer_amount,
-            logisticsAmount: 0,
-            platformAmount: 0,
-            farmerRealizationPercentage: 0,
-            traditionalFarmerEarnings: 0,
-            earningsGainPercentage: 0,
-            status: s.status,
-            settlementDate: s.settlement_date,
-            utrNumber: 'N/A'
-          }));
-          setSettlements(mappedSettlements);
+          if (dbOrders.length > 0) setOrders(dbOrders);
+          if (dbSettlements.length > 0) setSettlements(dbSettlements);
+          if (passports.length > 0) setProducePassports(passports);
         } catch (e) {
           console.error("Failed to fetch initial data", e);
         }
@@ -1368,7 +1325,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           : (rejectedKg > 0 ? 'Conditionally Passed' : 'Passed');
 
         const newOrderStatus: OrderStatus = qualityStatus === 'Rejected' ? 'Quality Rejected' : 'Quality Checked';
-
+        supabaseService.updateOrder(orderId, { status: newOrderStatus, qualityGrade: metrics.verifiedGrade, qualityStatus, acceptedQuantityKg: acceptedKg, rejectedQuantityKg: rejectedKg }).catch(console.error);
         targetBatchId = o.batchId;
         targetListingId = o.produceListingId;
         success = true;
@@ -1529,6 +1486,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // Step 9a: Transport Assignment (Gated on isReadyForTransport)
   const assignTransport = (orderId: string, transport: TransportAssignment) => {
+    supabaseService.updateOrder(orderId, { transportDetails: transport, status: 'Transport Assigned' }).catch(console.error);
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     setOrders((prev) =>
       prev.map((o) => {
@@ -1561,6 +1519,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // Step 9b: Dispatch Shipment
   const dispatchShipment = (orderId: string) => {
+    supabaseService.updateOrder(orderId, { status: 'In Transit' }).catch(console.error);
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     let targetBatchId = '';
     let targetListingId = '';
@@ -1609,6 +1568,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // Step 10: Delivered to Buyer Hub (Awaiting Buyer Confirmation)
   const markDelivered = (orderId: string) => {
+    supabaseService.updateOrder(orderId, { status: 'Delivered' }).catch(console.error);
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     let targetBatchId = '';
     let targetListingId = '';
@@ -1773,6 +1733,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const buyerConfirmReceipt = (orderId: string) => {
+    supabaseService.updateOrder(orderId, { status: 'Buyer Confirmed' }).catch(console.error);
     const order = orders.find((o) => o.id === orderId);
     if (!order) return;
     const acceptedKg = order.packedQuantityKg || order.acceptedQuantityKg || order.quantityKg;

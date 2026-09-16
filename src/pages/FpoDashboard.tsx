@@ -518,13 +518,11 @@ export const FpoDashboard: React.FC = () => {
     };
 
     assignTransport(transportModalOrder.id, assignment);
-    dispatchShipment(transportModalOrder.id);
     setTransportModalOrder(null);
     showNotification(
-      `Order ${transportModalOrder.id} dispatched via ${selectedTransport.carrierName} (${selectedTransport.vehicleNumber})! Reefer temp stabilized at 4.2°C.`
+      `Order ${transportModalOrder.id} assigned to ${selectedTransport.carrierName} (${selectedTransport.vehicleNumber}). Awaiting carrier dispatch.`
     );
     confetti({ particleCount: 40, origin: { y: 0.6 } });
-    setActiveStage('STAGE_9_DELIVERY');
   };
 
   // Stage 9: Buyer Delivery Receipt Sign-off
@@ -1978,12 +1976,13 @@ export const FpoDashboard: React.FC = () => {
                       </div>
                       <span
                         className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full border ${
-                          isDispatched
-                            ? 'bg-indigo-100 text-indigo-800 border-indigo-300 animate-pulse'
-                            : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                          order.status === 'Packed' || order.status === 'Ready for Transport' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' :
+                          order.status === 'Transport Assigned' ? 'bg-indigo-100 text-indigo-800 border-indigo-300' :
+                          'bg-amber-100 text-amber-800 border-amber-300 animate-pulse'
                         }`}
                       >
-                        {isDispatched ? 'En Route (Cold-Chain Active)' : 'Ready for Carrier Pickup'}
+                        {order.status === 'Packed' || order.status === 'Ready for Transport' ? 'Ready for Carrier Pickup' :
+                         order.status === 'Transport Assigned' ? 'Awaiting Carrier Dispatch' : 'En Route (Cold-Chain Active)'}
                       </span>
                     </div>
 
@@ -2023,26 +2022,24 @@ export const FpoDashboard: React.FC = () => {
                         <span>QR Passport</span>
                       </button>
 
-                      {!isDispatched ? (
+                      {order.status === 'Packed' || order.status === 'Ready for Transport' ? (
                         <button
                           onClick={() => handleOpenTransportModal(order)}
                           className="btn-primary text-xs py-2 px-4 rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
                         >
                           <Truck className="w-3.5 h-3.5" />
-                          <span>Assign Carrier & Dispatch →</span>
+                          <span>Assign Carrier</span>
                         </button>
+                      ) : order.status === 'Transport Assigned' ? (
+                        <div className="text-xs py-2 px-4 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 flex items-center gap-1.5 font-medium">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>Awaiting Dispatch</span>
+                        </div>
                       ) : (
-                        <button
-                          onClick={() => {
-                            markDelivered(order.id);
-                            setActiveStage('STAGE_9_DELIVERY');
-                            showNotification(`Order ${order.id} marked as arrived at Buyer Facility! Ready for handover sign-off.`);
-                          }}
-                          className="btn-secondary text-xs py-2 px-3.5 rounded-xl flex items-center gap-1 cursor-pointer"
-                        >
-                          <MapPin className="w-3.5 h-3.5 text-[#01472e]" />
-                          <span>Mark Arrived at Buyer Hub →</span>
-                        </button>
+                        <div className="text-xs py-2 px-4 rounded-xl border border-amber-200 bg-amber-50 text-amber-700 flex items-center gap-1.5 font-medium">
+                          <Truck className="w-3.5 h-3.5" />
+                          <span>In Transit to Buyer</span>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -2137,15 +2134,10 @@ export const FpoDashboard: React.FC = () => {
                       </button>
 
                       {order.status === 'In Transit' ? (
-                        <button
-                          onClick={() => {
-                            markDelivered(order.id);
-                            showNotification(`Order ${order.id} marked as arrived at receiving gate!`);
-                          }}
-                          className="btn-primary text-xs py-2 px-3.5 rounded-xl shadow-xs cursor-pointer"
-                        >
-                          Mark Arrived
-                        </button>
+                        <div className="text-xs py-2 px-4 rounded-xl border border-[#ccd5ae] bg-[#f9faf7] text-[#01472e]/70 flex items-center gap-1.5 font-medium">
+                          <Truck className="w-3.5 h-3.5" />
+                          <span>In Transit to Buyer</span>
+                        </div>
                       ) : !confirmation ? (
                         <div className="text-xs py-2 px-4 rounded-xl border border-amber-200 bg-amber-50 text-amber-800 flex items-center gap-1.5 font-semibold">
                           <Clock className="w-3.5 h-3.5" />
