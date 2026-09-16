@@ -626,13 +626,33 @@ export const BUYER_DEMAND_OPPORTUNITIES: BuyerDemandOpportunity[] = [
     location: 'R.S. Puram Terminal, Coimbatore',
     requiredDate: '2026-09-18',
     quality: 'Grade A'
+  },
+  {
+    id: 'OPP-TN-05',
+    buyerName: 'Ananda Grand Hospitality & Caterers',
+    crop: 'Chilli',
+    requiredQuantityKg: 1200,
+    maxPricePerKg: 54.0,
+    location: 'Guindy Central Commissary, Chennai',
+    requiredDate: '2026-09-19',
+    quality: 'Grade A'
+  },
+  {
+    id: 'OPP-TN-06',
+    buyerName: 'Tamil Nadu Civil Supplies / Mid-Day Meal Procurement',
+    crop: 'Paddy',
+    requiredQuantityKg: 6000,
+    maxPricePerKg: 27.0,
+    location: 'Central Grain Warehouse, Trichy',
+    requiredDate: '2026-09-20',
+    quality: 'Grade A'
   }
 ];
 
 export const FARMER_OFFERS_DATA: FarmerOfferItem[] = [];
 
 // ==========================================
-// 6. BUYER DEMANDS (Active & Varied States)
+// 6. BUYER DEMANDS (10 Realistic Demands with Varied States)
 // ==========================================
 export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [
   {
@@ -651,7 +671,7 @@ export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [
     deliveryDate: '2026-09-16',
     deliveryTimeWindow: '05:00 AM - 08:30 AM',
     maxTargetPricePerKg: 31.0,
-    status: 'ALLOCATED',
+    status: 'IN_PROGRESS',
     createdAt: '2026-09-13 07:30'
   },
   {
@@ -670,7 +690,7 @@ export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [
     deliveryDate: '2026-09-14',
     deliveryTimeWindow: '05:30 AM - 08:30 AM',
     maxTargetPricePerKg: 28.0,
-    status: 'Fulfilled',
+    status: 'COMPLETED',
     createdAt: '2026-09-12 08:15'
   },
   {
@@ -689,7 +709,7 @@ export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [
     deliveryDate: '2026-09-17',
     deliveryTimeWindow: '06:00 AM - 09:00 AM',
     maxTargetPricePerKg: 26.0,
-    status: 'Confirmed',
+    status: 'SUPPLY_CONFIRMED',
     createdAt: '2026-09-13 09:40'
   },
   {
@@ -708,7 +728,7 @@ export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [
     deliveryDate: '2026-09-18',
     deliveryTimeWindow: '05:00 AM - 07:30 AM',
     maxTargetPricePerKg: 34.0,
-    status: 'MATCHING',
+    status: 'IN_PROGRESS',
     createdAt: '2026-09-14 06:20'
   },
   {
@@ -720,14 +740,14 @@ export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [
     variety: 'G4 Hot Green',
     quantityKg: 1200,
     initialQuantityKg: 1200,
-    allocatedQuantityKg: 0,
+    allocatedQuantityKg: 1200,
     unit: 'kg',
     qualityRequirement: 'Grade A',
     location: 'Guindy Central Commissary, Chennai',
     deliveryDate: '2026-09-19',
     deliveryTimeWindow: '06:00 AM - 08:30 AM',
     maxTargetPricePerKg: 54.0,
-    status: 'OPEN',
+    status: 'FPO_APPROVAL',
     createdAt: '2026-09-14 11:30'
   },
   {
@@ -746,8 +766,84 @@ export const INITIAL_DEMAND_REQUESTS: DemandRequest[] = [
     deliveryDate: '2026-09-20',
     deliveryTimeWindow: '06:00 AM - 09:00 AM',
     maxTargetPricePerKg: 92.0,
-    status: 'OPEN',
+    status: 'MATCHING',
     createdAt: '2026-09-15 08:00'
+  },
+  {
+    id: 'DEM-TN-106',
+    buyerId: 'BUYER-BULK-06',
+    buyerName: 'Tamil Nadu Civil Supplies / Mid-Day Meal Procurement',
+    buyerType: 'Institutional Procurement',
+    crop: 'Paddy',
+    variety: 'BPT 5204 Sona Masuri',
+    quantityKg: 6000,
+    initialQuantityKg: 6000,
+    allocatedQuantityKg: 6000,
+    unit: 'kg',
+    qualityRequirement: 'Grade A',
+    location: 'Central Grain Warehouse, Trichy',
+    deliveryDate: '2026-09-14',
+    deliveryTimeWindow: '06:00 AM - 10:00 AM',
+    maxTargetPricePerKg: 27.0,
+    status: 'COMPLETED',
+    createdAt: '2026-09-11 09:00'
+  },
+  {
+    id: 'DEM-TN-107',
+    buyerId: 'usr-bulkbuyer-01',
+    buyerName: 'WayCool Agri Processors & Distribution Ltd.',
+    buyerType: 'Food Processor',
+    crop: 'Groundnut',
+    variety: 'Kallakurichi / TMV Bold Pods',
+    quantityKg: 3500,
+    initialQuantityKg: 3500,
+    allocatedQuantityKg: 3500,
+    unit: 'kg',
+    qualityRequirement: 'Grade A',
+    location: 'Ambattur Food Processing Terminal, Chennai',
+    deliveryDate: '2026-09-21',
+    deliveryTimeWindow: '05:30 AM - 09:00 AM',
+    maxTargetPricePerKg: 68.0,
+    status: 'SUPPLY_CONFIRMED',
+    createdAt: '2026-09-15 10:30'
+  },
+  {
+    id: 'DEM-TN-108',
+    buyerId: 'BUYER-BULK-04',
+    buyerName: 'Kovai Fresh Mega Wholesale Mart',
+    buyerType: 'Bulk Purchaser',
+    crop: 'Coconut',
+    variety: 'Pollachi Tall Grade A',
+    quantityKg: 4000,
+    initialQuantityKg: 4000,
+    allocatedQuantityKg: 0,
+    unit: 'kg',
+    qualityRequirement: 'Grade A',
+    location: 'R.S. Puram Terminal, Coimbatore',
+    deliveryDate: '2026-09-24',
+    deliveryTimeWindow: '06:00 AM - 10:00 AM',
+    maxTargetPricePerKg: 35.0,
+    status: 'OPEN',
+    createdAt: '2026-09-16 06:00'
+  },
+  {
+    id: 'DEM-TN-109',
+    buyerId: 'BUYER-BULK-03',
+    buyerName: 'MilkyMist Agri & Value Products Ltd.',
+    buyerType: 'Food Processor',
+    crop: 'Maize',
+    variety: 'Yellow Feed Quality',
+    quantityKg: 5000,
+    initialQuantityKg: 5000,
+    allocatedQuantityKg: 0,
+    unit: 'kg',
+    qualityRequirement: 'Standard',
+    location: 'Perundurai Food Park, Erode',
+    deliveryDate: '2026-09-25',
+    deliveryTimeWindow: '07:00 AM - 11:00 AM',
+    maxTargetPricePerKg: 23.0,
+    status: 'OPEN',
+    createdAt: '2026-09-16 07:15'
   }
 ];
 
@@ -1185,7 +1281,7 @@ export const SMART_MATCH_SUPPLIERS: SmartMatchSupplier[] = [
     supplierType: 'FPO',
     crop: 'Tomato',
     availableQtyKg: 3000,
-    allocatedQtyKg: 0,
+    allocatedQtyKg: 1200,
     distanceKm: 42,
     offeredPricePerKg: 26.0,
     qualityGrade: 'Grade A',
@@ -1193,8 +1289,8 @@ export const SMART_MATCH_SUPPLIERS: SmartMatchSupplier[] = [
     capacityScore: 94,
     qualityScore: 98,
     priceScore: 95,
-    distanceScore: 90,
-    totalMatchScore: 94.8,
+    distanceScore: 92,
+    totalMatchScore: 95.0,
     hubProximity: 'Chinnasalem Micro-Hub (4.2 km)',
     status: 'RECOMMENDED',
     reasons: [
@@ -1210,7 +1306,7 @@ export const SMART_MATCH_SUPPLIERS: SmartMatchSupplier[] = [
     supplierType: 'FPO',
     crop: 'Tomato',
     availableQtyKg: 3500,
-    allocatedQtyKg: 0,
+    allocatedQtyKg: 1800,
     distanceKm: 68,
     offeredPricePerKg: 26.5,
     qualityGrade: 'Grade A',
@@ -1218,8 +1314,8 @@ export const SMART_MATCH_SUPPLIERS: SmartMatchSupplier[] = [
     capacityScore: 90,
     qualityScore: 94,
     priceScore: 92,
-    distanceScore: 84,
-    totalMatchScore: 90.4,
+    distanceScore: 86,
+    totalMatchScore: 90.8,
     hubProximity: 'Valapadi Cold Hub (6.8 km)',
     status: 'RECOMMENDED',
     reasons: [
@@ -1232,18 +1328,42 @@ export const SMART_MATCH_SUPPLIERS: SmartMatchSupplier[] = [
     id: 'SMS-03',
     supplierName: 'Cauvery Delta Agro Federation',
     supplierType: 'FPO',
+    crop: 'Paddy',
+    availableQtyKg: 6000,
+    allocatedQtyKg: 6000,
+    distanceKm: 35,
+    offeredPricePerKg: 26.0,
+    qualityGrade: 'Grade A',
+    reliabilityScore: 96,
+    capacityScore: 97,
+    qualityScore: 95,
+    priceScore: 94,
+    distanceScore: 93,
+    totalMatchScore: 95.0,
+    hubProximity: 'Thiruvaiyaru Agro Depot (3.5 km)',
+    status: 'RECOMMENDED',
+    reasons: [
+      'Pure BPT 5204 Sona Masuri Grain Quality',
+      'Certified under 14% Moisture Level',
+      'Direct civil supplies institutional dispatch hub'
+    ]
+  },
+  {
+    id: 'SMS-04',
+    supplierName: 'Cauvery Delta Agro Federation',
+    supplierType: 'FPO',
     crop: 'Banana',
     availableQtyKg: 3200,
-    allocatedQtyKg: 0,
+    allocatedQtyKg: 3200,
     distanceKm: 85,
     offeredPricePerKg: 24.0,
     qualityGrade: 'Grade A',
     reliabilityScore: 94,
-    capacityScore: 96,
+    capacityScore: 92,
     qualityScore: 95,
-    priceScore: 96,
-    distanceScore: 82,
-    totalMatchScore: 92.6,
+    priceScore: 90,
+    distanceScore: 84,
+    totalMatchScore: 91.0,
     hubProximity: 'Thiruvaiyaru Agro Depot (3.5 km)',
     status: 'RECOMMENDED',
     reasons: [
@@ -1253,27 +1373,99 @@ export const SMART_MATCH_SUPPLIERS: SmartMatchSupplier[] = [
     ]
   },
   {
-    id: 'SMS-04',
-    supplierName: 'Salem Kongu Agri Producers Collective',
+    id: 'SMS-05',
+    supplierName: 'Kallakurichi Pasumai Farmers Producer Co.',
     supplierType: 'FPO',
-    crop: 'Onion',
-    availableQtyKg: 4000,
-    allocatedQtyKg: 0,
-    distanceKm: 58,
-    offeredPricePerKg: 28.0,
+    crop: 'Groundnut',
+    availableQtyKg: 3500,
+    allocatedQtyKg: 3500,
+    distanceKm: 76,
+    offeredPricePerKg: 65.0,
     qualityGrade: 'Grade A',
-    reliabilityScore: 91,
-    capacityScore: 89,
-    qualityScore: 92,
-    priceScore: 94,
-    distanceScore: 88,
-    totalMatchScore: 90.8,
-    hubProximity: 'Attur Agro Hub (5.0 km)',
+    reliabilityScore: 88,
+    capacityScore: 87,
+    qualityScore: 90,
+    priceScore: 86,
+    distanceScore: 84,
+    totalMatchScore: 87.0,
+    hubProximity: 'Chinnasalem Hub (12 km)',
     status: 'RECOMMENDED',
     reasons: [
-      'Cured medium bulbs compliant with wholesale specs',
-      'Low moisture skin retention (>85 days storage life)',
-      'Direct FPO packing in 25kg mesh bags'
+      'High oil content TMV-7 & VRI-2 Kernels',
+      'Aflatoxin-free verified lab report',
+      'Aggregated from 2 certified regional clusters'
+    ]
+  },
+  {
+    id: 'SMS-06',
+    supplierName: 'Anamalai Horticulture Farmers Co.',
+    supplierType: 'FPO',
+    crop: 'Tomato',
+    availableQtyKg: 2400,
+    allocatedQtyKg: 1000,
+    distanceKm: 110,
+    offeredPricePerKg: 27.0,
+    qualityGrade: 'Grade A',
+    reliabilityScore: 83,
+    capacityScore: 81,
+    qualityScore: 86,
+    priceScore: 80,
+    distanceScore: 75,
+    totalMatchScore: 81.0,
+    hubProximity: 'Pollachi Agro Center (8.4 km)',
+    status: 'RECOMMENDED',
+    reasons: [
+      'Solid pericarp Shivam Hybrid suited for processing',
+      'Higher transit distance compensated by cold chain EV',
+      'Supplementary buffer quota for bulk demand'
+    ]
+  },
+  {
+    id: 'SMS-07',
+    supplierName: 'Salem Kongu Agri Producers Collective',
+    supplierType: 'FPO',
+    crop: 'Turmeric',
+    availableQtyKg: 2500,
+    allocatedQtyKg: 0,
+    distanceKm: 142,
+    offeredPricePerKg: 90.0,
+    qualityGrade: 'Premium',
+    reliabilityScore: 74,
+    capacityScore: 72,
+    qualityScore: 78,
+    priceScore: 70,
+    distanceScore: 66,
+    totalMatchScore: 72.0,
+    hubProximity: 'Bhavani Aggregation Yard (18 km)',
+    status: 'BACKUP',
+    reasons: [
+      'High Curcumin content (4.8%) Erode Finger',
+      'Longer collection distance requires consolidation route',
+      'Awaiting secondary FPO aggregator review'
+    ]
+  },
+  {
+    id: 'SMS-08',
+    supplierName: 'Cauvery Delta Agro Federation',
+    supplierType: 'FPO',
+    crop: 'Chilli',
+    availableQtyKg: 1500,
+    allocatedQtyKg: 1200,
+    distanceKm: 92,
+    offeredPricePerKg: 52.0,
+    qualityGrade: 'Grade A',
+    reliabilityScore: 88,
+    capacityScore: 86,
+    qualityScore: 90,
+    priceScore: 85,
+    distanceScore: 86,
+    totalMatchScore: 87.0,
+    hubProximity: 'Melur Agro Depot (4.1 km)',
+    status: 'RECOMMENDED',
+    reasons: [
+      'Fresh G4 Green Chilli harvest with high pungency',
+      'Sorting and grading completed at farm-gate',
+      'Direct cold transit to Chennai commissary'
     ]
   }
 ];
@@ -1975,8 +2167,219 @@ export const INITIAL_ORDERS: WorkflowOrder[] = [
       { step: 'MATCHED', title: 'AI Matched & FPO Approved', location: 'Uzhavan Platform', timestamp: '14 Sep 2026, 12:00 PM', operator: 'FPO Approver', completed: true },
       { step: 'COLLECTED', title: 'Awaiting Farm-Gate Pickup', location: 'Melur Farm Gate', timestamp: 'Pending', operator: 'FPO Field Team', completed: false }
     ]
+  },
+
+  // Order 6: Groundnut Order (Supply Confirmed — Collection Scheduled)
+  {
+    id: 'ORD-TN-2026-106',
+    agreementId: 'AGR-TN-2026-106',
+    produceListingId: 'LST-TN-114',
+    demandRequestId: 'DEM-TN-107',
+    batchId: 'AGP-GND-2026-106',
+    farmerId: 'usr-farmer-14',
+    farmerName: 'Palanivel Chinnasamy',
+    buyerId: 'usr-bulkbuyer-01',
+    buyerName: 'WayCool Agri Processors & Distribution Ltd.',
+    crop: 'Groundnut',
+    variety: 'TMV-7 Pods',
+    quantityKg: 3500,
+    pricePerKg: 65.0,
+    totalValue: 227500,
+    status: 'Confirmed',
+    date: '15 Sep 2026',
+    deliveryLocation: 'Ambattur Food Processing Terminal, Chennai',
+    farmerLocation: 'Usilampatti, Madurai',
+    fpoName: 'Cauvery Delta Agro Federation',
+    qualityGrade: 'Grade A',
+    farmerContributions: [
+      {
+        farmerId: 'usr-farmer-14',
+        farmerName: 'Palanivel Chinnasamy',
+        farmerLocation: 'Usilampatti, Madurai',
+        produceListingId: 'LST-TN-114',
+        contributedQuantityKg: 3500,
+        collectedQuantityKg: 0,
+        collectionStatus: 'PENDING',
+        notes: 'TMV-7 bold pods sorted at farm. Collection scheduled 21 Sep.'
+      }
+    ],
+    collectionStatus: 'Collection Pending',
+    collectedQuantityKg: 0,
+    remainingCollectionKg: 3500,
+    qualityStatus: 'Pending',
+    acceptedQuantityKg: 0,
+    rejectedQuantityKg: 0,
+    packingStatus: 'Packing Pending',
+    packedQuantityKg: 0,
+    isReadyForTransport: false,
+    transportStatus: 'Transport Pending',
+    timeline: [
+      { step: 'DEMAND_CREATED', title: 'Demand Published (3,500 kg Groundnut)', location: 'WayCool Ambattur Terminal', timestamp: '15 Sep 2026, 10:30 AM', operator: 'Vikramaditya Singhania', completed: true },
+      { step: 'SUPPLIERS_MATCHED', title: 'Smart Match — Palanivel Chinnasamy (95% score)', location: 'Uzhavan AI Engine', timestamp: '15 Sep 2026, 10:32 AM', operator: 'Algorithmic Router', completed: true },
+      { step: 'SUPPLY_CONFIRMED', title: 'Supply Confirmed via Cauvery Delta FPO', location: 'Uzhavan Platform', timestamp: '15 Sep 2026, 11:00 AM', operator: 'FPO Aggregator (Rajagopalan)', completed: true },
+      { step: 'COLLECTION_SCHEDULED', title: 'Farm-Gate Collection Scheduled', location: 'Usilampatti Farm', timestamp: '21 Sep 2026, 06:00 AM (Scheduled)', operator: 'Logistics Dispatch Tower', completed: false }
+    ],
+    settlementId: 'SETTLE-2026-106'
+  },
+
+  // Order 7: Paddy Order — Completed with Full Institutional Settlement
+  {
+    id: 'ORD-TN-2026-107',
+    agreementId: 'AGR-TN-2026-107',
+    produceListingId: 'LST-TN-109',
+    demandRequestId: 'DEM-TN-106',
+    batchId: 'AGP-PDY-2026-107',
+    farmerId: 'usr-farmer-09',
+    farmerName: 'Balasubramanian Sethuraman',
+    buyerId: 'BUYER-BULK-06',
+    buyerName: 'Tamil Nadu Civil Supplies / Mid-Day Meal Procurement',
+    crop: 'Paddy',
+    variety: 'BPT 5204 Sona Masuri',
+    quantityKg: 6000,
+    pricePerKg: 26.5,
+    totalValue: 159000,
+    status: 'Completed',
+    date: '14 Sep 2026',
+    deliveryLocation: 'Central Grain Warehouse, Trichy',
+    farmerLocation: 'Thiruvaiyaru, Thanjavur',
+    fpoName: 'Cauvery Delta Agro Federation',
+    qualityGrade: 'Grade A',
+    farmerContributions: [
+      {
+        farmerId: 'usr-farmer-09',
+        farmerName: 'Balasubramanian Sethuraman',
+        farmerLocation: 'Thiruvaiyaru, Thanjavur',
+        produceListingId: 'LST-TN-109',
+        contributedQuantityKg: 6000,
+        collectedQuantityKg: 6000,
+        collectionStatus: 'FULLY_COLLECTED',
+        collectedAt: '14 Sep 2026, 05:30 AM',
+        agreedPricePerKg: 26.5,
+        settlementAmount: 141810,
+        settlementStatus: 'COMPLETED',
+        farmerUtr: 'UTR-FARM-PDY-107',
+        settledAt: '14 Sep 2026, 10:00 AM',
+        notes: 'BPT 5204 Sona Masuri — moisture 13.8%. Aflatoxin ND.'
+      }
+    ],
+    collectionStatus: 'Fully Collected',
+    collectedQuantityKg: 6000,
+    remainingCollectionKg: 0,
+    qualityStatus: 'Passed',
+    acceptedQuantityKg: 5820,
+    rejectedQuantityKg: 180,
+    packingStatus: 'Packed',
+    packedQuantityKg: 5820,
+    crateCount: 232,
+    packageType: '25 kg Jute Grain Sacks with Tamper-Evident QR Label',
+    isReadyForTransport: true,
+    transportStatus: 'Delivered',
+    inspectionMetrics: {
+      sugarBrix: 0,
+      firmnessKgCm: 0,
+      pesticideResidueTest: 'PASS - Standard Compliant',
+      moistureContent: '13.8%',
+      verifiedGrade: 'Grade A',
+      inspectorName: 'M. Chandrasekaran (APMC Lab)',
+      inspectionDate: '14 Sep 2026, 06:00 AM',
+      hubLocation: 'Thiruvaiyaru Grain & Vegetable Hub',
+      status: 'PASSED',
+      acceptedQuantityKg: 5820,
+      rejectedQuantityKg: 180,
+      rejectionReason: '180 kg chaff and moisture-excess rejected at QC',
+      inspectionNotes: 'Bulk lot 97% Grade A. 3% reject removed. Net 5,820 kg dispatched.'
+    },
+    transportDetails: {
+      carrierName: 'Sundar Transport & Cold Chain',
+      vehicleNumber: 'TN-45-AGRI-7721',
+      driverName: 'Anbarasan Ravi',
+      driverPhone: '+91 97890 12344',
+      vehicleType: 'Ashok Leyland 10-Tonne Grain Carrier',
+      departureTime: '14 Sep 2026, 07:00 AM',
+      estimatedArrival: '14 Sep 2026, 09:30 AM',
+      assignedAt: '2026-09-14 06:45',
+      temperatureC: 'Ambient'
+    },
+    buyerConfirmation: {
+      orderId: 'ORD-TN-2026-107',
+      deliveredQuantityKg: 5820,
+      receivedQuantityKg: 5820,
+      acceptedQuantityKg: 5820,
+      rejectedQuantityKg: 0,
+      acceptanceStatus: 'ACCEPTED_FULL',
+      issuesReported: 'All 232 sacks received intact. Moisture ≤14% verified on-site.',
+      receiverName: 'M. Sadasivam (Civil Supplies In-Charge)',
+      receiverRole: 'Grain Procurement Officer',
+      confirmedAt: '2026-09-14 09:45',
+      signatureOrOtp: 'OTP-CONFIRMED-730192'
+    },
+    feedbackSubmitted: true,
+    timeline: [
+      { step: 'DEMAND_CREATED', title: 'Institutional Demand Published (6,000 kg Paddy)', location: 'TN Civil Supplies, Trichy', timestamp: '11 Sep 2026, 09:00 AM', operator: 'M. Sadasivam', completed: true },
+      { step: 'SUPPLIERS_MATCHED', title: 'Cauvery Delta FPO — 95% Match Score', location: 'Uzhavan AI Engine', timestamp: '11 Sep 2026, 09:03 AM', operator: 'Algorithmic Router', completed: true },
+      { step: 'SUPPLY_CONFIRMED', title: 'Supply Confirmed (6,000 kg Sona Masuri)', location: 'Uzhavan Platform', timestamp: '11 Sep 2026, 10:00 AM', operator: 'Rajagopalan FPO', completed: true },
+      { step: 'COLLECTED', title: 'Farm-Gate Collection Complete', location: 'Thiruvaiyaru Farm Gate', timestamp: '14 Sep 2026, 05:30 AM', operator: 'Cauvery Delta Field Crew', completed: true },
+      { step: 'QUALITY_VERIFIED', title: 'APMC Quality & Moisture Certified', location: 'Thiruvaiyaru Hub Lab', timestamp: '14 Sep 2026, 06:00 AM', operator: 'M. Chandrasekaran', completed: true },
+      { step: 'LOADED_FOR_TRANSPORT', title: '232 Sacks Loaded into Grain Carrier', location: 'Hub Dispatch Bay', timestamp: '14 Sep 2026, 06:45 AM', operator: 'Logistics Crew', completed: true },
+      { step: 'IN_TRANSIT', title: 'En Route to Central Grain Warehouse', location: 'Trichy NH-67', timestamp: '14 Sep 2026, 07:00 AM', operator: 'Anbarasan Ravi', completed: true },
+      { step: 'DELIVERED', title: 'Delivered at Civil Supplies Warehouse', location: 'Central Grain Warehouse, Trichy', timestamp: '14 Sep 2026, 09:30 AM', operator: 'Dock Receiving Officer', completed: true },
+      { step: 'DELIVERY_CONFIRMED', title: 'OTP Acceptance by Civil Supplies', location: 'TN Civil Supplies Trichy', timestamp: '14 Sep 2026, 09:45 AM', operator: 'M. Sadasivam', completed: true },
+      { step: 'SETTLEMENT_COMPLETED', title: 'e-RUPI Farmer Payout Completed', location: 'e-RUPI Banking Gateway', timestamp: '14 Sep 2026, 10:00 AM', operator: 'NPCI / RBI Escrow', completed: true }
+    ],
+    settlementId: 'SETTLE-2026-107'
+  },
+
+  // Order 8: Turmeric Order (AI Matching in Progress)
+  {
+    id: 'ORD-TN-2026-108',
+    produceListingId: 'LST-TN-105',
+    demandRequestId: 'DEM-TN-105',
+    batchId: 'AGP-TUR-2026-108',
+    farmerId: 'usr-farmer-05',
+    farmerName: 'Arumugam Natarajan',
+    buyerId: 'usr-buyer-01',
+    buyerName: 'ABC Retail Stores & Consumer Coops',
+    crop: 'Turmeric',
+    variety: 'Erode Finger Grade A',
+    quantityKg: 2500,
+    pricePerKg: 90.0,
+    totalValue: 225000,
+    status: 'Pending',
+    date: '15 Sep 2026',
+    deliveryLocation: 'Koyambedu Hub, Chennai',
+    farmerLocation: 'Bhavani, Erode',
+    fpoName: 'Salem Kongu Agri Producers Collective',
+    qualityGrade: 'Premium',
+    farmerContributions: [
+      {
+        farmerId: 'usr-farmer-05',
+        farmerName: 'Arumugam Natarajan',
+        farmerLocation: 'Bhavani, Erode',
+        produceListingId: 'LST-TN-105',
+        contributedQuantityKg: 2500,
+        collectedQuantityKg: 0,
+        collectionStatus: 'PENDING',
+        notes: 'Erode Finger variety. Curcumin 4.8%. Solar dried below 10% moisture.'
+      }
+    ],
+    collectionStatus: 'Collection Pending',
+    collectedQuantityKg: 0,
+    remainingCollectionKg: 2500,
+    qualityStatus: 'Pending',
+    acceptedQuantityKg: 0,
+    rejectedQuantityKg: 0,
+    packingStatus: 'Packing Pending',
+    packedQuantityKg: 0,
+    isReadyForTransport: false,
+    transportStatus: 'Transport Pending',
+    timeline: [
+      { step: 'DEMAND_CREATED', title: 'Demand Published (2,500 kg Premium Turmeric)', location: 'ABC Retail Koyambedu', timestamp: '15 Sep 2026, 08:00 AM', operator: 'Anita Sharma', completed: true },
+      { step: 'SUPPLIERS_MATCHED', title: 'AI Matching in Progress — 2 Candidates', location: 'Uzhavan AI Engine', timestamp: '15 Sep 2026, 09:00 AM', operator: 'Algorithmic Router', completed: true },
+      { step: 'SUPPLY_CONFIRMED', title: 'Awaiting FPO Supply Confirmation', location: 'Salem Kongu FPO', timestamp: 'Pending', operator: 'P. Shanmugasundaram', completed: false }
+    ]
   }
 ];
+
 
 // ==========================================
 // 14. WORKFLOW AGREEMENTS
@@ -2198,6 +2601,84 @@ export const INITIAL_SETTLEMENTS: SettlementRecord[] = [
         bankAccountMasked: 'Indian Bank **** **** 1198'
       }
     ]
+  },
+  {
+    id: 'SETTLE-2026-106',
+    orderId: 'ORD-TN-2026-106',
+    batchId: 'AGP-GND-2026-106',
+    crop: 'Groundnut',
+    quantityKg: 3500,
+    buyerName: 'WayCool Agri Processors & Distribution Ltd.',
+    farmerOrFpoName: 'Palanivel Chinnasamy & Cauvery Delta FPO',
+    totalOrderValue: 227500,
+    farmerAmount: 202850,
+    logisticsAmount: 17500,
+    platformAmount: 7150,
+    farmerRealizationPercentage: 89.17,
+    traditionalFarmerEarnings: 126000,
+    earningsGainPercentage: 60.99,
+    status: 'PENDING',
+    settlementDate: 'Scheduled upon collection (21 Sep 2026)',
+    utrNumber: 'ESCROW_LOCKED_TXN106',
+    paymentMode: 'UPI e-RUPI Programmable Escrow (Prototype Simulator)',
+    buyerPaymentReference: 'UPI-ERUPI-106-LOCKED',
+    buyerPaymentRecordedAt: '2026-09-15 11:00 AM',
+    farmerBreakdown: [
+      {
+        farmerId: 'usr-farmer-14',
+        farmerName: 'Palanivel Chinnasamy',
+        farmerLocation: 'Usilampatti, Madurai',
+        produceListingId: 'LST-TN-114',
+        contributedQuantityKg: 3500,
+        collectedQuantityKg: 0,
+        agreedPricePerKg: 65.0,
+        grossAmount: 227500,
+        netFarmerAmount: 202850,
+        status: 'PENDING',
+        bankAccountMasked: 'IOB **** **** 3321'
+      }
+    ]
+  },
+  {
+    id: 'SETTLE-2026-107',
+    orderId: 'ORD-TN-2026-107',
+    batchId: 'AGP-PDY-2026-107',
+    crop: 'Paddy',
+    quantityKg: 5820,
+    buyerName: 'Tamil Nadu Civil Supplies / Mid-Day Meal Procurement',
+    farmerOrFpoName: 'Balasubramanian Sethuraman & Cauvery Delta FPO',
+    totalOrderValue: 154230,
+    farmerAmount: 141810,
+    logisticsAmount: 8820,
+    platformAmount: 3600,
+    farmerRealizationPercentage: 91.95,
+    traditionalFarmerEarnings: 87300,
+    earningsGainPercentage: 62.45,
+    status: 'COMPLETED',
+    settlementDate: '2026-09-14 10:00 AM',
+    utrNumber: 'AGRITXN20260914PDY107',
+    paymentMode: 'Bank RTGS / Direct NEFT Batch',
+    buyerPaymentReference: 'RTGS-GOV-TN-730192-CONFIRMED',
+    buyerPaymentRecordedAt: '2026-09-14 09:50 AM',
+    fpoSettledAt: '2026-09-14 09:55 AM',
+    farmerSettledAt: '2026-09-14 10:00 AM',
+    farmerBreakdown: [
+      {
+        farmerId: 'usr-farmer-09',
+        farmerName: 'Balasubramanian Sethuraman',
+        farmerLocation: 'Thiruvaiyaru, Thanjavur',
+        produceListingId: 'LST-TN-109',
+        contributedQuantityKg: 5820,
+        collectedQuantityKg: 5820,
+        agreedPricePerKg: 26.5,
+        grossAmount: 154230,
+        netFarmerAmount: 141810,
+        status: 'COMPLETED',
+        utrNumber: 'UTR-FARM-PDY-107',
+        settledAt: '2026-09-14 10:00 AM',
+        bankAccountMasked: 'Indian Bank **** **** 8842'
+      }
+    ]
   }
 ];
 
@@ -2252,7 +2733,211 @@ export const CROP_RECOMMENDATIONS: CropRecommendation[] = [
   }
 ];
 
-export const INITIAL_NOTIFICATIONS: AppNotification[] = [];
+export const INITIAL_NOTIFICATIONS: AppNotification[] = [
+  // ── FARMER notifications ─────────────────────────────────────────────────
+  {
+    id: 'NOTIF-TN-001',
+    title: '✅ Payment Received: ₹75,000',
+    message: 'Escrow settlement for 3,000 kg Tomato (Batch AGP-TOM-2026-102) has been credited to your SBI account **** 6821 via e-RUPI. Earnings: 89.3% net realization vs. 45% APMC baseline.',
+    timestamp: '2026-09-14 07:15 AM',
+    createdAt: Date.now() - 1000 * 60 * 60 * 48,
+    targetRole: 'FARMER',
+    userId: 'usr-farmer-01',
+    read: false,
+    type: 'SETTLEMENT',
+    priority: 'SUCCESS',
+    actionTab: 'orders',
+    actionLabel: 'View Settlement',
+    entityId: 'SETTLE-2026-102',
+    entityType: 'settlement'
+  },
+  {
+    id: 'NOTIF-TN-002',
+    title: '🚚 Your produce is In Transit',
+    message: 'Batch AGP-TOM-2026-101 (1,200 kg Tomato) loaded on CoolReefer EV TN-15-AGRI-5510. Driver: Karthik Subramanian (+91 98410 44021). ETA at WayCool Ambattur: 07:15 AM.',
+    timestamp: '2026-09-15 05:30 AM',
+    createdAt: Date.now() - 1000 * 60 * 60 * 17,
+    targetRole: 'FARMER',
+    userId: 'usr-farmer-01',
+    read: false,
+    type: 'LOGISTICS',
+    priority: 'INFO',
+    actionTab: 'orders',
+    actionLabel: 'Track Shipment',
+    entityId: 'ORD-TN-2026-101',
+    entityType: 'order'
+  },
+  {
+    id: 'NOTIF-TN-003',
+    title: '🌾 New Demand Match: Banana 3,200 kg',
+    message: 'MilkyMist Agri requires 3,200 kg Grand Naine Banana at ₹26/kg (max). Your listing LST-TN-107 is a 91% AI match. FPO Cauvery Delta has confirmed. Collection: Today 05:00 AM.',
+    timestamp: '2026-09-14 10:30 AM',
+    createdAt: Date.now() - 1000 * 60 * 60 * 36,
+    targetRole: 'FARMER',
+    userId: 'usr-farmer-07',
+    read: true,
+    type: 'MATCH',
+    priority: 'SUCCESS',
+    actionTab: 'orders',
+    actionLabel: 'View Match',
+    entityId: 'ORD-TN-2026-103',
+    entityType: 'order'
+  },
+
+  // ── FPO_AGGREGATOR notifications ──────────────────────────────────────────
+  {
+    id: 'NOTIF-TN-004',
+    title: '⚠️ FPO Approval Required: Chilli Order',
+    message: 'Demand DEM-TN-104 from Ananda Grand Hospitality (1,200 kg Chilli at ₹54/kg) is pending FPO approval. Farmer Chellappa Thevar (Melur) has been matched at 87% score. Action required within 4 hours.',
+    timestamp: '2026-09-14 12:00 PM',
+    createdAt: Date.now() - 1000 * 60 * 60 * 35,
+    targetRole: 'FPO_AGGREGATOR',
+    userId: 'usr-fpo-01',
+    read: false,
+    type: 'ORDERS',
+    priority: 'WARNING',
+    actionTab: 'orders',
+    actionLabel: 'Review & Approve',
+    entityId: 'DEM-TN-104',
+    entityType: 'demand'
+  },
+  {
+    id: 'NOTIF-TN-005',
+    title: '✅ Bulk Order Confirmed: 5,000 kg Tomato',
+    message: 'WayCool order ORD-TN-2026-101 (₹1,52,500) confirmed. 4 farmers allocated: Subramaniam (1,200 kg), Velusamy (1,000 kg), Meenakshi (1,800 kg), Vijayakumar (1,000 kg). Dispatch window: 15 Sep, 05:30 AM.',
+    timestamp: '2026-09-13 08:00 AM',
+    createdAt: Date.now() - 1000 * 60 * 60 * 63,
+    targetRole: 'FPO_AGGREGATOR',
+    userId: 'usr-fpo-01',
+    read: true,
+    type: 'ORDERS',
+    priority: 'SUCCESS',
+    actionTab: 'orders',
+    actionLabel: 'View Order',
+    entityId: 'ORD-TN-2026-101',
+    entityType: 'order'
+  },
+  {
+    id: 'NOTIF-TN-006',
+    title: '🔬 Quality Check Pending: Onion 2,800 kg',
+    message: 'Batch AGP-ONI-2026-104 (Marimuthu Karuppan, Lalgudi) has arrived at Thiruvaiyaru Hub. NABL quality assay due. Please initiate inspection to unblock packing and transport assignment.',
+    timestamp: '2026-09-15 06:00 AM',
+    createdAt: Date.now() - 1000 * 60 * 60 * 17,
+    targetRole: 'FPO_AGGREGATOR',
+    userId: 'usr-fpo-03',
+    read: false,
+    type: 'ORDERS',
+    priority: 'URGENT',
+    actionTab: 'orders',
+    actionLabel: 'Start Quality Check',
+    entityId: 'ORD-TN-2026-104',
+    entityType: 'order'
+  },
+
+  // ── LOGISTICS notifications ───────────────────────────────────────────────
+  {
+    id: 'NOTIF-TN-007',
+    title: '🚛 New Dispatch Assignment: CoolReefer TN-15-AGRI-5510',
+    message: '5,000 kg Tomato (4-stop multi-farmer route) assigned. Route: Chinnasalem → Pennagaram → Consolidation Hub → WayCool Ambattur. Distance: 74.2 km. Temp: 4°C. Depart: 05:30 AM.',
+    timestamp: '2026-09-15 03:45 AM',
+    createdAt: Date.now() - 1000 * 60 * 60 * 19,
+    targetRole: 'LOGISTICS',
+    userId: 'usr-logistics-01',
+    read: false,
+    type: 'LOGISTICS',
+    priority: 'URGENT',
+    actionTab: 'logistics',
+    actionLabel: 'Start Route',
+    entityId: 'ORD-TN-2026-101',
+    entityType: 'order'
+  },
+  {
+    id: 'NOTIF-TN-008',
+    title: '📦 Banana Batch Ready for Pickup: 128 crates',
+    message: 'Batch AGP-BAN-2026-103 packed at Thiruvaiyaru Hub. 128 cushioned crates (3,200 kg Grand Naine). Transport to Perundurai Food Park pending vehicle assignment. Packing time: 15 Sep, 06:45 AM.',
+    timestamp: '2026-09-15 06:45 AM',
+    createdAt: Date.now() - 1000 * 60 * 60 * 16,
+    targetRole: 'LOGISTICS',
+    userId: 'usr-logistics-01',
+    read: false,
+    type: 'LOGISTICS',
+    priority: 'WARNING',
+    actionTab: 'logistics',
+    actionLabel: 'Assign Vehicle',
+    entityId: 'ORD-TN-2026-103',
+    entityType: 'order'
+  },
+
+  // ── BULK_BUYER notifications ──────────────────────────────────────────────
+  {
+    id: 'NOTIF-TN-009',
+    title: '🚚 Shipment En Route: 5,000 kg Tomato',
+    message: 'CoolReefer EV TN-15-AGRI-5510 is on NH-48. Current speed: 52 km/h. Reefer temp: 4.2°C ✅. Remaining: 18.2 km. ETA: 07:15 AM at Ambattur Processing Terminal. OTP delivery confirmation ready.',
+    timestamp: '2026-09-15 06:50 AM',
+    createdAt: Date.now() - 1000 * 60 * 60 * 16,
+    targetRole: 'BULK_BUYER',
+    userId: 'usr-bulkbuyer-01',
+    read: false,
+    type: 'LOGISTICS',
+    priority: 'INFO',
+    actionTab: 'orders',
+    actionLabel: 'Track Live',
+    entityId: 'ORD-TN-2026-101',
+    entityType: 'order'
+  },
+  {
+    id: 'NOTIF-TN-010',
+    title: '🤝 Supply Confirmed: Groundnut 3,500 kg',
+    message: 'Demand DEM-TN-107 supply confirmed. Kallakurichi Pasumai FPO will supply 3,500 kg TMV-7 Groundnut at ₹65/kg. Total: ₹2,27,500. Scheduled delivery: 21 Sep 2026, Ambattur Terminal.',
+    timestamp: '2026-09-15 10:30 AM',
+    createdAt: Date.now() - 1000 * 60 * 60 * 12,
+    targetRole: 'BULK_BUYER',
+    userId: 'usr-bulkbuyer-01',
+    read: false,
+    type: 'ORDERS',
+    priority: 'SUCCESS',
+    actionTab: 'orders',
+    actionLabel: 'View Order',
+    entityId: 'ORD-TN-2026-106',
+    entityType: 'order'
+  },
+
+  // ── ADMIN notifications ───────────────────────────────────────────────────
+  {
+    id: 'NOTIF-TN-011',
+    title: '📊 Daily Platform Report: 16 Sep 2026',
+    message: 'Today: 5 active shipments, ₹4.58 Lakh in escrow, 8 orders across lifecycle, 42% reduction in post-harvest loss vs. APMC baseline. 2 FPO approvals pending. Platform health: ✅ Nominal.',
+    timestamp: '2026-09-16 07:00 AM',
+    createdAt: Date.now() - 1000 * 60 * 60 * 16,
+    targetRole: 'ADMIN',
+    userId: 'usr-ops-01',
+    read: false,
+    type: 'SYSTEM',
+    priority: 'INFO',
+    actionTab: 'admin',
+    actionLabel: 'View Reports',
+    entityId: '',
+    entityType: 'report'
+  },
+
+  // ── RETAIL_BUYER notifications ────────────────────────────────────────────
+  {
+    id: 'NOTIF-TN-012',
+    title: '🔍 AI Match Ready: Turmeric 2,500 kg',
+    message: 'Your demand DEM-TN-105 (2,500 kg Premium Erode Turmeric at ₹92/kg) has 2 supplier matches. Salem Kongu FPO: 72% score (backup). Bhavani cluster available immediately. Review and confirm.',
+    timestamp: '2026-09-15 09:00 AM',
+    createdAt: Date.now() - 1000 * 60 * 60 * 13,
+    targetRole: 'RETAIL_BUYER',
+    userId: 'usr-buyer-01',
+    read: false,
+    type: 'MATCH',
+    priority: 'SUCCESS',
+    actionTab: 'smart-match',
+    actionLabel: 'Review Matches',
+    entityId: 'DEM-TN-105',
+    entityType: 'demand'
+  }
+];
 
 // ==========================================
 // 18. AUDIT LOGS DATA
@@ -2532,6 +3217,28 @@ export const SYSTEM_USERS_DATA: SystemUserRecord[] = [
     location: 'R.S. Puram Terminal, Coimbatore',
     status: 'ACTIVE',
     joinedDate: '20 Jan 2026',
+    permissions: ROLE_PERMISSIONS.BULK_BUYER
+  },
+  {
+    id: 'BUYER-BULK-05',
+    name: 'Chef K. Venkatesan (Ananda Grand)',
+    role: 'BULK_BUYER',
+    phone: '+91 98406 44556',
+    email: 'ananda.procurement@anandagrand.in',
+    location: 'Guindy Central Commissary, Chennai',
+    status: 'ACTIVE',
+    joinedDate: '25 Feb 2026',
+    permissions: ROLE_PERMISSIONS.BULK_BUYER
+  },
+  {
+    id: 'BUYER-BULK-06',
+    name: 'M. Sadasivam (TN Civil Supplies)',
+    role: 'BULK_BUYER',
+    phone: '+91 98407 55667',
+    email: 'tncsc.procurement@tn.gov.in',
+    location: 'Central Grain Warehouse, Trichy',
+    status: 'ACTIVE',
+    joinedDate: '01 Jan 2026',
     permissions: ROLE_PERMISSIONS.BULK_BUYER
   },
   {

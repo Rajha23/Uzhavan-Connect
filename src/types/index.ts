@@ -90,7 +90,11 @@ export type BuyerDemandStatus =
   | 'POOLED'
   | 'MATCHING'
   | 'AUCTION_ACTIVE'
-  | 'ALLOCATED';
+  | 'ALLOCATED'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'SUPPLY_CONFIRMED'
+  | 'FPO_APPROVAL';
 
 export type OrderStatus =
   | 'Created'
@@ -370,7 +374,7 @@ export interface DemandRequest {
   id: string;
   buyerId: string;
   buyerName: string;
-  buyerType: 'Supermarket' | 'Retailer' | 'Bulk Purchaser' | 'Hospitality' | 'Food Processor' | 'Consumer Coop';
+  buyerType: 'Supermarket' | 'Retailer' | 'Bulk Purchaser' | 'Hospitality' | 'Food Processor' | 'Consumer Coop' | 'Institutional Procurement' | 'Wholesale';
   crop: string;
   variety?: string;
   quantityKg: number;

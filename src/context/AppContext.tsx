@@ -272,7 +272,7 @@ const GUEST_USER: UserProfile = {
 };
 
 const UZHAVAN_DATASET_VERSION_KEY = 'uzhavan_dataset_version';
-const CURRENT_DATASET_VERSION = 'sih2026_tn_connected_v3';
+const CURRENT_DATASET_VERSION = 'sih2026_tn_connected_v4';
 
 // Ensure localStorage gets upgraded to the clean connected SIH2026 dataset
 if (typeof window !== 'undefined') {
@@ -364,10 +364,33 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     );
   }, []);
 
-  // Persistent Produce Listings (Farmer supply)
-  const [produceListings, setProduceListings] = useState<ProduceListing[]>([]);
+  // Persistent Produce Listings (Farmer supply) — localStorage with INITIAL_FARMER_LISTINGS fallback
+  const [produceListings, setProduceListings] = useState<ProduceListing[]>(() => {
+    try {
+      const saved = localStorage.getItem('uzhavan_produce_listings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved produce listings from localStorage', e);
+    }
+    return INITIAL_FARMER_LISTINGS;
+  });
 
-  const [demandRequests, setDemandRequests] = useState<DemandRequest[]>([]);
+  // Persistent Demand Requests — localStorage with INITIAL_DEMAND_REQUESTS fallback
+  const [demandRequests, setDemandRequests] = useState<DemandRequest[]>(() => {
+    try {
+      const saved = localStorage.getItem('uzhavan_demand_requests');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved demand requests from localStorage', e);
+    }
+    return INITIAL_DEMAND_REQUESTS;
+  });
 
   // Dynamic News Articles across all network users
   const [newsArticles, setNewsArticles] = useState<NewsArticle[]>(() => {
@@ -707,8 +730,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             apiService.getOrders(),
             apiService.getSettlements()
           ]);
-          setProduceListings(listings);
-          setDemandRequests(demands);
+          // Guard: only overwrite state when backend returns non-empty arrays
+          // to prevent wiping mock data when Supabase tables are empty
+          if (listings.length > 0) setProduceListings(listings);
+          if (demands.length > 0) setDemandRequests(demands);
           
           const mappedOrders: WorkflowOrder[] = dbOrders.map((o: any) => ({
             id: o.id,
