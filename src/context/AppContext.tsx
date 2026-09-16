@@ -160,16 +160,6 @@ interface AppContextType {
   syncOfflineQueue: () => Promise<void>;
   isInstallable: boolean;
   promptInstall: () => Promise<boolean>;
-  isDocumentManagerOpen?: boolean;
-  documentManagerCategory?: string;
-  closeDocumentManager?: () => void;
-  files?: any[];
-  uploadDocument?: (f: any) => void;
-  searchDocuments?: (q: string) => void;
-  deleteDocument?: (id: string) => void;
-  cleanupDuplicateDocuments?: () => void;
-  refreshDocuments?: () => void;
-  newsArticles?: any[];
 
   // ─── Feedback Intelligence ───────────────────────────────────────────────
   feedbackItems: FeedbackItem[];
