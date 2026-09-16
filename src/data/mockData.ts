@@ -2658,6 +2658,6 @@ export const AGRICULTURE_NEWS: NewsArticle[] = [
     source: 'FoodTech Standards Review',
     publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 36).toISOString(),
     category: 'Technology',
-    imageUrl: 'https://images.unsplash.com/photo-1628183181878-eb09f3df9dd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   }
 ];
