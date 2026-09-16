@@ -141,6 +141,42 @@ export const seedDemoAccounts = async (): Promise<void> => {
       passwords: ['BulkBuyer@2026', 'SecurePass@2026', 'buyer123']
     },
     {
+      user: {
+        id: 'BUYER-BULK-05',
+        name: 'Chef K. Venkatesan (Ananda Grand)',
+        role: 'BULK_BUYER',
+        phone: '+91 98406 44556',
+        email: 'ananda.procurement@anandagrand.in',
+        location: 'Guindy Central Commissary, Chennai',
+        businessName: 'Ananda Grand Hospitality & Caterers',
+        buyerType: 'Restaurant / HORECA Procurement',
+        organization: 'Ananda Grand Hospitality',
+        rating: 4.91,
+        avatar: '🍽️'
+      },
+      email: 'ananda.procurement@anandagrand.in',
+      mobile: '9840644556',
+      passwords: ['BulkBuyer@2026', 'SecurePass@2026', 'buyer123']
+    },
+    {
+      user: {
+        id: 'BUYER-BULK-06',
+        name: 'M. Sadasivam (Civil Supplies)',
+        role: 'BULK_BUYER',
+        phone: '+91 98407 55667',
+        email: 'tncsc.procurement@tn.gov.in',
+        location: 'Central Grain Warehouse, Trichy',
+        businessName: 'Tamil Nadu Civil Supplies / Mid-Day Meal Procurement',
+        buyerType: 'Institutional Procurement',
+        organization: 'TN Civil Supplies Corp',
+        rating: 4.98,
+        avatar: '🏛️'
+      },
+      email: 'tncsc.procurement@tn.gov.in',
+      mobile: '9840755667',
+      passwords: ['BulkBuyer@2026', 'SecurePass@2026', 'buyer123']
+    },
+    {
       user: DEMO_USERS.FPO_AGGREGATOR,
       email: 'ravi.fpo@uzhavanconnect.gov.in',
       mobile: '9770011223',

@@ -56,10 +56,7 @@ export const LandingPage: React.FC = () => {
 
             {/* Main Headline */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-anton text-forest tracking-wide leading-[1.1]">
-              Sell Directly.<br />
-              <span className="text-sage">
-                Earn Better.
-              </span><br />Grow Smarter.
+              Sell Directly.
             </h1>
 
             {/* Subheading */}

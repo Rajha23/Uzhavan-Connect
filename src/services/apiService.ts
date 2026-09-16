@@ -41,9 +41,9 @@ import {
 } from './authVault';
 
 // In-memory fallback store
-let listingsStore: ProduceListing[] = [];
-let demandsStore: DemandRequest[] = [];
-let poolsStore: DemandPool[] = [];
+let listingsStore: ProduceListing[] = [...INITIAL_FARMER_LISTINGS];
+let demandsStore: DemandRequest[] = [...INITIAL_DEMAND_REQUESTS];
+let poolsStore: DemandPool[] = [INITIAL_DEMAND_POOL];
 
 export const apiService = {
   // Authentication & User Service

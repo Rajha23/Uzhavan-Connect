@@ -272,7 +272,7 @@ const GUEST_USER: UserProfile = {
 };
 
 const UZHAVAN_DATASET_VERSION_KEY = 'uzhavan_dataset_version';
-const CURRENT_DATASET_VERSION = 'sih2026_tn_connected_v4';
+const CURRENT_DATASET_VERSION = 'sih2026_tn_connected_v5';
 
 // Ensure localStorage gets upgraded to the clean connected SIH2026 dataset
 if (typeof window !== 'undefined') {
