@@ -871,9 +871,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     
     if (isCurrentlyOnline) {
       try {
-        const result = await apiService.createProduceListing(listing);
-        // The real-time subscription will catch this, but we can optimistically update
-        setProduceListings((prev) => [result, ...prev.filter(l => l.id !== result.id)]);
+        await supabaseService.insertProduceListing(listing);
+        // Optimistic update
+        setProduceListings((prev) => [listing, ...prev.filter(l => l.id !== listing.id)]);
       } catch (err) {
         console.error("Failed to create listing", err);
       }
@@ -898,9 +898,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     
     if (isCurrentlyOnline) {
       try {
-        const result = await apiService.createDemandRequest(demand);
-        // Optimistic update, though subscription will also catch it
-        setDemandRequests((prev) => [result, ...prev.filter(d => d.id !== result.id)]);
+        await supabaseService.insertDemandRequest(demand);
+        // Optimistic update
+        setDemandRequests((prev) => [demand, ...prev.filter(d => d.id !== demand.id)]);
       } catch (err) {
         console.error("Failed to create demand", err);
       }

@@ -23,12 +23,45 @@ export const fetchProduceListings = async (): Promise<ProduceListing[]> => {
   if (!isSupabaseConfigured) return [];
   const { data, error } = await supabase.from('produce_listings').select('*').order('created_at', { ascending: false });
   if (error) handleSupabaseError(error, 'fetchProduceListings');
-  return data as ProduceListing[];
+  return (data || []).map(row => ({
+    id: row.id,
+    farmerId: row.farmer_id,
+    farmerName: row.farmer_name,
+    crop: row.crop,
+    variety: row.variety,
+    quantityKg: row.quantity_kg,
+    grade: row.grade,
+    expectedPricePerKg: row.expected_price_per_kg,
+    harvestDate: row.harvest_date,
+    availabilityDate: row.availability_date,
+    location: row.location,
+    fpoId: row.fpo_id,
+    fpoName: row.fpo_name,
+    status: row.status,
+    coordinates: row.coordinates
+  })) as ProduceListing[];
 };
 
 export const insertProduceListing = async (listing: ProduceListing) => {
   if (!isSupabaseConfigured) return;
-  const { error } = await supabase.from('produce_listings').insert([listing]);
+  const row = {
+    id: listing.id,
+    farmer_id: listing.farmerId,
+    farmer_name: listing.farmerName,
+    crop: listing.crop,
+    variety: listing.variety,
+    quantity_kg: listing.quantityKg,
+    grade: listing.grade,
+    expected_price_per_kg: listing.expectedPricePerKg,
+    harvest_date: listing.harvestDate,
+    availability_date: listing.availabilityDate,
+    location: listing.location,
+    fpo_id: listing.fpoId,
+    fpo_name: listing.fpoName,
+    status: listing.status,
+    coordinates: listing.coordinates
+  };
+  const { error } = await supabase.from('produce_listings').insert([row]);
   if (error) handleSupabaseError(error, 'insertProduceListing');
 };
 
@@ -46,12 +79,44 @@ export const fetchDemandRequests = async (): Promise<DemandRequest[]> => {
   if (!isSupabaseConfigured) return [];
   const { data, error } = await supabase.from('demand_requests').select('*').order('created_at', { ascending: false });
   if (error) handleSupabaseError(error, 'fetchDemandRequests');
-  return data as DemandRequest[];
+  return (data || []).map(row => ({
+    id: row.id,
+    buyerId: row.buyer_id,
+    buyerName: row.buyer_name,
+    buyerType: row.buyer_type,
+    crop: row.crop,
+    variety: row.variety,
+    quantityKg: row.quantity_kg,
+    qualityRequirement: row.quality_requirement,
+    location: row.location,
+    deliveryDate: row.delivery_date,
+    deliveryTimeWindow: row.delivery_time_window,
+    maxTargetPricePerKg: row.max_target_price_per_kg,
+    status: row.status,
+    createdAt: row.created_at,
+    coordinates: row.coordinates
+  })) as DemandRequest[];
 };
 
 export const insertDemandRequest = async (request: DemandRequest) => {
   if (!isSupabaseConfigured) return;
-  const { error } = await supabase.from('demand_requests').insert([request]);
+  const row = {
+    id: request.id,
+    buyer_id: request.buyerId,
+    buyer_name: request.buyerName,
+    buyer_type: request.buyerType,
+    crop: request.crop,
+    variety: request.variety,
+    quantity_kg: request.quantityKg,
+    quality_requirement: request.qualityRequirement,
+    location: request.location,
+    delivery_date: request.deliveryDate,
+    delivery_time_window: request.deliveryTimeWindow,
+    max_target_price_per_kg: request.maxTargetPricePerKg,
+    status: request.status,
+    coordinates: request.coordinates
+  };
+  const { error } = await supabase.from('demand_requests').insert([row]);
   if (error) handleSupabaseError(error, 'insertDemandRequest');
 };
 
