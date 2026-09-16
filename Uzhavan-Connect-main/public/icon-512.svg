@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="96" fill="#01472e" />
+  <circle cx="256" cy="256" r="196" fill="#023120" />
+  <!-- Sprout & Growth Emblem -->
+  <g transform="translate(112, 102) scale(12)" stroke="#8da372" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" fill="#8da372" fill-opacity="0.25"/>
+    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+  </g>
+  <!-- Brand text badge -->
+  <text x="256" y="445" text-anchor="middle" fill="#f8f7f2" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="900" letter-spacing="4">UZHAVAN CONNECT</text>
+  <circle cx="360" cy="144" r="14" fill="#f8f7f2" />
+</svg>
