@@ -1976,12 +1976,12 @@ export const FpoDashboard: React.FC = () => {
                       </div>
                       <span
                         className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full border ${
-                          order.status === 'Packed' || order.status === 'Ready for Transport' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' :
+                          order.status === 'Packed' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' :
                           order.status === 'Transport Assigned' ? 'bg-indigo-100 text-indigo-800 border-indigo-300' :
                           'bg-amber-100 text-amber-800 border-amber-300 animate-pulse'
                         }`}
                       >
-                        {order.status === 'Packed' || order.status === 'Ready for Transport' ? 'Ready for Carrier Pickup' :
+                        {order.status === 'Packed' ? 'Ready for Carrier Pickup' :
                          order.status === 'Transport Assigned' ? 'Awaiting Carrier Dispatch' : 'En Route (Cold-Chain Active)'}
                       </span>
                     </div>
@@ -2022,7 +2022,7 @@ export const FpoDashboard: React.FC = () => {
                         <span>QR Passport</span>
                       </button>
 
-                      {order.status === 'Packed' || order.status === 'Ready for Transport' ? (
+                      {order.status === 'Packed' ? (
                         <button
                           onClick={() => handleOpenTransportModal(order)}
                           className="btn-primary text-xs py-2 px-4 rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
