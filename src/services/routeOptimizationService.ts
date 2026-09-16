@@ -96,7 +96,7 @@ export class RouteOptimizationService {
           vehicle_capacity: capacityKg,
           collection_center: hub
         }),
-        signal: AbortSignal.timeout(2000)
+        signal: AbortSignal.timeout(300)
       });
 
       if (response.ok) {

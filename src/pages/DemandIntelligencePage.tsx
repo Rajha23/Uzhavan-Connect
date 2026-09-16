@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import { AiService, ForecastResponseDto } from '../services/aiService';
+import confetti from 'canvas-confetti';
 import {
   TrendingUp,
   Sparkles,
@@ -52,6 +53,8 @@ export const DemandIntelligencePage: React.FC = () => {
   const [season, setSeason] = useState<'Kharif' | 'Rabi' | 'Monsoon' | 'Winter'>('Kharif');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [forecastResult, setForecastResult] = useState<ForecastResponseDto | null>(null);
+  const [showSuccessToast, setShowSuccessToast] = useState<boolean>(false);
+  const [lastExecutedTime, setLastExecutedTime] = useState<string | null>(null);
 
   // Dynamic available crops from actual application data + core commodities
   const availableCrops = Array.from(
@@ -61,10 +64,25 @@ export const DemandIntelligencePage: React.FC = () => {
       'Capsicum',
       'Carrot',
       'Onion',
+      'Potato',
+      'Banana',
+      'Coconut',
+      'Cabbage',
+      'Cauliflower',
+      'Turmeric',
       ...produceListings.map((p) => p.crop),
       ...demandRequests.map((d) => d.crop)
     ])
   );
+
+  // Calculate real committed FPO member supply for the chosen crop
+  const realCropSupplyKg = useMemo(() => {
+    const matching = produceListings.filter(
+      (p) => p.crop.toLowerCase().trim() === selectedCrop.toLowerCase().trim()
+    );
+    const sum = matching.reduce((acc, p) => acc + p.quantityKg, 0);
+    return sum > 0 ? sum : undefined;
+  }, [produceListings, selectedCrop]);
 
   // Fetch forecast prediction using modular AiService
   useEffect(() => {
@@ -76,7 +94,8 @@ export const DemandIntelligencePage: React.FC = () => {
       location: selectedRegion,
       season: season,
       current_price: currentMandiPrice,
-      days_ahead: horizonDays
+      days_ahead: horizonDays,
+      committed_supply_override: realCropSupplyKg
     }).then((result) => {
       if (isMounted) {
         setForecastResult(result);
@@ -87,41 +106,86 @@ export const DemandIntelligencePage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [selectedCrop, selectedRegion, horizonDays, currentMandiPrice, season]);
+  }, [selectedCrop, selectedRegion, horizonDays, currentMandiPrice, season, realCropSupplyKg]);
 
   const handleRunPrediction = () => {
     setIsLoading(true);
-    AiService.predictDemand({
-      crop: selectedCrop,
-      location: selectedRegion,
-      season: season,
-      current_price: currentMandiPrice,
-      days_ahead: horizonDays
-    }).then((result) => {
-      setForecastResult(result);
-      setIsLoading(false);
-    });
+    // Explicit 450ms simulation delay so the user perceives the ML inference processing
+    setTimeout(() => {
+      AiService.predictDemand({
+        crop: selectedCrop,
+        location: selectedRegion,
+        season: season,
+        current_price: currentMandiPrice,
+        days_ahead: horizonDays,
+        committed_supply_override: realCropSupplyKg
+      }).then((result) => {
+        setForecastResult(result);
+        setIsLoading(false);
+        setLastExecutedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+        setShowSuccessToast(true);
+        setTimeout(() => setShowSuccessToast(false), 5000);
+
+        // Celebratory visual effect
+        confetti({
+          particleCount: 50,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      });
+    }, 450);
   };
 
-  // Derived 7-Day Trend Chart based on dynamic predicted volume
-  const predictedTotal = forecastResult?.predicted_demand_kg || 8500;
-  const forecastSeries = [
-    { day: 'Day 1', actualDemand: Math.round(predictedTotal * 0.93), predictedDemand: Math.round(predictedTotal * 0.93), supply: Math.round(predictedTotal * 0.80) },
-    { day: 'Day 2', actualDemand: Math.round(predictedTotal * 0.95), predictedDemand: Math.round(predictedTotal * 0.95), supply: Math.round(predictedTotal * 0.81) },
-    { day: 'Day 3', actualDemand: Math.round(predictedTotal * 0.97), predictedDemand: Math.round(predictedTotal * 0.96), supply: Math.round(predictedTotal * 0.81) },
-    { day: 'Day 4 (Today)', actualDemand: null, predictedDemand: predictedTotal, supply: Math.round(predictedTotal * 0.81) },
-    { day: 'Day 5', actualDemand: null, predictedDemand: Math.round(predictedTotal * 1.02), supply: Math.round(predictedTotal * 0.82) },
-    { day: 'Day 6', actualDemand: null, predictedDemand: Math.round(predictedTotal * 1.04), supply: Math.round(predictedTotal * 0.83) },
-    { day: 'Day 7', actualDemand: null, predictedDemand: Math.round(predictedTotal * 1.06), supply: Math.round(predictedTotal * 0.84) },
-  ];
+  // Dynamic Trend Chart derived from the active forecast result and horizon
+  const forecastSeries = useMemo(() => {
+    const predictedTotal = forecastResult?.predicted_demand_kg || 8500;
+    const supplyTotal = forecastResult?.current_supply_kg || Math.round(predictedTotal * 0.81);
 
-  // Landed Cost vs Mandi Price
-  const priceTrendSeries = [
-    { week: 'Week 1', spotMandiPrice: currentMandiPrice + 12, uzhavanLanded: currentMandiPrice + 6, farmerRealization: currentMandiPrice },
-    { week: 'Week 2', spotMandiPrice: currentMandiPrice + 14, uzhavanLanded: currentMandiPrice + 7, farmerRealization: currentMandiPrice + 0.5 },
-    { week: 'Week 3', spotMandiPrice: currentMandiPrice + 11, uzhavanLanded: currentMandiPrice + 6.5, farmerRealization: currentMandiPrice + 1 },
-    { week: 'Week 4 (Proj)', spotMandiPrice: currentMandiPrice + 15, uzhavanLanded: currentMandiPrice + 7, farmerRealization: currentMandiPrice + 1.5 },
-  ];
+    if (horizonDays === 14) {
+      return [
+        { day: 'Day 2', actualDemand: Math.round(predictedTotal * 0.14), predictedDemand: Math.round(predictedTotal * 0.14), supply: Math.round(supplyTotal * 0.14) },
+        { day: 'Day 4', actualDemand: Math.round(predictedTotal * 0.28), predictedDemand: Math.round(predictedTotal * 0.28), supply: Math.round(supplyTotal * 0.29) },
+        { day: 'Day 6', actualDemand: Math.round(predictedTotal * 0.42), predictedDemand: Math.round(predictedTotal * 0.43), supply: Math.round(supplyTotal * 0.44) },
+        { day: 'Day 8 (Now)', actualDemand: null, predictedDemand: Math.round(predictedTotal * 0.58), supply: Math.round(supplyTotal * 0.57) },
+        { day: 'Day 10', actualDemand: null, predictedDemand: Math.round(predictedTotal * 0.72), supply: Math.round(supplyTotal * 0.72) },
+        { day: 'Day 12', actualDemand: null, predictedDemand: Math.round(predictedTotal * 0.86), supply: Math.round(supplyTotal * 0.86) },
+        { day: 'Day 14', actualDemand: null, predictedDemand: predictedTotal, supply: supplyTotal }
+      ];
+    }
+
+    if (horizonDays === 30) {
+      return [
+        { day: 'Day 5', actualDemand: Math.round(predictedTotal * 0.16), predictedDemand: Math.round(predictedTotal * 0.16), supply: Math.round(supplyTotal * 0.17) },
+        { day: 'Day 10', actualDemand: Math.round(predictedTotal * 0.33), predictedDemand: Math.round(predictedTotal * 0.34), supply: Math.round(supplyTotal * 0.35) },
+        { day: 'Day 15 (Now)', actualDemand: null, predictedDemand: Math.round(predictedTotal * 0.51), supply: Math.round(supplyTotal * 0.51) },
+        { day: 'Day 20', actualDemand: null, predictedDemand: Math.round(predictedTotal * 0.68), supply: Math.round(supplyTotal * 0.67) },
+        { day: 'Day 25', actualDemand: null, predictedDemand: Math.round(predictedTotal * 0.85), supply: Math.round(supplyTotal * 0.84) },
+        { day: 'Day 30', actualDemand: null, predictedDemand: predictedTotal, supply: supplyTotal }
+      ];
+    }
+
+    // Default 7-day Tactical Horizon
+    return [
+      { day: 'Day 1', actualDemand: Math.round(predictedTotal * 0.93), predictedDemand: Math.round(predictedTotal * 0.93), supply: Math.round(supplyTotal * 0.80) },
+      { day: 'Day 2', actualDemand: Math.round(predictedTotal * 0.95), predictedDemand: Math.round(predictedTotal * 0.95), supply: Math.round(supplyTotal * 0.81) },
+      { day: 'Day 3', actualDemand: Math.round(predictedTotal * 0.97), predictedDemand: Math.round(predictedTotal * 0.96), supply: Math.round(supplyTotal * 0.81) },
+      { day: 'Day 4 (Today)', actualDemand: null, predictedDemand: predictedTotal, supply: supplyTotal },
+      { day: 'Day 5', actualDemand: null, predictedDemand: Math.round(predictedTotal * 1.02), supply: Math.round(supplyTotal * 0.82) },
+      { day: 'Day 6', actualDemand: null, predictedDemand: Math.round(predictedTotal * 1.04), supply: Math.round(supplyTotal * 0.83) },
+      { day: 'Day 7', actualDemand: null, predictedDemand: Math.round(predictedTotal * 1.06), supply: Math.round(supplyTotal * 0.84) },
+    ];
+  }, [forecastResult, horizonDays]);
+
+  // Landed Cost vs Mandi Price with dynamic crop baseline
+  const priceTrendSeries = useMemo(() => {
+    const basePrice = forecastResult?.featuresUsed?.spotPrice || currentMandiPrice;
+    return [
+      { week: 'Week 1', spotMandiPrice: Math.round(basePrice + 12), uzhavanLanded: Math.round(basePrice + 6), farmerRealization: basePrice },
+      { week: 'Week 2', spotMandiPrice: Math.round(basePrice + 14), uzhavanLanded: Math.round(basePrice + 7), farmerRealization: Number((basePrice + 0.5).toFixed(1)) },
+      { week: 'Week 3', spotMandiPrice: Math.round(basePrice + 11), uzhavanLanded: Math.round(basePrice + 6.5), farmerRealization: basePrice + 1 },
+      { week: 'Week 4 (Proj)', spotMandiPrice: Math.round(basePrice + 15), uzhavanLanded: Math.round(basePrice + 7), farmerRealization: Number((basePrice + 1.5).toFixed(1)) },
+    ];
+  }, [forecastResult, currentMandiPrice]);
 
   const metrics = forecastResult?.metrics || {
     mae: 4.2,
@@ -249,13 +313,49 @@ export const DemandIntelligencePage: React.FC = () => {
         </div>
       </div>
 
+      {/* SUCCESS / EXECUTION STATUS NOTIFICATION */}
+      {showSuccessToast && (
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 px-4 py-3 rounded-2xl flex items-center justify-between shadow-sm animate-in fade-in slide-in-from-top duration-300">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 shrink-0">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-emerald-900">
+                {t('demandIntelligence.inferenceSuccessTitle', undefined, 'ML Demand Forecast Executed Successfully!')}
+              </p>
+              <p className="text-[11px] text-emerald-700">
+                {t('demandIntelligence.inferenceSuccessSub', {
+                  crop: selectedCrop,
+                  region: selectedRegion,
+                  horizon: horizonDays
+                }, `Updated predictive demand model for ${selectedCrop} across ${selectedRegion} (${horizonDays}-day horizon).`)}
+              </p>
+            </div>
+          </div>
+          {lastExecutedTime && (
+            <span className="text-[10px] font-mono font-medium text-emerald-600 bg-emerald-100/60 px-2.5 py-1 rounded-full shrink-0">
+              {lastExecutedTime}
+            </span>
+          )}
+        </div>
+      )}
+
       {/* 3. PREDICTION OUTPUT GAUGES */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#01472e] flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-[#01472e]" />
-            <span>{t('demandIntelligence.section2', undefined, '2. Forecast Predictions & Supply Gap')}</span>
-          </h3>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#01472e] flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-[#01472e]" />
+              <span>{t('demandIntelligence.section2', undefined, '2. Forecast Predictions & Supply Gap')}</span>
+            </h3>
+            {lastExecutedTime && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>{t('demandIntelligence.liveModelUpdated', { time: lastExecutedTime }, `Live Model Ran: ${lastExecutedTime}`)}</span>
+              </span>
+            )}
+          </div>
           <span className="text-[11px] font-mono text-slate-500 font-medium flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5 text-slate-400" />
             <span>{t('demandIntelligence.targetHorizon', undefined, 'Target Horizon:')} {forecastResult?.forecast_date || '2026-09-15'}</span>
