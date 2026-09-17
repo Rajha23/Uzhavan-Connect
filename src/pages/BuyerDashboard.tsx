@@ -175,9 +175,6 @@ export const BuyerDashboard: React.FC = () => {
           <div className="flex items-center gap-2 text-[#ccd5ae] text-xs font-semibold uppercase tracking-wider mb-2">
             <ShoppingBag className="w-4 h-4" />
             <span>{t('buyer.institutionalProcurementHub', 'Institutional Procurement Hub')}</span>
-            <span className="bg-[#e9edc9]/20 text-[#fefae0] text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-[#e9edc9]/30">
-              {t('buyer.demandAggregationActive', 'Demand Aggregation Active')}
-            </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
             {t('buyer.buyerDashboard', 'Buyer Dashboard')}
