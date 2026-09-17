@@ -12,7 +12,7 @@ export interface LanguageDefinition {
   regions: string[];      // Primary Indian states / regions (hint only)
 }
 
-export type TranslationMap = Record<string, string>;
+export type TranslationMap = Record<string, any>;
 
 export interface TranslationDictionary {
   common: TranslationMap;
