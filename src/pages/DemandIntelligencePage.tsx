@@ -51,6 +51,7 @@ export const DemandIntelligencePage: React.FC = () => {
   const [season, setSeason] = useState<'Kharif' | 'Rabi' | 'Monsoon' | 'Winter'>('Kharif');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [forecastResult, setForecastResult] = useState<ForecastResponseDto | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Dynamic available crops from actual application data + core commodities
   const availableCrops = Array.from(
@@ -65,46 +66,30 @@ export const DemandIntelligencePage: React.FC = () => {
     ])
   );
 
-  // Fetch forecast prediction using modular AiService
-  useEffect(() => {
-    let isMounted = true;
+  const handleRunPrediction = async () => {
     setIsLoading(true);
-
-    AiService.predictDemand({
-      crop: selectedCrop,
-      location: selectedRegion,
-      season: season,
-      current_price: currentMandiPrice,
-      days_ahead: horizonDays
-    }).then((result) => {
-      if (isMounted) {
-        setForecastResult(result);
-        setIsLoading(false);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [selectedCrop, selectedRegion, horizonDays, currentMandiPrice, season]);
-
-  const handleRunPrediction = () => {
-    setIsLoading(true);
-    AiService.predictDemand({
-      crop: selectedCrop,
-      location: selectedRegion,
-      season: season,
-      current_price: currentMandiPrice,
-      days_ahead: horizonDays
-    }).then((result) => {
+    setError(null);
+    try {
+      const result = await AiService.predictDemand({
+        crop: selectedCrop,
+        location: selectedRegion,
+        season: season,
+        current_price: currentMandiPrice,
+        days_ahead: horizonDays
+      });
       setForecastResult(result);
+    } catch (err: any) {
+      console.error('Forecast execution failed:', err);
+      setError(err?.message || 'Failed to execute forecast. Please try again.');
+      setForecastResult(null);
+    } finally {
       setIsLoading(false);
-    });
+    }
   };
 
   // Derived 7-Day Trend Chart based on dynamic predicted volume
-  const predictedTotal = forecastResult?.predicted_demand_kg || 8500;
-  const forecastSeries = [
+  const predictedTotal = forecastResult?.predicted_demand_kg ?? 0;
+  const forecastSeries = forecastResult ? [
     { day: 'Day 1', actualDemand: Math.round(predictedTotal * 0.93), predictedDemand: Math.round(predictedTotal * 0.93), supply: Math.round(predictedTotal * 0.80) },
     { day: 'Day 2', actualDemand: Math.round(predictedTotal * 0.95), predictedDemand: Math.round(predictedTotal * 0.95), supply: Math.round(predictedTotal * 0.81) },
     { day: 'Day 3', actualDemand: Math.round(predictedTotal * 0.97), predictedDemand: Math.round(predictedTotal * 0.96), supply: Math.round(predictedTotal * 0.81) },
@@ -112,24 +97,17 @@ export const DemandIntelligencePage: React.FC = () => {
     { day: 'Day 5', actualDemand: null, predictedDemand: Math.round(predictedTotal * 1.02), supply: Math.round(predictedTotal * 0.82) },
     { day: 'Day 6', actualDemand: null, predictedDemand: Math.round(predictedTotal * 1.04), supply: Math.round(predictedTotal * 0.83) },
     { day: 'Day 7', actualDemand: null, predictedDemand: Math.round(predictedTotal * 1.06), supply: Math.round(predictedTotal * 0.84) },
-  ];
+  ] : [];
 
   // Landed Cost vs Mandi Price
-  const priceTrendSeries = [
+  const priceTrendSeries = forecastResult ? [
     { week: 'Week 1', spotMandiPrice: currentMandiPrice + 12, uzhavanLanded: currentMandiPrice + 6, farmerRealization: currentMandiPrice },
     { week: 'Week 2', spotMandiPrice: currentMandiPrice + 14, uzhavanLanded: currentMandiPrice + 7, farmerRealization: currentMandiPrice + 0.5 },
     { week: 'Week 3', spotMandiPrice: currentMandiPrice + 11, uzhavanLanded: currentMandiPrice + 6.5, farmerRealization: currentMandiPrice + 1 },
     { week: 'Week 4 (Proj)', spotMandiPrice: currentMandiPrice + 15, uzhavanLanded: currentMandiPrice + 7, farmerRealization: currentMandiPrice + 1.5 },
-  ];
+  ] : [];
 
-  const metrics = forecastResult?.metrics || {
-    mae: 4.2,
-    rmse: 310,
-    mape: 3.8,
-    sampleSize: 1825,
-    evaluationDataset: 'Historical Tamil Nadu APMC Mandi Test Fold (2021-2025)',
-    isModelBenchmark: true
-  };
+  const metrics = forecastResult?.metrics;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -244,18 +222,39 @@ export const DemandIntelligencePage: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. PREDICTION OUTPUT GAUGES */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#01472e] flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-[#01472e]" />
-            <span>{t('demandIntelligence.section2', undefined, '2. Forecast Predictions & Supply Gap')}</span>
-          </h3>
-          <span className="text-[11px] font-mono text-slate-500 font-medium flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-slate-400" />
-            <span>{t('demandIntelligence.targetHorizon', undefined, 'Target Horizon:')} {forecastResult?.forecast_date || '2026-09-15'}</span>
-          </span>
+      {/* Error Alert (only if execution failed) */}
+      {error && (
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 flex items-center gap-3 shadow-soft">
+          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+          <div className="flex-1">
+            <p className="text-xs font-semibold">{t('common.error', undefined, 'Forecast Execution Failed')}</p>
+            <p className="text-xs text-rose-600 mt-0.5">{error}</p>
+          </div>
+          <button
+            onClick={handleRunPrediction}
+            disabled={isLoading}
+            className="px-3 py-1.5 text-xs font-semibold bg-rose-100 hover:bg-rose-200 text-rose-800 rounded-lg transition-colors cursor-pointer"
+          >
+            {t('common.retry', undefined, 'Retry')}
+          </button>
         </div>
+      )}
+
+      {/* Forecast Results & Details: Rendered ONLY after successful execution */}
+      {forecastResult && metrics && (
+        <>
+          {/* 3. PREDICTION OUTPUT GAUGES */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#01472e] flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-[#01472e]" />
+                <span>{t('demandIntelligence.section2', undefined, '2. Forecast Predictions & Supply Gap')}</span>
+              </h3>
+              <span className="text-[11px] font-mono text-slate-500 font-medium flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                <span>{t('demandIntelligence.targetHorizon', undefined, 'Target Horizon:')} {forecastResult.forecast_date}</span>
+              </span>
+            </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
           <div className="agri-card bg-white p-5 sm:p-6 rounded-3xl border border-[#ccd5ae]/40 shadow-soft">
@@ -534,6 +533,8 @@ export const DemandIntelligencePage: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
+  )}
+</div>
   );
 };
