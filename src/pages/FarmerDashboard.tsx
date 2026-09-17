@@ -476,15 +476,15 @@ export const FarmerDashboard: React.FC = () => {
                   onChange={(e) => setCrop(e.target.value)}
                   className="input-modern"
                 >
-                  <option value="Tomato">Tomato</option>
-                  <option value="Onion">Onion</option>
-                  <option value="Carrot">Carrot</option>
-                  <option value="Green Chilli">Green Chilli</option>
-                  <option value="Capsicum">Capsicum</option>
-                  <option value="Potato">Potato</option>
-                  <option value="Mango">Mango</option>
-                  <option value="Cabbage">Cabbage</option>
-                  <option value="Banana">Banana</option>
+                  <option value="Tomato">{t('crops.tomato', 'Tomato')}</option>
+                  <option value="Onion">{t('crops.onion', 'Onion')}</option>
+                  <option value="Carrot">{t('crops.carrot', 'Carrot')}</option>
+                  <option value="Green Chilli">{t('crops.greenChilli', 'Green Chilli')}</option>
+                  <option value="Capsicum">{t('crops.capsicum', 'Capsicum')}</option>
+                  <option value="Potato">{t('crops.potato', 'Potato')}</option>
+                  <option value="Mango">{t('crops.mango', 'Mango')}</option>
+                  <option value="Cabbage">{t('crops.cabbage', 'Cabbage')}</option>
+                  <option value="Banana">{t('crops.banana', 'Banana')}</option>
                 </select>
               </div>
 
