@@ -707,14 +707,14 @@ export const FpoDashboard: React.FC = () => {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-lg sm:text-xl font-bold text-[#01472e] tracking-tight">
-                  Produce Quality & Buyer Reviews Center
+                  {t('fpo.reviews.title', 'Produce Quality & Buyer Reviews Center')}
                 </h2>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">
-                  ● Live Sync
+                  {t('fpo.reviews.liveSync', '● Live Sync')}
                 </span>
               </div>
               <p className="text-xs text-[#5c7065] mt-1">
-                Produce quality benchmarks and reviews gathered from institutional buyer feedback, hub quality audits, and receiving dock reports.
+                {t('fpo.reviews.subtitle', 'Produce quality benchmarks and reviews gathered from institutional buyer feedback, hub quality audits, and receiving dock reports.')}
               </p>
             </div>
           </div>
@@ -725,7 +725,7 @@ export const FpoDashboard: React.FC = () => {
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#01472e] text-white text-xs font-semibold hover:bg-[#025a3b] transition cursor-pointer shadow-xs"
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span>Full Feedback Console</span>
+              <span>{t('fpo.reviews.fullConsole', 'Full Feedback Console')}</span>
               <ArrowRight className="w-3 h-3" />
             </button>
             <button
@@ -733,7 +733,7 @@ export const FpoDashboard: React.FC = () => {
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-[#ccd5ae]/60 text-[#01472e] text-xs font-semibold hover:bg-[#eaf4ec] transition cursor-pointer"
             >
               <Award className="w-3.5 h-3.5 text-amber-600" />
-              <span>Public Improvements</span>
+              <span>{t('fpo.reviews.publicImprovements', 'Public Improvements')}</span>
             </button>
           </div>
         </div>
@@ -742,7 +742,7 @@ export const FpoDashboard: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="bg-[#eaf4ec] border border-[#a3b18a]/40 rounded-2xl p-4 flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5c7065]">Avg Produce Quality</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5c7065]">{t('fpo.reviews.avgQuality', 'Avg Produce Quality')}</span>
               <div className="flex text-amber-400 text-xs">★★★★★</div>
             </div>
             <div className="mt-2">
@@ -750,13 +750,13 @@ export const FpoDashboard: React.FC = () => {
               <span className="text-xs font-medium text-[#5c7065]"> / 5.0</span>
             </div>
             <p className="text-[10px] text-emerald-700 font-semibold mt-1">
-              94% positive sentiment across 87 reviews
+              {t('fpo.reviews.positiveSentiment', '94% positive sentiment across 87 reviews')}
             </p>
           </div>
 
           <div className="bg-white border border-[#ccd5ae]/50 rounded-2xl p-4 flex flex-col justify-between shadow-2xs">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5c7065]">Grading Accuracy</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5c7065]">{t('fpo.reviews.gradingAccuracy', 'Grading Accuracy')}</span>
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
             </div>
             <div className="mt-2">
@@ -769,27 +769,27 @@ export const FpoDashboard: React.FC = () => {
 
           <div className="bg-white border border-[#ccd5ae]/50 rounded-2xl p-4 flex flex-col justify-between shadow-2xs">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5c7065]">Weighing Transparency</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5c7065]">{t('fpo.reviews.weighingTransparency', 'Weighing Transparency')}</span>
               <Scale className="w-4 h-4 text-blue-600" />
             </div>
             <div className="mt-2">
               <span className="text-2xl font-black text-[#01472e]">99.1%</span>
             </div>
             <p className="text-[10px] text-[#5c7065] font-medium mt-1">
-              Zero tare weight disputes this week
+              {t('fpo.reviews.tareWeightDisputes', 'Zero tare weight disputes this week')}
             </p>
           </div>
 
           <div className="bg-white border border-[#ccd5ae]/50 rounded-2xl p-4 flex flex-col justify-between shadow-2xs">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5c7065]">Cold-Chain Freshness</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5c7065]">{t('fpo.reviews.coldChainFreshness', 'Cold-Chain Freshness')}</span>
               <Truck className="w-4 h-4 text-teal-600" />
             </div>
             <div className="mt-2">
               <span className="text-2xl font-black text-[#01472e]">96.8%</span>
             </div>
             <p className="text-[10px] text-[#5c7065] font-medium mt-1">
-              Avg dispatch temp maintained at 4.2°C
+              {t('fpo.reviews.avgDispatchTemp', 'Avg dispatch temp maintained at 4.2°C')}
             </p>
           </div>
         </div>
@@ -800,7 +800,7 @@ export const FpoDashboard: React.FC = () => {
             <div className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-[#01472e]" />
               <h3 className="text-xs font-bold text-[#01472e] uppercase tracking-wider">
-                Recent Buyer Feedback on FPO Batches
+                {t('fpo.reviews.recentFeedback', 'Recent Buyer Feedback on FPO Batches')}
               </h3>
             </div>
             <button
