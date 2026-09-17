@@ -168,8 +168,7 @@ export const BulkBuyerDashboard: React.FC = () => {
     );
   }, [demandRequests, currentUser]);
 
-  // Aggregate Metrics computed from dataset
-  const activeDemandCount = bulkDemands.length > 0 ? bulkDemands.length : 1;
+  const activeDemandCount = bulkDemands.length;
   const totalRequiredQuantityKg = bulkDemands.reduce((sum, d) => sum + (d.initialQuantityKg || d.quantityKg), 0);
   const confirmedSupplyKg = bulkOrders.reduce((sum, o) => sum + o.quantityKg, 0);
   const inTransitCount = bulkOrders.filter((o) => o.status === 'In Transit' || o.lifecycleStage === 'IN_TRANSIT').length;
