@@ -46,6 +46,7 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, onTaskClick }) => {
           <thead>
             <tr className="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
               <th className="p-4 font-semibold">{t('tasks.fields.taskTitle', undefined, 'Task')}</th>
+              <th className="p-4 font-semibold">{t('tasks.fields.role', undefined, 'Role')}</th>
               <th className="p-4 font-semibold">{t('tasks.fields.status', undefined, 'Status')}</th>
               <th className="p-4 font-semibold">{t('tasks.fields.priority', undefined, 'Priority')}</th>
               <th className="p-4 font-semibold">{t('tasks.fields.assignedTo', undefined, 'Assigned To')}</th>
@@ -63,6 +64,11 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, onTaskClick }) => {
                 <td className="p-4">
                   <p className="font-semibold text-slate-800 text-sm line-clamp-1">{task.title}</p>
                   <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{task.taskType}</p>
+                </td>
+                <td className="p-4 whitespace-nowrap">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/30">
+                    {task.assignedRole.replace('_', ' ')}
+                  </span>
                 </td>
                 <td className="p-4">
                   <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${getStatusBadge(task.status)}`}>

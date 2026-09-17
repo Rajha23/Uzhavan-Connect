@@ -1,7 +1,7 @@
 import { Task, TaskStatus, TaskComment, TaskActivity, UserRole, isTaskOverdue } from '../types';
 import { INITIAL_TASKS } from '../data/mockTasks';
 
-const UZHAVAN_TASKS_KEY = 'uzhavan_tasks_v2';
+const UZHAVAN_TASKS_KEY = 'uzhavan_tasks_v3';
 
 let tasksStore: Task[] = [...INITIAL_TASKS];
 
@@ -40,6 +40,7 @@ const canViewTask = (
   organizationId?: string
 ): boolean => {
   if (role === 'ADMIN') return true;
+  if (task.assignedRole === role) return true;
   if (userId && (task.assignedTo === userId || task.createdBy === userId)) return true;
   if (
     role === 'FPO_AGGREGATOR' &&
@@ -56,12 +57,24 @@ export const taskService = {
     return [...tasksStore];
   },
 
+  getAllTasks: async (filterRole?: UserRole | 'ALL'): Promise<Task[]> => {
+    if (filterRole && filterRole !== 'ALL') {
+      return tasksStore.filter((task) => task.assignedRole === filterRole);
+    }
+    return [...tasksStore];
+  },
+
   getTasksByRoleOrUser: async (
     role: UserRole,
     userId?: string,
-    organizationId?: string
+    organizationId?: string,
+    filterRole?: UserRole | 'ALL'
   ): Promise<Task[]> => {
-    return tasksStore.filter((task) => canViewTask(task, role, userId, organizationId));
+    let result = tasksStore.filter((task) => canViewTask(task, role, userId, organizationId));
+    if (filterRole && filterRole !== 'ALL') {
+      result = result.filter((task) => task.assignedRole === filterRole);
+    }
+    return result;
   },
 
   createTask: async (

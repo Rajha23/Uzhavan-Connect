@@ -32,11 +32,16 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onStatusChang
       className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col gap-3"
     >
       <div className="flex justify-between items-start gap-2">
-        <span className={`text-xs font-semibold px-2 py-1 rounded-md ${getPriorityColor(task.priority)}`}>
-          {t(`tasks.priority.${task.priority.toLowerCase()}`, task.priority)}
-        </span>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${getPriorityColor(task.priority)}`}>
+            {t(`tasks.priority.${task.priority.toLowerCase()}`, task.priority)}
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/30">
+            {task.assignedRole.replace('_', ' ')}
+          </span>
+        </div>
         {overdue && (
-          <span className="flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded-md">
+          <span className="flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-md">
             <AlertOctagon className="w-3 h-3" />
             {t('tasks.overdue', 'Overdue')}
           </span>
