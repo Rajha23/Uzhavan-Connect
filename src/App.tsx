@@ -397,15 +397,17 @@ const PublicShell: React.FC = () => (
 // ─── Authenticated Shell (Sidebar + Header) ──────────────────────────────────
 
 const AuthenticatedShell: React.FC = () => {
+  const { sidebarOpen } = useApp();
+
   return (
     <div className="min-h-screen agri-canvas relative">
       <div className="noise-overlay" />
       <AgriAtmosphericGlow />
-      {/* Left sidebar — fixed */}
+      {/* Left sidebar — sliding window */}
       <Sidebar />
 
       {/* Right side: header + scrollable main */}
-      <div className="lg:pl-64 flex flex-col min-h-screen transition-all duration-300 relative z-10">
+      <div className={`${sidebarOpen ? 'lg:pl-64' : 'lg:pl-0'} flex flex-col min-h-screen transition-all duration-300 relative z-10`}>
         <Header />
         <main className="flex-1 overflow-auto">
           <PageContent />

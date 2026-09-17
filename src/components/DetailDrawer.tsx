@@ -101,7 +101,7 @@ export const DetailDrawer: React.FC<DetailDrawerProps> = ({
 
   return (
     <div
-      className="detail-drawer-backdrop"
+      className="fixed inset-0 z-50 flex justify-end bg-slate-900/30 backdrop-blur-xs detail-drawer-backdrop"
       onClick={handleBackdropClick}
       aria-hidden="true"
     >
@@ -112,7 +112,7 @@ export const DetailDrawer: React.FC<DetailDrawerProps> = ({
         aria-labelledby="drawer-title"
         tabIndex={-1}
         onKeyDown={handleKeyDown}
-        className={`detail-drawer-panel ${widthClass}`}
+        className={`h-full max-w-full flex flex-col bg-[#faf9f5] border-l border-[#ccd5ae]/60 shadow-2xl outline-none detail-drawer-panel w-full sm:${widthClass}`}
       >
         {/* ── HEADER ──────────────────────────────────────────────── */}
         <div className="shrink-0 px-6 py-5 border-b border-[#ccd5ae]/40 bg-[#faf9f5]/80">

@@ -46,6 +46,7 @@ const PAGE_TITLES: Record<string, string> = {
 
 export const Header: React.FC = () => {
   const {
+    sidebarOpen,
     toggleSidebar,
     activeTab,
     currentUser,
@@ -96,11 +97,12 @@ export const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-[#faf9f5]/90 backdrop-blur-md border-b border-[#ccd5ae]/40 flex items-center px-4 sm:px-6 gap-3 shadow-soft">
-      {/* Mobile hamburger */}
+      {/* Sidebar toggle button (laptop & mobile sliding window) */}
       <button
         onClick={toggleSidebar}
-        className="lg:hidden p-2 rounded-2xl text-[#5c7065] hover:text-[#01472e] hover:bg-[#ccd5ae]/20 transition cursor-pointer"
+        className="p-2 rounded-2xl text-[#5c7065] hover:text-[#01472e] hover:bg-[#ccd5ae]/20 transition cursor-pointer"
         aria-label="Toggle sidebar"
+        title={sidebarOpen ? t('nav.collapseSidebar', undefined, 'Collapse sidebar') : t('nav.expandSidebar', undefined, 'Expand sidebar')}
       >
         <Menu className="w-5 h-5" />
       </button>

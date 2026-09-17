@@ -201,7 +201,9 @@ export const Sidebar: React.FC = () => {
 
   const handleSelect = (id: string) => {
     setActiveTab(id);
-    setSidebarOpen(false);
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
   };
 
   return (
@@ -216,7 +218,7 @@ export const Sidebar: React.FC = () => {
 
       {/* Main Left Sidebar */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#faf9f5]/95 backdrop-blur-md text-[#01472e] border-r border-[#ccd5ae]/40 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 shadow-soft ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#faf9f5]/95 backdrop-blur-md text-[#01472e] border-r border-[#ccd5ae]/40 flex flex-col justify-between transition-transform duration-300 ease-in-out shadow-soft ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -247,7 +249,9 @@ export const Sidebar: React.FC = () => {
 
             <button
               onClick={() => setSidebarOpen(false)}
-              className="p-1.5 text-[#5c7065] hover:text-[#01472e] hover:bg-[#ccd5ae]/20 rounded-xl lg:hidden cursor-pointer"
+              className="p-1.5 text-[#5c7065] hover:text-[#01472e] hover:bg-[#ccd5ae]/20 rounded-xl cursor-pointer transition-colors"
+              aria-label={t('common.close', undefined, 'Close')}
+              title={t('common.close', undefined, 'Close')}
             >
               <X className="w-5 h-5" />
             </button>

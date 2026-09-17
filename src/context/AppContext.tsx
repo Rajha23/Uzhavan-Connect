@@ -308,7 +308,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return 'home';
   });
   const [attemptedFeature, setAttemptedFeature] = useState<string>('');
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024;
+    }
+    return false;
+  });
   const [readNotificationIds, setReadNotificationIds] = useState<Set<string>>(() => loadReadNotificationIds());
   const [notificationPreferences, setNotificationPreferences] = useState<NotificationPreferences>(() => loadNotificationPreferences());
   const [eventNotifications, setEventNotifications] = useState<AppNotification[]>([]);
