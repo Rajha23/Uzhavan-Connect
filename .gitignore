@@ -44,6 +44,5 @@ Thumbs.db
 *.sw?
 scratch/
 .vercel/
-Uzhavan-Connect-latest/
-
-Uzhavan-Connect/
+# Accidental nested repo clones or extracts
+Uzhavan-Connect*/
