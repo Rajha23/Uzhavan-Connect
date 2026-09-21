@@ -23,6 +23,7 @@ export type ComplaintStatus =
   | 'UNDER_REVIEW'
   | 'ASSIGNED'
   | 'ACTION_TAKEN'
+  | 'RESPONDED'
   | 'RESOLVED'
   | 'USER_CONFIRMED'
   | 'CLOSED';
@@ -77,6 +78,42 @@ export interface AiFeedbackAnalysis {
   patternAlert?: string;
 }
 
+export type StructuredFeedbackCategory =
+  | 'Product Quality'
+  | 'Delivery'
+  | 'Communication'
+  | 'Pricing'
+  | 'Packaging'
+  | 'Service'
+  | 'Other';
+
+export type FeedbackIssueType =
+  | 'No issue'
+  | 'Quality issue'
+  | 'Quantity issue'
+  | 'Delivery delay'
+  | 'Damaged product'
+  | 'Wrong product'
+  | 'Payment issue'
+  | 'Communication issue'
+  | 'Other';
+
+export type FeedbackProcessingStatus =
+  | 'Submitted'
+  | 'Under Review'
+  | 'Responded'
+  | 'Resolved';
+
+export interface FeedbackResponse {
+  id?: string;
+  responseId?: string;
+  responderId?: string;
+  responderName: string;
+  responderRole: string;
+  message: string;
+  createdAt: string;
+}
+
 // ─── Core Feedback Item ───────────────────────────────────────────────────────
 
 export interface FeedbackItem {
@@ -94,23 +131,42 @@ export interface FeedbackItem {
   productName?: string;
   // Ratings
   ratings: FeedbackRatings;
+  rating?: number; // 1 to 5 overall rating
   // Content
   comment?: string;
+  whatWentWell?: string;
+  whatCouldBeImproved?: string;
+  issueType?: FeedbackIssueType;
+  additionalComments?: string;
   photoUrl?: string;
   tags: string[];
   // Classification
   category: FeedbackCategory;
+  structuredCategory?: StructuredFeedbackCategory;
   subcategory?: string;
   sentiment: FeedbackSentiment;
   feedbackType: FeedbackType;
   priority: FeedbackPriority;
+  // Transaction association
+  transactionId?: string;
+  shipmentId?: string;
+  transactionDate?: string;
+  submittedByRole?: string;
+  submittedByName?: string;
+  targetRole?: string;
+  targetName?: string;
+  carrierName?: string;
+  logisticsProvider?: string;
   // AI
   aiConfidence: number;
   aiAnalysis: AiFeedbackAnalysis;
   // Status / Lifecycle
   status: ComplaintStatus;
+  processingStatus?: FeedbackProcessingStatus;
   adminResponse?: string;
   adminNotes?: string;
+  internalNotes?: string; // Private staff notes
+  responses?: FeedbackResponse[];
   assignedTeam?: string;
   assignedTo?: string;
   resolution?: string;
@@ -124,6 +180,7 @@ export interface FeedbackItem {
   createdAt: string;
   updatedAt: string;
   resolvedAt?: string;
+  resolvedBy?: string;
   // Delivery specifics
   deliveryOnTime?: boolean;
   deliveryDamaged?: boolean;

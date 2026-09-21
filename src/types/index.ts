@@ -729,3 +729,4 @@ export interface NewsArticle {
 }
 
 export * from './shipment';
+export * from './feedback';

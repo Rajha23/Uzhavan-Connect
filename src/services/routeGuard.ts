@@ -100,6 +100,8 @@ export const PATH_TO_TAB: Record<string, string> = {
   '/complaint': 'report-problem',
   '/feedback/complaints-tracker': 'my-complaints',
   '/my-complaints': 'my-complaints',
+  '/my-feedback': 'my-complaints',
+  '/feedback/my-feedback': 'my-complaints',
   '/complaint-tracker': 'my-complaints',
   '/complaints-tracker': 'my-complaints',
   '/feedback/improvements': 'you-said-we-improved',

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
-import { FeedbackItem } from '../types/feedback';
+import { FeedbackItem, FeedbackProcessingStatus } from '../types/feedback';
+import { feedbackService } from '../services/feedbackService';
 import { INITIAL_FEEDBACK } from '../data/feedbackMockData';
 import {
   UserProfile,
@@ -165,6 +166,9 @@ interface AppContextType {
   // ─── Feedback Intelligence ───────────────────────────────────────────────
   feedbackItems: FeedbackItem[];
   submitFeedback: (feedback: Omit<FeedbackItem, 'feedbackId' | 'createdAt' | 'updatedAt'>) => FeedbackItem;
+  submitTransactionFeedback: (item: any) => FeedbackItem;
+  respondToFeedback: (feedbackId: string, message: string, responderName: string, responderRole: string) => FeedbackItem | null;
+  updateFeedbackStatusAndNotes: (feedbackId: string, status: FeedbackProcessingStatus, internalNotes?: string, adminResponse?: string) => FeedbackItem | null;
   updateComplaintStatus: (feedbackId: string, newStatus: string, adminResponse?: string, resolution?: string) => void;
   // ─── Document Management ──────────────────────────────────────────────────
   files: FileRecord[];
@@ -330,21 +334,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // ─── Feedback Intelligence State ────────────────────────────────────────
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>(() => {
-    try {
-      const saved = localStorage.getItem('uzhavan_feedback_items');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch (e) {}
-    return INITIAL_FEEDBACK;
+    return feedbackService.loadFeedbacks();
   });
 
   useEffect(() => {
-    try {
-      localStorage.setItem('uzhavan_feedback_items', JSON.stringify(feedbackItems));
-    } catch (e) {}
-  }, [feedbackItems]);
+    const handleFeedbackUpdated = () => {
+      setFeedbackItems(feedbackService.loadFeedbacks());
+    };
+    window.addEventListener('transaction-feedback-updated', handleFeedbackUpdated);
+    window.addEventListener('storage', handleFeedbackUpdated);
+    return () => {
+      window.removeEventListener('transaction-feedback-updated', handleFeedbackUpdated);
+      window.removeEventListener('storage', handleFeedbackUpdated);
+    };
+  }, []);
 
   const submitFeedback = useCallback((feedback: Omit<FeedbackItem, 'feedbackId' | 'createdAt' | 'updatedAt'>): FeedbackItem => {
     const newFeedback: FeedbackItem = {
@@ -356,6 +359,29 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setFeedbackItems((prev) => [newFeedback, ...prev]);
     return newFeedback;
   }, []);
+
+  const submitTransactionFeedback = useCallback((data: any): FeedbackItem => {
+    const item = feedbackService.submitFeedback(data);
+    setFeedbackItems(feedbackService.loadFeedbacks());
+    return item;
+  }, []);
+
+  const respondToFeedback = useCallback((feedbackId: string, message: string, responderName: string, responderRole: string): FeedbackItem | null => {
+    const updated = feedbackService.addResponse(feedbackId, {
+      responderId: currentUser.id || 'usr-resp',
+      responderName: responderName || currentUser.name,
+      responderRole: responderRole || currentUser.role || 'ADMIN',
+      message
+    });
+    setFeedbackItems(feedbackService.loadFeedbacks());
+    return updated;
+  }, [currentUser]);
+
+  const updateFeedbackStatusAndNotes = useCallback((feedbackId: string, status: FeedbackProcessingStatus, internalNotes?: string, adminResponse?: string): FeedbackItem | null => {
+    const updated = feedbackService.updateStatusAndNotes(feedbackId, status, internalNotes, adminResponse, currentUser.name);
+    setFeedbackItems(feedbackService.loadFeedbacks());
+    return updated;
+  }, [currentUser]);
 
   const updateComplaintStatus = useCallback((feedbackId: string, newStatus: string, adminResponse?: string, resolution?: string) => {
     setFeedbackItems((prev) =>
@@ -2473,6 +2499,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         promptInstall: promptAppInstall,
         feedbackItems,
         submitFeedback,
+        submitTransactionFeedback,
+        respondToFeedback,
+        updateFeedbackStatusAndNotes,
         updateComplaintStatus,
         files,
         uploadDocument,

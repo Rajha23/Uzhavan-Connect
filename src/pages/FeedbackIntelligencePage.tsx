@@ -112,12 +112,38 @@ const TABS: { id: FITab; label: string; icon: React.ReactNode }[] = [
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export const FeedbackIntelligencePage: React.FC = () => {
-  const { feedbackItems, updateComplaintStatus, currentRole } = useApp() as any;
+  const {
+    feedbackItems,
+    updateComplaintStatus,
+    updateFeedbackStatusAndNotes,
+    respondToFeedback,
+    currentUser,
+    currentRole
+  } = useApp() as any;
+
   const [activeTab, setActiveTab] = useState<FITab>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [priorityFilter, setPriorityFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [roleFilter, setRoleFilter] = useState<string>('ALL');
+  const [ratingFilter, setRatingFilter] = useState<string>('ALL');
+  const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
+  const [issueTypeFilter, setIssueTypeFilter] = useState<string>('ALL');
   const [selectedFeedback, setSelectedFeedback] = useState<FeedbackItem | null>(null);
+
+  // Admin response & internal note state
+  const [replyText, setReplyText] = useState('');
+  const [internalNoteDraft, setInternalNoteDraft] = useState('');
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
+  const [isSendingReply, setIsSendingReply] = useState(false);
+
+  // Sync internal notes when selected feedback changes
+  React.useEffect(() => {
+    if (selectedFeedback) {
+      setInternalNoteDraft(selectedFeedback.internalNotes || '');
+      setReplyText('');
+    }
+  }, [selectedFeedback]);
 
   // Filter feedback items according to role scope
   const allFeedback: FeedbackItem[] = useMemo(() => {
@@ -126,8 +152,9 @@ export const FeedbackIntelligencePage: React.FC = () => {
       return raw.filter(
         (f) =>
           f.category === 'delivery' ||
-          f.category === 'packaging' ||
-          (f.ratings && f.ratings.delivery !== undefined && f.ratings.delivery < 5) ||
+          f.structuredCategory === 'Delivery' ||
+          f.targetRole === 'LOGISTICS' ||
+          f.submittedByRole === 'LOGISTICS' ||
           f.comment?.toLowerCase().includes('transit') ||
           f.comment?.toLowerCase().includes('delivery') ||
           f.comment?.toLowerCase().includes('driver') ||
@@ -138,7 +165,9 @@ export const FeedbackIntelligencePage: React.FC = () => {
       return raw.filter(
         (f) =>
           f.category === 'product_quality' ||
-          f.category === 'pricing' ||
+          f.structuredCategory === 'Product Quality' ||
+          f.targetRole === 'FPO_AGGREGATOR' ||
+          f.submittedByRole === 'FPO_AGGREGATOR' ||
           Boolean(f.microHubId) ||
           f.comment?.toLowerCase().includes('hub') ||
           f.comment?.toLowerCase().includes('grade') ||
@@ -172,32 +201,180 @@ export const FeedbackIntelligencePage: React.FC = () => {
       ? `AI-powered aggregation & farmer quality feedback · ${allFeedback.length} hub items`
       : `AI-powered feedback analysis · ${allFeedback.length} total feedback items · Central Administration`;
 
-  const complaints = allFeedback.filter((f) => f.feedbackType === 'complaint');
-  const openComplaints = complaints.filter((f) => !['RESOLVED', 'USER_CONFIRMED', 'CLOSED'].includes(f.status));
-  const highPriority = openComplaints.filter((f) => f.priority === 'high');
-  const resolved = complaints.filter((f) => ['RESOLVED', 'USER_CONFIRMED'].includes(f.status));
+  // Calculated metrics
+  const avgRating = useMemo(() => {
+    if (allFeedback.length === 0) return '0.0';
+    const total = allFeedback.reduce((sum, f) => sum + (f.rating || f.ratings?.overall || 4), 0);
+    return (total / allFeedback.length).toFixed(1);
+  }, [allFeedback]);
 
-  const avgRating = getAverageRating(allFeedback);
-  const sentiment = getSentimentSummary(allFeedback);
-  const resolutionRate = complaints.length > 0 ? Math.round((resolved.length / complaints.length) * 100) : 100;
+  const positiveCount = useMemo(() => {
+    return allFeedback.filter(f => (f.rating || f.ratings?.overall || 0) >= 4 || f.sentiment === 'positive').length;
+  }, [allFeedback]);
 
-  // Filtered complaints
-  const filteredComplaints = useMemo(() => {
-    return complaints.filter((c) => {
-      const matchSearch = !searchQuery ||
-        c.feedbackId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.comment?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.farmerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.buyerName?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchPriority = priorityFilter === 'ALL' || c.priority === priorityFilter.toLowerCase();
-      const matchStatus = statusFilter === 'ALL' || c.status === statusFilter;
-      return matchSearch && matchPriority && matchStatus;
+  const negativeCount = useMemo(() => {
+    return allFeedback.filter(f => (f.rating || f.ratings?.overall || 0) <= 2 || f.sentiment === 'negative').length;
+  }, [allFeedback]);
+
+  const positivePercent = allFeedback.length > 0 ? Math.round((positiveCount / allFeedback.length) * 100) : 0;
+  const negativePercent = allFeedback.length > 0 ? Math.round((negativeCount / allFeedback.length) * 100) : 0;
+
+  const openIssuesCount = useMemo(() => {
+    return allFeedback.filter(f => {
+      const isIssue = (f.issueType && f.issueType !== 'No issue') || f.feedbackType === 'complaint';
+      const isResolved = ['RESOLVED', 'USER_CONFIRMED', 'CLOSED'].includes(f.status);
+      return isIssue && !isResolved;
+    }).length;
+  }, [allFeedback]);
+
+  const resolvedIssuesCount = useMemo(() => {
+    return allFeedback.filter(f => {
+      const isIssue = (f.issueType && f.issueType !== 'No issue') || f.feedbackType === 'complaint';
+      const isResolved = ['RESOLVED', 'USER_CONFIRMED', 'CLOSED'].includes(f.status);
+      return isIssue && isResolved;
+    }).length;
+  }, [allFeedback]);
+
+  // 1 to 5 Star Distribution
+  const ratingDistribution = useMemo(() => {
+    const counts: { [star: number]: number } = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    allFeedback.forEach(f => {
+      const r = Math.min(5, Math.max(1, Math.round(f.rating || f.ratings?.overall || 4)));
+      counts[r] = (counts[r] || 0) + 1;
     });
-  }, [complaints, searchQuery, priorityFilter, statusFilter]);
+    return [5, 4, 3, 2, 1].map(star => ({
+      star,
+      count: counts[star],
+      percent: allFeedback.length > 0 ? Math.round((counts[star] / allFeedback.length) * 100) : 0
+    }));
+  }, [allFeedback]);
+
+  // Role Breakdown
+  const roleBreakdown = useMemo(() => {
+    const roles: { [key: string]: number } = { FARMER: 0, BUYER: 0, LOGISTICS: 0, FPO: 0 };
+    allFeedback.forEach(f => {
+      const role = f.submittedByRole || (f.userType === 'farmer' ? 'FARMER' : f.userType === 'buyer' ? 'BUYER' : 'OTHER');
+      if (role.includes('FARMER')) roles.FARMER = (roles.FARMER || 0) + 1;
+      else if (role.includes('BUYER')) roles.BUYER = (roles.BUYER || 0) + 1;
+      else if (role.includes('LOGISTICS')) roles.LOGISTICS = (roles.LOGISTICS || 0) + 1;
+      else if (role.includes('FPO')) roles.FPO = (roles.FPO || 0) + 1;
+      else roles.BUYER = (roles.BUYER || 0) + 1;
+    });
+    return [
+      { label: 'Farmers', count: roles.FARMER, color: 'bg-emerald-500' },
+      { label: 'Buyers / Retailers', count: roles.BUYER, color: 'bg-blue-500' },
+      { label: 'Logistics', count: roles.LOGISTICS, color: 'bg-amber-500' },
+      { label: 'FPOs', count: roles.FPO, color: 'bg-purple-500' },
+    ];
+  }, [allFeedback]);
+
+  // Common Issue Breakdown
+  const issueBreakdown = useMemo(() => {
+    const issues: { [key: string]: number } = {};
+    allFeedback.forEach(f => {
+      if (f.issueType && f.issueType !== 'No issue') {
+        issues[f.issueType] = (issues[f.issueType] || 0) + 1;
+      } else if (f.feedbackType === 'complaint') {
+        const cat = f.category === 'delivery' ? 'Delivery delay' : f.category === 'product_quality' ? 'Quality issue' : 'Other';
+        issues[cat] = (issues[cat] || 0) + 1;
+      }
+    });
+    return Object.entries(issues)
+      .map(([type, count]) => ({ type, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [allFeedback]);
+
+  const sentiment = getSentimentSummary(allFeedback);
+
+  // Filtered feedback for Complaints / Management tab
+  const filteredFeedbackList = useMemo(() => {
+    return allFeedback.filter((item) => {
+      const matchSearch =
+        !searchQuery ||
+        item.feedbackId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.comment?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.whatWentWell?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.whatCouldBeImproved?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.orderId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.shipmentId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.farmerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.buyerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.submittedByName?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchRole =
+        roleFilter === 'ALL' ||
+        item.submittedByRole === roleFilter ||
+        (roleFilter === 'FARMER' && item.userType === 'farmer') ||
+        (roleFilter === 'BUYER' && item.userType === 'buyer');
+
+      const itemRating = Math.round(item.rating || item.ratings?.overall || 0);
+      const matchRating = ratingFilter === 'ALL' || itemRating.toString() === ratingFilter;
+
+      const matchCategory =
+        categoryFilter === 'ALL' ||
+        item.structuredCategory === categoryFilter ||
+        item.category === categoryFilter.toLowerCase().replace(/ /g, '_');
+
+      const matchStatus = statusFilter === 'ALL' || item.status === statusFilter;
+
+      const matchIssueType =
+        issueTypeFilter === 'ALL' ||
+        item.issueType === issueTypeFilter ||
+        (issueTypeFilter === 'HAS_ISSUE' && item.issueType && item.issueType !== 'No issue');
+
+      return matchSearch && matchRole && matchRating && matchCategory && matchStatus && matchIssueType;
+    });
+  }, [allFeedback, searchQuery, roleFilter, ratingFilter, categoryFilter, statusFilter, issueTypeFilter]);
 
   const handleStatusChange = (feedbackId: string, newStatus: string) => {
-    if (updateComplaintStatus) updateComplaintStatus(feedbackId, newStatus);
-    setSelectedFeedback(null);
+    if (updateFeedbackStatusAndNotes) {
+      updateFeedbackStatusAndNotes(feedbackId, newStatus, internalNoteDraft);
+    } else if (updateComplaintStatus) {
+      updateComplaintStatus(feedbackId, newStatus);
+    }
+    if (selectedFeedback && selectedFeedback.feedbackId === feedbackId) {
+      setSelectedFeedback({ ...selectedFeedback, status: newStatus as any });
+    }
+  };
+
+  const handleSaveInternalNotes = () => {
+    if (!selectedFeedback) return;
+    setIsSavingNotes(true);
+    try {
+      if (updateFeedbackStatusAndNotes) {
+        updateFeedbackStatusAndNotes(selectedFeedback.feedbackId, selectedFeedback.status, internalNoteDraft);
+      }
+      setSelectedFeedback({ ...selectedFeedback, internalNotes: internalNoteDraft });
+    } finally {
+      setIsSavingNotes(false);
+    }
+  };
+
+  const handleSendReply = () => {
+    if (!selectedFeedback || !replyText.trim()) return;
+    setIsSendingReply(true);
+    try {
+      const responderName = currentUser?.name || 'Central Support & Operations';
+      const responderRole = currentRole || 'ADMIN';
+      if (respondToFeedback) {
+        respondToFeedback(selectedFeedback.feedbackId, replyText.trim(), responderName, responderRole);
+      }
+      const newResponse = {
+        responseId: 'RESP-' + Date.now(),
+        responderName,
+        responderRole,
+        message: replyText.trim(),
+        createdAt: new Date().toISOString(),
+      };
+      setSelectedFeedback({
+        ...selectedFeedback,
+        status: 'RESPONDED',
+        responses: [...(selectedFeedback.responses || []), newResponse]
+      });
+      setReplyText('');
+    } finally {
+      setIsSendingReply(false);
+    }
   };
 
   return (
@@ -247,41 +424,146 @@ export const FeedbackIntelligencePage: React.FC = () => {
       {/* ── TAB: OVERVIEW ────────────────────────────────────────────────────── */}
       {activeTab === 'overview' && (
         <div className="space-y-6">
-          {/* KPI Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KPICard label="Total Feedback" value={allFeedback.length} icon={<MessageSquare className="w-5 h-5 text-[#01472e]" />} color="bg-[#eaf4ec] border-[#a3b18a]/40" trend="up" trendVal="12%" sub="This month" />
-            <KPICard label="Average Rating" value={`${avgRating} / 5`} icon={<Star className="w-5 h-5 text-amber-500" />} color="bg-amber-50 border-amber-200" trend="up" trendVal="0.3" sub="vs. last month" />
-            <KPICard label="Open Complaints" value={openComplaints.length} icon={<AlertTriangle className="w-5 h-5 text-rose-600" />} color="bg-rose-50 border-rose-200" trend="down" trendVal="18%" />
-            <KPICard label="Resolution Rate" value={`${resolutionRate}%`} icon={<CheckCircle2 className="w-5 h-5 text-emerald-600" />} color="bg-emerald-50 border-emerald-200" trend="up" trendVal="5%" />
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KPICard label="Positive Feedback" value={`${sentiment.positive}%`} icon={<span className="text-xl">🟢</span>} color="bg-emerald-50 border-emerald-200" />
-            <KPICard label="Neutral Feedback" value={`${sentiment.neutral}%`} icon={<span className="text-xl">🟡</span>} color="bg-amber-50 border-amber-200" />
-            <KPICard label="Negative Feedback" value={`${sentiment.negative}%`} icon={<span className="text-xl">🔴</span>} color="bg-rose-50 border-rose-200" />
-            <KPICard label="High Priority Issues" value={highPriority.length} icon={<Lightbulb className="w-5 h-5 text-orange-600" />} color="bg-orange-50 border-orange-200" />
+          {/* Requirement 7: 6 Summary KPI Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <KPICard
+              label="Total Feedback"
+              value={allFeedback.length}
+              icon={<MessageSquare className="w-5 h-5 text-[#01472e]" />}
+              color="bg-[#eaf4ec] border-[#a3b18a]/40"
+              trend="up"
+              trendVal="12%"
+              sub="All transactions"
+            />
+            <KPICard
+              label="Average Rating"
+              value={`${avgRating} ★`}
+              icon={<Star className="w-5 h-5 text-amber-500 fill-amber-500" />}
+              color="bg-amber-50 border-amber-200"
+              trend="up"
+              trendVal="0.3"
+              sub="Out of 5.0"
+            />
+            <KPICard
+              label="Positive Feedback"
+              value={`${positivePercent}%`}
+              icon={<span className="text-xl">🟢</span>}
+              color="bg-emerald-50 border-emerald-200"
+              sub={`${positiveCount} items (4–5★)`}
+            />
+            <KPICard
+              label="Negative Feedback"
+              value={`${negativePercent}%`}
+              icon={<span className="text-xl">🔴</span>}
+              color="bg-rose-50 border-rose-200"
+              sub={`${negativeCount} items (1–2★)`}
+            />
+            <KPICard
+              label="Open Issues"
+              value={openIssuesCount}
+              icon={<AlertTriangle className="w-5 h-5 text-amber-600" />}
+              color="bg-orange-50 border-orange-200"
+              sub="Needs resolution"
+            />
+            <KPICard
+              label="Resolved Issues"
+              value={resolvedIssuesCount}
+              icon={<CheckCircle2 className="w-5 h-5 text-emerald-600" />}
+              color="bg-teal-50 border-teal-200"
+              sub="Closed with solution"
+            />
           </div>
 
+          {/* Rating Distribution (1 to 5 Stars) & Role Breakdown */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Sentiment distribution */}
+            {/* 1 to 5 Star Distribution */}
             <div className="bg-white rounded-2xl border border-[#ccd5ae]/60 p-5 shadow-sm">
-              <h3 className="font-semibold text-[#01472e] text-sm mb-4 flex items-center gap-2">
-                <BarChart3 className="w-4 h-4" /> Sentiment Distribution
+              <h3 className="font-semibold text-[#01472e] text-sm mb-4 flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Star className="w-4 h-4 text-amber-500 fill-amber-500" /> Rating Distribution (1–5 Stars)
+                </span>
+                <span className="text-xs text-[#788c80] font-normal">Based on {allFeedback.length} reviews</span>
               </h3>
-              <SentimentBar
-                positive={sentiment.positive}
-                neutral={sentiment.neutral}
-                negative={sentiment.negative}
-                mixed={sentiment.mixed}
-              />
+              <div className="space-y-2.5">
+                {ratingDistribution.map(({ star, count, percent }) => (
+                  <div key={star} className="flex items-center gap-2 text-xs">
+                    <span className="w-8 font-bold text-[#01472e] flex items-center gap-0.5">
+                      {star} <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    </span>
+                    <div className="flex-1 h-3 bg-[#eaf4ec] rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${
+                          star >= 4 ? 'bg-emerald-500' : star === 3 ? 'bg-amber-400' : 'bg-rose-500'
+                        }`}
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                    <span className="w-10 text-right font-medium text-[#5c7065]">{count}</span>
+                    <span className="w-10 text-right font-bold text-[#01472e] text-[11px]">{percent}%</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Category performance */}
+            {/* Role Breakdown */}
             <div className="bg-white rounded-2xl border border-[#ccd5ae]/60 p-5 shadow-sm">
-              <h3 className="font-semibold text-[#01472e] text-sm mb-4 flex items-center gap-2">
-                <Star className="w-4 h-4" /> Category Performance
+              <h3 className="font-semibold text-[#01472e] text-sm mb-4 flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-[#01472e]" /> Role Breakdown
+                </span>
+                <span className="text-xs text-[#788c80] font-normal">Feedback submitters</span>
+              </h3>
+              <div className="space-y-3">
+                {roleBreakdown.map((r) => {
+                  const pct = allFeedback.length > 0 ? Math.round((r.count / allFeedback.length) * 100) : 0;
+                  return (
+                    <div key={r.label}>
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span className="font-medium text-[#01472e]">{r.label}</span>
+                        <span className="text-[#5c7065] font-semibold">{r.count} ({pct}%)</span>
+                      </div>
+                      <div className="h-2.5 bg-[#eaf4ec] rounded-full overflow-hidden">
+                        <div className={`h-full ${r.color} rounded-full`} style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Common Issues Breakdown & Category Breakdown */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Common Issues Breakdown */}
+            <div className="bg-white rounded-2xl border border-[#ccd5ae]/60 p-5 shadow-sm">
+              <h3 className="font-semibold text-[#01472e] text-sm mb-3 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-orange-600" /> Common Issues & Bottlenecks
+              </h3>
+              {issueBreakdown.length === 0 ? (
+                <p className="text-xs text-emerald-700 py-4 text-center">🎉 No outstanding issues reported!</p>
+              ) : (
+                <div className="space-y-2">
+                  {issueBreakdown.slice(0, 5).map(({ type, count }) => (
+                    <div key={type} className="flex items-center justify-between p-2 rounded-xl bg-[#fafaf8] border border-[#ccd5ae]/30 text-xs">
+                      <span className="font-medium text-[#01472e] flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-rose-500" /> {type}
+                      </span>
+                      <span className="font-bold text-rose-700 px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200">
+                        {count} {count === 1 ? 'case' : 'cases'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Category Performance */}
+            <div className="bg-white rounded-2xl border border-[#ccd5ae]/60 p-5 shadow-sm">
+              <h3 className="font-semibold text-[#01472e] text-sm mb-3 flex items-center gap-2">
+                <Star className="w-4 h-4 text-amber-500" /> Category Performance
               </h3>
               <div className="space-y-2">
-                {CATEGORY_PERFORMANCE.slice(0, 6).map((cat) => (
+                {CATEGORY_PERFORMANCE.slice(0, 5).map((cat) => (
                   <div key={cat.category} className="flex items-center gap-2">
                     <span className="text-[10px] text-[#5c7065] w-28 truncate">{cat.category}</span>
                     <div className="flex-1 h-2 bg-[#eaf4ec] rounded-full overflow-hidden">
@@ -304,10 +586,10 @@ export const FeedbackIntelligencePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Trend mini chart */}
+          {/* Monthly Trend Mini Chart */}
           <div className="bg-white rounded-2xl border border-[#ccd5ae]/60 p-5 shadow-sm">
             <h3 className="font-semibold text-[#01472e] text-sm mb-4 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" /> Monthly Trend
+              <TrendingUp className="w-4 h-4" /> Feedback Trend Over Time
             </h3>
             <div className="grid grid-cols-6 gap-2 mb-2">
               {MONTHLY_TREND_DATA.map((d) => (
@@ -333,19 +615,6 @@ export const FeedbackIntelligencePage: React.FC = () => {
                 ✅ Feedback volume increased 163% over 6 months. Platform engagement is growing.
               </p>
             </div>
-          </div>
-
-          {/* Quick AI insights */}
-          <div className="bg-white rounded-2xl border border-[#ccd5ae]/60 p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-[#01472e] text-sm flex items-center gap-2">
-                <Sparkles className="w-4 h-4" /> AI Insights Summary
-              </h3>
-              <button onClick={() => setActiveTab('ai-insights')} className="text-xs text-[#01472e] hover:underline cursor-pointer flex items-center gap-1">
-                View all <ChevronRight className="w-3 h-3" />
-              </button>
-            </div>
-            <AiInsightsFeed alerts={INITIAL_PATTERN_ALERTS} maxShow={3} compact />
           </div>
         </div>
       )}
@@ -391,82 +660,205 @@ export const FeedbackIntelligencePage: React.FC = () => {
         </div>
       )}
 
-      {/* ── TAB: COMPLAINTS ──────────────────────────────────────────────────── */}
+      {/* ── TAB: COMPLAINTS / FEEDBACK MANAGEMENT ────────────────────────────── */}
       {activeTab === 'complaints' && (
         <div className="space-y-4">
-          {/* Filters */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#788c80]" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search complaints..."
-                className="w-full pl-8 pr-3 py-2 text-xs bg-white rounded-xl border border-[#ccd5ae]/60 focus:outline-none focus:border-[#01472e]/40 text-[#01472e] placeholder-[#a3b18a]"
-              />
+          {/* Multi-Filters Bar */}
+          <div className="bg-white rounded-2xl border border-[#ccd5ae]/60 p-4 shadow-sm space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Search Bar */}
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#788c80]" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search order, shipment, comments, names..."
+                  className="w-full pl-8 pr-3 py-2 text-xs bg-[#fafaf8] rounded-xl border border-[#ccd5ae]/60 focus:outline-none focus:border-[#01472e]/40 text-[#01472e] placeholder-[#a3b18a]"
+                />
+              </div>
+
+              {/* Role Filter */}
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="px-3 py-2 text-xs bg-[#fafaf8] rounded-xl border border-[#ccd5ae]/60 text-[#5c7065] cursor-pointer focus:outline-none"
+              >
+                <option value="ALL">All Roles</option>
+                <option value="FARMER">Farmer</option>
+                <option value="BUYER">Buyer / Retailer</option>
+                <option value="LOGISTICS">Logistics</option>
+                <option value="FPO">FPO Aggregator</option>
+              </select>
+
+              {/* Rating Filter (1 to 5 Stars) */}
+              <select
+                value={ratingFilter}
+                onChange={(e) => setRatingFilter(e.target.value)}
+                className="px-3 py-2 text-xs bg-[#fafaf8] rounded-xl border border-[#ccd5ae]/60 text-[#5c7065] cursor-pointer focus:outline-none"
+              >
+                <option value="ALL">All Ratings</option>
+                <option value="5">5 Stars ★★★★★</option>
+                <option value="4">4 Stars ★★★★☆</option>
+                <option value="3">3 Stars ★★★☆☆</option>
+                <option value="2">2 Stars ★★☆☆☆</option>
+                <option value="1">1 Star ★☆☆☆☆</option>
+              </select>
+
+              {/* Category Filter */}
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="px-3 py-2 text-xs bg-[#fafaf8] rounded-xl border border-[#ccd5ae]/60 text-[#5c7065] cursor-pointer focus:outline-none"
+              >
+                <option value="ALL">All Categories</option>
+                <option value="Product Quality">Product Quality</option>
+                <option value="Delivery">Delivery</option>
+                <option value="Communication">Communication</option>
+                <option value="Pricing">Pricing</option>
+                <option value="Packaging">Packaging</option>
+                <option value="Service">Service</option>
+                <option value="Other">Other</option>
+              </select>
+
+              {/* Status Filter */}
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 text-xs bg-[#fafaf8] rounded-xl border border-[#ccd5ae]/60 text-[#5c7065] cursor-pointer focus:outline-none"
+              >
+                <option value="ALL">All Statuses</option>
+                <option value="SUBMITTED">Submitted</option>
+                <option value="UNDER_REVIEW">Under Review</option>
+                <option value="RESPONDED">Responded</option>
+                <option value="RESOLVED">Resolved</option>
+              </select>
+
+              {/* Issue Type Filter */}
+              <select
+                value={issueTypeFilter}
+                onChange={(e) => setIssueTypeFilter(e.target.value)}
+                className="px-3 py-2 text-xs bg-[#fafaf8] rounded-xl border border-[#ccd5ae]/60 text-[#5c7065] cursor-pointer focus:outline-none"
+              >
+                <option value="ALL">All Issue Types</option>
+                <option value="HAS_ISSUE">Any Reported Issue</option>
+                <option value="Quality issue">Quality issue</option>
+                <option value="Quantity issue">Quantity issue</option>
+                <option value="Delivery delay">Delivery delay</option>
+                <option value="Damaged product">Damaged product</option>
+                <option value="Wrong product">Wrong product</option>
+                <option value="Payment issue">Payment issue</option>
+                <option value="Communication issue">Communication issue</option>
+                <option value="Other">Other issue</option>
+                <option value="No issue">No issue</option>
+              </select>
             </div>
-            <select
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-3 py-2 text-xs bg-white rounded-xl border border-[#ccd5ae]/60 text-[#5c7065] cursor-pointer focus:outline-none"
-            >
-              <option value="ALL">All Priority</option>
-              <option value="HIGH">High</option>
-              <option value="MEDIUM">Medium</option>
-              <option value="LOW">Low</option>
-            </select>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 text-xs bg-white rounded-xl border border-[#ccd5ae]/60 text-[#5c7065] cursor-pointer focus:outline-none"
-            >
-              <option value="ALL">All Status</option>
-              <option value="SUBMITTED">Submitted</option>
-              <option value="UNDER_REVIEW">Under Review</option>
-              <option value="ASSIGNED">Assigned</option>
-              <option value="ACTION_TAKEN">Action Taken</option>
-              <option value="RESOLVED">Resolved</option>
-            </select>
+            <div className="flex items-center justify-between text-xs text-[#788c80] pt-1 border-t border-[#ccd5ae]/30">
+              <span>Showing <strong>{filteredFeedbackList.length}</strong> matching transaction feedback records</span>
+              {(roleFilter !== 'ALL' || ratingFilter !== 'ALL' || categoryFilter !== 'ALL' || statusFilter !== 'ALL' || issueTypeFilter !== 'ALL' || searchQuery) && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setRoleFilter('ALL');
+                    setRatingFilter('ALL');
+                    setCategoryFilter('ALL');
+                    setStatusFilter('ALL');
+                    setIssueTypeFilter('ALL');
+                  }}
+                  className="text-xs text-[#01472e] hover:underline cursor-pointer"
+                >
+                  Clear all filters
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="text-xs text-[#788c80]">{filteredComplaints.length} complaints found</div>
-
-          {/* Complaint list */}
+          {/* Feedback & Issues List */}
           <div className="space-y-2">
-            {filteredComplaints.map((c) => (
-              <div
-                key={c.feedbackId}
-                className="bg-white rounded-2xl border border-[#ccd5ae]/60 shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setSelectedFeedback(c)}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <span className="text-xs font-bold text-[#01472e] font-mono">#{c.feedbackId}</span>
-                      <FeedbackStatusBadge status={c.status} />
-                      <PriorityBadge priority={c.priority} />
-                      <SentimentBadge sentiment={c.sentiment} />
+            {filteredFeedbackList.map((item) => {
+              const stars = Math.round(item.rating || item.ratings?.overall || 4);
+              const isIssue = (item.issueType && item.issueType !== 'No issue') || item.feedbackType === 'complaint';
+              return (
+                <div
+                  key={item.feedbackId}
+                  className="bg-white rounded-2xl border border-[#ccd5ae]/60 shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => setSelectedFeedback(item)}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                        <span className="text-xs font-bold text-[#01472e] font-mono">#{item.feedbackId}</span>
+                        <FeedbackStatusBadge status={item.status} />
+                        {isIssue && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200 flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" />
+                            {item.issueType || 'Issue Reported'}
+                          </span>
+                        )}
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#eaf4ec] text-[#01472e]">
+                          {item.structuredCategory || item.category?.replace(/_/g, ' ')}
+                        </span>
+                        {item.responses && item.responses.length > 0 && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-700">
+                            💬 {item.responses.length} {item.responses.length === 1 ? 'Response' : 'Responses'}
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-[#01472e] font-medium line-clamp-2">
+                        {item.whatWentWell ? `✓ ${item.whatWentWell}. ` : ''}
+                        {item.whatCouldBeImproved ? `⚠ ${item.whatCouldBeImproved}. ` : ''}
+                        {item.comment || item.additionalComments || 'No additional comment provided.'}
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-3 mt-2 text-[10px] text-[#788c80]">
+                        <span className="font-semibold text-[#01472e]">
+                          By: {item.submittedByName || item.userType || 'User'} ({item.submittedByRole || 'Participant'})
+                        </span>
+                        {item.orderId && (
+                          <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">
+                            Order: {item.orderId}
+                          </span>
+                        )}
+                        {item.shipmentId && (
+                          <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">
+                            Shipment: {item.shipmentId}
+                          </span>
+                        )}
+                        {item.productName && <span>🌾 {item.productName}</span>}
+                        <span><Clock className="w-3 h-3 inline mr-0.5" />{new Date(item.createdAt).toLocaleDateString('en-IN')}</span>
+                        {item.internalNotes && (
+                          <span className="text-purple-700 font-semibold flex items-center gap-0.5">
+                            🔒 Internal notes saved
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-xs text-[#01472e] font-medium truncate">{c.comment?.slice(0, 100)}...</p>
-                    <div className="flex flex-wrap items-center gap-3 mt-1 text-[10px] text-[#788c80]">
-                      <span>{c.userType === 'farmer' ? '👨‍🌾 Farmer' : '🛒 Buyer'}</span>
-                      {c.orderId && <span><Package className="w-3 h-3 inline mr-0.5" />{c.orderId}</span>}
-                      {c.farmerName && <span>🌾 {c.farmerName}</span>}
-                      {c.area && <span><MapPin className="w-3 h-3 inline mr-0.5" />{c.area}</span>}
-                      <span><Clock className="w-3 h-3 inline mr-0.5" />{new Date(c.createdAt).toLocaleDateString('en-IN')}</span>
-                      {c.aiAnalysis?.repeatedIssueFlag && (
-                        <span className="text-rose-600 font-medium">🔁 Repeated Issue</span>
-                      )}
+
+                    <div className="flex items-center gap-3 shrink-0">
+                      <div className="text-right">
+                        <div className="flex items-center gap-0.5 text-amber-500 justify-end">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              className={`w-3.5 h-3.5 ${s <= stars ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-[10px] font-bold text-[#5c7065]">{stars}.0 / 5.0</span>
+                      </div>
+                      <Eye className="w-4 h-4 text-[#a3b18a] hover:text-[#01472e]" />
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {c.ratings.overall && <StarDisplay value={c.ratings.overall} size="xs" />}
-                    <Eye className="w-4 h-4 text-[#a3b18a] hover:text-[#01472e]" />
                   </div>
                 </div>
+              );
+            })}
+            {filteredFeedbackList.length === 0 && (
+              <div className="text-center py-10 bg-white rounded-2xl border border-[#ccd5ae]/60">
+                <p className="text-sm font-medium text-[#01472e]">No feedback found matching current filters</p>
+                <p className="text-xs text-[#788c80] mt-1">Try relaxing your search terms or filter selection.</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       )}
@@ -653,108 +1045,253 @@ export const FeedbackIntelligencePage: React.FC = () => {
       {/* ── TAB: YOU SAID ────────────────────────────────────────────────────── */}
       {activeTab === 'you-said' && <YouSaidWeImproved />}
 
-      {/* ── FEEDBACK DETAIL MODAL ────────────────────────────────────────────── */}
+      {/* ── ACTIONABLE FEEDBACK & COMPLAINTS MANAGEMENT DRAWER / MODAL ─────── */}
       {selectedFeedback && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setSelectedFeedback(null)}>
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
+          onClick={() => setSelectedFeedback(null)}
+        >
           <div
-            className="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-white/95 backdrop-blur-sm p-4 border-b border-[#ccd5ae]/40 flex items-center justify-between rounded-t-3xl">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white/95 backdrop-blur-sm px-6 py-4 border-b border-[#ccd5ae]/40 flex items-center justify-between z-10">
               <div>
-                <h3 className="font-bold text-[#01472e]">Feedback Detail</h3>
-                <p className="text-xs text-[#788c80] font-mono">#{selectedFeedback.feedbackId}</p>
-              </div>
-              <button onClick={() => setSelectedFeedback(null)} className="p-2 rounded-xl hover:bg-[#eaf4ec] cursor-pointer text-[#788c80]">✕</button>
-            </div>
-            <div className="p-5 space-y-4">
-              {/* Status & Priority */}
-              <div className="flex flex-wrap gap-2">
-                <FeedbackStatusBadge status={selectedFeedback.status} />
-                <PriorityBadge priority={selectedFeedback.priority} />
-                <SentimentBadge sentiment={selectedFeedback.sentiment} />
-                {selectedFeedback.aiAnalysis?.repeatedIssueFlag && (
-                  <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-bold border border-rose-200">🔁 REPEATED ISSUE</span>
-                )}
-              </div>
-
-              {/* Details grid */}
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                {[
-                  { label: 'User Type', value: selectedFeedback.userType },
-                  { label: 'Order ID', value: selectedFeedback.orderId || '—' },
-                  { label: 'Farmer', value: selectedFeedback.farmerName || '—' },
-                  { label: 'Buyer', value: selectedFeedback.buyerName || '—' },
-                  { label: 'Product', value: selectedFeedback.productName || '—' },
-                  { label: 'Hub', value: selectedFeedback.microHubName || '—' },
-                  { label: 'Area', value: selectedFeedback.area || '—' },
-                  { label: 'Category', value: selectedFeedback.category.replace(/_/g, ' ') },
-                ].map(({ label, value }) => (
-                  <div key={label} className="bg-[#fafaf8] rounded-xl p-2.5 border border-[#ccd5ae]/30">
-                    <p className="text-[10px] text-[#788c80] uppercase tracking-wide">{label}</p>
-                    <p className="font-medium text-[#01472e] capitalize mt-0.5">{value}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Comment */}
-              <div className="bg-[#fafaf8] rounded-xl p-3 border border-[#ccd5ae]/40">
-                <p className="text-[10px] text-[#788c80] mb-1">Comment</p>
-                <p className="text-sm text-[#01472e]">{selectedFeedback.comment}</p>
-              </div>
-
-              {/* Tags */}
-              {selectedFeedback.tags?.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {selectedFeedback.tags.map((tag) => (
-                    <span key={tag} className="px-2 py-0.5 bg-[#eaf4ec] rounded-full text-[10px] text-[#5c7065] border border-[#a3b18a]/30">{tag}</span>
-                  ))}
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-base text-[#01472e]">Transaction Feedback Review</h3>
+                  <span className="text-xs font-mono font-bold text-[#5c7065] bg-[#eaf4ec] px-2 py-0.5 rounded-md">
+                    #{selectedFeedback.feedbackId}
+                  </span>
                 </div>
-              )}
-
-              {/* AI Analysis */}
-              <div className="bg-violet-50 rounded-2xl p-4 border border-violet-200 space-y-2">
-                <p className="text-xs font-bold text-violet-700 flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5" /> AI Analysis
+                <p className="text-xs text-[#788c80] mt-0.5">
+                  Submitted on {new Date(selectedFeedback.createdAt).toLocaleString('en-IN')}
                 </p>
-                <div className="grid grid-cols-2 gap-2 text-[10px]">
-                  <div>
-                    <span className="text-violet-500">Type: </span>
-                    <span className="font-medium text-violet-800 capitalize">{selectedFeedback.aiAnalysis?.feedbackType}</span>
+              </div>
+              <button
+                onClick={() => setSelectedFeedback(null)}
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 text-slate-500 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Scrollable Body */}
+            <div className="p-6 space-y-5 overflow-y-auto">
+              {/* Status and Issue Indicators */}
+              <div className="flex flex-wrap items-center gap-2">
+                <FeedbackStatusBadge status={selectedFeedback.status} />
+                {selectedFeedback.issueType && selectedFeedback.issueType !== 'No issue' && (
+                  <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200 flex items-center gap-1">
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                    {selectedFeedback.issueType}
+                  </span>
+                )}
+                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/30">
+                  📁 {selectedFeedback.structuredCategory || selectedFeedback.category?.replace(/_/g, ' ')}
+                </span>
+                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+                  👤 By: {selectedFeedback.submittedByName || selectedFeedback.userType} ({selectedFeedback.submittedByRole || 'User'})
+                </span>
+              </div>
+
+              {/* Verified Transaction Context Card */}
+              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wide">
+                    <Package className="w-3.5 h-3.5 text-[#01472e]" /> Verified Transaction Context
+                  </span>
+                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                    Completed & Linked
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                  <div className="bg-white rounded-xl p-2.5 border border-slate-200 shadow-2xs">
+                    <p className="text-[10px] text-slate-400 font-semibold uppercase">Order ID</p>
+                    <p className="font-mono font-bold text-[#01472e] mt-0.5 truncate">{selectedFeedback.orderId || '—'}</p>
                   </div>
-                  <div>
-                    <span className="text-violet-500">Confidence: </span>
-                    <span className="font-medium text-violet-800">{Math.round((selectedFeedback.aiConfidence || 0) * 100)}%</span>
+                  <div className="bg-white rounded-xl p-2.5 border border-slate-200 shadow-2xs">
+                    <p className="text-[10px] text-slate-400 font-semibold uppercase">Shipment ID</p>
+                    <p className="font-mono font-bold text-[#01472e] mt-0.5 truncate">{selectedFeedback.shipmentId || '—'}</p>
+                  </div>
+                  <div className="bg-white rounded-xl p-2.5 border border-slate-200 shadow-2xs">
+                    <p className="text-[10px] text-slate-400 font-semibold uppercase">Crop / Produce</p>
+                    <p className="font-bold text-slate-800 mt-0.5 truncate">{selectedFeedback.productName || '—'}</p>
+                  </div>
+                  <div className="bg-white rounded-xl p-2.5 border border-slate-200 shadow-2xs">
+                    <p className="text-[10px] text-slate-400 font-semibold uppercase">Transaction Date</p>
+                    <p className="font-medium text-slate-700 mt-0.5 truncate">
+                      {selectedFeedback.transactionDate
+                        ? new Date(selectedFeedback.transactionDate).toLocaleDateString('en-IN')
+                        : new Date(selectedFeedback.createdAt).toLocaleDateString('en-IN')}
+                    </p>
                   </div>
                 </div>
-                <div className="text-[10px]">
-                  <p className="text-violet-500 mb-0.5">Possible Root Cause:</p>
-                  <p className="text-violet-800 font-medium">{selectedFeedback.aiAnalysis?.possibleRootCause}</p>
-                </div>
-                <div className="text-[10px]">
-                  <p className="text-violet-500 mb-0.5">Recommended Action:</p>
-                  <p className="text-violet-800 font-medium">{selectedFeedback.aiAnalysis?.recommendedAction}</p>
+
+                <div className="grid grid-cols-3 gap-2 text-xs pt-1 border-t border-slate-200/60">
+                  <div>
+                    <span className="text-[10px] text-slate-500">Farmer: </span>
+                    <span className="font-medium text-slate-800">{selectedFeedback.farmerName || '—'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500">Buyer: </span>
+                    <span className="font-medium text-slate-800">{selectedFeedback.buyerName || '—'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500">Carrier: </span>
+                    <span className="font-medium text-slate-800">{selectedFeedback.carrierName || 'Tamil Nadu Agri Logistics'}</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Admin Actions */}
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-[#01472e]">Admin Actions</p>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { label: 'Mark Under Review', status: 'UNDER_REVIEW', color: 'bg-blue-600' },
-                    { label: 'Assign to Team', status: 'ASSIGNED', color: 'bg-violet-600' },
-                    { label: 'Action Taken', status: 'ACTION_TAKEN', color: 'bg-amber-600' },
-                    { label: 'Resolve', status: 'RESOLVED', color: 'bg-emerald-600' },
-                  ].map(({ label, status, color }) => (
+              {/* Rating & Structured Review Details */}
+              <div className="bg-[#fafaf8] rounded-2xl p-4 border border-[#ccd5ae]/50 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#01472e]">Rating & Feedback Content</span>
+                  <div className="flex items-center gap-1.5">
+                    <div className="flex text-amber-500">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star
+                          key={s}
+                          className={`w-4 h-4 ${
+                            s <= Math.round(selectedFeedback.rating || selectedFeedback.ratings?.overall || 4)
+                              ? 'fill-amber-400 text-amber-400'
+                              : 'text-slate-200'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs font-bold text-[#01472e]">
+                      {Math.round(selectedFeedback.rating || selectedFeedback.ratings?.overall || 4)}.0 / 5.0
+                    </span>
+                  </div>
+                </div>
+
+                {selectedFeedback.whatWentWell && (
+                  <div className="bg-emerald-50/70 rounded-xl p-3 border border-emerald-100">
+                    <p className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider mb-0.5">What went well</p>
+                    <p className="text-xs text-emerald-950 font-medium">{selectedFeedback.whatWentWell}</p>
+                  </div>
+                )}
+
+                {selectedFeedback.whatCouldBeImproved && (
+                  <div className="bg-amber-50/70 rounded-xl p-3 border border-amber-100">
+                    <p className="text-[10px] font-bold text-amber-800 uppercase tracking-wider mb-0.5">What could be improved</p>
+                    <p className="text-xs text-amber-950 font-medium">{selectedFeedback.whatCouldBeImproved}</p>
+                  </div>
+                )}
+
+                <div className="bg-white rounded-xl p-3 border border-slate-200">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Detailed Remarks</p>
+                  <p className="text-xs text-slate-800 leading-relaxed">
+                    {selectedFeedback.comment || selectedFeedback.additionalComments || 'No detailed comments added.'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Private Staff / Internal Notes (Requirement 8 - Private & Protected) */}
+              <div className="bg-purple-50/70 rounded-2xl p-4 border border-purple-200 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-purple-900 flex items-center gap-1.5">
+                    🔒 Internal Investigation Notes <span className="text-[10px] font-normal text-purple-700">(Staff Only · Never visible to customer)</span>
+                  </h4>
+                  <button
+                    onClick={handleSaveInternalNotes}
+                    disabled={isSavingNotes}
+                    className="px-3 py-1 bg-purple-700 text-white rounded-lg text-xs font-medium hover:bg-purple-800 transition disabled:opacity-50 cursor-pointer"
+                  >
+                    {isSavingNotes ? 'Saving...' : 'Save Notes'}
+                  </button>
+                </div>
+                <textarea
+                  value={internalNoteDraft}
+                  onChange={(e) => setInternalNoteDraft(e.target.value)}
+                  placeholder="Record root cause findings, supplier follow-up details, cold-storage checks, or internal notes..."
+                  rows={2}
+                  className="w-full p-2.5 bg-white rounded-xl border border-purple-200 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-purple-400 resize-none"
+                />
+              </div>
+
+              {/* Official Public Responses Thread (Requirement 8 - Public to User) */}
+              <div className="bg-blue-50/50 rounded-2xl p-4 border border-blue-200 space-y-3">
+                <h4 className="text-xs font-bold text-blue-950 flex items-center gap-1.5">
+                  💬 Official Resolution Thread <span className="text-[10px] font-normal text-blue-700">(Visible to User in My Feedback)</span>
+                </h4>
+
+                {/* Existing responses list */}
+                {selectedFeedback.responses && selectedFeedback.responses.length > 0 ? (
+                  <div className="space-y-2">
+                    {selectedFeedback.responses.map((resp: any, i: number) => (
+                      <div key={resp.responseId || i} className="bg-white rounded-xl p-3 border border-blue-100 shadow-2xs">
+                        <div className="flex items-center justify-between text-[11px] mb-1">
+                          <span className="font-bold text-[#01472e]">{resp.responderName} ({resp.responderRole})</span>
+                          <span className="text-slate-400">{new Date(resp.createdAt).toLocaleString('en-IN')}</span>
+                        </div>
+                        <p className="text-xs text-slate-700">{resp.message}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-blue-700 italic">No official responses posted yet.</p>
+                )}
+
+                {/* Compose new response */}
+                <div className="space-y-2 pt-1 border-t border-blue-100">
+                  <textarea
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    placeholder="Write an official response or resolution message to the user..."
+                    rows={2}
+                    className="w-full p-2.5 bg-white rounded-xl border border-blue-200 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-400 resize-none"
+                  />
+                  <div className="flex justify-end">
                     <button
-                      key={status}
-                      onClick={() => handleStatusChange(selectedFeedback.feedbackId, status)}
-                      className={`px-3 py-1.5 ${color} text-white text-xs font-medium rounded-xl hover:opacity-90 transition cursor-pointer`}
+                      onClick={handleSendReply}
+                      disabled={isSendingReply || !replyText.trim()}
+                      className="px-4 py-1.5 bg-[#01472e] text-white rounded-xl text-xs font-medium hover:bg-[#003b25] transition disabled:opacity-40 cursor-pointer"
                     >
-                      {label}
+                      {isSendingReply ? 'Sending...' : 'Send Official Response'}
                     </button>
-                  ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Status Update & Resolution Actions */}
+              <div className="space-y-2 pt-2 border-t border-slate-200">
+                <p className="text-xs font-semibold text-[#01472e]">Update Processing Status</p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => handleStatusChange(selectedFeedback.feedbackId, 'UNDER_REVIEW')}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-xl transition cursor-pointer ${
+                      selectedFeedback.status === 'UNDER_REVIEW'
+                        ? 'bg-blue-600 text-white font-bold'
+                        : 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100'
+                    }`}
+                  >
+                    Mark Under Review
+                  </button>
+                  <button
+                    onClick={() => handleStatusChange(selectedFeedback.feedbackId, 'RESPONDED')}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-xl transition cursor-pointer ${
+                      selectedFeedback.status === 'RESPONDED'
+                        ? 'bg-purple-600 text-white font-bold'
+                        : 'bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100'
+                    }`}
+                  >
+                    Mark Responded
+                  </button>
+                  <button
+                    onClick={() => handleStatusChange(selectedFeedback.feedbackId, 'RESOLVED')}
+                    className={`px-4 py-1.5 text-xs font-bold rounded-xl transition cursor-pointer flex items-center gap-1.5 ${
+                      selectedFeedback.status === 'RESOLVED'
+                        ? 'bg-emerald-700 text-white'
+                        : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    }`}
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Mark Resolved
+                  </button>
                 </div>
               </div>
             </div>

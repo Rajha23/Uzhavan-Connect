@@ -345,8 +345,9 @@ const PageContent: React.FC = () => {
 
     case 'complaint-tracker':
     case 'my-complaints':
+    case 'my-feedback':
       return (
-        <div className="max-w-2xl mx-auto px-4 py-6">
+        <div className="max-w-5xl mx-auto px-4 py-6">
           <ComplaintTracker />
         </div>
       );

@@ -20,10 +20,13 @@ import {
   FileCheck2,
   AlertTriangle,
   Layers,
-  Building2
+  Building2,
+  Star
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
+import { feedbackService } from '../services/feedbackService';
+import { TransactionFeedbackModal } from '../components/feedback/TransactionFeedbackModal';
 
 const STATUS_STYLES: Record<string, string> = {
   'Created': 'bg-[#faf9f5] text-slate-700 border-[#ccd5ae]/60',
@@ -60,6 +63,8 @@ export const OrdersPage: React.FC = () => {
 
   // Delivery confirmation modal state
   const [verifyOrder, setVerifyOrder] = useState<WorkflowOrder | null>(null);
+  const [selectedOrderForFeedback, setSelectedOrderForFeedback] = useState<WorkflowOrder | null>(null);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState<boolean>(false);
   const [receivedKg, setReceivedKg] = useState<number>(1000);
   const [acceptedKg, setAcceptedKg] = useState<number>(1000);
   const [rejectedKg, setRejectedKg] = useState<number>(0);
@@ -375,6 +380,37 @@ export const OrdersPage: React.FC = () => {
                           <CreditCard className="w-3.5 h-3.5" />
                           <span>{isCompleted ? t('orders.receipt', 'Receipt') : t('orders.escrowPayout', 'Escrow Payout')}</span>
                         </button>
+                      )}
+
+                      {/* Give / View Feedback for completed orders */}
+                      {(isDelivered || order.status === 'Buyer Confirmed' || order.status === 'Completed' || isPaymentPending) && (
+                        feedbackService.hasSubmittedFeedback(order.id, currentUser.id) ? (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedOrderForFeedback(order);
+                              setIsFeedbackModalOpen(true);
+                            }}
+                            className="px-3 py-1.5 text-xs font-semibold text-[#01472e] bg-[#eaf4ec] hover:bg-[#d8ebd9] border border-[#a3b18a]/50 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                            title="View / Edit Submitted Feedback"
+                          >
+                            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                            <span>{t('orders.feedbackSubmitted', 'Feedback Submitted')}</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedOrderForFeedback(order);
+                              setIsFeedbackModalOpen(true);
+                            }}
+                            className="btn-primary px-3 py-1.5 text-xs font-semibold rounded-xl shadow-soft flex items-center gap-1.5 cursor-pointer"
+                            title="Give Verified Transaction Feedback"
+                          >
+                            <Star className="w-3.5 h-3.5 text-amber-300" />
+                            <span>{t('orders.giveFeedback', 'Give Feedback')}</span>
+                          </button>
+                        )
                       )}
 
                       <button
@@ -744,6 +780,18 @@ export const OrdersPage: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Transaction Feedback Modal */}
+      {isFeedbackModalOpen && selectedOrderForFeedback && (
+        <TransactionFeedbackModal
+          isOpen={isFeedbackModalOpen}
+          onClose={() => {
+            setIsFeedbackModalOpen(false);
+            setSelectedOrderForFeedback(null);
+          }}
+          order={selectedOrderForFeedback}
+        />
       )}
     </div>
   );

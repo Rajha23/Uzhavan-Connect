@@ -35,13 +35,14 @@ const STATUS_CONFIG: Record<ComplaintStatus, { label: string; classes: string; i
   UNDER_REVIEW:   { label: 'Under Review',   classes: 'bg-blue-100 text-blue-700 border-blue-300',        icon: '🔍' },
   ASSIGNED:       { label: 'Assigned',       classes: 'bg-violet-100 text-violet-700 border-violet-300',  icon: '👤' },
   ACTION_TAKEN:   { label: 'Action Taken',   classes: 'bg-amber-100 text-amber-700 border-amber-300',     icon: '⚙️' },
+  RESPONDED:      { label: 'Responded',      classes: 'bg-purple-100 text-purple-700 border-purple-300',  icon: '💬' },
   RESOLVED:       { label: 'Resolved',       classes: 'bg-emerald-100 text-emerald-700 border-emerald-300', icon: '✅' },
   USER_CONFIRMED: { label: 'User Confirmed', classes: 'bg-teal-100 text-teal-700 border-teal-300',        icon: '🎉' },
   CLOSED:         { label: 'Closed',         classes: 'bg-gray-100 text-gray-500 border-gray-300',        icon: '🔒' },
 };
 
 export const FeedbackStatusBadge: React.FC<FeedbackStatusBadgeProps> = ({ status }) => {
-  const c = STATUS_CONFIG[status];
+  const c = STATUS_CONFIG[status] || STATUS_CONFIG.SUBMITTED;
   return (
     <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-xs font-medium ${c.classes}`}>
       <span className="text-[11px]">{c.icon}</span>
