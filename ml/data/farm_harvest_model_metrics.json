@@ -1,0 +1,68 @@
+{
+  "dataset_name": "Uzhavan Connect Farm Harvest Observations",
+  "sample_size": 25,
+  "last_trained_at": "2026-09-21T19:54:29.915687",
+  "features": {
+    "categorical": [
+      "crop",
+      "variety",
+      "location",
+      "soil_type",
+      "irrigation"
+    ],
+    "numeric": [
+      "rainfall",
+      "temperature",
+      "humidity",
+      "farm_area"
+    ]
+  },
+  "days_to_first_harvest_model": {
+    "algorithm": "RandomForestRegressor(n_estimators=100, max_depth=6)",
+    "cross_val_mae_days": 37.51,
+    "train_r2_score": 0.9235,
+    "target": "days_to_first_harvest"
+  },
+  "harvest_duration_model": {
+    "algorithm": "GradientBoostingRegressor(n_estimators=80, max_depth=4)",
+    "train_mae_days": 0.1,
+    "train_r2_score": 1.0,
+    "target": "harvest_duration_days"
+  },
+  "crops_represented": [
+    "Brinjal",
+    "Carrot",
+    "Cucumber",
+    "French Beans",
+    "Green Chilli",
+    "Groundnut",
+    "Ladies Finger/Okra",
+    "Maize",
+    "Potato",
+    "Rice/Paddy",
+    "Sugarcane",
+    "Tomato"
+  ],
+  "districts_represented": [
+    "Coimbatore",
+    "Cuddalore",
+    "Dharmapuri",
+    "Dindigul",
+    "Erode",
+    "Krishnagiri",
+    "Madurai",
+    "Nagapattinam",
+    "Nilgiris",
+    "Perambalur",
+    "Salem",
+    "Thanjavur",
+    "Theni",
+    "Tirunelveli",
+    "Tiruvannamalai",
+    "Tiruvarur",
+    "Tuticorin",
+    "Vellore",
+    "Villupuram",
+    "Virudhunagar"
+  ]
+}

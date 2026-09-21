@@ -720,10 +720,28 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       prev.map((item) => (item.syncStatus === 'PENDING_SYNC' ? { ...item, syncStatus: 'SYNCED' } : item))
     );
 
-    // Clear local offline sync action log
     try {
+      const queueRaw = localStorage.getItem('uzhavan_offline_sync_queue');
+      if (queueRaw) {
+        const queue = JSON.parse(queueRaw);
+        if (Array.isArray(queue)) {
+          for (const item of queue) {
+            try {
+              if (item.type === 'ADD_PRODUCE') {
+                await supabaseService.insertProduceListing(item.payload);
+              } else if (item.type === 'ADD_DEMAND') {
+                await supabaseService.insertDemandRequest(item.payload);
+              }
+            } catch (err) {
+              console.error('[UZHAVAN SYNC] Failed to sync item:', item, err);
+            }
+          }
+        }
+      }
       localStorage.removeItem('uzhavan_offline_sync_queue');
-    } catch {}
+    } catch (e) {
+      console.error('[UZHAVAN SYNC] Error processing offline queue:', e);
+    }
 
     setSyncStatus('synced');
     console.log('[UZHAVAN SYNC] All field updates successfully synchronized.');

@@ -1,0 +1,26 @@
+crop,variety,location,sowing_date,soil_type,irrigation,rainfall,temperature,humidity,farm_area,historical_yield,actual_first_harvest_date,actual_final_harvest_date
+Tomato,PKM-1,Dindigul,2025-06-10,Red loam,Borewell Drip Irrigation (Optimized),310.5,28.4,68.0,1.2,34.8,2025-08-14,2025-10-28
+Tomato,Arka Vikas,Salem,2025-07-01,Well-drained loam,Borewell Drip Irrigation (Optimized),285.0,29.1,64.0,0.8,23.5,2025-09-02,2025-11-15
+Tomato,CO-3,Coimbatore,2025-09-15,Fertile loam,Sprinkler System,420.0,26.5,75.0,1.5,42.0,2025-11-22,2026-01-30
+Tomato,Shivam Hybrid,Krishnagiri,2025-10-05,Red loam,Borewell Drip Irrigation (Optimized),360.0,25.2,72.0,2.0,58.0,2025-12-11,2026-02-20
+Tomato,Arka Rakshak,Dharmapuri,2026-01-10,Well-drained loam,Borewell Drip Irrigation (Optimized),95.0,31.0,55.0,1.0,29.5,2026-03-16,2026-05-25
+Ladies Finger/Okra,Arka Anamika,Madurai,2025-06-15,Fertile well-drained soil,Borewell Drip Irrigation (Optimized),220.0,32.5,62.0,0.75,10.2,2025-08-02,2025-10-10
+Ladies Finger/Okra,Kashi Kranti,Theni,2025-07-20,Well-drained loam,Flood / Basin Irrigation,290.0,29.8,70.0,0.5,6.8,2025-09-08,2025-11-20
+Ladies Finger/Okra,Parbhani Kranti,Tirunelveli,2025-10-12,Sandy loam,Borewell Drip Irrigation (Optimized),410.0,28.0,76.0,1.0,14.5,2025-12-01,2026-02-15
+Brinjal,CO-2,Vellore,2025-05-18,Fertile loam,Borewell Drip Irrigation (Optimized),260.0,33.2,60.0,0.6,16.2,2025-07-24,2025-11-10
+Brinjal,Annamalai,Cuddalore,2025-08-05,Clay/loam,Canal / River Basin Flow,480.0,29.5,78.0,1.2,31.0,2025-10-12,2026-01-20
+Green Chilli,K-1,Tuticorin,2025-09-10,Black soil/loam,Borewell Drip Irrigation (Optimized),320.0,30.0,68.0,1.5,18.0,2025-11-20,2026-03-05
+Green Chilli,CO-4,Virudhunagar,2025-10-01,Well-drained loam,Borewell Drip Irrigation (Optimized),280.0,29.0,66.0,0.8,10.5,2025-12-15,2026-03-25
+Rice/Paddy,Co-51,Thanjavur,2025-06-15,Clay/loam,Canal / River Basin Flow,650.0,30.5,80.0,2.5,14.5,2025-10-05,2025-10-10
+Rice/Paddy,CR-1009 Sub 1,Tiruvarur,2025-08-20,Clay/loam,Canal / River Basin Flow,780.0,28.0,84.0,3.0,18.2,2026-01-18,2026-01-22
+Rice/Paddy,ADT-43,Nagapattinam,2025-07-01,Clay/loam,Canal / River Basin Flow,710.0,29.0,82.0,1.8,9.8,2025-10-26,2025-10-30
+Maize,CO-6,Perambalur,2025-07-10,Well-drained loam,Flood / Basin Irrigation,380.0,31.0,65.0,2.0,12.0,2025-10-18,2025-10-22
+Maize,NK-6240,Dindigul,2025-09-05,Red loam,Borewell Drip Irrigation (Optimized),320.0,28.5,68.0,1.5,10.5,2025-12-10,2025-12-15
+Sugarcane,Co-86032,Erode,2025-01-15,Deep fertile loam,Borewell Drip Irrigation (Optimized),720.0,31.5,70.0,2.0,230.0,2025-12-20,2026-01-10
+Sugarcane,Co-0212,Villupuram,2025-02-10,Fertile loam,Canal / River Basin Flow,840.0,30.0,75.0,3.0,325.0,2026-01-25,2026-02-18
+Groundnut,TMV-7,Tiruvannamalai,2025-06-25,Sandy loam,Sprinkler System,390.0,30.2,65.0,1.5,3.6,2025-10-18,2025-10-22
+Groundnut,VRI-2,Cuddalore,2025-07-15,Sandy loam,Flood / Basin Irrigation,440.0,29.8,70.0,1.2,2.8,2025-11-12,2025-11-16
+French Beans,Arka Komal,Dindigul,2025-09-01,Well-drained loam,Borewell Drip Irrigation (Optimized),290.0,24.5,72.0,0.5,5.2,2025-10-20,2025-12-15
+Cucumber,Poinsette,Coimbatore,2025-08-10,Well-drained loam,Borewell Drip Irrigation (Optimized),250.0,28.0,68.0,0.6,9.8,2025-09-24,2025-11-12
+Carrot,Pusa Kesar,Nilgiris,2025-08-01,Sandy loam,Sprinkler System,850.0,17.5,85.0,0.8,16.5,2025-10-28,2025-11-05
+Potato,Kufri Jyoti,Nilgiris,2025-05-10,Sandy loam,Sprinkler System,920.0,16.8,88.0,1.0,21.0,2025-08-18,2025-08-25

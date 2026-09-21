@@ -10,6 +10,7 @@ import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 import { UpcomingTasksWidget } from '../components/task';
 import { CropVarietySearchDropdown } from '../components/crop/CropVarietySearchDropdown';
 import { CropYieldPredictionCard } from '../components/crop/CropYieldPredictionCard';
+import { CropHarvestForecasterCard } from '../components/crop/CropHarvestForecasterCard';
 import {
   Sprout,
   TrendingUp,
@@ -36,7 +37,8 @@ import {
   Layers,
   Clock,
   ExternalLink,
-  Check
+  Check,
+  CalendarDays
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -200,6 +202,7 @@ export const FarmerDashboard: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'COMPLETED'>('ALL');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showYieldEstimator, setShowYieldEstimator] = useState(false);
+  const [showHarvestForecaster, setShowHarvestForecaster] = useState(false);
 
   const handleListProduceFromYield = (data: { crop: string; variety?: string; estimatedKg: number; grade: string }) => {
     setCrop(data.crop);
@@ -343,6 +346,7 @@ export const FarmerDashboard: React.FC = () => {
           {[
             { id: 'add-crop', label: t('farmer.addCrop', 'Add Crop'), icon: Plus, action: () => setIsAddingListing(true), badge: t('farmer.listBadge', 'List') },
             { id: 'yield-predict', label: t('farmer.yieldPredict', 'Yield Predict'), icon: Sprout, action: () => setShowYieldEstimator(!showYieldEstimator), badge: 'ML Model' },
+            { id: 'harvest-forecast', label: 'Harvest Forecast', icon: CalendarDays, action: () => { setShowHarvestForecaster(!showHarvestForecaster); setShowYieldEstimator(false); }, badge: 'Calendar AI' },
             { id: 'find-buyers', label: t('farmer.findBuyers', 'Find Buyers'), icon: ArrowRight, action: () => setActiveTab('find-buyers'), badge: t('farmer.directBadge', 'Direct') },
             { id: 'smart-match', label: t('farmer.matchPool', 'Match Pool'), icon: Sparkles, action: () => setActiveTab('smart-matching'), badge: t('farmer.aiBadge', 'AI') },
             { id: 'orders', label: t('farmer.myOrders', 'My Orders'), icon: Package, action: () => setActiveTab('orders'), badge: t('farmer.trackBadge', 'Track') },
@@ -353,13 +357,15 @@ export const FarmerDashboard: React.FC = () => {
               key={act.id}
               onClick={act.action}
               className={`flex items-center gap-2.5 p-3 rounded-2xl border transition-all text-left cursor-pointer group ${
-                act.id === 'yield-predict' && showYieldEstimator
+                (act.id === 'yield-predict' && showYieldEstimator) ||
+                (act.id === 'harvest-forecast' && showHarvestForecaster)
                   ? 'bg-[#01472e] text-[#fefae0] border-[#01472e] shadow-md'
                   : 'bg-white border-[#ccd5ae]/50 hover:border-[#01472e]/50 hover:bg-[#fefae0]/40 shadow-soft'
               }`}
             >
               <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-                act.id === 'yield-predict' && showYieldEstimator
+                (act.id === 'yield-predict' && showYieldEstimator) ||
+                (act.id === 'harvest-forecast' && showHarvestForecaster)
                   ? 'bg-white/20 text-white'
                   : 'bg-[#eaf4ec] text-[#01472e] group-hover:bg-[#01472e] group-hover:text-[#fefae0]'
               }`}>
@@ -367,10 +373,16 @@ export const FarmerDashboard: React.FC = () => {
               </div>
               <div className="min-w-0">
                 <span className={`text-xs font-medium block truncate ${
-                  act.id === 'yield-predict' && showYieldEstimator ? 'text-white' : 'text-[#01472e]'
+                  (act.id === 'yield-predict' && showYieldEstimator) ||
+                  (act.id === 'harvest-forecast' && showHarvestForecaster)
+                    ? 'text-white'
+                    : 'text-[#01472e]'
                 }`}>{act.label}</span>
                 <span className={`text-[10px] font-normal ${
-                  act.id === 'yield-predict' && showYieldEstimator ? 'text-[#ccd5ae]' : 'text-[#5c7065]'
+                  (act.id === 'yield-predict' && showYieldEstimator) ||
+                  (act.id === 'harvest-forecast' && showHarvestForecaster)
+                    ? 'text-[#ccd5ae]'
+                    : 'text-[#5c7065]'
                 }`}>{act.badge}</span>
               </div>
             </button>
@@ -395,6 +407,42 @@ export const FarmerDashboard: React.FC = () => {
             </button>
           </div>
           <CropYieldPredictionCard onListProduce={handleListProduceFromYield} />
+        </div>
+      )}
+
+      {/* 2.6 Crop Harvest Forecaster Section */}
+      {showHarvestForecaster && (
+        <div className="space-y-2 animate-fadeIn">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[11px] font-medium uppercase tracking-wider text-[#5c7065] flex items-center gap-1.5">
+              <CalendarDays className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Harvest Forecast &amp; Crop Calendar Intelligence</span>
+            </span>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setActiveTab('harvest-forecast')}
+                className="text-xs text-[#01472e] hover:underline cursor-pointer font-medium"
+              >
+                Full Page →
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowHarvestForecaster(false)}
+                className="text-xs text-[#5c7065] hover:text-[#01472e] cursor-pointer"
+              >
+                Hide
+              </button>
+            </div>
+          </div>
+          <CropHarvestForecasterCard
+            onListProduce={(data) => {
+              setCrop(data.crop);
+              if (data.variety) setVariety(data.variety);
+              setIsAddingListing(true);
+              setShowHarvestForecaster(false);
+            }}
+          />
         </div>
       )}
 

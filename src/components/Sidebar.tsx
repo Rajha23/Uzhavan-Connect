@@ -35,7 +35,8 @@ import {
   MessageSquare,
   Award,
   AlertCircle,
-  Newspaper
+  Newspaper,
+  CalendarDays
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -69,6 +70,7 @@ export const Sidebar: React.FC = () => {
           { id: 'demand-forecast', label: t('nav.demandForecast'), icon: TrendingUp, section: 'MAIN' },
           { id: 'my-crops', label: t('nav.myCrops'), icon: Sprout, section: 'MAIN' },
           { id: 'crop-yield-prediction', label: t('nav.cropYieldPrediction', 'Yield Predictor'), icon: Sparkles, section: 'MAIN' },
+          { id: 'harvest-forecast', label: t('nav.harvestForecast', 'Harvest Forecast'), icon: CalendarDays, section: 'MAIN' },
           { id: 'find-buyers', label: t('nav.findBuyers'), icon: Search, section: 'MARKET' },
           { id: 'tasks', label: t('nav.taskManagement', 'Task Management'), icon: CheckCircle2, section: 'OPERATIONS' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },

@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FarmHarvestObservation",
+  "description": "Standardized schema for recording empirical farm-level crop harvest and yield observations for supervised machine learning training.",
+  "type": "object",
+  "required": [
+    "crop",
+    "location",
+    "sowing_date",
+    "soil_type",
+    "irrigation",
+    "farm_area",
+    "actual_first_harvest_date"
+  ],
+  "properties": {
+    "crop": {
+      "type": "string",
+      "description": "Standardized crop name (e.g. Tomato, Rice/Paddy, Okra, Brinjal, Sugarcane, Maize)"
+    },
+    "variety": {
+      "type": ["string", "null"],
+      "description": "Specific cultivated cultivar or hybrid variety (e.g., PKM-1, Arka Vikas, Co-51, CO-86032, Bhendi No. 10)"
+    },
+    "location": {
+      "type": "string",
+      "description": "Farm location district or sub-district (e.g., Coimbatore, Thanjavur, Madurai, Salem, Dindigul)"
+    },
+    "sowing_date": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO format date of sowing or transplanting (YYYY-MM-DD)"
+    },
+    "soil_type": {
+      "type": "string",
+      "description": "Farm soil classification (e.g. Red loam, Black soil/loam, Sandy loam, Clay/loam, Fertile loam, Well-drained loam)"
+    },
+    "irrigation": {
+      "type": "string",
+      "description": "Irrigation technique / water availability (e.g., Borewell Drip Irrigation (Optimized), Canal / River Basin Flow, Flood / Basin Irrigation, Sprinkler System, Rainfed (Monsoon Dependent))"
+    },
+    "rainfall": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Recorded cumulative rainfall during crop growth cycle in millimeters (mm)"
+    },
+    "temperature": {
+      "type": "number",
+      "description": "Average ambient temperature during crop growth cycle in degrees Celsius (°C)"
+    },
+    "humidity": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Average relative humidity during crop growth cycle in percentage (%)"
+    },
+    "farm_area": {
+      "type": "number",
+      "minimum": 0.01,
+      "description": "Cultivated farm plot area in hectares"
+    },
+    "historical_yield": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Observed final yield produced from the farm plot in metric tonnes (or tonnes/hectare)"
+    },
+    "actual_first_harvest_date": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO format date when the farmer performed the first marketable picking or primary harvest (YYYY-MM-DD)"
+    },
+    "actual_final_harvest_date": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "ISO format date when harvesting was concluded for the crop cycle (YYYY-MM-DD)"
+    }
+  },
+  "additionalProperties": true
+}

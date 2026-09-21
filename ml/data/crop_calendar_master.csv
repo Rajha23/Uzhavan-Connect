@@ -1,0 +1,60 @@
+crop_id,crop_name,category,season,sowing_window,crop_duration_days,first_harvest_days,first_harvest_days_min,first_harvest_days_max,harvest_interval_days,harvest_type,harvest_period,water_requirement,soil_type,temperature_range,pests,diseases
+crop_rice,Rice/Paddy,Cereal,"Kuruvai, Samba/Thaladi, Navarai","Jun–Jul (Kuruvai), Aug–Sep (Samba), Dec–Jan (Navarai)",120,90–150 days,90,150,,One-time,90–150 days,High,Clay/loam,20–35°C,"Stem borer, leaf folder","Blast, bacterial leaf blight"
+crop_maize,Maize,Cereal,Various seasons with irrigation,"Jun–Jul (Kharif), Oct–Nov (Rabi), Jan–Feb (Summer)",100,80–120 days,80,120,,One-time,80–120 days,Moderate,Well-drained loam,18–32°C,Fall armyworm,"Leaf blight, downy mildew"
+crop_sorghum,Sorghum/Cholam,Millet,"Kharif, Late Kharif","Jun–Jul, Sep–Oct",105,90–120 days,90,120,,One-time,90–120 days,Moderate,Loam,25–34°C,Shoot fly,"Downy mildew, grain mold"
+crop_pearl_millet,Pearl Millet/Kambu,Millet,"Kharif, Summer","Jun–Jul, Sep–Oct",85,75–100 days,75,100,,One-time,75–100 days,Low–moderate,Sandy loam,25–35°C,Shoot fly,Downy mildew
+crop_ragi,Ragi,Millet,"Kharif, Late Kharif","Jun–Jul, Sep–Oct",105,90–120 days,90,120,,One-time,90–120 days,Moderate,Red loam,20–32°C,Shoot fly,Blast
+crop_green_gram,Green Gram,Pulse,"Kharif, Rabi, Summer","Jun–Jul, Sep–Oct, Jan–Feb",70,60–75 days,60,75,,One-time,60–75 days,Low–moderate,Well-drained loam,22–35°C,"Aphids, pod borer",Yellow mosaic
+crop_black_gram,Black Gram,Pulse,"Kharif, Rabi, Rice fallow","Jun–Jul, Sep–Oct, Jan–Feb",70,60–80 days,60,80,,One-time,60–80 days,Low–moderate,Loam,25–35°C,"Aphids, pod borer",Yellow mosaic
+crop_red_gram,Red Gram/Pigeon Pea,Pulse,Kharif,Jun–Jul,180,150–200 days,150,200,,One-time,150–200 days,Moderate,Well-drained loam,20–35°C,Pod borer,Wilt
+crop_bengal_gram,Bengal Gram/Chickpea,Pulse,Cool season (Rabi),Oct–Nov,110,100–120 days,100,120,,One-time,100–120 days,Low,Loam,15–28°C,Pod borer,Wilt
+crop_groundnut,Groundnut,Oilseed,"Kharif, Rabi, Summer","Jun–Jul, Sep–Oct, Jan–Feb",115,100–130 days,100,130,,One-time,100–130 days,Moderate,Sandy loam,22–32°C,"Leaf miner, thrips",Tikka disease
+crop_sesame,Sesame/Gingelly,Oilseed,"Kharif, Rabi, Summer","Jun–Jul, Sep–Oct, Jan–Feb",90,80–100 days,80,100,,One-time,80–100 days,Low–moderate,Well-drained soil,25–35°C,"Gall fly, leaf webber",Phyllody
+crop_sunflower,Sunflower,Oilseed,Several seasons,"Jun–Jul, Oct–Nov, Jan–Feb",100,90–110 days,90,110,,One-time,90–110 days,Moderate,Well-drained loam,20–30°C,Head borer,Downy mildew
+crop_cotton,Cotton,Fibre,Kharif,"Jun–Jul, Sep–Oct",180,150–180 days,150,180,15,Multiple pickings,Several weeks/months,Moderate,Black soil/loam,21–35°C,"Bollworms, whitefly","Wilt, leaf curl"
+crop_sugarcane,Sugarcane,Commercial,Different planting windows,"Dec–Feb (Eksali), Jun–Jul (Adsali)",360,300–420 days,300,420,,One-time,10–14 months,High,Deep fertile loam,20–38°C,Early shoot borer,Red rot
+crop_okra,Ladies Finger/Okra,Vegetable,Warm season; several periods,"Feb–Mar, Jun–Jul, Oct–Nov",120,45–60 days,45,60,2,Repeated,2–3 months,Moderate,Fertile well-drained soil,22–35°C,"Aphids, jassids, borer","Yellow vein mosaic, powdery mildew"
+crop_tomato,Tomato,Vegetable,Multiple seasons by region,"Jun–Jul, Oct–Nov, Jan–Feb",140,60–80 days,60,80,3.5,Repeated,2–3 months,Moderate,Well-drained loam,18–30°C,"Fruit borer, whitefly","Leaf curl, early blight"
+crop_brinjal,Brinjal,Vegetable,Multiple seasons,"Jun–Jul, Oct–Nov, Jan–Feb",150,60–80 days,60,80,4,Repeated,3–4 months,Moderate,Fertile loam,20–32°C,Shoot/fruit borer,"Little leaf, bacterial wilt"
+crop_green_chilli,Green Chilli,Vegetable,Multiple seasons,"Jun–Jul, Sep–Oct, Jan–Feb",180,60–90 days,60,90,6,Repeated,3–5 months,Moderate,Well-drained loam,20–32°C,"Thrips, mites",Leaf curl
+crop_french_beans,French Beans,Vegetable,Cool/moderate periods,"Jul–Aug, Oct–Nov",100,45–60 days,45,60,2.5,Repeated,1.5–3 months,Moderate,Well-drained loam,15–25°C,"Aphids, pod borer","Rust, anthracnose"
+crop_cluster_beans,Cluster Beans,Vegetable,Warm season,"Jun–Jul, Jan–Feb",100,45–60 days,45,60,2.5,Repeated,1.5–3 months,Low–moderate,Sandy loam,25–35°C,Aphids,Powdery mildew
+crop_cucumber,Cucumber,Vegetable,Warm season,"Feb–Mar, Jun–Jul",90,40–55 days,40,55,2.5,Repeated,1.5–2 months,Moderate–high,Well-drained loam,20–32°C,"Fruit fly, aphids",Downy mildew
+crop_bitter_gourd,Bitter Gourd,Vegetable,Warm season,"Jan–Feb, Jun–Jul",120,55–70 days,55,70,2.5,Repeated,2–3 months,Moderate,Well-drained loam,24–35°C,"Fruit fly, beetles",Downy mildew
+crop_bottle_gourd,Bottle Gourd,Vegetable,Warm season,"Jan–Feb, Jun–Jul",120,55–70 days,55,70,3,Repeated,2–3 months,Moderate,Well-drained loam,24–32°C,"Fruit fly, aphids",Powdery mildew
+crop_ridge_gourd,Ridge Gourd,Vegetable,Warm season,"Jan–Feb, Jun–Jul",120,55–70 days,55,70,2.5,Repeated,2–3 months,Moderate,Well-drained loam,24–35°C,"Fruit fly, beetles",Downy mildew
+crop_ash_gourd,Ash Gourd,Vegetable,Warm season,"Jan–Feb, Jun–Jul",150,90–120 days,90,120,7,Multiple pickings,2–3 months,Moderate,Well-drained loam,24–32°C,Fruit fly,Downy mildew
+crop_pumpkin,Pumpkin,Vegetable,Warm season,"Jan–Feb, Jun–Jul",150,90–120 days,90,120,7,Multiple pickings,2–3 months,Moderate,Well-drained loam,22–32°C,"Fruit fly, beetles",Powdery mildew
+crop_cabbage,Cabbage,Vegetable,Cool season,Sep–Nov,90,70–100 days,70,100,,One-time,70–100 days,Moderate,Fertile loam,15–22°C,Diamondback moth,Black rot
+crop_cauliflower,Cauliflower,Vegetable,Cool season,Aug–Nov,85,60–100 days,60,100,,One-time,60–100 days,Moderate,Fertile loam,15–20°C,Diamondback moth,Downy mildew
+crop_carrot,Carrot,Root vegetable,Cool season,Aug–Nov,90,70–100 days,70,100,,One-time,70–100 days,Moderate,Sandy loam,15–20°C,"Aphids, nematodes",Leaf blight
+crop_radish,Radish,Root vegetable,Cool season,Sep–Jan,45,30–60 days,30,60,,One-time,30–60 days,Moderate,Sandy loam,12–25°C,Aphids,Downy mildew
+crop_beetroot,Beetroot,Root vegetable,Cool season,Aug–Nov,75,60–90 days,60,90,,One-time,60–90 days,Moderate,Well-drained loam,18–25°C,Leaf miner,Leaf spot
+crop_onion,Onion,Bulb vegetable,"Region/variety dependent (Kharif, Late Kharif, Rabi)","May–Jun, Aug–Sep, Oct–Nov",130,90–150 days,90,150,,One-time,90–150 days,Moderate,Well-drained loam,15–30°C,Thrips,Purple blotch
+crop_potato,Potato,Tuber crop,Cool season (Rabi),Oct–Nov,100,70–120 days,70,120,,One-time,70–120 days,Moderate,Sandy loam,15–24°C,"Aphids, tuber moth",Late blight
+crop_sweet_potato,Sweet Potato,Tuber crop,Warm season,"Jun–Jul, Sep–Oct",110,90–120 days,90,120,,One-time,90–120 days,Moderate,Sandy loam,22–30°C,Weevils,Scurf
+crop_tapioca,Tapioca/Cassava,Tuber crop,Warm conditions,"Apr–May, Sep–Oct",300,240–365 days,240,365,,One-time,8–12 months,Moderate,Sandy loam,25–35°C,Mealybug,Mosaic disease
+crop_elephant_foot_yam,Elephant Foot Yam,Tuber crop,Warm/wet season,Mar–May,240,210–270 days,210,270,,One-time,7–9 months,Moderate–high,Loam,25–35°C,Scale insects,Leaf spot
+crop_watermelon,Watermelon,Fruit,Warm season (Summer),Dec–Feb,90,70–100 days,70,100,7,Multiple pickings,Several weeks,Moderate,Sandy loam,24–35°C,"Fruit fly, aphids",Downy mildew
+crop_muskmelon,Muskmelon,Fruit,Warm season (Summer),Dec–Feb,80,60–90 days,60,90,5,Multiple pickings,Several weeks,Moderate,Sandy loam,24–32°C,Fruit fly,Powdery mildew
+crop_papaya,Papaya,Fruit,Warm tropical conditions,"Jun–Jul, Feb–Mar",300,240–365 days,240,365,7,Repeated,Several months/years,Moderate,Well-drained loam,22–35°C,"Mealybug, mites",Papaya ringspot
+crop_banana,Banana,Fruit,Most of year with suitable irrigation,"Feb–Apr, Jul–Aug",360,300–420 days,300,420,,One-time,One main harvest (one bunch/plant),High,Deep fertile loam,20–35°C,Rhizome weevil,"Sigatoka, Panama disease"
+crop_guava,Guava,Fruit,Year-round tropical/subtropical,Jun–Aug planting,730,730–1095 days,730,1095,4,Repeated,Seasonal flushes,Moderate,Well-drained loam,20–32°C,Fruit fly,Wilt
+crop_mango,Mango,Fruit,Seasonal summer harvest,Jul–Aug planting,1095,1095–1460 days,1095,1460,7,Multiple pickings,Seasonal (Mar–Jun),Moderate,Deep well-drained soil,24–38°C,"Mango hopper, fruit fly",Powdery mildew
+crop_pomegranate,Pomegranate,Fruit,Warm/dry conditions,"Jun–Jul, Dec–Jan",730,730–1095 days,730,1095,5,Repeated,Seasonal flushes,Moderate,Well-drained loam,20–35°C,"Fruit borer, aphids",Bacterial blight
+crop_sapota,Sapota/Chikoo,Fruit,Tropical,Jun–Aug,1095,1095–1460 days,1095,1460,6,Repeated,Multiple harvests,Moderate,Deep well-drained soil,20–34°C,"Fruit fly, mealybug",Sooty mold
+crop_turmeric,Turmeric,Spice,Kharif,Jun–Jul commonly,250,210–270 days,210,270,,One-time,7–9 months,High,Well-drained loam,20–35°C,Shoot borer,Rhizome rot
+crop_ginger,Ginger,Spice,Kharif,Apr–Jun commonly,220,180–240 days,180,240,,One-time,6–8 months,High,Well-drained loam,20–30°C,Shoot borer,Soft rot
+crop_coriander,Coriander,Herb/spice,Cool/moderate season,"Oct–Nov, Jun–Jul",100,35–50 days,35,50,10,Repeated,30–50 days (leaves); 90–110 days (seed),Moderate,Well-drained loam,15–28°C,Aphids,Powdery mildew
+crop_curry_leaf,Curry Leaf,Leaf crop,Warm conditions,May–Jul,180,120–180 days,120,180,60,Repeated,Long-term (periodic pruning),Moderate,Well-drained soil,22–35°C,"Psyllid, scale",Leaf spot
+crop_moringa,Moringa/Drumstick,Vegetable,Warm conditions,Jul–Oct,180,120–180 days,120,180,7,Repeated,Several months,Moderate,Well-drained soil,25–38°C,"Pod fly, caterpillars",Powdery mildew
+crop_jasmine,Jasmine,Flower,Warm conditions,Jun–Aug,210,180–240 days,180,240,1,Repeated,Long-term (daily/frequent picking),Moderate,Well-drained loam,22–35°C,"Bud worm, mites",Leaf blight
+crop_marigold,Marigold,Flower,Various seasons,"May–Jun, Sep–Oct, Jan–Feb",120,60–90 days,60,90,2.5,Repeated,2–3 months,Moderate,Well-drained loam,18–30°C,"Aphids, thrips",Leaf spot
+crop_rose,Rose,Flower,Suitable conditions,"Jul–Aug, Oct–Nov",150,120–180 days,120,180,2,Repeated,Long-term (regular picking),Moderate,Well-drained loam,15–28°C,"Aphids, mites","Black spot, powdery mildew"
+crop_tuberose,Tuberose,Flower,Warm season,Mar–May,120,90–150 days,90,150,4,Repeated,Several months,Moderate,Well-drained loam,20–32°C,"Bud borer, thrips",Blight
+crop_chrysanthemum,Chrysanthemum,Flower,Cool/moderate period,May–Jun,130,90–120 days,90,120,3,Repeated,Several weeks,Moderate,Well-drained loam,15–25°C,"Aphids, thrips","Wilt, leaf spot"
+crop_coconut,Coconut,Plantation,Year-round planting with suitable irrigation,"May–Jun, Sep–Oct",2190,1825–2555 days,1825,2555,37.5,Repeated,Long-term (every ~30–45 days),High,Sandy/loam coastal soils,22–35°C,"Rhinoceros beetle, red palm weevil","Bud rot, basal stem rot"
+crop_arecanut,Arecanut,Plantation,Warm/humid,May–Jul,2190,1825–2555 days,1825,2555,30,Repeated,Long-term (periodic harvest),High,Well-drained soil,20–35°C,"Spindle bug, mite",Fruit rot
+crop_cashew,Cashew,Plantation,Rainfed/tropical,Jun–Aug,1200,1095–1460 days,1095,1460,7,Multiple pickings,Seasonal (Feb–May),Moderate,Well-drained sandy soil,20–36°C,Tea mosquito bug,Dieback
+crop_coffee,Coffee,Plantation,Hill regions,Jun–Aug planting,1200,1095–1460 days,1095,1460,10,Multiple pickings,Seasonal (Nov–Feb),Moderate,Well-drained acidic soil,15–28°C,Coffee berry borer,Leaf rust
+crop_tea,Tea,Plantation,Hill regions,May–Jul planting,1095,1095–1460 days,1095,1460,7,Repeated,Long-term (regular leaf plucking every 7–10 days),High,Acidic well-drained soil,13–30°C,"Tea mosquito bug, mites",Blister blight

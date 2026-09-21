@@ -1,16 +1,17 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from demand_forecaster import forecaster
 from route_optimizer import route_optimizer
 
 from crop_yield_predictor import yield_predictor
+from crop_harvest_engine import harvest_engine
 
 app = FastAPI(
     title="AgriPulse AI & Optimization Service",
-    description="Microservice providing XGBoost/ML Demand Forecasting, Crop Yield Prediction, and Google OR-Tools Route Optimization for Uzhavan Connect",
-    version="1.1.0"
+    description="Microservice providing XGBoost/ML Demand Forecasting, Crop Yield Prediction, Google OR-Tools Route Optimization, and Crop Harvest Forecasting & Calendar Intelligence for Uzhavan Connect",
+    version="1.2.0"
 )
 
 app.add_middleware(
@@ -46,17 +47,48 @@ class CropYieldRequest(BaseModel):
     pesticide: float = Field(default=15.0, description="Pesticide amount in kg")
     crop_year: Optional[int] = Field(default=2026, description="Cropping year")
 
+class HarvestForecastRequest(BaseModel):
+    crop: str = Field(description="Crop name (e.g., Tomato, Rice/Paddy, Ladies Finger/Okra)")
+    sowing_date: str = Field(description="Sowing date in ISO format YYYY-MM-DD")
+    variety: Optional[str] = Field(default=None, description="Variety name (optional)")
+    location: Optional[str] = Field(default="Tamil Nadu", description="District or state name")
+    season: Optional[str] = Field(default=None, description="Agricultural season")
+    soil_type: Optional[str] = Field(default=None, description="Soil type (e.g., Well-drained loam, Clay/loam, Sandy loam)")
+    irrigation: Optional[str] = Field(default=None, description="Irrigation method")
+    rainfall: Optional[float] = Field(default=None, description="Expected seasonal rainfall in mm")
+    temperature: Optional[float] = Field(default=None, description="Average ambient temperature in °C")
+    humidity: Optional[float] = Field(default=None, description="Average relative humidity %")
+
+class FarmObservationRequest(BaseModel):
+    crop: str = Field(description="Crop name")
+    variety: Optional[str] = Field(default=None, description="Variety name")
+    location: str = Field(description="Farm district/location")
+    sowing_date: str = Field(description="Sowing date YYYY-MM-DD")
+    actual_first_harvest_date: str = Field(description="Actual first harvest date YYYY-MM-DD")
+    actual_final_harvest_date: Optional[str] = Field(default=None, description="Actual final harvest date YYYY-MM-DD")
+    soil_type: Optional[str] = Field(default=None, description="Soil type")
+    irrigation: Optional[str] = Field(default=None, description="Irrigation method")
+    rainfall: Optional[float] = Field(default=None, description="Seasonal rainfall in mm")
+    temperature: Optional[float] = Field(default=None, description="Avg temperature °C")
+    humidity: Optional[float] = Field(default=None, description="Avg humidity %")
+    farm_area: Optional[float] = Field(default=1.0, description="Farm area in hectares")
+    historical_yield: Optional[float] = Field(default=None, description="Yield in tonnes/ha")
+
 @app.get("/")
 def root():
     return {
         "service": "AgriPulse AI & Optimization Microservice",
         "status": "ONLINE",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "endpoints": [
             "/api/forecasts/predict",
             "/api/routes/optimize",
             "/api/ml/crop-yield/predict",
             "/api/ml/crop-yield/meta",
+            "/api/ml/harvest/crops",
+            "/api/ml/harvest/forecast",
+            "/api/ml/harvest/record-observation",
+            "/api/ml/harvest/observations-schema",
             "/health"
         ]
     }
@@ -67,8 +99,89 @@ def health():
         "status": "UP",
         "forecast_model_loaded": True,
         "crop_yield_model_loaded": yield_predictor.model_loaded,
+        "harvest_engine_crops_loaded": len(harvest_engine.crops_db),
+        "harvest_ml_model_loaded": harvest_engine.ml_bundle is not None,
         "models_loaded": yield_predictor.model_loaded
     }
+
+# ─── Crop Harvest Forecasting & Calendar Intelligence Endpoints ──────────────
+
+@app.get("/api/ml/harvest/crops")
+def list_harvest_crops():
+    """
+    List all 59 crops from the Crop Calendar Master Database
+    with categories, harvest types, and agronomic parameters.
+    """
+    try:
+        crops = harvest_engine.get_supported_crops()
+        return {
+            "total_crops": len(crops),
+            "source": "Uzhavan Connect Crop Details & Harvest Database (PDF-derived agronomic reference)",
+            "crops": crops
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/ml/harvest/forecast")
+def forecast_harvest(req: HarvestForecastRequest):
+    """
+    Primary harvest prediction endpoint.
+    Computes expected first harvest date, harvest window, picking schedule
+    (for repeated crops), and plant protection advisories.
+    Calendar-derived forecasts are clearly labeled as Agronomic Reference values.
+    """
+    try:
+        result = harvest_engine.forecast_harvest(
+            crop=req.crop,
+            sowing_date=req.sowing_date,
+            variety=req.variety,
+            location=req.location or "Tamil Nadu",
+            season=req.season,
+            soil_type=req.soil_type,
+            irrigation=req.irrigation,
+            rainfall=req.rainfall,
+            temperature=req.temperature,
+            humidity=req.humidity
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/ml/harvest/record-observation")
+def record_farm_observation(req: FarmObservationRequest):
+    """
+    Collect real-world farmer harvest observations for supervised ML retraining.
+    Records are appended to farm_harvest_observations.csv for future model training.
+    """
+    try:
+        result = harvest_engine.record_farm_observation(req.dict())
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/ml/harvest/observations-schema")
+def get_observations_schema():
+    """
+    Expose the farm harvest observation JSON schema for
+    mobile/web form validation and API documentation.
+    """
+    import os, json
+    schema_path = os.path.join(os.path.dirname(__file__), "..", "ml", "data", "farm_harvest_schema.json")
+    try:
+        with open(schema_path, "r", encoding="utf-8") as f:
+            schema = json.load(f)
+        return schema
+    except FileNotFoundError:
+        return {
+            "title": "FarmHarvestObservation",
+            "type": "object",
+            "required": ["crop", "location", "sowing_date", "actual_first_harvest_date"],
+            "note": "Full schema file not found. Required fields listed above."
+        }
 
 @app.get("/api/ml/crop-yield/meta")
 def crop_yield_metadata():

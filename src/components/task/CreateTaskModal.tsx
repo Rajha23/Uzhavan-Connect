@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TaskPriority, TaskStatus, UserRole } from '../../types';
+import { TaskPriority, TaskStatus, UserRole, AGRI_TASK_TYPES } from '../../types';
 import { X, Save } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useApp } from '../../context/AppContext';
@@ -111,13 +111,15 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ onClose, onTas
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 {t('tasks.fields.taskType', undefined, 'Task Type')}
               </label>
-              <input
-                type="text"
+              <select
                 value={formData.taskType}
                 onChange={e => setFormData({...formData, taskType: e.target.value})}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                placeholder="e.g. Quality Check"
-              />
+              >
+                {AGRI_TASK_TYPES.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
             </div>
 
             {/* Priority */}

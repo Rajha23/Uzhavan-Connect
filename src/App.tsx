@@ -62,6 +62,7 @@ import { MiddlemanSimulator } from './components/MiddlemanSimulator';
 import { RouteOptimizationMap } from './components/RouteOptimizationMap';
 import { SmartMatchingEngine } from './components/SmartMatchingEngine';
 import { CropYieldPredictionPage } from './pages/CropYieldPredictionPage';
+import { CropHarvestForecastPage } from './pages/CropHarvestForecastPage';
 
 // ─── Public and Role-Guarded Route Definitions ──────────────────────────────
 
@@ -186,6 +187,13 @@ const PageContent: React.FC = () => {
         return <AccessDenied attemptedFeature="AI Crop Yield Prediction" />;
       }
       return <CropYieldPredictionPage />;
+
+    case 'harvest-forecast':
+    case 'crop-harvest-forecast':
+      if (!FARMER_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="Crop Harvest Forecasting & Calendar Intelligence" />;
+      }
+      return <CropHarvestForecastPage />;
 
     // ── Buyer Operations (RBAC: RETAIL_BUYER, ADMIN) ─
     case 'create-demand':
