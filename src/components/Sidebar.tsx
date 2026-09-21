@@ -68,6 +68,7 @@ export const Sidebar: React.FC = () => {
           { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, section: 'MAIN' },
           { id: 'demand-forecast', label: t('nav.demandForecast'), icon: TrendingUp, section: 'MAIN' },
           { id: 'my-crops', label: t('nav.myCrops'), icon: Sprout, section: 'MAIN' },
+          { id: 'crop-yield-prediction', label: t('nav.cropYieldPrediction', 'Yield Predictor'), icon: Sparkles, section: 'MAIN' },
           { id: 'find-buyers', label: t('nav.findBuyers'), icon: Search, section: 'MARKET' },
           { id: 'tasks', label: t('nav.taskManagement', 'Task Management'), icon: CheckCircle2, section: 'OPERATIONS' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },

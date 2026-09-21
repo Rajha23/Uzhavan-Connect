@@ -9,6 +9,7 @@ import { DetailDrawer } from "../components/DetailDrawer";
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 import { UpcomingTasksWidget } from '../components/task';
 import { CropVarietySearchDropdown } from '../components/crop/CropVarietySearchDropdown';
+import { CropYieldPredictionCard } from '../components/crop/CropYieldPredictionCard';
 import {
   Sprout,
   TrendingUp,
@@ -198,6 +199,17 @@ export const FarmerDashboard: React.FC = () => {
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'COMPLETED'>('ALL');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [showYieldEstimator, setShowYieldEstimator] = useState(false);
+
+  const handleListProduceFromYield = (data: { crop: string; variety?: string; estimatedKg: number; grade: string }) => {
+    setCrop(data.crop);
+    if (data.variety) setVariety(data.variety);
+    setQuantity(data.estimatedKg);
+    setUnit('kg');
+    setQuality(data.grade as any || 'Grade A');
+    setIsAddingListing(true);
+    setShowYieldEstimator(false);
+  };
 
   const forecast = CHENNAI_TOMATO_FORECAST;
 
@@ -327,9 +339,10 @@ export const FarmerDashboard: React.FC = () => {
         <span className="text-[11px] font-medium uppercase tracking-wider text-[#5c7065] px-1">
           {t('farmer.quickOps', 'Quick Operations')}
         </span>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
           {[
             { id: 'add-crop', label: t('farmer.addCrop', 'Add Crop'), icon: Plus, action: () => setIsAddingListing(true), badge: t('farmer.listBadge', 'List') },
+            { id: 'yield-predict', label: t('farmer.yieldPredict', 'Yield Predict'), icon: Sprout, action: () => setShowYieldEstimator(!showYieldEstimator), badge: 'ML Model' },
             { id: 'find-buyers', label: t('farmer.findBuyers', 'Find Buyers'), icon: ArrowRight, action: () => setActiveTab('find-buyers'), badge: t('farmer.directBadge', 'Direct') },
             { id: 'smart-match', label: t('farmer.matchPool', 'Match Pool'), icon: Sparkles, action: () => setActiveTab('smart-matching'), badge: t('farmer.aiBadge', 'AI') },
             { id: 'orders', label: t('farmer.myOrders', 'My Orders'), icon: Package, action: () => setActiveTab('orders'), badge: t('farmer.trackBadge', 'Track') },
@@ -339,19 +352,51 @@ export const FarmerDashboard: React.FC = () => {
             <button
               key={act.id}
               onClick={act.action}
-              className="flex items-center gap-2.5 p-3 rounded-2xl bg-white border border-[#ccd5ae]/50 hover:border-[#01472e]/50 hover:bg-[#fefae0]/40 shadow-soft transition-all text-left cursor-pointer group"
+              className={`flex items-center gap-2.5 p-3 rounded-2xl border transition-all text-left cursor-pointer group ${
+                act.id === 'yield-predict' && showYieldEstimator
+                  ? 'bg-[#01472e] text-[#fefae0] border-[#01472e] shadow-md'
+                  : 'bg-white border-[#ccd5ae]/50 hover:border-[#01472e]/50 hover:bg-[#fefae0]/40 shadow-soft'
+              }`}
             >
-              <div className="w-8 h-8 rounded-xl bg-[#eaf4ec] text-[#01472e] flex items-center justify-center shrink-0 group-hover:bg-[#01472e] group-hover:text-[#fefae0] transition-colors">
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                act.id === 'yield-predict' && showYieldEstimator
+                  ? 'bg-white/20 text-white'
+                  : 'bg-[#eaf4ec] text-[#01472e] group-hover:bg-[#01472e] group-hover:text-[#fefae0]'
+              }`}>
                 <act.icon className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <span className="text-xs font-medium text-[#01472e] block truncate">{act.label}</span>
-                <span className="text-[10px] text-[#5c7065] font-normal">{act.badge}</span>
+                <span className={`text-xs font-medium block truncate ${
+                  act.id === 'yield-predict' && showYieldEstimator ? 'text-white' : 'text-[#01472e]'
+                }`}>{act.label}</span>
+                <span className={`text-[10px] font-normal ${
+                  act.id === 'yield-predict' && showYieldEstimator ? 'text-[#ccd5ae]' : 'text-[#5c7065]'
+                }`}>{act.badge}</span>
               </div>
             </button>
           ))}
         </div>
       </div>
+
+      {/* 2.5 Crop Yield Prediction Section */}
+      {showYieldEstimator && (
+        <div className="space-y-2 animate-fadeIn">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[11px] font-medium uppercase tracking-wider text-[#5c7065] flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>AI Crop Yield Intelligence Engine (Random Forest)</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowYieldEstimator(false)}
+              className="text-xs text-[#5c7065] hover:text-[#01472e] cursor-pointer"
+            >
+              Hide Estimator
+            </button>
+          </div>
+          <CropYieldPredictionCard onListProduce={handleListProduceFromYield} />
+        </div>
+      )}
 
       {/* 3. AI Farmer Mentor Card */}
       <div className="p-6 rounded-[28px] bg-[#eaf4ec]/90 border border-[#a3b18a]/50 shadow-soft flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden">
@@ -500,7 +545,17 @@ export const FarmerDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-medium text-[#01472e] block mb-1 text-xs">{t('farmer.quantity', 'Quantity')}</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-medium text-[#01472e] block text-xs">{t('farmer.quantity', 'Quantity')}</label>
+                  <button
+                    type="button"
+                    onClick={() => setShowYieldEstimator(true)}
+                    className="text-[10px] text-emerald-800 hover:text-emerald-950 font-semibold inline-flex items-center gap-1 cursor-pointer bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200"
+                  >
+                    <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                    <span>Estimate with ML</span>
+                  </button>
+                </div>
                 <div className="flex gap-2">
                   <input
                     type="number"

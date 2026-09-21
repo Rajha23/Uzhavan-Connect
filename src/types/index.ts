@@ -732,3 +732,50 @@ export interface NewsArticle {
 
 export * from './shipment';
 export * from './feedback';
+
+export interface CropYieldRequestDto {
+  crop: string;
+  variety?: string;
+  season: string;
+  state: string;
+  area: number; // in hectares
+  annual_rainfall: number;
+  fertilizer: number;
+  pesticide: number;
+  crop_year?: number;
+}
+
+export interface CropYieldResponseDto {
+  success: boolean;
+  predicted_yield?: number;
+  unit?: string;
+  crop?: string;
+  variety?: string;
+  season?: string;
+  state?: string;
+  cultivated_area_ha?: number;
+  estimated_total_production?: number;
+  total_production_unit?: string;
+  model?: string;
+  model_performance?: {
+    r2_score: number;
+    mae: number;
+    median_absolute_error: number;
+    test_samples: number;
+    training_samples: number;
+    crop_specific_benchmark?: {
+      sample_count?: number;
+      mean_yield?: number;
+      mae?: number;
+      median_ae?: number;
+    };
+  };
+  explainability?: {
+    factors_considered: string[];
+    feature_importance_pct: Record<string, number>;
+    disclaimer: string;
+  };
+  errors?: string[];
+  message?: string;
+  source?: 'FASTAPI_MODEL' | 'OFFLINE_FALLBACK_PIPELINE';
+}

@@ -61,6 +61,7 @@ import { FarmerBuyerFeedbackForm } from './pages/feedback/FarmerBuyerFeedbackFor
 import { MiddlemanSimulator } from './components/MiddlemanSimulator';
 import { RouteOptimizationMap } from './components/RouteOptimizationMap';
 import { SmartMatchingEngine } from './components/SmartMatchingEngine';
+import { CropYieldPredictionPage } from './pages/CropYieldPredictionPage';
 
 // ─── Public and Role-Guarded Route Definitions ──────────────────────────────
 
@@ -178,6 +179,13 @@ const PageContent: React.FC = () => {
           <MiddlemanSimulator />
         </div>
       );
+    case 'crop-yield':
+    case 'crop-yield-prediction':
+    case 'yield-prediction':
+      if (!FARMER_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="AI Crop Yield Prediction" />;
+      }
+      return <CropYieldPredictionPage />;
 
     // ── Buyer Operations (RBAC: RETAIL_BUYER, ADMIN) ─
     case 'create-demand':
