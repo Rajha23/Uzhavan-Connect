@@ -180,6 +180,9 @@ interface AppContextType {
   // ─── News ─────────────────────────────────────────────────────────────────
   newsArticles: NewsArticle[];
   addNewsArticle: (article: NewsArticle) => void;
+  // ─── Shipments ────────────────────────────────────────────────────────────
+  shipmentInitialFilter?: string | null;
+  setShipmentInitialFilter: (filter: string | null) => void;
 }
 
 export const identifyCompatibleDemandGroups = (demands: DemandRequest[]): AggregatedDemandGroup[] => {
@@ -323,6 +326,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [demoStep, setDemoStepState] = useState<number>(1);
   const [marketPrices, setMarketPrices] = useState<MarketPriceItem[]>(MARKET_PRICES_DATA);
   const [systemUsers, setSystemUsers] = useState<SystemUserRecord[]>(SYSTEM_USERS_DATA);
+  const [shipmentInitialFilter, setShipmentInitialFilter] = useState<string | null>(null);
 
   // ─── Feedback Intelligence State ────────────────────────────────────────
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>(() => {
@@ -2481,7 +2485,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         openDocumentManager,
         closeDocumentManager,
         newsArticles,
-        addNewsArticle
+        addNewsArticle,
+        shipmentInitialFilter,
+        setShipmentInitialFilter
       }}
     >
       {children}

@@ -1,9 +1,17 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
 import { LanguageDefinition, LanguageContextType, ScriptDirection } from '../types/i18n';
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, getLanguageByCode } from '../i18n/languages';
 import { getTranslation } from '../i18n/locales/translations';
+import {
+  detectBrowserLanguage,
+  detectTextLanguage,
+  translateText,
+  getCachedTranslation,
+  syncGoogleTranslateDOM
+} from '../services/translationService';
 
 const LANGUAGE_STORAGE_KEY = 'uzhavan_language';
+const AUTODETECT_STORAGE_KEY = 'uzhavan_autodetect_language';
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
@@ -12,26 +20,65 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  // Initialize language from local persistence (or default English)
+  // 1. Detect browser / device language automatically
+  const [detectedLanguage] = useState<LanguageDefinition>(() => {
+    return detectBrowserLanguage(SUPPORTED_LANGUAGES);
+  });
+
+  // 2. Track whether auto-detection is active (defaults to true if user hasn't explicitly set a preference)
+  const [isAutoDetect, setIsAutoDetect] = useState<boolean>(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const autoStored = localStorage.getItem(AUTODETECT_STORAGE_KEY);
+        if (autoStored !== null) {
+          return autoStored === 'true';
+        }
+        // If there's no saved manual language, enable auto-detect by default
+        const savedCode = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+        return !savedCode;
+      }
+    } catch {
+      // Default to auto-detect
+    }
+    return true;
+  });
+
+  // 3. Initialize active language based on auto-detection or saved preference
   const [currentLanguage, setCurrentLanguageState] = useState<LanguageDefinition>(() => {
     try {
       if (typeof window !== 'undefined') {
+        const autoStored = localStorage.getItem(AUTODETECT_STORAGE_KEY);
         const savedCode = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+
+        // If explicitly set to manual and valid savedCode exists
+        if (autoStored === 'false' && savedCode) {
+          return getLanguageByCode(savedCode);
+        }
+
+        // If no explicit manual lock, use detected browser language
+        const detected = detectBrowserLanguage(SUPPORTED_LANGUAGES);
+        if (detected && detected.code) {
+          return detected;
+        }
+
         if (savedCode) {
           return getLanguageByCode(savedCode);
         }
       }
     } catch (e) {
-      console.warn('Failed to restore language preference from localStorage:', e);
+      console.warn('Failed to restore language preference:', e);
     }
-    return DEFAULT_LANGUAGE;
+    return detectedLanguage || DEFAULT_LANGUAGE;
   });
 
   const [direction, setDirection] = useState<ScriptDirection>(currentLanguage.direction);
   const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState<boolean>(false);
   const [isPostRegOnboardingOpen, setIsPostRegOnboardingOpen] = useState<boolean>(false);
 
-  // Synchronize document direction and lang attributes
+  // Background translation trigger throttle to avoid redundant requests
+  const pendingTranslationsRef = useRef<Set<string>>(new Set());
+
+  // Synchronize document direction, lang attributes, and Google Translate DOM integration
   const applyDocumentLocale = useCallback((lang: LanguageDefinition) => {
     if (typeof document !== 'undefined') {
       document.documentElement.lang = lang.code;
@@ -41,22 +88,45 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       } else {
         document.documentElement.classList.remove('rtl-layout');
       }
+      // Sync whole-page DOM translation
+      syncGoogleTranslateDOM(lang.code);
     }
   }, []);
 
-  // Update language, persist preference, and apply direction
+  // Update language manually, persist preference, disable auto-detect
   const setLanguage = useCallback((code: string) => {
     const lang = getLanguageByCode(code);
     setCurrentLanguageState(lang);
     setDirection(lang.direction);
+    setIsAutoDetect(false);
     applyDocumentLocale(lang);
 
     try {
       if (typeof window !== 'undefined') {
         localStorage.setItem(LANGUAGE_STORAGE_KEY, lang.code);
+        localStorage.setItem(AUTODETECT_STORAGE_KEY, 'false');
       }
     } catch (e) {
       console.warn('Failed to save language preference:', e);
+    }
+  }, [applyDocumentLocale]);
+
+  // Toggle Auto-Detect mode
+  const setAutoDetect = useCallback((enable: boolean) => {
+    setIsAutoDetect(enable);
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(AUTODETECT_STORAGE_KEY, enable ? 'true' : 'false');
+      }
+    } catch (e) {
+      console.warn('Failed to save auto-detect setting:', e);
+    }
+
+    if (enable) {
+      const detected = detectBrowserLanguage(SUPPORTED_LANGUAGES);
+      setCurrentLanguageState(detected);
+      setDirection(detected.direction);
+      applyDocumentLocale(detected);
     }
   }, [applyDocumentLocale]);
 
@@ -65,14 +135,63 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     applyDocumentLocale(currentLanguage);
   }, [currentLanguage, applyDocumentLocale]);
 
-  // Translation helper with parameters and fallback
+  // Translation helper with parameters, local dictionary, and dynamic translation fallback
   const t = useCallback((
     key: string,
     arg2?: Record<string, string | number> | string | any,
     arg3?: Record<string, string | number> | string | any
   ): string => {
-    return getTranslation(currentLanguage.code, key, arg2, arg3);
+    const dictResult = getTranslation(currentLanguage.code, key, arg2, arg3);
+    let defaultText: string | undefined;
+
+    if (typeof arg2 === 'string') {
+      defaultText = arg2;
+    } else if (typeof arg3 === 'string') {
+      defaultText = arg3;
+    }
+
+    // If result came directly from dictionary and differs from fallback/key, return it
+    if (dictResult && dictResult !== key && dictResult !== defaultText) {
+      return dictResult;
+    }
+
+    // Check if dynamic translation is available in cache
+    const textToTranslate = defaultText || key;
+    if (currentLanguage.code !== 'en' && textToTranslate) {
+      const cached = getCachedTranslation(textToTranslate, currentLanguage.code);
+      if (cached) {
+        return cached;
+      }
+
+      // If untranslated and not queued, dynamically fetch in background for seamless caching
+      const queueKey = `${currentLanguage.code}_${textToTranslate}`;
+      if (!pendingTranslationsRef.current.has(queueKey)) {
+        pendingTranslationsRef.current.add(queueKey);
+        translateText(textToTranslate, currentLanguage.code)
+          .catch(() => {
+            // Silently ignore background translation errors
+          })
+          .finally(() => {
+            pendingTranslationsRef.current.delete(queueKey);
+          });
+      }
+    }
+
+    return dictResult || defaultText || key;
   }, [currentLanguage.code]);
+
+  // Dynamic text translation for arbitrary user content or API responses
+  const handleTranslateText = useCallback(
+    async (text: string, targetLang?: string, sourceLang?: string): Promise<string> => {
+      return translateText(text, targetLang || currentLanguage.code, sourceLang || 'auto');
+    },
+    [currentLanguage.code]
+  );
+
+  // Dynamic text language detector
+  const handleDetectTextLanguage = useCallback((text: string): LanguageDefinition | null => {
+    return detectTextLanguage(text, SUPPORTED_LANGUAGES);
+  }, []);
 
   // Indian Numbering Currency Formatter (₹1,25,000)
   const formatCurrency = useCallback((amount: number): string => {
@@ -145,9 +264,15 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     closeLanguageSelector,
     isPostRegOnboardingOpen,
     startPostRegistrationOnboarding,
-    completePostRegistrationOnboarding
-  };
+    completePostRegistrationOnboarding,
 
+    // Language Detection & Dynamic Translation extensions
+    isAutoDetect,
+    detectedLanguage,
+    setAutoDetect,
+    translateText: handleTranslateText,
+    detectTextLanguage: handleDetectTextLanguage
+  };
 
   return (
     <LanguageContext.Provider value={contextValue}>

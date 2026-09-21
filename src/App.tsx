@@ -46,6 +46,7 @@ import { NewsPage } from './pages/NewsPage';
 import { SubsidyPage } from './pages/SubsidyPage';
 import { SupportPage } from './pages/SupportPage';
 import { TaskManagementPage } from './pages/TaskManagementPage';
+import { ShipmentsPage } from './pages/ShipmentsPage';
 
 // Feedback Intelligence System
 import { FeedbackIntelligencePage } from './pages/FeedbackIntelligencePage';
@@ -206,6 +207,10 @@ const PageContent: React.FC = () => {
 
     // ── Operations / Logistics (RBAC: LOGISTICS, ADMIN) ─
     case 'shipments':
+      if (!LOGISTICS_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="Cold-Chain Fleet Shipments" />;
+      }
+      return <ShipmentsPage />;
     case 'hubs':
     case 'delivery':
       if (!LOGISTICS_ALLOWED_ROLES.includes(currentRole)) {

@@ -45,6 +45,11 @@ export const TaskManagementPage: React.FC = () => {
 
   useEffect(() => {
     fetchTasks();
+    if (currentRole && currentRole !== 'ADMIN') {
+      setRoleFilter(currentRole);
+    } else {
+      setRoleFilter('ALL');
+    }
     
     // Listen for global task updates to sync the UI across components
     const handleTasksUpdated = () => fetchTasks();

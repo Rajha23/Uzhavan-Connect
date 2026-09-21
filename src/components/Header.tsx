@@ -12,6 +12,8 @@ const PAGE_TITLES: Record<string, string> = {
   'find-buyers': 'Find Buyers',
   'farmer-offers': 'Offers',
   orders: 'My Orders',
+  tasks: 'Task Management',
+  'task-management': 'Task Management',
   logistics: 'Logistics',
   traceability: 'Traceability',
   'cost-simulator': 'Cost Simulator',
@@ -61,7 +63,7 @@ export const Header: React.FC = () => {
     promptInstall,
   } = useApp();
 
-  const { currentLanguageDef, openLanguageSelector, t } = useLanguage();
+  const { currentLanguageDef, openLanguageSelector, isAutoDetect, t } = useLanguage();
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -73,6 +75,8 @@ export const Header: React.FC = () => {
       case 'demand-forecast':
       case 'demand-intel': return t('nav.demandForecast', undefined, 'Demand Forecast');
       case 'find-buyers': return t('nav.findBuyers', undefined, 'Find Direct Buyers');
+      case 'tasks':
+      case 'task-management': return t('nav.taskManagement', undefined, 'Task Management');
       case 'orders': return t('nav.orders', undefined, 'My Orders');
       case 'logistics': return t('nav.logistics', undefined, 'Logistics');
       case 'traceability':
@@ -157,12 +161,18 @@ export const Header: React.FC = () => {
           type="button"
           onClick={openLanguageSelector}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-semibold bg-white/90 hover:bg-white text-[#01472e] border border-[#ccd5ae]/80 shadow-2xs hover:border-[#01472e]/60 transition hover:scale-[1.02] cursor-pointer"
-          title="Change platform language (22 Constitutional Languages supported)"
+          title={isAutoDetect ? "Language Auto-Detected from device (Click to switch or configure)" : "Change platform language (22 Constitutional Languages supported)"}
           aria-label="Change Language"
         >
           <Globe2 className="w-3.5 h-3.5 text-[#01472e] shrink-0" />
           <span className="font-bold tracking-tight">{currentLanguageDef.nativeName}</span>
-          <span className="hidden xl:inline text-[10px] text-slate-500 font-normal">({currentLanguageDef.name})</span>
+          {isAutoDetect ? (
+            <span className="hidden md:inline text-[9px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded-full border border-emerald-300">
+              Auto
+            </span>
+          ) : (
+            <span className="hidden xl:inline text-[10px] text-slate-500 font-normal">({currentLanguageDef.name})</span>
+          )}
         </button>
 
         {/* Centralized Notifications & Operational Alerts Bell */}

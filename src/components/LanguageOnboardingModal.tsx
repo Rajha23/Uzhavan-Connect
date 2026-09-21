@@ -9,6 +9,8 @@ export const LanguageOnboardingModal: React.FC = () => {
     setLanguage,
     isPostRegOnboardingOpen,
     completePostRegistrationOnboarding,
+    detectedLanguage,
+    setAutoDetect,
     t
   } = useLanguage();
 
@@ -21,6 +23,11 @@ export const LanguageOnboardingModal: React.FC = () => {
 
   const handleConfirmAndProceed = () => {
     setLanguage(selectedCode);
+    completePostRegistrationOnboarding();
+  };
+
+  const handleUseAutoDetect = () => {
+    setAutoDetect(true);
     completePostRegistrationOnboarding();
   };
 
@@ -61,6 +68,23 @@ export const LanguageOnboardingModal: React.FC = () => {
           <span className="text-[11px] font-bold text-[#01472e] bg-[#eaf4ec] px-2.5 py-0.5 rounded-full border border-[#a3b18a]/40">
             22 Languages Available
           </span>
+        </div>
+
+        {/* Device Language Auto-Detection Recommendation */}
+        <div className="px-7 py-3 bg-gradient-to-r from-[#eaf4ec] to-[#f4f7f4] border-b border-[#ccd5ae]/40 flex items-center justify-between gap-3">
+          <div className="text-xs">
+            <span className="font-bold text-[#01472e]">Auto-Detected Device Language: </span>
+            <span className="font-semibold text-slate-800">
+              {detectedLanguage.nativeName} ({detectedLanguage.nameEnglish})
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={handleUseAutoDetect}
+            className="px-3.5 py-1 bg-[#01472e] hover:bg-[#025a3b] text-white text-xs font-semibold rounded-xl transition shadow-2xs cursor-pointer"
+          >
+            Auto-Detect & Continue
+          </button>
         </div>
 
         {/* Search Bar */}

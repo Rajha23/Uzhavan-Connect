@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { SUPPORTED_LANGUAGES, searchLanguages } from '../i18n/languages';
-import { Search, Globe, Check, X } from 'lucide-react';
+import { Search, Globe, Check, X, Sparkles, Compass } from 'lucide-react';
 
 export const LanguageSelectorModal: React.FC = () => {
-  const { currentLanguage, setLanguage, isLanguageSelectorOpen, closeLanguageSelector, t } = useLanguage();
+  const {
+    currentLanguage,
+    setLanguage,
+    isLanguageSelectorOpen,
+    closeLanguageSelector,
+    isAutoDetect,
+    detectedLanguage,
+    setAutoDetect,
+    t
+  } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
 
   if (!isLanguageSelectorOpen) return null;
@@ -13,6 +22,11 @@ export const LanguageSelectorModal: React.FC = () => {
 
   const handleSelectLanguage = (code: string) => {
     setLanguage(code);
+    closeLanguageSelector();
+  };
+
+  const handleEnableAutoDetect = () => {
+    setAutoDetect(true);
     closeLanguageSelector();
   };
 
@@ -35,7 +49,7 @@ export const LanguageSelectorModal: React.FC = () => {
                 {t('onboarding.chooseLanguage', undefined, 'Choose Language / மொழி தேர்வு')}
               </h2>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                22 Eighth Schedule Indian Languages Supported
+                22 Constitutional Languages & Automatic Real-Time Translation
               </p>
             </div>
           </div>
@@ -45,6 +59,51 @@ export const LanguageSelectorModal: React.FC = () => {
             aria-label="Close"
           >
             <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Automatic Language Detection Card */}
+        <div className="px-6 py-3.5 bg-gradient-to-r from-[#eaf4ec] via-[#f4f8f4] to-emerald-50/50 border-b border-[#ccd5ae]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#01472e] text-[#fefae0] flex items-center justify-center shrink-0 shadow-2xs">
+              <Compass className="w-4 h-4 animate-spin-slow" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-[#01472e]">
+                  Auto-Detect Device Language
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                  Live Detection
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-600">
+                Detected: <strong className="text-[#01472e]">{detectedLanguage.nativeName}</strong> ({detectedLanguage.nameEnglish})
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleEnableAutoDetect}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs cursor-pointer ${
+              isAutoDetect
+                ? 'bg-[#01472e] text-white border border-[#01472e]'
+                : 'bg-white hover:bg-emerald-50 text-[#01472e] border border-[#ccd5ae]'
+            }`}
+          >
+            {isAutoDetect ? (
+              <>
+                <Check className="w-3.5 h-3.5" />
+                <span>Auto-Detect Active</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                <span>Switch to Auto-Detect</span>
+              </>
+            )}
           </button>
         </div>
 
@@ -63,7 +122,7 @@ export const LanguageSelectorModal: React.FC = () => {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 Clear
               </button>
@@ -72,7 +131,7 @@ export const LanguageSelectorModal: React.FC = () => {
         </div>
 
         {/* Scrollable Language Grid */}
-        <div className="p-6 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[55vh]">
+        <div className="p-6 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh]">
           {filteredLanguages.length > 0 ? (
             filteredLanguages.map((lang) => {
               const isSelected = lang.code === currentLanguage.code;
@@ -130,7 +189,14 @@ export const LanguageSelectorModal: React.FC = () => {
 
         {/* Footer */}
         <div className="p-4 sm:p-5 border-t border-[#ccd5ae]/40 bg-[#faf9f5] flex items-center justify-between text-xs text-slate-500">
-          <span>Current: <strong className="text-[#01472e] font-bold">{currentLanguage.nativeName} ({currentLanguage.nameEnglish})</strong></span>
+          <div>
+            <span>Current: <strong className="text-[#01472e] font-bold">{currentLanguage.nativeName} ({currentLanguage.nameEnglish})</strong></span>
+            {isAutoDetect && (
+              <span className="ml-2 text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300">
+                Auto-Detected
+              </span>
+            )}
+          </div>
           <button
             onClick={closeLanguageSelector}
             className="px-5 py-2 bg-white hover:bg-slate-100 border border-[#ccd5ae] text-slate-700 font-semibold rounded-xl text-xs transition cursor-pointer"

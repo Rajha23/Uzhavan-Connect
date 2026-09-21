@@ -124,6 +124,7 @@ export const Sidebar: React.FC = () => {
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' },
           { id: 'my-complaints', label: 'My Complaints', icon: AlertCircle, section: 'FEEDBACK' },
           { id: 'report-problem', label: 'Report a Problem', icon: MessageSquare, section: 'FEEDBACK' },
+          { id: 'you-said-we-improved', label: 'You Said, We Improved', icon: Award, section: 'FEEDBACK' },
         ];
 
       case 'FPO_AGGREGATOR':
@@ -135,6 +136,7 @@ export const Sidebar: React.FC = () => {
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
           { id: 'settlement', label: t('nav.settlement', 'Settlement'), icon: Scale, section: 'OPERATIONS' },
           { id: 'traceability', label: t('nav.traceability'), icon: QrCode, section: 'OPERATIONS' },
+          { id: 'reports', label: t('nav.reports', 'Reports & Analytics'), icon: FileText, section: 'OPERATIONS' },
           { id: 'news', label: t('nav.news', 'News & Updates'), icon: Newspaper, section: 'SUPPORT' },
           { id: 'schemes', label: t('nav.schemes', 'Govt Schemes'), icon: Landmark, section: 'SUPPORT' },
           { id: 'subsidy', label: t('nav.subsidy', 'Subsidy'), icon: HandCoins, section: 'SUPPORT' },

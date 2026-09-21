@@ -58,4 +58,11 @@ export interface LanguageContextType {
   isPostRegOnboardingOpen: boolean;
   startPostRegistrationOnboarding: () => void;
   completePostRegistrationOnboarding: () => void;
+
+  // Proper Language Detection & Dynamic Translation
+  isAutoDetect: boolean;
+  detectedLanguage: LanguageDefinition;
+  setAutoDetect: (enable: boolean) => void;
+  translateText: (text: string, targetLang?: string, sourceLang?: string) => Promise<string>;
+  detectTextLanguage: (text: string) => LanguageDefinition | null;
 }

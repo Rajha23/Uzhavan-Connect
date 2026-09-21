@@ -35,7 +35,8 @@ export const LogisticsDashboard: React.FC = () => {
     dispatchShipment,
     markDelivered,
     openPassportModal,
-    setActiveTab
+    setActiveTab,
+    setShipmentInitialFilter
   } = useApp();
 
   const [activeSection, setActiveSection] = useState<'ASSIGN' | 'TRANSIT' | 'DELIVERED'>('ASSIGN');
@@ -139,10 +140,20 @@ export const LogisticsDashboard: React.FC = () => {
 
           <div className="flex flex-wrap items-center gap-3 relative z-10">
             <button
-              onClick={() => setActiveTab('route-optimization')}
-              className="flex items-center gap-2 bg-[#fefae0] hover:bg-white text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-soft hover:shadow-md transition-all cursor-pointer"
+              onClick={() => {
+                setShipmentInitialFilter('ALL');
+                setActiveTab('shipments');
+              }}
+              className="flex items-center gap-2 bg-[#fefae0] hover:bg-white text-[#01472e] text-xs font-semibold px-4 py-3 rounded-2xl shadow-soft hover:shadow-md transition-all cursor-pointer"
             >
-              <Navigation className="w-4 h-4 text-[#01472e]" />
+              <Package className="w-4 h-4 text-[#01472e]" />
+              <span>{t('logistics.manageShipments', 'Shipments Console')}</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('route-optimization')}
+              className="flex items-center gap-2 bg-emerald-700/60 hover:bg-emerald-700/80 text-[#fefae0] border border-emerald-400/30 text-xs font-semibold px-4 py-3 rounded-2xl shadow-soft hover:shadow-md transition-all cursor-pointer backdrop-blur-sm"
+            >
+              <Navigation className="w-4 h-4 text-emerald-300" />
               <span>{t('logistics.routeOptimizerMap', 'Route Optimizer Map')}</span>
             </button>
             <a
@@ -172,10 +183,10 @@ export const LogisticsDashboard: React.FC = () => {
       {/* KPI Cards */}
       <KPIGrid columns={4}>
         {[
-          { labelKey: 'logistics.kpi.awaitingVehicle', defaultLabel: 'Awaiting Vehicle', count: awaitingTransportOrders.length, descKey: 'logistics.kpi.packedQRSealed', defaultDesc: 'Packed & QR Sealed', section: 'ASSIGN' as const, color: 'text-teal-700', bg: 'bg-teal-50', icon: Package },
-          { labelKey: 'logistics.kpi.assignedOnBay', defaultLabel: 'Assigned on Bay', count: assignedOrders.length, descKey: 'logistics.kpi.readyForDispatch', defaultDesc: 'Ready for Dispatch', section: 'TRANSIT' as const, color: 'text-indigo-700', bg: 'bg-indigo-50', icon: Clock },
-          { labelKey: 'logistics.kpi.enRouteInTransit', defaultLabel: 'En Route in Transit', count: inTransitOrders.length, descKey: 'logistics.kpi.coldChainTelemetry', defaultDesc: 'Cold-Chain Telemetry', section: 'TRANSIT' as const, color: 'text-amber-700', bg: 'bg-amber-50', icon: Truck },
-          { labelKey: 'logistics.kpi.deliveredAtBuyerHubs', defaultLabel: 'Delivered at Buyer Hubs', count: deliveredOrders.length, descKey: 'logistics.kpi.receiptVerification', defaultDesc: 'Receipt Verification', section: 'DELIVERED' as const, color: 'text-[#01472e]', bg: 'bg-emerald-50', icon: CheckCircle2 },
+          { labelKey: 'logistics.kpi.awaitingVehicle', defaultLabel: 'Awaiting Vehicle', count: awaitingTransportOrders.length, descKey: 'logistics.kpi.packedQRSealed', defaultDesc: 'Packed & QR Sealed', section: 'ASSIGN' as const, color: 'text-teal-700', bg: 'bg-teal-50', icon: Package, shipmentStatus: 'Pending' },
+          { labelKey: 'logistics.kpi.assignedOnBay', defaultLabel: 'Assigned on Bay', count: assignedOrders.length, descKey: 'logistics.kpi.readyForDispatch', defaultDesc: 'Ready for Dispatch', section: 'TRANSIT' as const, color: 'text-indigo-700', bg: 'bg-indigo-50', icon: Clock, shipmentStatus: 'Assigned' },
+          { labelKey: 'logistics.kpi.enRouteInTransit', defaultLabel: 'En Route in Transit', count: inTransitOrders.length, descKey: 'logistics.kpi.coldChainTelemetry', defaultDesc: 'Cold-Chain Telemetry', section: 'TRANSIT' as const, color: 'text-amber-700', bg: 'bg-amber-50', icon: Truck, shipmentStatus: 'In Transit' },
+          { labelKey: 'logistics.kpi.deliveredAtBuyerHubs', defaultLabel: 'Delivered at Buyer Hubs', count: deliveredOrders.length, descKey: 'logistics.kpi.receiptVerification', defaultDesc: 'Receipt Verification', section: 'DELIVERED' as const, color: 'text-[#01472e]', bg: 'bg-emerald-50', icon: CheckCircle2, shipmentStatus: 'Delivered' },
         ].map((item) => (
           <KPIStatCard
             key={item.labelKey}
@@ -187,7 +198,10 @@ export const LogisticsDashboard: React.FC = () => {
             iconColor={item.color}
             valueColor={item.color}
             isActive={activeSection === item.section}
-            onClick={() => setActiveSection(item.section)}
+            onClick={() => {
+              setShipmentInitialFilter(item.shipmentStatus);
+              setActiveTab('shipments');
+            }}
           />
         ))}
       </KPIGrid>

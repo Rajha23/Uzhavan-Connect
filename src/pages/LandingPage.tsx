@@ -10,7 +10,6 @@ import {
   User,
   HeartHandshake,
   Lock,
-  UserPlus,
   ArrowRight,
   Users,
   Scale,
@@ -65,14 +64,6 @@ export const LandingPage: React.FC = () => {
               >
                 <Lock className="w-4 h-4 text-[#e9edc9]" />
                 <span>{t('landing.launchConsole', undefined, 'Login')}</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab('register')}
-                className="px-7 py-3.5 rounded-2xl bg-white hover:bg-[#fefae0] text-[#01472e] border border-[#ccd5ae] font-semibold text-sm shadow-xs transition hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2.5 cursor-pointer"
-              >
-                <UserPlus className="w-4 h-4 text-[#01472e]" />
-                <span>{t('landing.registerAccount', undefined, 'Register Direct Account')}</span>
               </button>
             </div>
 

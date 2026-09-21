@@ -28,7 +28,8 @@ export type Permission =
   | 'COMPLAINTS_SUBMIT'
   | 'COMPLAINTS_VIEW'
   | 'COMPLAINTS_MANAGE'
-  | 'FEEDBACK_INTELLIGENCE';
+  | 'FEEDBACK_INTELLIGENCE'
+  | 'TASK_MANAGEMENT';
 
 export interface UserProfile {
   id: string;
@@ -726,3 +727,5 @@ export interface NewsArticle {
   imageUrl?: string;
   category: 'Policy' | 'Weather' | 'Market' | 'Technology' | 'General';
 }
+
+export * from './shipment';

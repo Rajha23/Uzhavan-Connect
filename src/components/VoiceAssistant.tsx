@@ -44,18 +44,11 @@ export const VoiceAssistant: React.FC = () => {
   // Update language when it changes
   useEffect(() => {
     if (recognitionRef.current) {
-      // Map app language code to BCP 47 tag
-      const langMap: Record<string, string> = {
-        'en': 'en-IN',
-        'ta': 'ta-IN',
-        'hi': 'hi-IN',
-        'kn': 'kn-IN',
-        'te': 'te-IN',
-        'bn': 'bn-IN'
-      };
-      recognitionRef.current.lang = langMap[currentLanguage.code] || 'en-IN';
+      // Map app language code to BCP 47 tag dynamically for all 22+ languages
+      const code = currentLanguage.iso6391 || currentLanguage.code;
+      recognitionRef.current.lang = code === 'en' ? 'en-IN' : `${code}-IN`;
     }
-  }, [currentLanguage.code]);
+  }, [currentLanguage.code, currentLanguage.iso6391]);
 
   const toggleListen = () => {
     if (isListening) {
