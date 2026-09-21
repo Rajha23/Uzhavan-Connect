@@ -8,6 +8,7 @@ import { DetailDrawer } from "../components/DetailDrawer";
 
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 import { UpcomingTasksWidget } from '../components/task';
+import { CropVarietySearchDropdown } from '../components/crop/CropVarietySearchDropdown';
 import {
   Sprout,
   TrendingUp,
@@ -183,7 +184,10 @@ export const FarmerDashboard: React.FC = () => {
 
   const [isAddingListing, setIsAddingListing] = useState(false);
   const [crop, setCrop] = useState('Tomato');
-  const [variety, setVariety] = useState('PKM-1 Hybrid');
+  const [cropId, setCropId] = useState('CROP-TOMATO');
+  const [variety, setVariety] = useState('Arka Rakshak');
+  const [varietyId, setVarietyId] = useState('VAR-TOM-01');
+  const [customVariety, setCustomVariety] = useState('');
   const [quantity, setQuantity] = useState<number>(500);
   const [unit, setUnit] = useState<string>('kg');
   const [price, setPrice] = useState<number>(25.0);
@@ -205,12 +209,19 @@ export const FarmerDashboard: React.FC = () => {
     else if (unit === 'Crates') computedKg = computedKg * 25;
     else if (unit === 'Ton') computedKg = computedKg * 1000;
 
+    const finalVariety =
+      (variety === 'Other' || varietyId?.includes('OTHER')) && customVariety.trim()
+        ? customVariety.trim()
+        : (variety || 'Certified Regional Variety');
+
     const newCropItem: ProduceListing = {
       id: `LST-${Date.now().toString().slice(-4)}`,
       farmerId: currentUser.id || 'usr-farmer-01',
       farmerName: currentUser.name || 'Farmer',
       crop,
-      variety: variety || 'Certified Regional Variety',
+      cropId: cropId || undefined,
+      variety: finalVariety,
+      varietyId: varietyId || undefined,
       quantityKg: computedKg,
       initialQuantityKg: computedKg,
       allocatedQuantityKg: 0,
@@ -469,33 +480,21 @@ export const FarmerDashboard: React.FC = () => {
         {isAddingListing && (
           <form onSubmit={handleAddCrop} className="p-6 sm:p-7 bg-[#faf9f5]/80 border-b border-[#ccd5ae]/40 space-y-4 text-xs">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-              <div>
-                <label className="font-medium text-[#01472e] block mb-1 text-xs">{t('farmer.cropName', 'Crop Name')}</label>
-                <select
-                  value={crop}
-                  onChange={(e) => setCrop(e.target.value)}
-                  className="input-modern"
-                >
-                  <option value="Tomato">{t('crops.tomato', 'Tomato')}</option>
-                  <option value="Onion">{t('crops.onion', 'Onion')}</option>
-                  <option value="Carrot">{t('crops.carrot', 'Carrot')}</option>
-                  <option value="Green Chilli">{t('crops.greenChilli', 'Green Chilli')}</option>
-                  <option value="Capsicum">{t('crops.capsicum', 'Capsicum')}</option>
-                  <option value="Potato">{t('crops.potato', 'Potato')}</option>
-                  <option value="Mango">{t('crops.mango', 'Mango')}</option>
-                  <option value="Cabbage">{t('crops.cabbage', 'Cabbage')}</option>
-                  <option value="Banana">{t('crops.banana', 'Banana')}</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="font-medium text-[#01472e] block mb-1 text-xs">{t('farmer.variety', 'Variety')}</label>
-                <input
-                  type="text"
-                  value={variety}
-                  onChange={(e) => setVariety(e.target.value)}
-                  placeholder="e.g. PKM-1 Hybrid / Nattu"
-                  className="input-modern"
+              <div className="sm:col-span-2 lg:col-span-2 xl:col-span-2">
+                <CropVarietySearchDropdown
+                  selectedCrop={crop}
+                  selectedCropId={cropId}
+                  selectedVariety={variety}
+                  selectedVarietyId={varietyId}
+                  customVariety={customVariety}
+                  onSelect={(sel) => {
+                    setCrop(sel.crop);
+                    setCropId(sel.cropId);
+                    setVariety(sel.variety);
+                    setVarietyId(sel.varietyId);
+                  }}
+                  onCustomVarietyChange={(val) => setCustomVariety(val)}
+                  label={t('farmer.cropName', 'Crop & Available Varieties')}
                   required
                 />
               </div>

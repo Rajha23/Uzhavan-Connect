@@ -354,7 +354,9 @@ export interface ProduceListing {
   farmerId: string;
   farmerName: string;
   crop: string;
+  cropId?: string;
   variety?: string;
+  varietyId?: string;
   quantityKg: number;
   initialQuantityKg?: number;
   allocatedQuantityKg?: number;
