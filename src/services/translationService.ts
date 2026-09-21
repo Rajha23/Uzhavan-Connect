@@ -2,10 +2,30 @@ import { LanguageDefinition } from '../types/i18n';
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, getLanguageByCode } from '../i18n/languages';
 
 const TRANSLATION_CACHE_KEY = 'uzhavan_translation_cache_v1';
-const MAX_CACHE_SIZE = 1500;
+const MAX_CACHE_SIZE = 3000;
 
 // In-memory translation cache initialized from localStorage
 const memoryCache = new Map<string, string>();
+
+// Subscribed listeners for reactive re-renders when async translations complete
+const translationListeners = new Set<() => void>();
+
+export const addTranslationListener = (cb: () => void): (() => void) => {
+  translationListeners.add(cb);
+  return () => {
+    translationListeners.delete(cb);
+  };
+};
+
+export const notifyTranslationListeners = (): void => {
+  translationListeners.forEach((cb) => {
+    try {
+      cb();
+    } catch (e) {
+      console.warn('[TranslationService] Error in listener callback:', e);
+    }
+  });
+};
 
 const loadCache = (): void => {
   try {
@@ -49,8 +69,8 @@ const saveCache = (): void => {
 loadCache();
 
 /**
- * Automatically detects the user's preferred language from browser and system settings.
- * Checks navigator.languages, navigator.language, and matches ISO codes against supported languages.
+ * Automatically detects the user's preferred language from browser, system, and locale settings.
+ * Checks navigator.languages, navigator.language, Intl API, and matches against supported languages.
  */
 export const detectBrowserLanguage = (
   supportedLanguages: LanguageDefinition[] = SUPPORTED_LANGUAGES
@@ -65,6 +85,18 @@ export const detectBrowserLanguage = (
   }
   if (navigator.language) {
     browserLocales.push(navigator.language);
+  }
+  if ((navigator as any).userLanguage) {
+    browserLocales.push((navigator as any).userLanguage);
+  }
+
+  try {
+    const intlLocale = Intl.DateTimeFormat().resolvedOptions().locale;
+    if (intlLocale) {
+      browserLocales.push(intlLocale);
+    }
+  } catch {
+    // Ignore Intl resolution failure
   }
 
   for (const rawLocale of browserLocales) {
@@ -83,7 +115,7 @@ export const detectBrowserLanguage = (
       return { ...exactMatch, name: exactMatch.nameEnglish };
     }
 
-    // Check primary 2-letter or 3-letter tag match
+    // Check primary 2-letter or 3-letter tag match (e.g. 'ta-IN' -> 'ta')
     const primaryMatch = supportedLanguages.find(
       (l) =>
         l.code.toLowerCase() === primaryTag ||
@@ -199,12 +231,13 @@ export const translateText = async (
         if (translated && typeof translated === 'string') {
           memoryCache.set(cacheKey, translated);
           saveCache();
+          notifyTranslationListeners();
           return translated;
         }
       }
     }
   } catch {
-    // Continue to fallback
+    // Fallback to secondary service
   }
 
   // 2. Attempt MyMemory Translation Fallback API
@@ -220,14 +253,61 @@ export const translateText = async (
       if (translated && typeof translated === 'string' && !translated.startsWith('MYMEMORY WARNING')) {
         memoryCache.set(cacheKey, translated);
         saveCache();
+        notifyTranslationListeners();
         return translated;
       }
     }
   } catch {
-    // Ignore and fallback
+    // Ignore and return original
   }
 
   return text;
+};
+
+/**
+ * Batch translation helper for efficiently translating multiple texts concurrently.
+ */
+export const translateBatch = async (
+  texts: string[],
+  targetLang: string,
+  sourceLang: string = 'auto'
+): Promise<Map<string, string>> => {
+  const result = new Map<string, string>();
+  if (!texts || texts.length === 0) return result;
+
+  const uniqueTexts = Array.from(new Set(texts.map((t) => t.trim()))).filter(Boolean);
+  const uncached: string[] = [];
+
+  for (const text of uniqueTexts) {
+    const cached = getCachedTranslation(text, targetLang, sourceLang);
+    if (cached) {
+      result.set(text, cached);
+    } else {
+      uncached.push(text);
+    }
+  }
+
+  if (uncached.length === 0 || targetLang === 'en') {
+    return result;
+  }
+
+  // Translate uncached in chunks of 5
+  const chunkSize = 5;
+  for (let i = 0; i < uncached.length; i += chunkSize) {
+    const chunk = uncached.slice(i, i + chunkSize);
+    await Promise.allSettled(
+      chunk.map(async (text) => {
+        try {
+          const trans = await translateText(text, targetLang, sourceLang);
+          result.set(text, trans);
+        } catch {
+          result.set(text, text);
+        }
+      })
+    );
+  }
+
+  return result;
 };
 
 /**
@@ -244,21 +324,170 @@ export const getCachedTranslation = (
   return memoryCache.get(cacheKey);
 };
 
+// ── Whole-App Dynamic DOM Translator ──────────────────────────────────────────
+// Automatically scans, detects, and translates text nodes in the DOM into target language
+
+const originalTextMap = new WeakMap<Node, string>();
+let currentDomTargetLang = 'en';
+let domMutationObserver: MutationObserver | null = null;
+let domDebounceTimer: any = null;
+
+const shouldSkipNode = (node: Node): boolean => {
+  const parent = node.parentElement;
+  if (!parent) return true;
+
+  const tag = parent.tagName.toUpperCase();
+  if (
+    tag === 'SCRIPT' ||
+    tag === 'STYLE' ||
+    tag === 'NOSCRIPT' ||
+    tag === 'CODE' ||
+    tag === 'PRE' ||
+    tag === 'TEXTAREA' ||
+    tag === 'INPUT' ||
+    tag === 'SVG' ||
+    tag === 'PATH'
+  ) {
+    return true;
+  }
+
+  if (
+    parent.getAttribute('data-no-translate') === 'true' ||
+    parent.getAttribute('translate') === 'no' ||
+    parent.classList.contains('notranslate') ||
+    parent.isContentEditable
+  ) {
+    return true;
+  }
+
+  return false;
+};
+
+const isTranslatableText = (val: string): boolean => {
+  const trimmed = val.trim();
+  if (!trimmed || trimmed.length < 2) return false;
+  // Skip pure numbers, punctuation, currency codes without text
+  if (/^[0-9₹$,.:;!?/\\\-+%*#@()\[\]{}|'"\s]+$/.test(trimmed)) {
+    return false;
+  }
+  return true;
+};
+
+const processDOMSubtree = (root: Node, targetLang: string) => {
+  if (typeof document === 'undefined') return;
+
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: (node) => {
+      if (shouldSkipNode(node)) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+
+  const textNodesToTranslate: { node: Node; originalText: string }[] = [];
+
+  let currentNode = walker.nextNode();
+  while (currentNode) {
+    const rawVal = currentNode.nodeValue || '';
+    if (isTranslatableText(rawVal)) {
+      if (!originalTextMap.has(currentNode)) {
+        originalTextMap.set(currentNode, rawVal);
+      }
+      const orig = originalTextMap.get(currentNode)!;
+
+      if (targetLang === 'en') {
+        if (currentNode.nodeValue !== orig) {
+          currentNode.nodeValue = orig;
+        }
+      } else {
+        const cached = getCachedTranslation(orig.trim(), targetLang);
+        if (cached) {
+          // Replace matching trimmed portion while preserving edge spaces
+          const leadingSpace = orig.match(/^\s*/)?.[0] || '';
+          const trailingSpace = orig.match(/\s*$/)?.[0] || '';
+          currentNode.nodeValue = leadingSpace + cached + trailingSpace;
+        } else {
+          textNodesToTranslate.push({ node: currentNode, originalText: orig.trim() });
+        }
+      }
+    }
+    currentNode = walker.nextNode();
+  }
+
+  if (targetLang !== 'en' && textNodesToTranslate.length > 0) {
+    const texts = textNodesToTranslate.map((item) => item.originalText);
+    translateBatch(texts, targetLang).then((transMap) => {
+      textNodesToTranslate.forEach(({ node, originalText }) => {
+        const trans = transMap.get(originalText);
+        if (trans && node.parentElement) {
+          const origFull = originalTextMap.get(node) || originalText;
+          const leadingSpace = origFull.match(/^\s*/)?.[0] || '';
+          const trailingSpace = origFull.match(/\s*$/)?.[0] || '';
+          node.nodeValue = leadingSpace + trans + trailingSpace;
+        }
+      });
+    });
+  }
+};
+
 /**
- * Initializes Google Translate full-DOM auto-translation integration.
- * Enables whole-page dynamic translation for any language.
+ * Starts continuous dynamic DOM auto-translation for the entire application.
+ * Listens for new DOM nodes and translates them automatically into targetLang.
+ */
+export const startDOMTranslation = (targetLang: string): void => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+  currentDomTargetLang = targetLang.toLowerCase();
+
+  // Initial pass on document.body
+  processDOMSubtree(document.body, currentDomTargetLang);
+
+  if (!domMutationObserver) {
+    domMutationObserver = new MutationObserver((mutations) => {
+      if (currentDomTargetLang === 'en') return;
+
+      clearTimeout(domDebounceTimer);
+      domDebounceTimer = setTimeout(() => {
+        for (const mut of mutations) {
+          if (mut.type === 'childList') {
+            mut.addedNodes.forEach((node) => {
+              if (node.nodeType === Node.ELEMENT_NODE || node.nodeType === Node.TEXT_NODE) {
+                processDOMSubtree(node, currentDomTargetLang);
+              }
+            });
+          }
+        }
+      }, 100);
+    });
+
+    domMutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  // Also trigger Google Translate DOM sync if enabled
+  syncGoogleTranslateDOM(targetLang);
+};
+
+export const stopDOMTranslation = (): void => {
+  if (domMutationObserver) {
+    domMutationObserver.disconnect();
+    domMutationObserver = null;
+  }
+};
+
+/**
+ * Initializes Google Translate full-DOM auto-translation integration as a fallback.
  */
 export const syncGoogleTranslateDOM = (targetLang: string): void => {
   if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
   try {
     const lang = targetLang.toLowerCase();
-    // Set google translate cookie for auto-translation
     const cookieVal = targetLang === 'en' ? '' : `/auto/${lang}`;
     document.cookie = `googtrans=${cookieVal}; path=/;`;
     document.cookie = `googtrans=${cookieVal}; path=/; domain=.${window.location.hostname};`;
 
-    // Ensure hidden container exists
     let container = document.getElementById('google_translate_element');
     if (!container) {
       container = document.createElement('div');
@@ -267,7 +496,6 @@ export const syncGoogleTranslateDOM = (targetLang: string): void => {
       document.body.appendChild(container);
     }
 
-    // Load Google Translate script if not yet loaded
     if (!(window as any).googleTranslateElementInit) {
       (window as any).googleTranslateElementInit = () => {
         new (window as any).google.translate.TranslateElement(
@@ -289,7 +517,6 @@ export const syncGoogleTranslateDOM = (targetLang: string): void => {
       }
     }
 
-    // Trigger select change on google translate combo if mounted
     setTimeout(() => {
       const select = document.querySelector('.goog-te-combo') as HTMLSelectElement | null;
       if (select) {
@@ -301,3 +528,4 @@ export const syncGoogleTranslateDOM = (targetLang: string): void => {
     console.warn('[TranslationService] DOM translation sync warning:', e);
   }
 };
+

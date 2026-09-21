@@ -1,57 +1,33 @@
 import { TranslationDictionary } from '../../types/i18n';
-import { asTranslations } from './as';
-import { bnTranslations } from './bn';
-import { brTranslations } from './br';
-import { doiTranslations } from './doi';
 import { enTranslations } from './en';
-import { guTranslations } from './gu';
-import { hiTranslations } from './hi';
-import { knTranslations } from './kn';
-import { kokTranslations } from './kok';
-import { ksTranslations } from './ks';
-import { maiTranslations } from './mai';
-import { mlTranslations } from './ml';
-import { mniTranslations } from './mni';
-import { mrTranslations } from './mr';
-import { neTranslations } from './ne';
-import { orTranslations } from './or';
-import { paTranslations } from './pa';
-import { saTranslations } from './sa';
-import { satTranslations } from './sat';
-import { sdTranslations } from './sd';
-import { taTranslations } from './ta';
-import { teTranslations } from './te';
-import { urTranslations } from './ur';
-
-export const TRANSLATIONS_REGISTRY: Record<string, any> = {
-  as: asTranslations,
-  bn: bnTranslations,
-  br: brTranslations,
-  doi: doiTranslations,
-  en: enTranslations,
-  gu: guTranslations,
-  hi: hiTranslations,
-  kn: knTranslations,
-  kok: kokTranslations,
-  ks: ksTranslations,
-  mai: maiTranslations,
-  ml: mlTranslations,
-  mni: mniTranslations,
-  mr: mrTranslations,
-  ne: neTranslations,
-  or: orTranslations,
-  pa: paTranslations,
-  sa: saTranslations,
-  sat: satTranslations,
-  sd: sdTranslations,
-  ta: taTranslations,
-  te: teTranslations,
-  ur: urTranslations,
-};
+import { getCachedTranslation, translateText } from '../../services/translationService';
 
 /**
- * Resolves a translation key with deep fallback:
- * Selected Language -> English Dictionary -> Fallback Text -> Raw Key
+ * UZHAVAN CONNECT — Dynamic Multilingual Translation Registry
+ * Eliminates statically hardcoded 23 language files in favor of
+ * canonical English base definitions and automated real-time translation.
+ */
+export const TRANSLATIONS_REGISTRY: Record<string, any> = {
+  en: enTranslations
+};
+
+const resolvePath = (dict: any, path: string[]): string | undefined => {
+  let curr = dict;
+  for (const seg of path) {
+    if (!curr || typeof curr !== 'object') return undefined;
+    curr = curr[seg];
+  }
+  return typeof curr === 'string' ? curr : undefined;
+};
+
+// Pending translation queue to avoid duplicate dynamic requests
+const pendingTranslationKeys = new Set<string>();
+
+/**
+ * Resolves a translation key dynamically:
+ * - English is resolved from canonical base vocabulary
+ * - Other languages check dynamic memory/localStorage translation cache
+ * - Misses trigger real-time background dynamic translation and notify context
  */
 export const getTranslation = (
   langCode: string,
@@ -78,39 +54,60 @@ export const getTranslation = (
 
   if (!key) return defaultText || '';
 
-  const targetDict = TRANSLATIONS_REGISTRY[langCode] || TRANSLATIONS_REGISTRY.en;
-
-  const resolve = (dict: any, path: string[]): string | undefined => {
-    let curr = dict;
-    for (const seg of path) {
-      if (!curr || typeof curr !== 'object') return undefined;
-      curr = curr[seg];
-    }
-    return typeof curr === 'string' ? curr : undefined;
-  };
-
+  // 1. Resolve base English text from canonical dictionary
   const parts = key.split('.');
-  let translated: string | undefined;
+  let englishText: string | undefined;
 
   if (parts.length >= 2) {
-    translated = resolve(targetDict, parts);
-    if (!translated && langCode !== 'en') {
-      translated = resolve(TRANSLATIONS_REGISTRY.en, parts);
-    }
+    englishText = resolvePath(enTranslations, parts);
   } else {
-    translated = targetDict?.common?.[key] || (targetDict as any)?.[key];
-    if (!translated && langCode !== 'en') {
-      translated = TRANSLATIONS_REGISTRY.en?.common?.[key] || (TRANSLATIONS_REGISTRY.en as any)?.[key];
-    }
+    englishText = (enTranslations as any)?.common?.[key] || (enTranslations as any)?.[key];
   }
 
-  let result = translated || defaultText || key;
+  const baseText = englishText || defaultText || key;
 
+  // 2. If target is English or already translated
+  if (langCode === 'en' || !langCode) {
+    let res = baseText;
+    if (params) {
+      Object.entries(params).forEach(([paramKey, val]) => {
+        res = res.replace(new RegExp('\\{' + paramKey + '\\}', 'g'), String(val));
+      });
+    }
+    return res;
+  }
+
+  // 3. Look up dynamic real-time translation cache
+  const cached = getCachedTranslation(baseText, langCode);
+  if (cached) {
+    let res = cached;
+    if (params) {
+      Object.entries(params).forEach(([paramKey, val]) => {
+        res = res.replace(new RegExp('\\{' + paramKey + '\\}', 'g'), String(val));
+      });
+    }
+    return res;
+  }
+
+  // 4. Trigger asynchronous real-time translation if not yet queued
+  const queueKey = `${langCode}:${baseText}`;
+  if (!pendingTranslationKeys.has(queueKey)) {
+    pendingTranslationKeys.add(queueKey);
+    translateText(baseText, langCode)
+      .catch(() => {
+        // Fallback silently
+      })
+      .finally(() => {
+        pendingTranslationKeys.delete(queueKey);
+      });
+  }
+
+  // Return base text while dynamic translation completes
+  let res = baseText;
   if (params) {
     Object.entries(params).forEach(([paramKey, val]) => {
-      result = result.replace(new RegExp('\\{' + paramKey + '\\}', 'g'), String(val));
+      res = res.replace(new RegExp('\\{' + paramKey + '\\}', 'g'), String(val));
     });
   }
-
-  return result;
+  return res;
 };

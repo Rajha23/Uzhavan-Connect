@@ -7,7 +7,9 @@ import {
   detectTextLanguage,
   translateText,
   getCachedTranslation,
-  syncGoogleTranslateDOM
+  startDOMTranslation,
+  stopDOMTranslation,
+  addTranslationListener
 } from '../services/translationService';
 
 const LANGUAGE_STORAGE_KEY = 'uzhavan_language';
@@ -74,11 +76,17 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const [direction, setDirection] = useState<ScriptDirection>(currentLanguage.direction);
   const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState<boolean>(false);
   const [isPostRegOnboardingOpen, setIsPostRegOnboardingOpen] = useState<boolean>(false);
+  const [translationRevision, setTranslationRevision] = useState<number>(0);
 
-  // Background translation trigger throttle to avoid redundant requests
-  const pendingTranslationsRef = useRef<Set<string>>(new Set());
+  // Subscribe to dynamic translation events so the UI reactively updates when translations arrive
+  useEffect(() => {
+    const unsubscribe = addTranslationListener(() => {
+      setTranslationRevision((v) => v + 1);
+    });
+    return unsubscribe;
+  }, []);
 
-  // Synchronize document direction, lang attributes, and Google Translate DOM integration
+  // Synchronize document direction, lang attributes, and whole-DOM dynamic translation
   const applyDocumentLocale = useCallback((lang: LanguageDefinition) => {
     if (typeof document !== 'undefined') {
       document.documentElement.lang = lang.code;
@@ -88,8 +96,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       } else {
         document.documentElement.classList.remove('rtl-layout');
       }
-      // Sync whole-page DOM translation
-      syncGoogleTranslateDOM(lang.code);
+      // Trigger continuous whole-page dynamic DOM translation
+      startDOMTranslation(lang.code);
     }
   }, []);
 
@@ -130,55 +138,22 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     }
   }, [applyDocumentLocale]);
 
-  // Initial sync on mount
+  // Initial sync on mount and cleanup on unmount
   useEffect(() => {
     applyDocumentLocale(currentLanguage);
+    return () => {
+      stopDOMTranslation();
+    };
   }, [currentLanguage, applyDocumentLocale]);
 
-  // Translation helper with parameters, local dictionary, and dynamic translation fallback
+  // Translation helper with parameters and reactive dynamic translation
   const t = useCallback((
     key: string,
     arg2?: Record<string, string | number> | string | any,
     arg3?: Record<string, string | number> | string | any
   ): string => {
-    const dictResult = getTranslation(currentLanguage.code, key, arg2, arg3);
-    let defaultText: string | undefined;
-
-    if (typeof arg2 === 'string') {
-      defaultText = arg2;
-    } else if (typeof arg3 === 'string') {
-      defaultText = arg3;
-    }
-
-    // If result came directly from dictionary and differs from fallback/key, return it
-    if (dictResult && dictResult !== key && dictResult !== defaultText) {
-      return dictResult;
-    }
-
-    // Check if dynamic translation is available in cache
-    const textToTranslate = defaultText || key;
-    if (currentLanguage.code !== 'en' && textToTranslate) {
-      const cached = getCachedTranslation(textToTranslate, currentLanguage.code);
-      if (cached) {
-        return cached;
-      }
-
-      // If untranslated and not queued, dynamically fetch in background for seamless caching
-      const queueKey = `${currentLanguage.code}_${textToTranslate}`;
-      if (!pendingTranslationsRef.current.has(queueKey)) {
-        pendingTranslationsRef.current.add(queueKey);
-        translateText(textToTranslate, currentLanguage.code)
-          .catch(() => {
-            // Silently ignore background translation errors
-          })
-          .finally(() => {
-            pendingTranslationsRef.current.delete(queueKey);
-          });
-      }
-    }
-
-    return dictResult || defaultText || key;
-  }, [currentLanguage.code]);
+    return getTranslation(currentLanguage.code, key, arg2, arg3);
+  }, [currentLanguage.code, translationRevision]);
 
   // Dynamic text translation for arbitrary user content or API responses
   const handleTranslateText = useCallback(
