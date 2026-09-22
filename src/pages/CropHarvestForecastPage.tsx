@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import { CropHarvestForecasterCard } from '../components/crop/CropHarvestForecasterCard';
 import {
   CropHarvestService,
@@ -47,6 +48,7 @@ type BrowserView = 'grid' | 'list';
 
 export const CropHarvestForecastPage: React.FC = () => {
   const { setActiveTab, currentUser } = useApp();
+  const { t } = useLanguage();
 
   const [viewMode, setViewMode] = useState<ViewMode>('forecast');
   const [browserView, setBrowserView] = useState<BrowserView>('grid');

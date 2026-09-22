@@ -2,7 +2,6 @@ import {
   CropChecklistConfig, 
   QualityChecklistResult, 
   QualitySampleObservation, 
-  QualityScore, 
   QualityVerificationStatus,
   QualityGrade 
 } from '../types/quality';

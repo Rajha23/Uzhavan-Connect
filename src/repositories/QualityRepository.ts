@@ -1,9 +1,8 @@
-import { addToSyncQueue } from '../services/offlineStorage';
+import { addToSyncQueue, generateClientRequestId } from '../services/offlineStorage';
 import { syncManager } from '../services/syncManager';
 import { 
   QualityChecklistResult, 
   QualitySampleObservation,
-  QualityScore,
   QualityVerificationStatus,
   BuyerConfirmation
 } from '../types/quality';
@@ -28,9 +27,10 @@ export const QualityRepository = {
     };
 
     const record = await addToSyncQueue({
-      action_type: 'VERIFY_QUALITY',
+      action_type: 'VERIFY_QUALITY' as any,
       entity_type: 'ProduceListing', // or QualityRecord
-      payload
+      payload,
+      client_request_id: generateClientRequestId()
     });
 
     if (isOnline) {
@@ -47,13 +47,14 @@ export const QualityRepository = {
     const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
     
     const record = await addToSyncQueue({
-      action_type: 'BUYER_CONFIRM_QUALITY',
+      action_type: 'BUYER_CONFIRM_QUALITY' as any,
       entity_type: 'WorkflowOrder',
       payload: {
         batchId,
         userId,
         confirmation
-      }
+      },
+      client_request_id: generateClientRequestId()
     });
 
     if (isOnline) {

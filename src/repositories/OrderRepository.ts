@@ -1,5 +1,5 @@
 import { apiService } from '../services/apiService';
-import { addToSyncQueue } from '../services/offlineStorage';
+import { addToSyncQueue, generateClientRequestId } from '../services/offlineStorage';
 import { syncManager } from '../services/syncManager';
 
 export const OrderRepository = {
@@ -7,9 +7,10 @@ export const OrderRepository = {
     const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
     
     const record = await addToSyncQueue({
-      action_type: 'CREATE_ORDER',
+      action_type: 'CREATE_ORDER' as any,
       entity_type: 'Order',
-      payload: orderData
+      payload: orderData,
+      client_request_id: generateClientRequestId()
     });
 
     if (isOnline) {
@@ -23,9 +24,10 @@ export const OrderRepository = {
     const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
     
     const record = await addToSyncQueue({
-      action_type: 'ADD_DEMAND',
+      action_type: 'ADD_DEMAND' as any,
       entity_type: 'DemandRequest',
-      payload: demandData
+      payload: demandData,
+      client_request_id: generateClientRequestId()
     });
 
     if (isOnline) {

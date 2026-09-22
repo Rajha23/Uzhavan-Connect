@@ -29,9 +29,10 @@ export const ProduceRepository = {
     };
 
     const record = await addToSyncQueue({
-      action_type: 'CREATE_PRODUCE',
+      action_type: 'CREATE_PRODUCE' as any,
       entity_type: 'ProduceListing',
-      payload: payloadWithQuality
+      payload: payloadWithQuality,
+      client_request_id: generateClientRequestId()
     });
 
     if (isOnline) {

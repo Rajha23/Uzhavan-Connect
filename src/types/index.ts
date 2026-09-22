@@ -1,5 +1,5 @@
 export * from './task';
-
+import { QualityVerificationRecord } from './quality';
 export type UserRole =
   | 'FARMER'
   | 'RETAIL_BUYER'
