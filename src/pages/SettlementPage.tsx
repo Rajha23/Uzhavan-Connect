@@ -150,10 +150,7 @@ export const SettlementPage: React.FC = () => {
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 bg-[#fefae0]/15 border border-[#fefae0]/25 px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-[#fefae0]">
-              <CreditCard className="w-3.5 h-3.5 text-[#fefae0]" />
-              <span>{t('settlement.escrowDisbursement', 'Automated Escrow Disbursement & Direct Realization')}</span>
-            </div>
+
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
               {t('settlement.title', 'Settlement & Net Realization')}
             </h1>
