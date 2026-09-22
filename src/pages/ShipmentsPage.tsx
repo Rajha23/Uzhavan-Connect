@@ -1232,13 +1232,30 @@ export const ShipmentsPage: React.FC = () => {
                   }
                   className="w-full bg-[#faf9f5] border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-semibold"
                 >
-                  <option value="Assigned">Assigned</option>
-                  <option value="Pickup Scheduled">Pickup Scheduled</option>
-                  <option value="Picked Up">Picked Up (Loaded at Hub)</option>
-                  <option value="In Transit">In Transit (Dispatched on Highway)</option>
-                  <option value="Delivered">Delivered (Arrived at Receiving Dock)</option>
-                  <option value="Delayed">Delayed (Exception Alert)</option>
-                  <option value="Cancelled">Cancelled</option>
+                  {(() => {
+                    const flow = ['Pending', 'Assigned', 'Pickup Scheduled', 'Picked Up', 'In Transit', 'Delivered'];
+                    const currentIndex = flow.indexOf(selectedShipment.status);
+                    
+                    const isDisabled = (status: string) => {
+                      const targetIndex = flow.indexOf(status);
+                      if (currentIndex === -1 || targetIndex === -1) return false;
+                      return targetIndex < currentIndex;
+                    };
+
+                    const isTerminal = selectedShipment.status === 'Delivered' || selectedShipment.status === 'Cancelled';
+
+                    return (
+                      <>
+                        <option value="Assigned" disabled={isDisabled('Assigned') || isTerminal}>Assigned</option>
+                        <option value="Pickup Scheduled" disabled={isDisabled('Pickup Scheduled') || isTerminal}>Pickup Scheduled</option>
+                        <option value="Picked Up" disabled={isDisabled('Picked Up') || isTerminal}>Picked Up (Loaded at Hub)</option>
+                        <option value="In Transit" disabled={isDisabled('In Transit') || isTerminal}>In Transit (Dispatched on Highway)</option>
+                        <option value="Delivered" disabled={isDisabled('Delivered') || selectedShipment.status === 'Cancelled'}>Delivered (Arrived at Receiving Dock)</option>
+                        <option value="Delayed" disabled={isTerminal}>Delayed (Exception Alert)</option>
+                        <option value="Cancelled" disabled={isTerminal && selectedShipment.status !== 'Cancelled'}>Cancelled</option>
+                      </>
+                    );
+                  })()}
                 </select>
               </div>
 
