@@ -42,6 +42,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { UpcomingTasksWidget } from '../components/task';
+import { QualityVerificationModal } from '../components/quality/QualityVerificationModal';
 import {
   QualityInspectionData,
   WorkflowOrder,
@@ -1698,154 +1699,44 @@ export const FpoDashboard: React.FC = () => {
 
                     {/* Interactive Quality Form */}
                     {isInspecting && (
-                      <div className="p-6 bg-white border border-[#ccd5ae]/50 rounded-2xl space-y-4 animate-in fade-in">
-                        <div className="flex items-center justify-between pb-2 border-b border-[#ccd5ae]/30">
-                          <h5 className="font-semibold text-[#01472e] text-xs uppercase tracking-wider flex items-center gap-2">
-                            <ShieldCheck className="w-4 h-4 text-[#01472e]" />
-                            <span>Quality Certification & Acceptance Entry — Batch: {order.batchId}</span>
-                          </h5>
-                          <span className="text-xs font-mono font-semibold text-[#01472e]">Total Collected: {totalCollected} kg</span>
-                        </div>
+                      (() => {
+                        const listing = produceListings.find(l => l.id === order.produceListingId);
+                        if (!listing) return <div className="p-4 text-rose-500">Produce listing not found for order</div>;
+                        return (
+                          <div className="mt-4 animate-in fade-in">
+                            <QualityVerificationModal
+                              batch={listing}
+                              onClose={() => setSelectedOrderForInspection(null)}
+                              onSuccess={(result, obs, checklist) => {
+                                const totalCollected = order.collectedQuantityKg || order.quantityKg;
+                                
+                                const metrics: QualityInspectionData = {
+                                  sugarBrix: 5.2, 
+                                  firmnessKgCm: 3.8,
+                                  pesticideResidueTest: 'PASS - Organic / ND',
+                                  moistureContent: '91.5%',
+                                  verifiedGrade: (result.grade === 'PREMIUM' ? 'Premium' : result.grade === 'STANDARD' ? 'Standard' : 'Grade A') as any,
+                                  inspectorName: currentUser.name || 'FPO QA Officer',
+                                  inspectionDate: new Date().toLocaleDateString(),
+                                  hubLocation: currentUser.location || 'FPO Hub',
+                                  status: result.grade === 'REJECT' ? 'REJECTED' : 'PASSED',
+                                  acceptedQuantityKg: totalCollected,
+                                  rejectedQuantityKg: 0,
+                                  inspectionNotes: `Score: ${result.score}/100. Sample size: ${obs.sampleSize}.`
+                                };
 
-                        {/* Acceptance & Rejection Breakdown */}
-                        <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                          <div>
-                            <label className="block text-[#01472e] font-semibold mb-1">
-                              Accepted Quantity (kg) <span className="text-[#01472e]/70 font-mono">(Moves to Packing)</span>
-                            </label>
-                            <input
-                              type="number"
-                              min="0"
-                              max={totalCollected}
-                              value={acceptedKg}
-                              onChange={(e) => {
-                                const val = Number(e.target.value);
-                                setAcceptedKg(val);
-                                setRejectedKg(Math.max(0, totalCollected - val));
+                                fpoRecordQualityGrading(order.id, metrics);
+                                setSelectedOrderForInspection(null);
+                                showNotification(
+                                  `Quality check certified for Order ${order.id}: Score ${result.score}/100, Grade ${result.grade}.`
+                                );
+                                confetti({ particleCount: 40, origin: { y: 0.6 } });
+                                setActiveStage('STAGE_7_PACKING');
                               }}
-                              className="input-modern font-mono font-semibold text-[#01472e]"
                             />
                           </div>
-
-                          <div>
-                            <label className="block text-rose-800 font-semibold mb-1">
-                              Rejected Quantity (kg) <span className="text-rose-600 font-mono">(Defects/Shortage)</span>
-                            </label>
-                            <input
-                              type="number"
-                              min="0"
-                              max={totalCollected}
-                              value={rejectedKg}
-                              onChange={(e) => {
-                                const val = Number(e.target.value);
-                                setRejectedKg(val);
-                                setAcceptedKg(Math.max(0, totalCollected - val));
-                              }}
-                              className="input-modern font-mono font-semibold text-rose-800 border-rose-300 focus:border-rose-500"
-                            />
-                          </div>
-
-                          {rejectedKg > 0 && (
-                            <div className="sm:col-span-2">
-                              <label className="block text-[#01472e] font-semibold mb-1">Rejection Reason / Defect Notes</label>
-                              <input
-                                type="text"
-                                value={rejectionReason}
-                                onChange={(e) => setRejectionReason(e.target.value)}
-                                placeholder="e.g. Surface sizing variation 3%, minor skin bruising"
-                                className="input-modern"
-                              />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Lab Metrics */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                          <div>
-                            <label className="block text-[#01472e]/80 font-semibold mb-1">Sugar Content (°Brix)</label>
-                            <input
-                              type="number"
-                              step="0.1"
-                              value={sugarBrix}
-                              onChange={(e) => setSugarBrix(Number(e.target.value))}
-                              className="input-modern font-mono"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-[#01472e]/80 font-semibold mb-1">Firmness (kg/cm²)</label>
-                            <input
-                              type="number"
-                              step="0.1"
-                              value={firmness}
-                              onChange={(e) => setFirmness(Number(e.target.value))}
-                              className="input-modern font-mono"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-[#01472e]/80 font-semibold mb-1">Moisture Content</label>
-                            <input
-                              type="text"
-                              value={moisture}
-                              onChange={(e) => setMoisture(e.target.value)}
-                              className="input-modern font-mono"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-[#01472e]/80 font-semibold mb-1">Pesticide Residue Test</label>
-                            <select
-                              value={pesticideTest}
-                              onChange={(e) => setPesticideTest(e.target.value as any)}
-                              className="input-modern"
-                            >
-                              <option value="PASS - Organic / ND">PASS - Organic / ND (Non-Detectable)</option>
-                              <option value="PASS - Standard Compliant">PASS - Standard Compliant</option>
-                            </select>
-                          </div>
-
-                          <div>
-                            <label className="block text-[#01472e]/80 font-semibold mb-1">Certified Grade</label>
-                            <select
-                              value={grade}
-                              onChange={(e) => setGrade(e.target.value as any)}
-                              className="input-modern"
-                            >
-                              <option value="Grade A">Grade A (Premium Export Quality)</option>
-                              <option value="Grade B">Grade B (Retail High Grade)</option>
-                              <option value="Standard">Standard Commercial</option>
-                              <option value="Premium">Premium Spec</option>
-                            </select>
-                          </div>
-
-                          <div>
-                            <label className="block text-[#01472e]/80 font-semibold mb-1">QA Assessor Name</label>
-                            <input
-                              type="text"
-                              value={inspectorName}
-                              onChange={(e) => setInspectorName(e.target.value)}
-                              className="input-modern"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="flex justify-end gap-3 pt-3 border-t border-[#ccd5ae]/30">
-                          <button
-                            onClick={() => setSelectedOrderForInspection(null)}
-                            className="px-4 py-2 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-xl text-xs font-semibold transition cursor-pointer"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => handleSaveInspection(order.id)}
-                            className="btn-primary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-1.5 shadow-sm cursor-pointer"
-                          >
-                            <ShieldCheck className="w-4 h-4" />
-                            <span>Certify Quality & Record Accepted Volume</span>
-                          </button>
-                        </div>
-                      </div>
+                        );
+                      })()
                     )}
                   </div>
                 );

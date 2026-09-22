@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 interface BuyerConfirmationModalProps {
   order: WorkflowOrder;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (status: BuyerConfirmationStatus) => void;
 }
 
 export const BuyerConfirmationModal: React.FC<BuyerConfirmationModalProps> = ({ order, onClose, onSuccess }) => {
@@ -31,7 +31,7 @@ export const BuyerConfirmationModal: React.FC<BuyerConfirmationModalProps> = ({ 
       timestamp: new Date().toISOString()
     });
 
-    onSuccess();
+    onSuccess(status);
   };
 
   return (

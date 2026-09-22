@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 interface QualityVerificationModalProps {
   batch: ProduceListing;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (result: ReturnType<typeof calculateQualityScore>, obs: QualitySampleObservation, checklist: QualityChecklistResult) => void;
 }
 
 export const QualityVerificationModal: React.FC<QualityVerificationModalProps> = ({ batch, onClose, onSuccess }) => {
@@ -63,7 +63,7 @@ export const QualityVerificationModal: React.FC<QualityVerificationModalProps> =
       result
     );
 
-    onSuccess();
+    onSuccess(result, obs, checklist);
   };
 
   return (

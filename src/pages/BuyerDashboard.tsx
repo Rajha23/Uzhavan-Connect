@@ -33,6 +33,7 @@ import {
 import { AiInsightCard } from '../components/AiInsightCard';
 import { UpcomingTasksWidget } from '../components/task';
 import confetti from 'canvas-confetti';
+import { BuyerConfirmationModal } from '../components/quality/BuyerConfirmationModal';
 
 export const BuyerDashboard: React.FC = () => {
   const { t } = useLanguage();
@@ -50,15 +51,7 @@ export const BuyerDashboard: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Delivery confirmation modal state
   const [deliveryReceiptOrder, setDeliveryReceiptOrder] = useState<WorkflowOrder | null>(null);
-  const [receivedKg, setReceivedKg] = useState<number>(1000);
-  const [acceptedKg, setAcceptedKg] = useState<number>(1000);
-  const [rejectedKg, setRejectedKg] = useState<number>(0);
-  const [acceptanceStatus, setAcceptanceStatus] = useState<'ACCEPTED_FULL' | 'ACCEPTED_PARTIAL' | 'REJECTED'>('ACCEPTED_FULL');
-  const [issuesReported, setIssuesReported] = useState<string>('All crates received intact at 4°C. Clean handover.');
-  const [receiverName, setReceiverName] = useState<string>(currentUser.name || 'S. Sundaresan');
-  const [receiverRole, setReceiverRole] = useState<string>('Receiving In-Charge');
 
   // Feedback form state
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
@@ -122,42 +115,7 @@ export const BuyerDashboard: React.FC = () => {
   };
 
   const handleOpenDeliveryModal = (order: WorkflowOrder) => {
-    const qty = order.packedQuantityKg || order.acceptedQuantityKg || order.quantityKg;
     setDeliveryReceiptOrder(order);
-    setReceivedKg(qty);
-    setAcceptedKg(qty);
-    setRejectedKg(0);
-    setAcceptanceStatus('ACCEPTED_FULL');
-    setIssuesReported('All crates inspected and accepted in fresh condition.');
-    setReceiverName(currentUser.name || 'S. Sundaresan');
-    setReceiverRole('Receiving Logistics In-Charge');
-  };
-
-  const handleConfirmDeliveryReceipt = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!deliveryReceiptOrder) return;
-
-    const confirmation: BuyerDeliveryConfirmation = {
-      orderId: deliveryReceiptOrder.id,
-      deliveredQuantityKg: Number(deliveryReceiptOrder.packedQuantityKg || deliveryReceiptOrder.quantityKg),
-      receivedQuantityKg: Number(receivedKg),
-      acceptedQuantityKg: Number(acceptedKg),
-      rejectedQuantityKg: Number(rejectedKg),
-      acceptanceStatus,
-      issuesReported,
-      receiverName,
-      receiverRole,
-      confirmedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
-      signatureOrOtp: `OTP-CONFIRMED-${Math.floor(100000 + Math.random() * 900000)}`
-    };
-
-    buyerConfirmDelivery(deliveryReceiptOrder.id, confirmation);
-    setDeliveryReceiptOrder(null);
-    confetti({
-      particleCount: 70,
-      spread: 80,
-      origin: { y: 0.6 }
-    });
   };
 
   const totalDemandVolumeKg = demands.reduce((sum, d) => sum + d.quantityKg, 0);
@@ -872,271 +830,27 @@ export const BuyerDashboard: React.FC = () => {
 
       {/* Buyer Delivery Verification & Receipt Modal */}
       {deliveryReceiptOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="bg-white rounded-[32px] shadow-2xl border border-[#ccd5ae]/50 p-6 sm:p-8 max-w-2xl w-full space-y-6 max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-[#ccd5ae]/30">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-[#eaf4ec] rounded-2xl border border-[#a3b18a]/30">
-                  <FileCheck2 className="w-5 h-5 text-[#01472e]" />
-                </div>
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#01472e]">
-                    {t('buyer.docksideInspectionTitle', 'Dockside Produce Inspection & Receiving Handover')}
-                  </h3>
-                  <p className="text-xs text-[#01472e]/70 font-normal">
-                    {t('buyer.order', 'Order')} <span className="font-mono font-semibold text-[#01472e]">{deliveryReceiptOrder.id}</span> • {t('buyer.batch', 'Batch')} <span className="font-mono font-semibold text-[#01472e]">{deliveryReceiptOrder.batchId}</span>
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setDeliveryReceiptOrder(null)}
-                className="text-[#01472e]/50 hover:text-[#01472e] transition text-lg font-semibold p-2 rounded-xl hover:bg-[#faf9f5]"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Shipment Summary Strip */}
-            <div className="p-4 bg-[#faf9f5] rounded-2xl border border-[#ccd5ae]/40 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div className="flex items-center gap-2">
-                <img src={getCropImageUrl(deliveryReceiptOrder.crop)} alt={deliveryReceiptOrder.crop} className="w-8 h-8 rounded-full object-cover shadow-sm border border-[#ccd5ae]/40" />
-                <div>
-                  <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.produce', 'Produce')}</span>
-                  <strong className="text-[#01472e] text-sm font-semibold">{deliveryReceiptOrder.crop}</strong>
-                  <span className="text-[11px] text-[#01472e]/70 block">({deliveryReceiptOrder.variety})</span>
-                </div>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.deliveredVolume', 'Delivered Volume')}</span>
-                <strong className="text-[#01472e] text-sm font-semibold">
-                  {(deliveryReceiptOrder.packedQuantityKg || deliveryReceiptOrder.quantityKg).toLocaleString()} kg
-                </strong>
-                <span className="text-[11px] text-[#01472e]/70 block">
-                  {deliveryReceiptOrder.crateCount || Math.ceil((deliveryReceiptOrder.packedQuantityKg || deliveryReceiptOrder.quantityKg) / 25)} Crates
-                </span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.contractRate', 'Contract Rate')}</span>
-                <strong className="text-[#01472e] text-sm font-semibold">₹{deliveryReceiptOrder.pricePerKg}/kg</strong>
-                <span className="text-[11px] text-[#01472e]/70 block">Grade {deliveryReceiptOrder.qualityGrade || 'A'}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#01472e]/60 font-semibold uppercase tracking-wider block">{t('buyer.inboundCarrier', 'Inbound Carrier')}</span>
-                <strong className="text-[#01472e] text-xs truncate block font-semibold">
-                  {deliveryReceiptOrder.transportDetails?.carrierName || 'Cold-Chain Express'}
-                </strong>
-                <span className="text-[11px] text-[#01472e]/70 block">
-                  {deliveryReceiptOrder.transportDetails?.vehicleNumber || 'TN-38-BZ-4419'}
-                </span>
-              </div>
-            </div>
-
-            <form onSubmit={handleConfirmDeliveryReceipt} className="space-y-4 text-xs">
-              {/* Quantities Breakdown */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1 text-[10px]">
-                    {t('buyer.grossReceived', 'Gross Received (kg)')}
-                  </label>
-                  <input
-                    type="number"
-                    value={receivedKg}
-                    onChange={(e) => {
-                      const val = Math.max(0, Number(e.target.value));
-                      setReceivedKg(val);
-                      setAcceptedKg(Math.max(0, val - rejectedKg));
-                    }}
-                    className="input-modern font-semibold text-base text-[#01472e]"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1 text-[10px]">
-                    {t('buyer.acceptedVolume', 'Accepted Volume (kg)')}
-                  </label>
-                  <input
-                    type="number"
-                    value={acceptedKg}
-                    onChange={(e) => {
-                      const val = Math.max(0, Number(e.target.value));
-                      setAcceptedKg(val);
-                      setRejectedKg(Math.max(0, receivedKg - val));
-                      if (val === receivedKg) setAcceptanceStatus('ACCEPTED_FULL');
-                      else if (val > 0) setAcceptanceStatus('ACCEPTED_PARTIAL');
-                      else setAcceptanceStatus('REJECTED');
-                    }}
-                    className="input-modern font-semibold text-base text-[#01472e]"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="font-semibold text-rose-800 uppercase tracking-wider block mb-1 text-[10px]">
-                    {t('buyer.rejectedDamaged', 'Rejected / Damaged (kg)')}
-                  </label>
-                  <input
-                    type="number"
-                    value={rejectedKg}
-                    onChange={(e) => {
-                      const val = Math.max(0, Number(e.target.value));
-                      setRejectedKg(val);
-                      setAcceptedKg(Math.max(0, receivedKg - val));
-                      if (val === 0) setAcceptanceStatus('ACCEPTED_FULL');
-                      else if (val >= receivedKg) setAcceptanceStatus('REJECTED');
-                      else setAcceptanceStatus('ACCEPTED_PARTIAL');
-                    }}
-                    className="input-modern font-semibold text-base text-rose-800 border-rose-300 focus:border-rose-500"
-                  />
-                </div>
-              </div>
-
-              {/* Acceptance Status Decision */}
-              <div>
-                <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1.5 text-[10px]">
-                  {t('buyer.qualityDecision', 'Quality Gate Signoff Decision')}
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {[
-                    {
-                      id: 'ACCEPTED_FULL',
-                      label: t('buyer.fullAcceptance', 'Full Acceptance (100%)'),
-                      desc: t('buyer.fullAcceptanceDesc', 'Produce conforms to Grade A standard')
-                    },
-                    {
-                      id: 'ACCEPTED_PARTIAL',
-                      label: t('buyer.partialAcceptance', 'Partial Acceptance'),
-                      desc: t('buyer.partialAcceptanceDesc', 'Deduct non-conforming crates')
-                    },
-                    {
-                      id: 'REJECTED',
-                      label: t('buyer.consignmentRejected', 'Consignment Rejected'),
-                      desc: t('buyer.consignmentRejectedDesc', 'Quality failure or critical damage')
-                    }
-                  ].map((opt) => (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      onClick={() => {
-                        const status = opt.id as any;
-                        setAcceptanceStatus(status);
-                        if (status === 'ACCEPTED_FULL') {
-                          setAcceptedKg(receivedKg);
-                          setRejectedKg(0);
-                        } else if (status === 'REJECTED') {
-                          setAcceptedKg(0);
-                          setRejectedKg(receivedKg);
-                        }
-                      }}
-                      className={`p-3.5 rounded-2xl border text-left transition ${
-                        acceptanceStatus === opt.id
-                          ? opt.id === 'ACCEPTED_FULL'
-                            ? 'bg-[#eaf4ec] border-[#01472e] text-[#01472e] font-medium shadow-xs'
-                            : opt.id === 'ACCEPTED_PARTIAL'
-                            ? 'bg-amber-50 border-amber-400 text-amber-950 font-medium shadow-xs'
-                            : 'bg-rose-50 border-rose-400 text-rose-950 font-medium shadow-xs'
-                          : 'bg-white border-[#ccd5ae]/40 text-[#01472e]/70 hover:bg-[#faf9f5]'
-                      }`}
-                    >
-                      <p className="font-semibold text-xs">{opt.label}</p>
-                      <p className="text-[10px] opacity-75 mt-0.5">{opt.desc}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Issues Reported / Receiving Remarks */}
-              <div>
-                <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1 text-[10px]">
-                  {t('buyer.inspectionRemarks', 'Receiving Inspection Remarks & Observations')}
-                </label>
-                <textarea
-                  value={issuesReported}
-                  onChange={(e) => setIssuesReported(e.target.value)}
-                  rows={2}
-                  className="input-modern"
-                  placeholder="Record cold-chain temp log, crate condition, or defect notes..."
-                />
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {[
-                    'Cold-Chain Intact (4.2°C logged)',
-                    'Zero transit bruising observed',
-                    'Minor 15kg crate sorting defect deducted',
-                    'Tamper-evident QR seal intact'
-                  ].map((quickNote, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setIssuesReported(quickNote)}
-                      className="text-[10px] bg-[#faf9f5] hover:bg-[#eaf4ec] text-[#01472e] font-medium px-2.5 py-1 rounded-xl border border-[#ccd5ae]/40 transition"
-                    >
-                      + {quickNote}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Signoff Personnel Details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1 text-[10px]">
-                    {t('buyer.receivingOfficer', 'Receiving Officer Name')}
-                  </label>
-                  <input
-                    type="text"
-                    value={receiverName}
-                    onChange={(e) => setReceiverName(e.target.value)}
-                    className="input-modern"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="font-semibold text-[#01472e] uppercase tracking-wider block mb-1 text-[10px]">
-                    {t('buyer.officerRole', 'Officer Designation / Role')}
-                  </label>
-                  <input
-                    type="text"
-                    value={receiverRole}
-                    onChange={(e) => setReceiverRole(e.target.value)}
-                    className="input-modern"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Settlement Impact Notice */}
-              <div className="p-4 bg-[#eaf4ec] rounded-2xl border border-[#a3b18a]/40 text-xs text-[#01472e] space-y-1">
-                <div className="flex items-center gap-2 font-semibold text-[#01472e]">
-                  <ShieldCheck className="w-4 h-4 text-[#01472e]" />
-                  <span>{t('buyer.escrowImpact', 'Transparent Escrow Payout Impact')}</span>
-                </div>
-                <p className="text-[11px] leading-relaxed text-[#01472e]/80">
-                  Signing this receipt locks final accepted volume at <strong>{acceptedKg.toLocaleString()} kg</strong> (₹{(acceptedKg * deliveryReceiptOrder.pricePerKg).toLocaleString()} total value).
-                  The escrow engine will automatically disburse <strong>89% directly to member farmers / FPO</strong> and <strong>8% to cold-chain logistics</strong>.
-                </p>
-              </div>
-
-              {/* Modal Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#ccd5ae]/30">
-                <button
-                  type="button"
-                  onClick={() => setDeliveryReceiptOrder(null)}
-                  className="px-5 py-2.5 text-[#01472e]/70 hover:bg-[#faf9f5] rounded-2xl font-semibold transition"
-                >
-                  {t('common.cancel', 'Cancel')}
-                </button>
-                <button
-                  type="submit"
-                  className="btn-primary py-3 px-6 rounded-2xl flex items-center gap-2"
-                >
-                  <FileCheck2 className="w-4 h-4" />
-                  <span>{t('buyer.confirmReceiptBtn', 'Confirm Receipt & Release Escrow Queue')}</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <BuyerConfirmationModal
+          order={deliveryReceiptOrder}
+          onClose={() => setDeliveryReceiptOrder(null)}
+          onSuccess={(status) => {
+            buyerConfirmDelivery(deliveryReceiptOrder.id, {
+              orderId: deliveryReceiptOrder.id,
+              deliveredQuantityKg: Number(deliveryReceiptOrder.packedQuantityKg || deliveryReceiptOrder.quantityKg),
+              receivedQuantityKg: Number(deliveryReceiptOrder.packedQuantityKg || deliveryReceiptOrder.quantityKg),
+              acceptedQuantityKg: Number(deliveryReceiptOrder.packedQuantityKg || deliveryReceiptOrder.quantityKg),
+              rejectedQuantityKg: 0,
+              acceptanceStatus: (status === 'REJECTED' ? 'REJECTED' : 'ACCEPTED_FULL') as any,
+              issuesReported: 'Accepted via Quality Modal',
+              receiverName: 'Buyer Staff',
+              receiverRole: 'Receiving',
+              confirmedAt: new Date().toISOString(),
+              signatureOrOtp: 'QA-OTP-1234'
+            });
+            setDeliveryReceiptOrder(null);
+            confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+          }}
+        />
       )}
     </div>
   );
