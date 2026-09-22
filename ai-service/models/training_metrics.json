@@ -1,22 +1,94 @@
 {
-  "dataset_name": "Crop Yield Historical Dataset",
-  "sample_size": 19689,
-  "training_samples": 15751,
-  "test_samples": 3938,
-  "last_trained_at": "2026-09-21T21:06:44.897939",
-  "model": "RandomForestRegressor(n_estimators=100)",
-  "r2": 0.9803,
-  "mae": 9.45,
-  "median_absolute_error": 0.13,
+  "model": "Random Forest Regressor",
+  "mae": 16.7651,
+  "rmse": 297.2898,
+  "r2": 0.911,
+  "median_absolute_error": 0.3536,
+  "training_samples": 13781,
+  "validation_samples": 2954,
+  "test_samples": 2954,
+  "total_dataset_rows": 19689,
+  "features": [
+    "Crop",
+    "Crop_Year",
+    "Season",
+    "State",
+    "Area",
+    "Annual_Rainfall",
+    "Fertilizer",
+    "Pesticide"
+  ],
+  "target": "Yield",
+  "unit": "Tonnes / Hectare (dataset units)",
+  "models_compared": {
+    "Random Forest Regressor": {
+      "training_time_sec": 22.15,
+      "val_mae": 13.1166,
+      "val_rmse": 355.9645,
+      "val_r2": 0.8362,
+      "val_median_absolute_error": 0.3561,
+      "test_mae": 16.7651,
+      "test_rmse": 297.2898,
+      "test_r2": 0.911,
+      "test_median_absolute_error": 0.3536
+    },
+    "HistGradientBoosting Regressor": {
+      "training_time_sec": 1.98,
+      "val_mae": 14.2563,
+      "val_rmse": 337.5925,
+      "val_r2": 0.8526,
+      "val_median_absolute_error": 0.5763,
+      "test_mae": 17.4055,
+      "test_rmse": 304.6587,
+      "test_r2": 0.9066,
+      "test_median_absolute_error": 0.5639
+    },
+    "Gradient Boosting Regressor": {
+      "training_time_sec": 6.03,
+      "val_mae": 14.6638,
+      "val_rmse": 396.5383,
+      "val_r2": 0.7967,
+      "val_median_absolute_error": 0.5425,
+      "test_mae": 18.7209,
+      "test_rmse": 340.2193,
+      "test_r2": 0.8835,
+      "test_median_absolute_error": 0.5385
+    },
+    "XGBoost Regressor": {
+      "training_time_sec": 0.4,
+      "val_mae": 12.124,
+      "val_rmse": 216.5479,
+      "val_r2": 0.9394,
+      "val_median_absolute_error": 0.4567,
+      "test_mae": 16.2469,
+      "test_rmse": 187.509,
+      "test_r2": 0.9646,
+      "test_median_absolute_error": 0.4597
+    }
+  },
+  "temporal_evaluation": {
+    "Random Forest Regressor": {
+      "test_mae": 12.8208,
+      "test_rmse": 170.3542,
+      "test_r2": 0.9591,
+      "test_medae": 0.39
+    },
+    "XGBoost Regressor": {
+      "test_mae": 13.3527,
+      "test_rmse": 161.6386,
+      "test_r2": 0.9632,
+      "test_medae": 0.5405
+    }
+  },
   "feature_importances": {
-    "Crop": 84.6,
-    "State": 6.1,
-    "Annual_Rainfall": 3.2,
-    "Pesticide": 2.1,
-    "Area": 1.7,
-    "Fertilizer": 1.6,
-    "Crop_Year": 0.7,
-    "Season": 0.0
+    "Crop": 84.43,
+    "State": 5.47,
+    "Annual_Rainfall": 4.47,
+    "Area": 2.14,
+    "Fertilizer": 1.81,
+    "Pesticide": 1.68,
+    "Season": 0.0,
+    "Crop_Year": 0.0
   },
   "supported_crops": [
     "Arecanut",
@@ -28,7 +100,7 @@
     "Cardamom",
     "Cashewnut",
     "Castor seed",
-    "Coconut ",
+    "Coconut",
     "Coriander",
     "Cotton(lint)",
     "Cowpea(Lobia)",
@@ -75,6 +147,14 @@
     "Wheat",
     "other oilseeds"
   ],
+  "supported_seasons": [
+    "Autumn",
+    "Kharif",
+    "Rabi",
+    "Summer",
+    "Whole Year",
+    "Winter"
+  ],
   "supported_states": [
     "Andhra Pradesh",
     "Arunachal Pradesh",
@@ -107,179 +187,336 @@
     "Uttarakhand",
     "West Bengal"
   ],
-  "supported_seasons": [
-    "Autumn     ",
-    "Kharif     ",
-    "Rabi       ",
-    "Summer     ",
-    "Whole Year ",
-    "Winter     "
-  ],
   "crop_benchmarks": {
     "Arecanut": {
-      "mean_yield": 2.07
+      "sample_count": 27,
+      "mean_yield": 2.63,
+      "mae": 0.83,
+      "median_ae": 0.45
     },
     "Arhar/Tur": {
-      "mean_yield": 0.97
+      "sample_count": 81,
+      "mean_yield": 0.83,
+      "mae": 0.24,
+      "median_ae": 0.21
     },
     "Bajra": {
-      "mean_yield": 2.43
+      "sample_count": 74,
+      "mean_yield": 2.56,
+      "mae": 1.21,
+      "median_ae": 0.27
     },
     "Banana": {
-      "mean_yield": 26.85
+      "sample_count": 43,
+      "mean_yield": 28.48,
+      "mae": 6.3,
+      "median_ae": 3.01
     },
     "Barley": {
-      "mean_yield": 1.6
+      "sample_count": 42,
+      "mean_yield": 1.71,
+      "mae": 0.54,
+      "median_ae": 0.39
     },
     "Black pepper": {
-      "mean_yield": 0.83
+      "sample_count": 17,
+      "mean_yield": 0.86,
+      "mae": 0.64,
+      "median_ae": 0.71
     },
     "Cardamom": {
-      "mean_yield": 0.17
+      "sample_count": 15,
+      "mean_yield": 0.26,
+      "mae": 0.51,
+      "median_ae": 0.39
     },
     "Cashewnut": {
-      "mean_yield": 3.12
+      "sample_count": 16,
+      "mean_yield": 0.64,
+      "mae": 4.65,
+      "median_ae": 0.42
     },
     "Castor seed": {
-      "mean_yield": 0.69
+      "sample_count": 47,
+      "mean_yield": 0.74,
+      "mae": 0.38,
+      "median_ae": 0.33
     },
-    "Coconut ": {
-      "mean_yield": 8652.0
+    "Coconut": {
+      "sample_count": 30,
+      "mean_yield": 9103.67,
+      "mae": 1116.36,
+      "median_ae": 392.81
     },
     "Coriander": {
-      "mean_yield": 0.65
+      "sample_count": 33,
+      "mean_yield": 0.73,
+      "mae": 0.54,
+      "median_ae": 0.36
     },
     "Cotton(lint)": {
-      "mean_yield": 1.8
+      "sample_count": 81,
+      "mean_yield": 1.87,
+      "mae": 0.82,
+      "median_ae": 0.75
     },
     "Cowpea(Lobia)": {
-      "mean_yield": 0.81
+      "sample_count": 20,
+      "mean_yield": 1.11,
+      "mae": 0.46,
+      "median_ae": 0.34
     },
     "Dry chillies": {
-      "mean_yield": 2.08
+      "sample_count": 68,
+      "mean_yield": 1.69,
+      "mae": 0.59,
+      "median_ae": 0.35
     },
     "Garlic": {
-      "mean_yield": 4.54
+      "sample_count": 23,
+      "mean_yield": 5.01,
+      "mae": 0.91,
+      "median_ae": 0.83
     },
     "Ginger": {
-      "mean_yield": 6.44
+      "sample_count": 51,
+      "mean_yield": 6.14,
+      "mae": 2.51,
+      "median_ae": 1.59
     },
     "Gram": {
-      "mean_yield": 0.88
+      "sample_count": 68,
+      "mean_yield": 1.0,
+      "mae": 0.42,
+      "median_ae": 0.25
     },
     "Groundnut": {
-      "mean_yield": 1.36
+      "sample_count": 96,
+      "mean_yield": 1.31,
+      "mae": 0.39,
+      "median_ae": 0.3
     },
     "Guar seed": {
-      "mean_yield": 0.95
+      "sample_count": 9,
+      "mean_yield": 0.7,
+      "mae": 0.19,
+      "median_ae": 0.11
     },
     "Horse-gram": {
-      "mean_yield": 0.46
+      "sample_count": 51,
+      "mean_yield": 0.45,
+      "mae": 0.37,
+      "median_ae": 0.4
     },
     "Jowar": {
-      "mean_yield": 1.07
+      "sample_count": 79,
+      "mean_yield": 1.09,
+      "mae": 0.42,
+      "median_ae": 0.3
     },
     "Jute": {
-      "mean_yield": 7.56
+      "sample_count": 24,
+      "mean_yield": 8.13,
+      "mae": 2.22,
+      "median_ae": 1.45
     },
     "Khesari": {
-      "mean_yield": 0.79
+      "sample_count": 12,
+      "mean_yield": 0.76,
+      "mae": 0.16,
+      "median_ae": 0.14
     },
     "Linseed": {
-      "mean_yield": 0.47
+      "sample_count": 55,
+      "mean_yield": 0.52,
+      "mae": 0.32,
+      "median_ae": 0.3
     },
     "Maize": {
-      "mean_yield": 3.43
+      "sample_count": 153,
+      "mean_yield": 2.5,
+      "mae": 0.64,
+      "median_ae": 0.26
     },
     "Masoor": {
-      "mean_yield": 0.7
+      "sample_count": 53,
+      "mean_yield": 0.72,
+      "mae": 0.19,
+      "median_ae": 0.18
     },
     "Mesta": {
-      "mean_yield": 5.39
+      "sample_count": 26,
+      "mean_yield": 5.74,
+      "mae": 2.76,
+      "median_ae": 2.75
     },
     "Moong(Green Gram)": {
-      "mean_yield": 0.53
+      "sample_count": 114,
+      "mean_yield": 0.55,
+      "mae": 0.32,
+      "median_ae": 0.3
     },
     "Moth": {
-      "mean_yield": 0.45
+      "sample_count": 12,
+      "mean_yield": 0.32,
+      "mae": 0.47,
+      "median_ae": 0.49
     },
     "Niger seed": {
-      "mean_yield": 0.42
+      "sample_count": 31,
+      "mean_yield": 0.35,
+      "mae": 0.44,
+      "median_ae": 0.48
     },
     "Oilseeds total": {
-      "mean_yield": 2.0
+      "sample_count": 4,
+      "mean_yield": 2.76,
+      "mae": 1.88,
+      "median_ae": 0.52
     },
     "Onion": {
-      "mean_yield": 13.25
+      "sample_count": 63,
+      "mean_yield": 12.38,
+      "mae": 3.39,
+      "median_ae": 1.59
     },
     "Other  Rabi pulses": {
-      "mean_yield": 0.78
+      "sample_count": 60,
+      "mean_yield": 0.83,
+      "mae": 0.32,
+      "median_ae": 0.24
     },
     "Other Cereals": {
-      "mean_yield": 0.85
+      "sample_count": 20,
+      "mean_yield": 0.69,
+      "mae": 0.36,
+      "median_ae": 0.32
     },
     "Other Kharif pulses": {
-      "mean_yield": 0.7
+      "sample_count": 53,
+      "mean_yield": 0.67,
+      "mae": 0.27,
+      "median_ae": 0.26
     },
     "Other Summer Pulses": {
-      "mean_yield": 0.86
+      "sample_count": 4,
+      "mean_yield": 1.15,
+      "mae": 0.68,
+      "median_ae": 0.3
     },
     "Peas & beans (Pulses)": {
-      "mean_yield": 1.39
+      "sample_count": 68,
+      "mean_yield": 1.43,
+      "mae": 0.72,
+      "median_ae": 0.27
     },
     "Potato": {
-      "mean_yield": 13.33
+      "sample_count": 74,
+      "mean_yield": 10.39,
+      "mae": 1.75,
+      "median_ae": 1.12
     },
     "Ragi": {
-      "mean_yield": 1.22
+      "sample_count": 71,
+      "mean_yield": 1.14,
+      "mae": 0.44,
+      "median_ae": 0.28
     },
     "Rapeseed &Mustard": {
-      "mean_yield": 0.79
+      "sample_count": 88,
+      "mean_yield": 0.86,
+      "mae": 0.42,
+      "median_ae": 0.29
     },
     "Rice": {
-      "mean_yield": 2.22
+      "sample_count": 189,
+      "mean_yield": 2.16,
+      "mae": 0.39,
+      "median_ae": 0.23
     },
     "Safflower": {
-      "mean_yield": 0.57
+      "sample_count": 29,
+      "mean_yield": 0.48,
+      "mae": 0.33,
+      "median_ae": 0.36
     },
     "Sannhamp": {
-      "mean_yield": 1.27
+      "sample_count": 10,
+      "mean_yield": 2.18,
+      "mae": 1.72,
+      "median_ae": 0.77
     },
     "Sesamum": {
-      "mean_yield": 0.61
+      "sample_count": 119,
+      "mean_yield": 0.49,
+      "mae": 0.33,
+      "median_ae": 0.33
     },
     "Small millets": {
-      "mean_yield": 0.77
+      "sample_count": 76,
+      "mean_yield": 0.71,
+      "mae": 0.25,
+      "median_ae": 0.23
     },
     "Soyabean": {
-      "mean_yield": 1.08
+      "sample_count": 52,
+      "mean_yield": 1.12,
+      "mae": 0.38,
+      "median_ae": 0.35
     },
     "Sugarcane": {
-      "mean_yield": 51.73
+      "sample_count": 79,
+      "mean_yield": 53.11,
+      "mae": 10.07,
+      "median_ae": 6.19
     },
     "Sunflower": {
-      "mean_yield": 0.93
+      "sample_count": 59,
+      "mean_yield": 0.94,
+      "mae": 0.36,
+      "median_ae": 0.27
     },
     "Sweet potato": {
-      "mean_yield": 9.24
+      "sample_count": 39,
+      "mean_yield": 8.92,
+      "mae": 2.03,
+      "median_ae": 1.94
     },
     "Tapioca": {
-      "mean_yield": 16.67
+      "sample_count": 26,
+      "mean_yield": 17.38,
+      "mae": 2.71,
+      "median_ae": 2.2
     },
     "Tobacco": {
-      "mean_yield": 2.11
+      "sample_count": 55,
+      "mean_yield": 2.72,
+      "mae": 1.9,
+      "median_ae": 0.46
     },
     "Turmeric": {
-      "mean_yield": 3.33
+      "sample_count": 44,
+      "mean_yield": 2.77,
+      "mae": 0.99,
+      "median_ae": 0.73
     },
     "Urad": {
-      "mean_yield": 0.58
+      "sample_count": 120,
+      "mean_yield": 0.61,
+      "mae": 0.28,
+      "median_ae": 0.23
     },
     "Wheat": {
-      "mean_yield": 2.01
+      "sample_count": 83,
+      "mean_yield": 2.25,
+      "mae": 0.36,
+      "median_ae": 0.22
     },
     "other oilseeds": {
-      "mean_yield": 1.79
+      "sample_count": 18,
+      "mean_yield": 1.96,
+      "mae": 1.78,
+      "median_ae": 1.11
     }
   }
 }

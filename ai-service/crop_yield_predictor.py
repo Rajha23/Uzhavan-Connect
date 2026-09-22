@@ -28,6 +28,18 @@ class CropYieldPredictor:
             model_path = os.path.join(base_dir, "..", "ml", "models", "crop_yield_model.pkl")
             metrics_path = os.path.join(base_dir, "..", "ml", "models", "training_metrics.json")
 
+        # Check for split parts and recombine if needed
+        part1 = model_path + ".part1"
+        part2 = model_path + ".part2"
+        if not os.path.exists(model_path) and os.path.exists(part1) and os.path.exists(part2):
+            print(f"[AI-SERVICE] Recombining split model from {part1} and {part2}...")
+            with open(model_path, 'wb') as outfile:
+                with open(part1, 'rb') as f1:
+                    outfile.write(f1.read())
+                with open(part2, 'rb') as f2:
+                    outfile.write(f2.read())
+            print(f"[AI-SERVICE] Successfully recombined {model_path}")
+
         if os.path.exists(model_path):
             try:
                 self.model = joblib.load(model_path)

@@ -4,6 +4,7 @@ import App from './App';
 import { AppProvider } from './context/AppContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { registerServiceWorker } from './services/serviceWorkerRegistration';
+import './i18n/i18n'; // Initialize i18next before rendering
 import './index.css';
 
 // Register PWA service worker for offline field support
