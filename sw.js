@@ -8,9 +8,7 @@ const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/icons/icon-192.svg',
-  '/icons/icon-512.svg',
-  '/icons/icon-maskable-512.svg'
+  '/logo.png'
 ];
 
 // Install Event: Pre-cache App Shell
