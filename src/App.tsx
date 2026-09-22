@@ -439,7 +439,7 @@ const AuthenticatedShell: React.FC = () => {
       {/* Right side: header + scrollable main */}
       <div className={`${sidebarOpen ? 'lg:pl-64' : 'lg:pl-0'} flex flex-col min-h-screen transition-all duration-300 relative z-10`}>
         <Header />
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto pb-24">
           <PageContent />
         </main>
       </div>
