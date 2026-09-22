@@ -676,7 +676,7 @@ export const FpoDashboard: React.FC = () => {
             onClick={() => setActiveTab('orders')}
             className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-5 py-3 rounded-2xl border border-white/20 shadow-sm transition cursor-pointer"
           >
-            <span>{t('fpo.allOrdersCount', 'Orders Ledger ({count})', { count: orders.length })}</span>
+            <span>{t('fpo.allOrdersCount', 'Orders Ledger ({{count}})', { count: orders.length })}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -928,7 +928,7 @@ export const FpoDashboard: React.FC = () => {
               : 'bg-white text-[#01472e]/70 border border-[#ccd5ae]/40 hover:bg-[#eaf4ec]'
           }`}
         >
-          {t('fpo.tab.memberSupplyPool', 'Member Supply Pool ({count})', { count: produceListings.length })}
+          {t('fpo.tab.memberSupplyPool', 'Member Supply Pool ({{count}})', { count: produceListings.length })}
         </button>
         <button
           onClick={() => setActiveStage('CONSOLIDATION')}
@@ -938,7 +938,7 @@ export const FpoDashboard: React.FC = () => {
               : 'bg-white text-[#01472e]/70 border border-[#ccd5ae]/40 hover:bg-[#eaf4ec]'
           }`}
         >
-          {t('fpo.tab.bulkConsolidation', 'Bulk Consolidation Hub ({count})', { count: bulkConsolidatedOrders.length })}
+          {t('fpo.tab.bulkConsolidation', 'Bulk Consolidation Hub ({{count}})', { count: bulkConsolidatedOrders.length })}
         </button>
         <button
           onClick={() => setActiveStage('ALL')}
@@ -948,7 +948,7 @@ export const FpoDashboard: React.FC = () => {
               : 'bg-white text-[#01472e]/70 border border-[#ccd5ae]/40 hover:bg-[#eaf4ec]'
           }`}
         >
-          {t('fpo.tab.allOrdersLedger', 'All Collective Batches ({count})', { count: orders.length })}
+          {t('fpo.tab.allOrdersLedger', 'All Collective Batches ({{count}})', { count: orders.length })}
         </button>
       </div>
 
