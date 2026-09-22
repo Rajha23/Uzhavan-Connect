@@ -348,7 +348,7 @@ export const OrdersPage: React.FC = () => {
                       </div>
 
                       {/* Interactive Buyer Acceptance Button */}
-                      {isDelivered && (
+                      {isDelivered && (currentRole === 'RETAIL_BUYER' || currentRole === 'BULK_BUYER') && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -369,7 +369,7 @@ export const OrdersPage: React.FC = () => {
                       )}
 
                       {/* Payment Pending / Settle Shortcut */}
-                      {(isPaymentPending || isCompleted) && (
+                      {(isPaymentPending || isCompleted) && currentRole !== 'LOGISTICS' && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -382,8 +382,9 @@ export const OrdersPage: React.FC = () => {
                         </button>
                       )}
 
-                      {/* Give / View Feedback for completed orders */}
-                      {(isDelivered || order.status === 'Buyer Confirmed' || order.status === 'Completed' || isPaymentPending) && (
+                      {/* Give / View Feedback for completed orders (Farmers, FPOs, Buyers) */}
+                      {(isDelivered || order.status === 'Buyer Confirmed' || order.status === 'Completed' || isPaymentPending) && 
+                       (currentRole === 'RETAIL_BUYER' || currentRole === 'BULK_BUYER' || currentRole === 'FARMER' || currentRole === 'FPO_AGGREGATOR') && (
                         feedbackService.hasSubmittedFeedback(order.id, currentUser.id) ? (
                           <button
                             onClick={(e) => {
