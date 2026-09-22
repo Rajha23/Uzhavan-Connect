@@ -28,6 +28,9 @@ import {
   DEMO_USERS
 } from '../data/mockData';
 
+const AI_SERVICE_URL = 
+  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_AI_SERVICE_URL) || 
+  'http://localhost:8000';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { ApiClient } from './apiClient';
 import {
@@ -447,6 +450,29 @@ export const apiService = {
     }
     listingsStore = listingsStore.filter((l) => l.id !== id);
     return true;
+  },
+
+  predictMarketPrice: async (crop: string, state: string, district: string) => {
+    try {
+      const response = await fetch(`${AI_SERVICE_URL}/api/ml/price/predict`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ crop, state, district })
+      });
+      if (!response.ok) throw new Error('Failed to predict market price');
+      return await response.json();
+    } catch (e) {
+      console.error(e);
+      // Fallback
+      return {
+        crop,
+        state,
+        district,
+        predicted_price_rs_per_kg: 25.0,
+        confidence: 0.5,
+        timestamp: new Date().toISOString()
+      };
+    }
   },
 
   // Demand Intelligence Service

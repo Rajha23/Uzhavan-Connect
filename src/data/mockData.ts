@@ -21,7 +21,8 @@ import {
   Permission,
   WorkflowOrder,
   WorkflowAgreement,
-  NewsArticle
+  NewsArticle,
+  HarvestRecord
 } from '../types';
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
@@ -1415,5 +1416,34 @@ export const AGRICULTURE_NEWS: NewsArticle[] = [
     publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 36).toISOString(),
     category: 'Technology',
     imageUrl: 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  }
+];
+
+export const INITIAL_HARVEST_RECORDS: HarvestRecord[] = [
+  {
+    id: 'hr_1',
+    farmerId: 'f1',
+    crop: 'Tomato',
+    variety: 'Arka Rakshak',
+    sowingDate: '2026-06-15',
+    expectedHarvestDate: '2026-08-20',
+    actualHarvestDate: '2026-08-22',
+    harvestedQuantityKg: 1500,
+    remainingQuantityKg: 1500,
+    status: 'Completed',
+    syncStatus: 'SYNCED'
+  },
+  {
+    id: 'hr_2',
+    farmerId: 'f2',
+    crop: 'Rice',
+    variety: 'Ponni',
+    sowingDate: '2026-07-01',
+    expectedHarvestDate: '2026-11-15',
+    actualHarvestDate: undefined,
+    harvestedQuantityKg: 0,
+    remainingQuantityKg: 0,
+    status: 'Planned',
+    syncStatus: 'SYNCED'
   }
 ];

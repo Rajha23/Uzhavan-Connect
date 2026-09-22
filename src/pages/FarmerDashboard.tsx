@@ -11,6 +11,7 @@ import { UpcomingTasksWidget } from '../components/task';
 import { CropVarietySearchDropdown } from '../components/crop/CropVarietySearchDropdown';
 import { CropYieldPredictionCard } from '../components/crop/CropYieldPredictionCard';
 import { CropHarvestForecasterCard } from '../components/crop/CropHarvestForecasterCard';
+import { RecordHarvestModal } from '../components/crop/RecordHarvestModal';
 import {
   Sprout,
   TrendingUp,
@@ -203,6 +204,7 @@ export const FarmerDashboard: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showYieldEstimator, setShowYieldEstimator] = useState(false);
   const [showHarvestForecaster, setShowHarvestForecaster] = useState(false);
+  const [selectedListingForHarvest, setSelectedListingForHarvest] = useState<ProduceListing | null>(null);
 
   const handleListProduceFromYield = (data: { crop: string; variety?: string; estimatedKg: number; grade: string }) => {
     setCrop(data.crop);
@@ -765,6 +767,14 @@ export const FarmerDashboard: React.FC = () => {
                           {t(`stages.${lifecycle.stage}.label`, lifecycle.stage)}
                         </span>
                       </div>
+                      <button
+                        onClick={() => setSelectedListingForHarvest(item)}
+                        className="p-2 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-2xl transition cursor-pointer flex items-center gap-1 text-[11px] font-medium"
+                        title="Record Actual Harvest"
+                      >
+                        <Scale className="w-4 h-4" />
+                        <span className="hidden sm:inline">Record Harvest</span>
+                      </button>
                       <button
                         onClick={() => handleRemove(item.id)}
                         className="p-2 text-[#788c80] hover:text-rose-700 hover:bg-rose-50 rounded-2xl transition cursor-pointer"
@@ -1413,6 +1423,14 @@ export const FarmerDashboard: React.FC = () => {
           </div>
         )}
       </DetailDrawer>
+      
+      {/* Record Harvest Modal */}
+      {selectedListingForHarvest && (
+        <RecordHarvestModal
+          listing={selectedListingForHarvest}
+          onClose={() => setSelectedListingForHarvest(null)}
+        />
+      )}
     </div>
   );
 };

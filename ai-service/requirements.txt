@@ -7,3 +7,4 @@ scikit-learn>=1.4.0
 ortools>=9.8.3296
 xgboost>=2.0.0
 joblib>=1.3.0
+pdfplumber>=0.11.0

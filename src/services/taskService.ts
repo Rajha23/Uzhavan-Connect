@@ -118,6 +118,9 @@ export const taskService = {
     const oldStatus = task.status;
 
     if (oldStatus === newStatus) return task;
+    if (oldStatus === 'Completed') {
+      throw new Error("Cannot change status of a completed task.");
+    }
 
     task.status = newStatus;
     task.updatedAt = new Date().toISOString();

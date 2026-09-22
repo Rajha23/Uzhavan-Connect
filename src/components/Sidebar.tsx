@@ -36,7 +36,8 @@ import {
   Award,
   AlertCircle,
   Newspaper,
-  CalendarDays
+  CalendarDays,
+  LineChart
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -71,6 +72,7 @@ export const Sidebar: React.FC = () => {
           { id: 'my-crops', label: t('nav.myCrops'), icon: Sprout, section: 'MAIN' },
           { id: 'crop-yield-prediction', label: t('nav.cropYieldPrediction', 'Yield Predictor'), icon: Sparkles, section: 'MAIN' },
           { id: 'harvest-forecast', label: t('nav.harvestForecast', 'Harvest Forecast'), icon: CalendarDays, section: 'MAIN' },
+          { id: 'market-price-prediction', label: 'AI Price Predictor', icon: LineChart, section: 'MAIN' },
           { id: 'find-buyers', label: t('nav.findBuyers'), icon: Search, section: 'MARKET' },
           { id: 'tasks', label: t('nav.taskManagement', 'Task Management'), icon: CheckCircle2, section: 'OPERATIONS' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
@@ -94,6 +96,7 @@ export const Sidebar: React.FC = () => {
           { id: 'create-demand', label: t('nav.createDemand'), icon: Sparkles, section: 'MAIN' },
           { id: 'demand-pool', label: t('nav.demandPool'), icon: Layers, section: 'MARKET' },
           { id: 'smart-matching', label: t('nav.smartMatching'), icon: Search, section: 'MARKET' },
+          { id: 'market-price-prediction', label: 'AI Price Predictor', icon: LineChart, section: 'MARKET' },
           { id: 'reverse-auction', label: t('nav.reverseAuction'), icon: Gavel, section: 'MARKET' },
           { id: 'tasks', label: t('nav.taskManagement', 'Task Management'), icon: CheckCircle2, section: 'OPERATIONS' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
@@ -114,6 +117,7 @@ export const Sidebar: React.FC = () => {
         return [
           { id: 'dashboard', label: t('nav.bulkProcurement', 'Bulk Procurement'), icon: LayoutDashboard, section: 'MAIN' },
           { id: 'bulk-demand', label: t('nav.bulkDemand', 'Bulk Demand'), icon: Users, section: 'MAIN' },
+          { id: 'market-price-prediction', label: 'AI Price Predictor', icon: LineChart, section: 'MAIN' },
           { id: 'tasks', label: t('nav.taskManagement', 'Task Management'), icon: CheckCircle2, section: 'OPERATIONS' },
           { id: 'tracking', label: t('nav.fleetTelematics', 'Fleet Telematics'), icon: Truck, section: 'OPERATIONS' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },

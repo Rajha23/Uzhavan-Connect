@@ -58,6 +58,22 @@ export interface UserProfile {
   serviceArea?: string;
 }
 
+export type HarvestStatus = 'Planned' | 'In Progress' | 'Completed' | 'Failed';
+
+export interface HarvestRecord {
+  id: string;
+  farmerId: string;
+  crop: string;
+  variety?: string;
+  sowingDate: string;
+  expectedHarvestDate?: string;
+  actualHarvestDate?: string;
+  harvestedQuantityKg: number;
+  remainingQuantityKg: number;
+  status: HarvestStatus;
+  syncStatus?: 'SYNCED' | 'PENDING_SYNC';
+}
+
 export type NetworkSyncStatus = 'idle' | 'offline_saved' | 'syncing' | 'synced';
 
 export type ProduceStatus =

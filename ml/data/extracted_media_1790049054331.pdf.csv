@@ -1,0 +1,60 @@
+Crop,Type,Main season,First harvest / maturity,Harvest pattern,Harvest period,Water,Soil,Major pests,Major diseases
+Rice/Paddy,Cereal,"Kuruvai, Samba/Thaladi, Navarai",90–150,One harvest,90–150 days,High,Clay/loam,"Stem borer, leaf folder","Blast, bacterial leaf blight"
+Maize,Cereal,Various seasons with irrigation,80–120,One harvest,80–120 days,Moderate,Well-drained loam,Fall armyworm,"Leaf blight, downy mildew"
+Sorghum/Cholam,Millet,"Jun–Jul, Sep–Oct",90–120,One harvest,90–120 days,Moderate,Loam,Shoot fly,"Downy mildew, grain mold"
+Pearl Millet/Kambu,Millet,"Jun–Jul, Sep–Oct",75–100,One harvest,75–100 days,Low–moderate,Sandy loam,Shoot fly,Downy mildew
+Ragi,Millet,"Jun–Jul, Sep–Oct",90–120,One harvest,90–120 days,Moderate,Red loam,Shoot fly,Blast
+Green Gram,Pulse,"Jun–Jul, Sep–Oct, Jan–Feb",60–75,One main harvest,60–75 days,Low–moderate,Well-drained loam,"Aphids, pod borer",Yellow mosaic
+Black Gram,Pulse,"Jun–Jul, Sep–Oct, Jan–Feb",60–80,One main harvest,60–80 days,Low–moderate,Loam,"Aphids, pod borer",Yellow mosaic
+Red Gram/Pigeon Pea,Pulse,Jun–Jul,150–200,One harvest,150–200 days,Moderate,Well-drained loam,Pod borer,Wilt
+Bengal Gram/Chickpea,Pulse,Cool season,100–120,One harvest,100–120 days,Low,Loam,Pod borer,Wilt
+Groundnut,Oilseed,"Jun–Jul, Sep–Oct, Jan–Feb",100–130,One harvest,100–130 days,Moderate,Sandy loam,"Leaf miner, thrips",Tikka disease
+Sesame/Gingelly,Oilseed,"Jun–Jul, Sep–Oct, Jan–Feb",80–100,One harvest,80–100 days,Low–moderate,Well-drained soil,"Gall fly, leaf webber",Phyllody
+Sunflower,Oilseed,Several seasons,90–110,One harvest,90–110 days,Moderate,Well-drained loam,Head borer,Downy mildew
+Cotton,Fibre,"Jun–Jul, Sep–Oct",150–180+,Multiple pickings,Several weeks/months,Moderate,Black soil/loam,"Bollworms, whitefly","Wilt, leaf curl"
+Sugarcane,Commercial,Different planting windows,10–14 months,One main harvest,10–14 months,High,Deep fertile loam,Early shoot borer,Red rot
+Ladies Finger/Okra,Vegetable,Warm season; several periods,45–60,Every ~2 days,2–3 months,Moderate,Fertile well-drained soil,"Aphids, jassids, borer","Yellow vein mosaic, powdery mildew"
+Tomato,Vegetable,Multiple seasons by region,60–80,Every 3–4 days,2–3 months,Moderate,Well-drained loam,"Fruit borer, whitefly","Leaf curl, early blight"
+Brinjal,Vegetable,Multiple seasons,60–80,Every 3–5 days,3–4 months,Moderate,Fertile loam,Shoot/fruit borer,"Little leaf, bacterial wilt"
+Green Chilli,Vegetable,Multiple seasons,60–90,Every 5–7 days,3–5 months,Moderate,Well-drained loam,"Thrips, mites",Leaf curl
+French Beans,Vegetable,Cool/moderate periods,45–60,Every 2–3 days,1.5–3 months,Moderate,Well-drained loam,"Aphids, pod borer","Rust, anthracnose"
+Cluster Beans,Vegetable,Warm season,45–60,Every 2–3 days,1.5–3 months,Low–moderate,Sandy loam,Aphids,Powdery mildew
+Cucumber,Vegetable,Warm season,40–55,Every 2–3 days,1.5–2 months,Moderate–high,Well-drained loam,"Fruit fly, aphids",Downy mildew
+Bitter Gourd,Vegetable,Warm season,55–70,Every 2–3 days,2–3 months,Moderate,Well-drained loam,"Fruit fly, beetles",Downy mildew
+Bottle Gourd,Vegetable,Warm season,55–70,Every 2–4 days,2–3 months,Moderate,Well-drained loam,"Fruit fly, aphids",Powdery mildew
+Ridge Gourd,Vegetable,Warm season,55–70,Every 2–3 days,2–3 months,Moderate,Well-drained loam,"Fruit fly, beetles",Downy mildew
+Ash Gourd,Vegetable,Warm season,90–120,As fruits mature,2–3 months,Moderate,Well-drained loam,Fruit fly,Downy mildew
+Pumpkin,Vegetable,Warm season,90–120,As fruits mature,2–3 months,Moderate,Well-drained loam,"Fruit fly, beetles",Powdery mildew
+Cabbage,Vegetable,Cool season,70–100,One harvest,70–100 days,Moderate,Fertile loam,Diamondback moth,Black rot
+Cauliflower,Vegetable,Cool season,60–100,One harvest,60–100 days,Moderate,Fertile loam,Diamondback moth,Downy mildew
+Carrot,Root vegetable,Cool season,70–100,One harvest,70–100 days,Moderate,Sandy loam,"Aphids, nematodes",Leaf blight
+Radish,Root vegetable,Cool season,30–60,One harvest,30–60 days,Moderate,Sandy loam,Aphids,Downy mildew
+Beetroot,Root vegetable,Cool season,60–90,One harvest,60–90 days,Moderate,Well-drained loam,Leaf miner,Leaf spot
+Onion,Bulb vegetable,Region/variety dependent,90–150,One harvest,90–150 days,Moderate,Well-drained loam,Thrips,Purple blotch
+Potato,Tuber crop,Cool season,70–120,One harvest,70–120 days,Moderate,Sandy loam,"Aphids, tuber moth",Late blight
+Sweet Potato,Tuber crop,Warm season,90–120,One harvest,90–120 days,Moderate,Sandy loam,Weevils,Scurf
+Tapioca/Cassava,Tuber crop,Warm conditions,8–12 months,One harvest,8–12 months,Moderate,Sandy loam,Mealybug,Mosaic disease
+Elephant Foot Yam,Tuber crop,Warm/wet season,7–9 months,One harvest,7–9 months,Moderate–high,Loam,Scale insects,Leaf spot
+Watermelon,Fruit,Warm season,70–100,As fruits mature,Several weeks,Moderate,Sandy loam,"Fruit fly, aphids",Downy mildew
+Muskmelon,Fruit,Warm season,60–90,As fruits mature,Several weeks,Moderate,Sandy loam,Fruit fly,Powdery mildew
+Papaya,Fruit,Warm tropical conditions,8–12 months,Repeated,Several months/years,Moderate,Well-drained loam,"Mealybug, mites",Papaya ringspot
+Banana,Fruit,Most of year with suitable irrigation,10–14 months,One bunch/plant,One main harvest,High,Deep fertile loam,Rhizome weevil,"Sigatoka, Panama disease"
+Guava,Fruit,Year-round tropical/subtropical,2–3 years to regular bearing,Repeated/seasonal,Seasonal flushes,Moderate,Well-drained loam,Fruit fly,Wilt
+Mango,Fruit,Suitable planting periods; seasonal crop,Several years,Seasonal,Seasonal,Moderate,Deep well-drained soil,"Mango hopper, fruit fly",Powdery mildew
+Pomegranate,Fruit,Warm/dry conditions,2–3 years,Repeated/seasonal,Seasonal,Moderate,Well-drained loam,"Fruit borer, aphids",Bacterial blight
+Sapota/Chikoo,Fruit,Tropical,3–4 years,Repeated/seasonal,Multiple harvests,Moderate,Deep well-drained soil,"Fruit fly, mealybug",Sooty mold
+Turmeric,Spice,Jun–Jul commonly,7–9 months,One harvest,7–9 months,High,Well-drained loam,Shoot borer,Rhizome rot
+Ginger,Spice,Jun–Jul commonly,6–8 months,One harvest,6–8 months,High,Well-drained loam,Shoot borer,Soft rot
+Coriander,Herb/spice,Cool/moderate season,30–50 leaves; 90–110 seed,Repeated leaves or one seed harvest,Variable,Moderate,Well-drained loam,Aphids,Powdery mildew
+Curry Leaf,Leaf crop,Warm conditions,4–6 months after establishment,Repeated pruning,Long-term,Moderate,Well-drained soil,"Psyllid, scale",Leaf spot
+Moringa/Drumstick,Vegetable/tree,Warm conditions,4–6 months,Repeated pod harvest,Several months,Moderate,Well-drained soil,"Pod fly, caterpillars",Powdery mildew
+Jasmine,Flower,Warm conditions,6–8 months,Frequent picking,Long-term,Moderate,Well-drained loam,"Bud worm, mites",Leaf blight
+Marigold,Flower,Various seasons,60–90 days,Every 2–3 days,2–3 months,Moderate,Well-drained loam,"Aphids, thrips",Leaf spot
+Rose,Flower,Suitable conditions,4–6 months,Regular picking,Long-term,Moderate,Well-drained loam,"Aphids, mites","Black spot, powdery mildew"
+Tuberose,Flower,Warm season,3–5 months,Repeated spike harvest,Several months,Moderate,Well-drained loam,"Bud borer, thrips",Blight
+Chrysanthemum,Flower,Cool/moderate period,3–4 months,Repeated picking,Several weeks,Moderate,Well-drained loam,"Aphids, thrips","Wilt, leaf spot"
+Coconut,Plantation,Year-round planting with suitable irrigation,5–7 years,Every ~30–45 days,Long-term,High,Sandy/loam coastal soils,"Rhinoceros beetle, red palm weevil","Bud rot, basal stem rot"
+Arecanut,Plantation,Warm/humid,5–7 years,Periodic harvest,Long-term,High,Well-drained soil,"Spindle bug, mite",Fruit rot
+Cashew,Plantation,Rainfed/tropical,3–4 years,Seasonal,Seasonal,Moderate,Well-drained sandy soil,Tea mosquito bug,Dieback
+Coffee,Plantation,Hill regions,3–4 years,Seasonal,Seasonal,Moderate,Well-drained acidic soil,Coffee berry borer,Leaf rust
+Tea,Plantation,Hill regions,3+ years,Regular leaf plucking,Long-term,High,Acidic well-drained soil,"Tea mosquito bug, mites",Blister blight

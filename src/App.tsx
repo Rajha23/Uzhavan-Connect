@@ -13,6 +13,7 @@ import { ProducePassportModal } from './components/ProducePassportModal';
 import { LanguageSelectorModal } from './components/LanguageSelectorModal';
 import { LanguageOnboardingModal } from './components/LanguageOnboardingModal';
 import { ChatbotWidget } from './components/ChatbotWidget';
+import { SyncStatusIndicator } from './components/SyncStatusIndicator';
 
 // Public pages (no sidebar)
 import { LandingPage } from './pages/LandingPage';
@@ -63,6 +64,7 @@ import { RouteOptimizationMap } from './components/RouteOptimizationMap';
 import { SmartMatchingEngine } from './components/SmartMatchingEngine';
 import { CropYieldPredictionPage } from './pages/CropYieldPredictionPage';
 import { CropHarvestForecastPage } from './pages/CropHarvestForecastPage';
+import { MarketPricePredictionPage } from './pages/MarketPricePredictionPage';
 
 // ─── Public and Role-Guarded Route Definitions ──────────────────────────────
 
@@ -194,6 +196,14 @@ const PageContent: React.FC = () => {
         return <AccessDenied attemptedFeature="Crop Harvest Forecasting & Calendar Intelligence" />;
       }
       return <CropHarvestForecastPage />;
+
+    case 'market-price':
+    case 'market-price-prediction':
+    case 'price-prediction':
+      if (!FARMER_ALLOWED_ROLES.includes(currentRole)) {
+        return <AccessDenied attemptedFeature="AI Market Price Prediction" />;
+      }
+      return <MarketPricePredictionPage />;
 
     // ── Buyer Operations (RBAC: RETAIL_BUYER, ADMIN) ─
     case 'create-demand':
@@ -441,6 +451,7 @@ const AuthenticatedShell: React.FC = () => {
       <LanguageSelectorModal />
       <LanguageOnboardingModal />
       <ChatbotWidget />
+      <SyncStatusIndicator />
     </div>
   );
 };

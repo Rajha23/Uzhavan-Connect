@@ -29,7 +29,8 @@ import {
   FarmerSettlementItem,
   SettlementStatus,
   BuyerDeliveryConfirmation,
-  NewsArticle
+  NewsArticle,
+  HarvestRecord
 } from '../types';
 import {
   DEMO_USERS,
@@ -43,7 +44,8 @@ import {
   INITIAL_ORDERS,
   INITIAL_AGREEMENTS,
   INITIAL_PASSPORTS,
-  INITIAL_SETTLEMENTS
+  INITIAL_SETTLEMENTS,
+  INITIAL_HARVEST_RECORDS
 } from '../data/mockData';
 import {
   FileRecord,
@@ -128,6 +130,8 @@ interface AppContextType {
   deleteProduceListing: (id: string) => void;
   addDemandRequest: (demand: DemandRequest) => void;
   deleteDemandRequest: (id: string) => void;
+  harvestRecords: HarvestRecord[];
+  addHarvestRecord: (record: HarvestRecord) => void;
   orders: WorkflowOrder[];
   addOrder: (order: WorkflowOrder) => void;
   agreements: WorkflowAgreement[];
@@ -428,6 +432,28 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return INITIAL_DEMAND_REQUESTS;
   });
 
+  // Persistent Harvest Records
+  const [harvestRecords, setHarvestRecords] = useState<HarvestRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem('uzhavan_harvest_records');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved harvest records', e);
+    }
+    return INITIAL_HARVEST_RECORDS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('uzhavan_harvest_records', JSON.stringify(harvestRecords));
+    } catch (e) {
+      console.warn('Failed to save harvest records', e);
+    }
+  }, [harvestRecords]);
+
   // Dynamic News Articles across all network users
   const [newsArticles, setNewsArticles] = useState<NewsArticle[]>(() => {
     if (typeof window !== 'undefined') {
@@ -719,26 +745,38 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setDemandRequests((prev) =>
       prev.map((item) => (item.syncStatus === 'PENDING_SYNC' ? { ...item, syncStatus: 'SYNCED' } : item))
     );
+    setHarvestRecords((prev) =>
+      prev.map((item) => (item.syncStatus === 'PENDING_SYNC' ? { ...item, syncStatus: 'SYNCED' } : item))
+    );
 
     try {
       const queueRaw = localStorage.getItem('uzhavan_offline_sync_queue');
       if (queueRaw) {
         const queue = JSON.parse(queueRaw);
         if (Array.isArray(queue)) {
+          const remainingQueue = [];
           for (const item of queue) {
             try {
               if (item.type === 'ADD_PRODUCE') {
                 await supabaseService.insertProduceListing(item.payload);
               } else if (item.type === 'ADD_DEMAND') {
                 await supabaseService.insertDemandRequest(item.payload);
+              } else if (item.type === 'ADD_HARVEST_RECORD') {
+                await supabaseService.insertHarvestRecord(item.payload);
               }
             } catch (err) {
               console.error('[UZHAVAN SYNC] Failed to sync item:', item, err);
+              remainingQueue.push(item);
             }
+          }
+          if (remainingQueue.length > 0) {
+            localStorage.setItem('uzhavan_offline_sync_queue', JSON.stringify(remainingQueue));
+            console.warn(`[UZHAVAN SYNC] ${remainingQueue.length} items failed to sync and remain in queue.`);
+          } else {
+            localStorage.removeItem('uzhavan_offline_sync_queue');
           }
         }
       }
-      localStorage.removeItem('uzhavan_offline_sync_queue');
     } catch (e) {
       console.error('[UZHAVAN SYNC] Error processing offline queue:', e);
     }
@@ -939,6 +977,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         localStorage.setItem('uzhavan_offline_sync_queue', JSON.stringify(queue));
       } catch {}
       setProduceListings((prev) => [listing, ...prev]);
+    }
+  };
+
+  const addHarvestRecord = async (record: HarvestRecord) => {
+    const isCurrentlyOnline = isOnline && (typeof navigator !== 'undefined' ? navigator.onLine : true);
+    
+    if (isCurrentlyOnline) {
+      setHarvestRecords((prev) => [record, ...prev.filter(r => r.id !== record.id)]);
+    } else {
+      setSyncStatus('offline_saved');
+      try {
+        const queue = JSON.parse(localStorage.getItem('uzhavan_offline_sync_queue') || '[]');
+        queue.push({ type: 'ADD_HARVEST_RECORD', payload: record, timestamp: Date.now() });
+        localStorage.setItem('uzhavan_offline_sync_queue', JSON.stringify(queue));
+      } catch {}
+      setHarvestRecords((prev) => [{ ...record, syncStatus: 'PENDING_SYNC' as const }, ...prev]);
     }
   };
 
@@ -2487,6 +2541,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         deleteProduceListing,
         addDemandRequest: (demand) => { addDemandRequest(demand); },
         deleteDemandRequest,
+        harvestRecords,
+        addHarvestRecord,
         orders,
         addOrder,
         agreements,

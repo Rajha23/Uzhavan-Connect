@@ -42,8 +42,17 @@ export const fetchProduceListings = async (): Promise<ProduceListing[]> => {
   })) as ProduceListing[];
 };
 
+export const insertHarvestRecord = async (record: any) => {
+  if (!isSupabaseConfigured) return;
+  // Simulated network call for Harvest Records
+  console.log('[Mock Backend] Inserting harvest record:', record);
+  return new Promise(resolve => setTimeout(resolve, 500));
+};
+
 export const insertProduceListing = async (listing: ProduceListing) => {
   if (!isSupabaseConfigured) return;
+  if (listing.quantityKg <= 0) throw new Error("Quantity must be greater than zero.");
+  if (listing.expectedPricePerKg !== undefined && listing.expectedPricePerKg <= 0) throw new Error("Expected price must be positive.");
   const row = {
     id: listing.id,
     farmer_id: listing.farmerId,
@@ -100,6 +109,8 @@ export const fetchDemandRequests = async (): Promise<DemandRequest[]> => {
 
 export const insertDemandRequest = async (request: DemandRequest) => {
   if (!isSupabaseConfigured) return;
+  if (request.quantityKg <= 0) throw new Error("Demand quantity must be greater than zero.");
+  if (request.maxTargetPricePerKg !== undefined && request.maxTargetPricePerKg <= 0) throw new Error("Max target price must be positive.");
   const row = {
     id: request.id,
     buyer_id: request.buyerId,
@@ -167,6 +178,9 @@ export const fetchOrders = async (): Promise<WorkflowOrder[]> => {
 
 export const insertOrder = async (order: WorkflowOrder) => {
   if (!isSupabaseConfigured) return;
+  if (order.quantityKg <= 0) throw new Error("Order quantity must be greater than zero.");
+  if (order.pricePerKg <= 0) throw new Error("Order price must be greater than zero.");
+  if (!order.buyerId || !order.farmerId || !order.crop) throw new Error("Missing required order fields.");
   const row = {
     id: order.id,
     batch_id: order.batchId,
@@ -193,6 +207,11 @@ export const insertOrder = async (order: WorkflowOrder) => {
 
 export const updateOrder = async (id: string, updates: Partial<WorkflowOrder>) => {
   if (!isSupabaseConfigured) return;
+  
+  if (updates.packedQuantityKg !== undefined && updates.packedQuantityKg < 0) {
+    throw new Error("Packed quantity cannot be negative.");
+  }
+  
   const rowUpdates: any = {};
   if (updates.status !== undefined) rowUpdates.status = updates.status;
   if (updates.batchId !== undefined) rowUpdates.batch_id = updates.batchId;

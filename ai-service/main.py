@@ -7,6 +7,7 @@ from route_optimizer import route_optimizer
 
 from crop_yield_predictor import yield_predictor
 from crop_harvest_engine import harvest_engine
+from price_predictor import price_predictor
 
 app = FastAPI(
     title="AgriPulse AI & Optimization Service",
@@ -46,6 +47,11 @@ class CropYieldRequest(BaseModel):
     fertilizer: float = Field(default=120.0, description="Fertilizer amount in kg")
     pesticide: float = Field(default=15.0, description="Pesticide amount in kg")
     crop_year: Optional[int] = Field(default=2026, description="Cropping year")
+
+class PricePredictionRequest(BaseModel):
+    crop: str = Field(default="Wheat", description="Crop name")
+    state: str = Field(default="Rajasthan", description="State name")
+    district: str = Field(default="Chittorgarh", description="District name")
 
 class HarvestForecastRequest(BaseModel):
     crop: str = Field(description="Crop name (e.g., Tomato, Rice/Paddy, Ladies Finger/Okra)")
@@ -89,6 +95,7 @@ def root():
             "/api/ml/harvest/forecast",
             "/api/ml/harvest/record-observation",
             "/api/ml/harvest/observations-schema",
+            "/api/ml/price/predict",
             "/health"
         ]
     }
@@ -101,7 +108,8 @@ def health():
         "crop_yield_model_loaded": yield_predictor.model_loaded,
         "harvest_engine_crops_loaded": len(harvest_engine.crops_db),
         "harvest_ml_model_loaded": harvest_engine.ml_bundle is not None,
-        "models_loaded": yield_predictor.model_loaded
+        "models_loaded": yield_predictor.model_loaded,
+        "price_predictor_loaded": price_predictor.is_trained
     }
 
 # ─── Crop Harvest Forecasting & Calendar Intelligence Endpoints ──────────────
@@ -200,6 +208,18 @@ def predict_crop_yield(req: CropYieldRequest):
             fertilizer=req.fertilizer,
             pesticide=req.pesticide,
             crop_year=req.crop_year or 2026
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/ml/price/predict")
+def predict_price(req: PricePredictionRequest):
+    try:
+        result = price_predictor.predict(
+            crop=req.crop,
+            state=req.state,
+            district=req.district
         )
         return result
     except Exception as e:
