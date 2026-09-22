@@ -1245,6 +1245,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setOrders((prev) => [newOrder, ...prev]);
     setProducePassports((prev) => [newPassport, ...prev]);
 
+    // Supabase Backend Persistence
+    supabaseService.insertOrder(newOrder).catch(console.error);
+    supabaseService.insertProducePassport(newPassport).catch(console.error);
+
+    const prevAllocatedL = listing.allocatedQuantityKg || 0;
+    const newAllocatedL = prevAllocatedL + finalQty;
+    const remainingQtyL = Math.max(0, listing.quantityKg - finalQty);
+    const newStatusL = remainingQtyL <= 0 ? 'Confirmed' : 'Listed';
+    supabaseService.updateProduceListingQuantities(listing.id, newAllocatedL, remainingQtyL, newStatusL).catch(console.error);
+
+    const prevAllocatedD = demand.allocatedQuantityKg || 0;
+    const newAllocatedD = prevAllocatedD + finalQty;
+    const remainingDemandD = Math.max(0, demand.quantityKg - finalQty);
+    const newStatusD = remainingDemandD <= 0 ? 'Order Created' : 'Partially Fulfilled';
+    supabaseService.updateDemandRequestQuantities(demand.id, newAllocatedD, remainingDemandD, newStatusD).catch(console.error);
+
+
     // Send notification event
     const newNotif: AppNotification = {
       id: `order-created-event-${orderId}`,

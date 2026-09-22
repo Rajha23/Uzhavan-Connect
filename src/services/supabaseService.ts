@@ -80,6 +80,16 @@ export const updateProduceListingStatus = async (id: string, status: ProduceList
   if (error) handleSupabaseError(error, 'updateProduceListingStatus');
 };
 
+export const updateProduceListingQuantities = async (id: string, allocatedQty: number, remainingQty: number, status: ProduceListing['status']) => {
+  if (!isSupabaseConfigured) return;
+  const { error } = await supabase.from('produce_listings').update({ 
+    allocated_quantity_kg: allocatedQty,
+    quantity_kg: remainingQty,
+    status: status
+  }).eq('id', id);
+  if (error) handleSupabaseError(error, 'updateProduceListingQuantities');
+};
+
 
 // =========================================
 // DEMAND REQUESTS
@@ -135,6 +145,16 @@ export const updateDemandRequestStatus = async (id: string, status: DemandReques
   if (!isSupabaseConfigured) return;
   const { error } = await supabase.from('demand_requests').update({ status }).eq('id', id);
   if (error) handleSupabaseError(error, 'updateDemandRequestStatus');
+};
+
+export const updateDemandRequestQuantities = async (id: string, allocatedQty: number, remainingQty: number, status: DemandRequest['status']) => {
+  if (!isSupabaseConfigured) return;
+  const { error } = await supabase.from('demand_requests').update({ 
+    allocated_quantity_kg: allocatedQty,
+    quantity_kg: remainingQty,
+    status: status
+  }).eq('id', id);
+  if (error) handleSupabaseError(error, 'updateDemandRequestQuantities');
 };
 
 
