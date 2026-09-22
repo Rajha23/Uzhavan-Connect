@@ -174,20 +174,6 @@ export const SettlementPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Prototype Escrow Architecture Safety Notice */}
-      <div className="bg-[#faf9f5] border border-[#ccd5ae]/60 rounded-3xl p-5 sm:p-6 flex items-start gap-4 text-xs text-[#01472e] shadow-xs">
-        <div className="p-2.5 bg-[#eaf4ec] rounded-2xl border border-[#a3b18a]/40 shrink-0 text-[#01472e]">
-          <AlertCircle className="w-5 h-5 text-[#01472e]" />
-        </div>
-        <div className="space-y-1">
-          <strong className="text-sm font-bold text-[#01472e] block">
-            {t('settlement.architectureTitle', 'Verifiable Escrow Architecture & Operational Scope')}
-          </strong>
-          <p className="leading-relaxed text-xs text-slate-600 font-normal">
-            {t('settlement.architectureDesc', 'This module provides a connected, prototype-safe simulation of the RBI UPI e-RUPI programmable escrow ledger. All simulated UTR numbers, settlement splits (89% farmer / 8% logistics / 3% platform), and multi-farmer contributions reflect actual application orders and verifiable accounting rules.')}
-          </p>
-        </div>
-      </div>
 
       {/* Aggregate KPI Strip */}
       <KPIGrid columns={3}>
