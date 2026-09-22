@@ -815,13 +815,15 @@ export const ShipmentsPage: React.FC = () => {
                             <FileText className="w-4 h-4" />
                           </button>
 
-                          <button
-                            onClick={() => handleOpenAssignModal(shipment)}
-                            className="p-1.5 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-xl transition cursor-pointer"
-                            title="Assign / Change Fleet Vehicle"
-                          >
-                            <Truck className="w-4 h-4" />
-                          </button>
+                          {!shipment.assignedVehicle && (
+                            <button
+                              onClick={() => handleOpenAssignModal(shipment)}
+                              className="p-1.5 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-xl transition cursor-pointer"
+                              title="Assign Fleet Vehicle"
+                            >
+                              <Truck className="w-4 h-4" />
+                            </button>
+                          )}
 
                           <button
                             onClick={() => handleOpenStatusModal(shipment)}
