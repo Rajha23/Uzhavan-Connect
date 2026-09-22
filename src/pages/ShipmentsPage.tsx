@@ -70,7 +70,7 @@ export const ShipmentsPage: React.FC = () => {
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<ShipmentStatus | 'ALL'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [destinationFilter, setDestinationFilter] = useState<string>('ALL');
   const [driverFilter, setDriverFilter] = useState<string>('ALL');
   const [vehicleFilter, setVehicleFilter] = useState<string>('ALL');
@@ -164,7 +164,13 @@ export const ShipmentsPage: React.FC = () => {
 
       // Status
       if (statusFilter !== 'ALL') {
-        if (s.status !== statusFilter) return false;
+        if (statusFilter === 'GROUP_PENDING') {
+          if (!['Pending', 'Assigned', 'Pickup Scheduled'].includes(s.status)) return false;
+        } else if (statusFilter === 'GROUP_IN_TRANSIT') {
+          if (!['In Transit', 'Picked Up'].includes(s.status)) return false;
+        } else {
+          if (s.status !== statusFilter) return false;
+        }
       }
 
       // Destination
@@ -446,7 +452,7 @@ export const ShipmentsPage: React.FC = () => {
             border: 'border-slate-200'
           },
           {
-            key: 'Pending' as const,
+            key: 'GROUP_PENDING' as const,
             label: t('shipments.kpi.pending', 'Pending Pickup'),
             count: counts.pendingPickup,
             desc: 'Awaiting / Scheduled',
@@ -456,7 +462,7 @@ export const ShipmentsPage: React.FC = () => {
             border: 'border-amber-200'
           },
           {
-            key: 'In Transit' as const,
+            key: 'GROUP_IN_TRANSIT' as const,
             label: t('shipments.kpi.inTransit', 'In Transit'),
             count: counts.inTransit,
             desc: 'Active Telematics',
@@ -562,18 +568,24 @@ export const ShipmentsPage: React.FC = () => {
             <label className="block text-[11px] font-semibold text-slate-600 mb-1">Status</label>
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
+              onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full text-xs bg-[#faf9f5] border border-[#ccd5ae]/60 rounded-xl p-2 focus:ring-1 focus:ring-[#01472e] focus:outline-none text-[#01472e]"
             >
               <option value="ALL">All Statuses</option>
-              <option value="Pending">Pending</option>
-              <option value="Assigned">Assigned</option>
-              <option value="Pickup Scheduled">Pickup Scheduled</option>
-              <option value="Picked Up">Picked Up</option>
-              <option value="In Transit">In Transit</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Delayed">Delayed</option>
-              <option value="Cancelled">Cancelled</option>
+              <optgroup label="KPI Groups">
+                <option value="GROUP_PENDING">Pending Pickup (Group)</option>
+                <option value="GROUP_IN_TRANSIT">In Transit (Group)</option>
+              </optgroup>
+              <optgroup label="Individual Statuses">
+                <option value="Pending">Pending</option>
+                <option value="Assigned">Assigned</option>
+                <option value="Pickup Scheduled">Pickup Scheduled</option>
+                <option value="Picked Up">Picked Up</option>
+                <option value="In Transit">In Transit</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Delayed">Delayed</option>
+                <option value="Cancelled">Cancelled</option>
+              </optgroup>
             </select>
           </div>
 
