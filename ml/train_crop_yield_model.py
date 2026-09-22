@@ -137,7 +137,7 @@ def train_and_evaluate():
     # 3. Model Candidates
     candidates = {
         "Random Forest Regressor": RandomForestRegressor(
-            n_estimators=120,
+            n_estimators=800,
             max_depth=22,
             min_samples_split=4,
             min_samples_leaf=2,
