@@ -64,7 +64,6 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   const [direction, setDirection] = useState<ScriptDirection>(currentLanguage.direction);
   const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState<boolean>(false);
-  const [isPostRegOnboardingOpen, setIsPostRegOnboardingOpen] = useState<boolean>(false);
 
   const applyDocumentLocale = useCallback((lang: LanguageDefinition) => {
     if (typeof document !== 'undefined') {
@@ -201,8 +200,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   const openLanguageSelector = useCallback(() => setIsLanguageSelectorOpen(true), []);
   const closeLanguageSelector = useCallback(() => setIsLanguageSelectorOpen(false), []);
-  const startPostRegistrationOnboarding = useCallback(() => setIsPostRegOnboardingOpen(true), []);
-  const completePostRegistrationOnboarding = useCallback(() => setIsPostRegOnboardingOpen(false), []);
+  const startPostRegistrationOnboarding = useCallback(() => setIsLanguageSelectorOpen(true), []);
+  const completePostRegistrationOnboarding = useCallback(() => setIsLanguageSelectorOpen(false), []);
 
   const contextValue: LanguageContextType = {
     currentLanguage,
@@ -216,7 +215,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     isLanguageSelectorOpen,
     openLanguageSelector,
     closeLanguageSelector,
-    isPostRegOnboardingOpen,
+    isPostRegOnboardingOpen: isLanguageSelectorOpen,
     startPostRegistrationOnboarding,
     completePostRegistrationOnboarding,
 

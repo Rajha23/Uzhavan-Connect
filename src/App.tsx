@@ -11,7 +11,6 @@ import { Footer } from './components/Footer';
 // Global modals (always mounted regardless of shell)
 import { ProducePassportModal } from './components/ProducePassportModal';
 import { LanguageSelectorModal } from './components/LanguageSelectorModal';
-import { LanguageOnboardingModal } from './components/LanguageOnboardingModal';
 import { ChatbotWidget } from './components/ChatbotWidget';
 import { SyncStatusIndicator } from './components/SyncStatusIndicator';
 
@@ -421,7 +420,6 @@ const PublicShell: React.FC = () => (
 
     <ProducePassportModal />
     <LanguageSelectorModal />
-    <LanguageOnboardingModal />
     <ChatbotWidget />
   </div>
 );
@@ -449,7 +447,6 @@ const AuthenticatedShell: React.FC = () => {
       {/* Global modals */}
       <ProducePassportModal />
       <LanguageSelectorModal />
-      <LanguageOnboardingModal />
       <ChatbotWidget />
       <SyncStatusIndicator />
     </div>

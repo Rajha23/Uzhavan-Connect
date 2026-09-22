@@ -27,7 +27,7 @@ import {
   PackageCheck,
   Layers
 } from 'lucide-react';
-import { LanguageSettingsCard } from '../components/LanguageSettingsCard';
+
 import { NotificationPreferencesCard } from '../components/NotificationPreferencesCard';
 
 export const ProfilePage: React.FC = () => {
@@ -655,8 +655,6 @@ export const ProfilePage: React.FC = () => {
       {/* Operational Notification & Alert Preferences Card */}
       <NotificationPreferencesCard />
 
-      {/* Multilingual Localization Settings Card */}
-      <LanguageSettingsCard />
     </div>
   );
 };
