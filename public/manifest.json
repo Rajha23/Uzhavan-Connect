@@ -19,22 +19,10 @@
   ],
   "icons": [
     {
-      "src": "/icons/icon-192.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512.svg",
+      "src": "/logo.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-maskable-512.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [
@@ -43,21 +31,21 @@
       "short_name": "Produce",
       "description": "View and manage active crop listings",
       "url": "/?tab=dashboard",
-      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+      "icons": [{ "src": "/logo.png", "sizes": "512x512" }]
     },
     {
       "name": "Demand Pools",
       "short_name": "Demands",
       "description": "View aggregated institutional buyer demands",
       "url": "/?tab=demand-pool",
-      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+      "icons": [{ "src": "/logo.png", "sizes": "512x512" }]
     },
     {
       "name": "Smart Matching",
       "short_name": "Matching",
       "description": "Match farmer harvest with verified buyers",
       "url": "/?tab=smart-matching",
-      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+      "icons": [{ "src": "/logo.png", "sizes": "512x512" }]
     }
   ]
 }

@@ -238,8 +238,8 @@ export const Sidebar: React.FC = () => {
               onClick={() => setActiveTab('landing')}
               className="flex items-center gap-3 group text-left cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-2xl bg-[#01472e] flex items-center justify-center text-[#fefae0] shadow-soft group-hover:bg-[#003b25] transition-colors">
-                <Sprout className="w-5 h-5 text-[#fefae0]" />
+              <div className="w-9 h-9 rounded-2xl bg-[#01472e] flex items-center justify-center text-[#fefae0] shadow-soft group-hover:bg-[#003b25] transition-colors overflow-hidden border border-[#ccd5ae]/40">
+                <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
