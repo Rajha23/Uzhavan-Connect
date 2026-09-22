@@ -1,7 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
-  children?: ReactNode;
+  children: ReactNode;
 }
 
 interface State {
@@ -29,16 +29,17 @@ export class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: '20px', backgroundColor: '#fee2e2', color: '#991b1b', minHeight: '100vh', fontFamily: 'monospace' }}>
-          <h2>Uzhavan Connect - Fatal Application Error</h2>
-          <p style={{ fontWeight: 'bold' }}>{this.state.error && this.state.error.toString()}</p>
-          <pre style={{ whiteSpace: 'pre-wrap', fontSize: '12px', marginTop: '10px' }}>
+        <div style={{ padding: '2rem', color: 'red', fontFamily: 'monospace' }}>
+          <h2>Something went wrong.</h2>
+          <details style={{ whiteSpace: 'pre-wrap' }}>
+            {this.state.error && this.state.error.toString()}
+            <br />
             {this.state.errorInfo && this.state.errorInfo.componentStack}
-          </pre>
-          <p style={{ marginTop: '20px' }}>Please copy this error message and send it to the developer.</p>
+          </details>
         </div>
       );
     }
+
     return this.props.children;
   }
 }
