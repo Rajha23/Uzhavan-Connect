@@ -5,20 +5,28 @@
  */
 
 export type SyncActionType =
-  | 'ADD_PRODUCE'
+  | 'CREATE_PRODUCE'
   | 'UPDATE_PRODUCE'
-  | 'ADD_SUBSIDY'
-  | 'UPDATE_PROFILE'
-  | 'ADD_DEMAND';
+  | 'CREATE_ORDER'
+  | 'UPDATE_ORDER'
+  | 'ADD_DEMAND'
+  | 'UPDATE_PROFILE';
 
-export interface SyncQueueItem {
+export type SyncStatus = 'PENDING' | 'SYNCING' | 'SYNCED' | 'FAILED';
+
+export interface SyncRecord {
   id: string;
-  type: SyncActionType;
-  payload: unknown;
-  timestamp: number;
-  retryCount: number;
-  status: 'pending' | 'syncing' | 'failed';
-  lastError?: string;
+  client_request_id: string;
+  action_type: SyncActionType;
+  entity_type: string;
+  payload: any;
+  status: SyncStatus;
+  retry_count: number;
+  created_at: string;
+  updated_at: string;
+  last_attempt_at: string | null;
+  synced_at: string | null;
+  error_message: string | null;
 }
 
 const SYNC_QUEUE_KEY = 'uzhavan_offline_sync_queue';
@@ -43,50 +51,73 @@ function writeJSON<T>(key: string, value: T): void {
   }
 }
 
+export function generateClientRequestId(): string {
+  try {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+  } catch {}
+  return 'req-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+}
+
 // ── Sync Queue Operations ─────────────────────────────────────────────────────
 
 export const initDB = async () => {
-  // No-op — we use localStorage, no IndexedDB init required
   return Promise.resolve();
 };
 
 export const addToSyncQueue = async (
-  item: Omit<SyncQueueItem, 'status' | 'retryCount' | 'timestamp'>
-): Promise<SyncQueueItem> => {
-  const fullItem: SyncQueueItem = {
-    ...item,
-    status: 'pending',
-    retryCount: 0,
-    timestamp: Date.now(),
+  record: Omit<SyncRecord, 'id' | 'status' | 'retry_count' | 'created_at' | 'updated_at' | 'last_attempt_at' | 'synced_at' | 'error_message'>
+): Promise<SyncRecord> => {
+  const fullRecord: SyncRecord = {
+    ...record,
+    id: generateClientRequestId(),
+    status: 'PENDING',
+    retry_count: 0,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    last_attempt_at: null,
+    synced_at: null,
+    error_message: null
   };
-  const queue = readJSON<SyncQueueItem[]>(SYNC_QUEUE_KEY, []);
-  queue.push(fullItem);
+  const queue = readJSON<SyncRecord[]>(SYNC_QUEUE_KEY, []);
+  queue.push(fullRecord);
   writeJSON(SYNC_QUEUE_KEY, queue);
-  return fullItem;
+  return fullRecord;
 };
 
-export const getPendingSyncItems = async (): Promise<SyncQueueItem[]> => {
-  const queue = readJSON<SyncQueueItem[]>(SYNC_QUEUE_KEY, []);
-  return queue.filter((item) => item.status === 'pending' || item.status === 'failed');
+export const getPendingSyncItems = async (): Promise<SyncRecord[]> => {
+  const queue = readJSON<SyncRecord[]>(SYNC_QUEUE_KEY, []);
+  return queue.filter((item) => item.status === 'PENDING' || item.status === 'FAILED');
+};
+
+export const getSyncItemByRequestId = async (client_request_id: string): Promise<SyncRecord | undefined> => {
+  const queue = readJSON<SyncRecord[]>(SYNC_QUEUE_KEY, []);
+  return queue.find((item) => item.client_request_id === client_request_id);
 };
 
 export const updateSyncItem = async (
-  id: string,
-  updates: Partial<SyncQueueItem>
+  client_request_id: string,
+  updates: Partial<SyncRecord>
 ): Promise<void> => {
-  const queue = readJSON<SyncQueueItem[]>(SYNC_QUEUE_KEY, []);
-  const idx = queue.findIndex((item) => item.id === id);
+  const queue = readJSON<SyncRecord[]>(SYNC_QUEUE_KEY, []);
+  const idx = queue.findIndex((item) => item.client_request_id === client_request_id);
   if (idx !== -1) {
-    queue[idx] = { ...queue[idx], ...updates };
+    queue[idx] = { 
+      ...queue[idx], 
+      ...updates,
+      updated_at: new Date().toISOString()
+    };
     writeJSON(SYNC_QUEUE_KEY, queue);
   }
 };
 
-export const removeSyncItem = async (id: string): Promise<void> => {
-  const queue = readJSON<SyncQueueItem[]>(SYNC_QUEUE_KEY, []);
+// IMPORTANT: Do not blindly delete records. Only mark them as SYNCED unless explicitly discarding.
+export const removeSyncItem = async (client_request_id: string): Promise<void> => {
+  const queue = readJSON<SyncRecord[]>(SYNC_QUEUE_KEY, []);
   writeJSON(
     SYNC_QUEUE_KEY,
-    queue.filter((item) => item.id !== id)
+    queue.filter((item) => item.client_request_id !== client_request_id)
   );
 };
 

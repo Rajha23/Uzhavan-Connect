@@ -401,7 +401,12 @@ export const apiService = {
     return [...listingsStore];
   },
 
-  createProduceListing: async (listing: Omit<ProduceListing, 'id' | 'status'>): Promise<ProduceListing> => {
+  createProduceListing: async (listing: Omit<ProduceListing, 'id' | 'status'> & { client_request_id?: string }): Promise<ProduceListing> => {
+    // Idempotency check for mock store
+    if (listing.client_request_id) {
+      const existing = listingsStore.find((l: any) => l.client_request_id === listing.client_request_id);
+      if (existing) return existing;
+    }
     try {
       const { data, error } = await supabase
         .from('produce_listings')
@@ -436,7 +441,8 @@ export const apiService = {
     const newListing: ProduceListing = {
       ...listing,
       id: `LST-${Date.now().toString().slice(-4)}`,
-      status: 'AVAILABLE'
+      status: 'AVAILABLE',
+      ...(listing.client_request_id ? { client_request_id: listing.client_request_id } : {})
     };
     listingsStore = [newListing, ...listingsStore];
     return newListing;
@@ -537,7 +543,12 @@ export const apiService = {
   },
 
   // Demand Service - Buyer Requests & Pooling
-  createDemandRequest: async (demand: Omit<DemandRequest, 'id' | 'status' | 'createdAt'>): Promise<DemandRequest> => {
+  createDemandRequest: async (demand: Omit<DemandRequest, 'id' | 'status' | 'createdAt'> & { client_request_id?: string }): Promise<DemandRequest> => {
+    // Idempotency check for mock store
+    if (demand.client_request_id) {
+      const existing = demandsStore.find((d: any) => d.client_request_id === demand.client_request_id);
+      if (existing) return existing;
+    }
     try {
       const { data, error } = await supabase
         .from('demand_requests')
@@ -574,7 +585,8 @@ export const apiService = {
       ...demand,
       id: `DEM-${Date.now().toString().slice(-4)}`,
       status: 'POOLED',
-      createdAt: new Date().toISOString().replace('T', ' ').slice(0, 16)
+      createdAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+      ...(demand.client_request_id ? { client_request_id: demand.client_request_id } : {})
     };
     demandsStore = [newDemand, ...demandsStore];
     return newDemand;
@@ -650,7 +662,7 @@ export const apiService = {
     };
   },
   // Orders
-  createOrder: async (orderData: { buyerId: string; farmerId: string; crop: string; quantityKg: number; pricePerKg: number; totalValue: number }): Promise<any> => {
+  createOrder: async (orderData: { buyerId: string; farmerId: string; crop: string; quantityKg: number; pricePerKg: number; totalValue: number; client_request_id?: string }): Promise<any> => {
     try {
       const { data, error } = await supabase
         .from('orders')

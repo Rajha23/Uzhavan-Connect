@@ -269,6 +269,7 @@ export interface WorkflowOrder {
 
   // Quality & Grading tracking (Part D)
   qualityStatus?: 'Pending' | 'Passed' | 'Rejected' | 'Conditionally Passed';
+  qualityRecord?: QualityVerificationRecord;
   acceptedQuantityKg?: number;
   rejectedQuantityKg?: number;
 
@@ -389,6 +390,7 @@ export interface ProduceListing {
   imageUrl?: string;
   syncStatus?: 'SYNCED' | 'PENDING_SYNC';
   offlineCreated?: boolean;
+  qualityRecord?: QualityVerificationRecord;
 }
 
 export interface DemandRequest {
@@ -412,6 +414,7 @@ export interface DemandRequest {
   coordinates?: { lat: number; lng: number };
   syncStatus?: 'SYNCED' | 'PENDING_SYNC';
   offlineCreated?: boolean;
+  qualityRecord?: QualityVerificationRecord;
   aggregatedGroupId?: string;
 }
 
@@ -748,6 +751,7 @@ export interface NewsArticle {
 
 export * from './shipment';
 export * from './feedback';
+export * from './quality';
 
 export interface CropYieldRequestDto {
   crop: string;

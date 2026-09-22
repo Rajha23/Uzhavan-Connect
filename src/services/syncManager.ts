@@ -1,4 +1,4 @@
-import { getPendingSyncItems, updateSyncItem, removeSyncItem } from './offlineStorage';
+import { getPendingSyncItems, updateSyncItem, removeSyncItem, SyncRecord } from './offlineStorage';
 import { apiService } from './apiService';
 import { ProduceListing, DemandRequest } from '../types';
 
@@ -8,11 +8,12 @@ class SyncManager {
   private isSyncing = false;
   private listeners: SyncStatusCallback[] = [];
   
-  // Max retries before giving up temporarily (exponential backoff will still try later)
+  // Exponential Backoff base settings
   private MAX_RETRIES = 5;
+  private RETRY_DELAYS = [5000, 15000, 30000, 60000, 300000]; // 5s, 15s, 30s, 1m, 5m
 
   constructor() {
-    // Listen for network becoming available
+    // Note: The global online listener was moved to NetworkContext, but we can keep a failsafe here
     if (typeof window !== 'undefined') {
       window.addEventListener('online', () => {
         console.log('[SyncManager] Network online. Triggering sync...');
@@ -50,25 +51,49 @@ class SyncManager {
 
       console.log(`[SyncManager] Found ${pendingItems.length} items to sync.`);
 
+      // Sort items by creation time to preserve chronological ordering
+      pendingItems.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
       for (const item of pendingItems) {
-        if (item.retryCount >= this.MAX_RETRIES) {
-          console.warn(`[SyncManager] Skipping item ${item.id} due to max retries exceeded.`);
+        if (item.retry_count >= this.MAX_RETRIES) {
+          console.warn(`[SyncManager] Skipping item ${item.client_request_id} due to max retries exceeded.`);
           continue;
         }
 
+        // Exponential backoff check
+        if (item.status === 'FAILED' && item.last_attempt_at) {
+          const delay = this.RETRY_DELAYS[item.retry_count] || this.RETRY_DELAYS[this.RETRY_DELAYS.length - 1];
+          const timeSinceLastAttempt = Date.now() - new Date(item.last_attempt_at).getTime();
+          if (timeSinceLastAttempt < delay) {
+            console.log(`[SyncManager] Waiting for backoff on ${item.client_request_id} (needs ${delay}ms, passed ${timeSinceLastAttempt}ms)`);
+            continue;
+          }
+        }
+
         try {
+          await updateSyncItem(item.client_request_id, {
+            status: 'SYNCING',
+            last_attempt_at: new Date().toISOString()
+          });
+
           await this.processItem(item);
-          // If successful, remove from queue
-          await removeSyncItem(item.id);
-        } catch (error: any) {
-          console.error(`[SyncManager] Failed to sync item ${item.id}:`, error);
           
-          // Exponential backoff logic based on retryCount could be added here
-          // For now, we increment the retry count
-          await updateSyncItem(item.id, {
-            status: 'failed',
-            retryCount: item.retryCount + 1,
-            lastError: error.message
+          // IMPORTANT: If successful, we update it to SYNCED instead of deleting it immediately
+          // (Or remove it safely depending on business rules)
+          await updateSyncItem(item.client_request_id, {
+            status: 'SYNCED',
+            synced_at: new Date().toISOString()
+          });
+          // After syncing, we can optionally remove it from the queue if the local database already synced the canonical state
+          await removeSyncItem(item.client_request_id);
+
+        } catch (error: any) {
+          console.error(`[SyncManager] Failed to sync item ${item.client_request_id}:`, error);
+          
+          await updateSyncItem(item.client_request_id, {
+            status: 'FAILED',
+            retry_count: item.retry_count + 1,
+            error_message: error.message
           });
         }
       }
@@ -86,23 +111,34 @@ class SyncManager {
       this.emit('error', 'Synchronization failed due to a critical error.');
     } finally {
       this.isSyncing = false;
-      // Reset back to idle after a few seconds if it was synced
       setTimeout(() => this.emit('idle'), 3000);
     }
   }
 
-  private async processItem(item: any) {
-    switch (item.type) {
-      case 'ADD_PRODUCE':
-        await apiService.createProduceListing(item.payload as ProduceListing);
+  private async processItem(item: SyncRecord) {
+    // For idempotency, we pass client_request_id to the API. 
+    // The apiService must be updated to accept and handle this.
+    switch (item.action_type) {
+      case 'CREATE_PRODUCE':
+        await apiService.createProduceListing({
+          ...item.payload,
+          client_request_id: item.client_request_id
+        });
+        break;
+      case 'CREATE_ORDER':
+        await apiService.createOrder({
+          ...item.payload,
+          client_request_id: item.client_request_id
+        });
         break;
       case 'ADD_DEMAND':
-        // Assuming createDemandRequest exists or similar
-        // await apiService.createDemandRequest(item.payload as DemandRequest);
+        await apiService.createDemandRequest({
+          ...item.payload,
+          client_request_id: item.client_request_id
+        });
         break;
-      // Add other cases here (UPDATE_PRODUCE, ADD_SUBSIDY, etc.)
       default:
-        console.warn(`[SyncManager] Unknown sync action type: ${item.type}`);
+        console.warn(`[SyncManager] Unknown sync action type: ${item.action_type}`);
         break;
     }
   }

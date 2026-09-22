@@ -62,6 +62,8 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { authVault, normalizeRole, seedDemoAccounts } from '../services/authVault';
 import { apiService } from '../services/apiService';
 import * as supabaseService from '../services/supabaseService';
+import { ProduceRepository } from '../repositories/ProduceRepository';
+import { OrderRepository } from '../repositories/OrderRepository';
 import { onInstallableChange, promptAppInstall } from '../services/serviceWorkerRegistration';
 import {
   PUBLIC_TABS,
@@ -627,7 +629,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
 
   const addOrder = useCallback((order: WorkflowOrder) => {
-    supabaseService.insertOrder(order).catch(console.error);
+    OrderRepository.createOrder(order).catch(console.error);
     setOrders((prev) => [order, ...prev.filter((o) => o.id !== order.id)]);
   }, []);
 
@@ -958,25 +960,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, [isAuthenticated]);
 
   const addProduceListing = async (listing: ProduceListing) => {
-    const isCurrentlyOnline = isOnline && (typeof navigator !== 'undefined' ? navigator.onLine : true);
-    
-    if (isCurrentlyOnline) {
-      try {
-        await supabaseService.insertProduceListing(listing);
-        // Optimistic update
-        setProduceListings((prev) => [listing, ...prev.filter(l => l.id !== listing.id)]);
-      } catch (err) {
-        console.error("Failed to create listing", err);
-      }
-    } else {
-      // Offline fallback
-      setSyncStatus('offline_saved');
-      try {
-        const queue = JSON.parse(localStorage.getItem('uzhavan_offline_sync_queue') || '[]');
-        queue.push({ type: 'ADD_PRODUCE', payload: listing, timestamp: Date.now() });
-        localStorage.setItem('uzhavan_offline_sync_queue', JSON.stringify(queue));
-      } catch {}
-      setProduceListings((prev) => [listing, ...prev]);
+    try {
+      // Use ProduceRepository which handles queueing and syncing automatically
+      await ProduceRepository.createProduceListing(listing);
+      // Optimistic UI update
+      setProduceListings((prev) => [listing, ...prev.filter(l => l.id !== listing.id)]);
+    } catch (err) {
+      console.error("Failed to create listing", err);
     }
   };
 
@@ -1001,24 +991,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const addDemandRequest = async (demand: DemandRequest) => {
-    const isCurrentlyOnline = isOnline && (typeof navigator !== 'undefined' ? navigator.onLine : true);
-    
-    if (isCurrentlyOnline) {
-      try {
-        await supabaseService.insertDemandRequest(demand);
-        // Optimistic update
-        setDemandRequests((prev) => [demand, ...prev.filter(d => d.id !== demand.id)]);
-      } catch (err) {
-        console.error("Failed to create demand", err);
-      }
-    } else {
-      setSyncStatus('offline_saved');
-      try {
-        const queue = JSON.parse(localStorage.getItem('uzhavan_offline_sync_queue') || '[]');
-        queue.push({ type: 'ADD_DEMAND', payload: demand, timestamp: Date.now() });
-        localStorage.setItem('uzhavan_offline_sync_queue', JSON.stringify(queue));
-      } catch {}
-      setDemandRequests((prev) => [demand, ...prev]);
+    try {
+      await OrderRepository.createDemandRequest(demand);
+      // Optimistic update
+      setDemandRequests((prev) => [demand, ...prev.filter(d => d.id !== demand.id)]);
+    } catch (err) {
+      console.error("Failed to create demand", err);
     }
   };
 
