@@ -348,7 +348,7 @@ export const FarmerDashboard: React.FC = () => {
           {[
             { id: 'add-crop', label: t('farmer.addCrop', 'Add Crop'), icon: Plus, action: () => setIsAddingListing(true), badge: t('farmer.listBadge', 'List') },
             { id: 'yield-predict', label: t('farmer.yieldPredict', 'Yield Predict'), icon: Sprout, action: () => setShowYieldEstimator(!showYieldEstimator), badge: 'ML Model' },
-            { id: 'harvest-forecast', label: 'Harvest Forecast', icon: CalendarDays, action: () => { setShowHarvestForecaster(!showHarvestForecaster); setShowYieldEstimator(false); }, badge: 'Calendar AI' },
+            { id: 'harvest-forecast', label: t('farmer.harvestForecast', 'Harvest Forecast'), icon: CalendarDays, action: () => { setShowHarvestForecaster(!showHarvestForecaster); setShowYieldEstimator(false); }, badge: t('farmer.calendarAIBadge', 'Calendar AI') },
             { id: 'find-buyers', label: t('farmer.findBuyers', 'Find Buyers'), icon: ArrowRight, action: () => setActiveTab('find-buyers'), badge: t('farmer.directBadge', 'Direct') },
             { id: 'smart-match', label: t('farmer.matchPool', 'Match Pool'), icon: Sparkles, action: () => setActiveTab('smart-matching'), badge: t('farmer.aiBadge', 'AI') },
             { id: 'orders', label: t('farmer.myOrders', 'My Orders'), icon: Package, action: () => setActiveTab('orders'), badge: t('farmer.trackBadge', 'Track') },
@@ -398,14 +398,14 @@ export const FarmerDashboard: React.FC = () => {
           <div className="flex items-center justify-between px-1">
             <span className="text-[11px] font-medium uppercase tracking-wider text-[#5c7065] flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              <span>AI Crop Yield Intelligence Engine (Random Forest)</span>
+              <span>{t('farmer.yieldEstimatorTitle', 'AI Crop Yield Intelligence Engine (Random Forest)')}</span>
             </span>
             <button
               type="button"
               onClick={() => setShowYieldEstimator(false)}
               className="text-xs text-[#5c7065] hover:text-[#01472e] cursor-pointer"
             >
-              Hide Estimator
+              {t('common.hideEstimator', 'Hide Estimator')}
             </button>
           </div>
           <CropYieldPredictionCard onListProduce={handleListProduceFromYield} />
@@ -418,7 +418,7 @@ export const FarmerDashboard: React.FC = () => {
           <div className="flex items-center justify-between px-1">
             <span className="text-[11px] font-medium uppercase tracking-wider text-[#5c7065] flex items-center gap-1.5">
               <CalendarDays className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Harvest Forecast &amp; Crop Calendar Intelligence</span>
+              <span>{t('farmer.harvestForecastTitle', 'Harvest Forecast & Crop Calendar Intelligence')}</span>
             </span>
             <div className="flex items-center gap-3">
               <button
@@ -426,14 +426,14 @@ export const FarmerDashboard: React.FC = () => {
                 onClick={() => setActiveTab('harvest-forecast')}
                 className="text-xs text-[#01472e] hover:underline cursor-pointer font-medium"
               >
-                Full Page →
+                {t('common.fullPage', 'Full Page →')}
               </button>
               <button
                 type="button"
                 onClick={() => setShowHarvestForecaster(false)}
                 className="text-xs text-[#5c7065] hover:text-[#01472e] cursor-pointer"
               >
-                Hide
+                {t('common.hide', 'Hide')}
               </button>
             </div>
           </div>
@@ -770,10 +770,10 @@ export const FarmerDashboard: React.FC = () => {
                       <button
                         onClick={() => setSelectedListingForHarvest(item)}
                         className="p-2 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-2xl transition cursor-pointer flex items-center gap-1 text-[11px] font-medium"
-                        title="Record Actual Harvest"
+                        title={t('farmer.recordActualHarvestTitle', 'Record Actual Harvest')}
                       >
                         <Scale className="w-4 h-4" />
-                        <span className="hidden sm:inline">Record Harvest</span>
+                        <span className="hidden sm:inline">{t('farmer.recordHarvest', 'Record Harvest')}</span>
                       </button>
                       <button
                         onClick={() => handleRemove(item.id)}

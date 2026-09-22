@@ -152,7 +152,7 @@ export const TaskManagementPage: React.FC = () => {
           <Search className="w-5 h-5 absolute left-3.5 top-3 text-slate-400" />
           <input
             type="text"
-            placeholder="Search tasks, descriptions, assignees..."
+            placeholder={t('tasks.searchPlaceholder', 'Search tasks, descriptions, assignees...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-white border border-slate-200 rounded-xl pl-11 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#01472e]/20 focus:border-[#01472e] shadow-sm"
@@ -167,11 +167,11 @@ export const TaskManagementPage: React.FC = () => {
               onChange={(e) => setStatusFilter(e.target.value as any)}
               className="appearance-none bg-white border border-slate-200 rounded-xl pl-10 pr-10 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#01472e] shadow-sm"
             >
-              <option value="All">All Status</option>
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-              <option value="Blocked">Blocked</option>
+              <option value="All">{t('tasks.statusAll', 'All Status')}</option>
+              <option value="Pending">{t('tasks.statusPending', 'Pending')}</option>
+              <option value="In Progress">{t('tasks.statusInProgress', 'In Progress')}</option>
+              <option value="Completed">{t('tasks.statusCompleted', 'Completed')}</option>
+              <option value="Blocked">{t('tasks.statusBlocked', 'Blocked')}</option>
             </select>
             <Filter className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
           </div>
@@ -182,11 +182,11 @@ export const TaskManagementPage: React.FC = () => {
               onChange={(e) => setPriorityFilter(e.target.value as any)}
               className="appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#01472e] shadow-sm"
             >
-              <option value="All">All Priorities</option>
-              <option value="Urgent">Urgent</option>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
+              <option value="All">{t('tasks.priorityAll', 'All Priorities')}</option>
+              <option value="Urgent">{t('tasks.priorityUrgent', 'Urgent')}</option>
+              <option value="High">{t('tasks.priorityHigh', 'High')}</option>
+              <option value="Medium">{t('tasks.priorityMedium', 'Medium')}</option>
+              <option value="Low">{t('tasks.priorityLow', 'Low')}</option>
             </select>
           </div>
           

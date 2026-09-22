@@ -72,7 +72,7 @@ export const Sidebar: React.FC = () => {
           { id: 'my-crops', label: t('nav.myCrops'), icon: Sprout, section: 'MAIN' },
           { id: 'crop-yield-prediction', label: t('nav.cropYieldPrediction', 'Yield Predictor'), icon: Sparkles, section: 'MAIN' },
           { id: 'harvest-forecast', label: t('nav.harvestForecast', 'Harvest Forecast'), icon: CalendarDays, section: 'MAIN' },
-          { id: 'market-price-prediction', label: 'AI Price Predictor', icon: LineChart, section: 'MAIN' },
+          { id: 'market-price-prediction', label: t('nav.aiPricePredictor', 'AI Price Predictor'), icon: LineChart, section: 'MAIN' },
           { id: 'find-buyers', label: t('nav.findBuyers'), icon: Search, section: 'MARKET' },
           { id: 'tasks', label: t('nav.taskManagement', 'Task Management'), icon: CheckCircle2, section: 'OPERATIONS' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
@@ -85,9 +85,9 @@ export const Sidebar: React.FC = () => {
           { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' },
           // Feedback
-          { id: 'farmer-platform-feedback', label: 'Platform Feedback', icon: MessageSquare, section: 'FEEDBACK' },
-          { id: 'my-complaints', label: 'My Complaints', icon: AlertCircle, section: 'FEEDBACK' },
-          { id: 'you-said-we-improved', label: 'You Said, We Improved', icon: Award, section: 'FEEDBACK' },
+          { id: 'farmer-platform-feedback', label: t('nav.platformFeedback', 'Platform Feedback'), icon: MessageSquare, section: 'FEEDBACK' },
+          { id: 'my-complaints', label: t('nav.myComplaints', 'My Complaints'), icon: AlertCircle, section: 'FEEDBACK' },
+          { id: 'you-said-we-improved', label: t('nav.youSaidWeImproved', 'You Said, We Improved'), icon: Award, section: 'FEEDBACK' },
         ];
 
       case 'RETAIL_BUYER':
@@ -96,7 +96,7 @@ export const Sidebar: React.FC = () => {
           { id: 'create-demand', label: t('nav.createDemand'), icon: Sparkles, section: 'MAIN' },
           { id: 'demand-pool', label: t('nav.demandPool'), icon: Layers, section: 'MARKET' },
           { id: 'smart-matching', label: t('nav.smartMatching'), icon: Search, section: 'MARKET' },
-          { id: 'market-price-prediction', label: 'AI Price Predictor', icon: LineChart, section: 'MARKET' },
+          { id: 'market-price-prediction', label: t('nav.aiPricePredictor', 'AI Price Predictor'), icon: LineChart, section: 'MARKET' },
           { id: 'reverse-auction', label: t('nav.reverseAuction'), icon: Gavel, section: 'MARKET' },
           { id: 'tasks', label: t('nav.taskManagement', 'Task Management'), icon: CheckCircle2, section: 'OPERATIONS' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
@@ -108,16 +108,16 @@ export const Sidebar: React.FC = () => {
           { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' },
           // Feedback
-          { id: 'my-complaints', label: 'My Complaints', icon: AlertCircle, section: 'FEEDBACK' },
-          { id: 'report-problem', label: 'Report a Problem', icon: MessageSquare, section: 'FEEDBACK' },
-          { id: 'you-said-we-improved', label: 'You Said, We Improved', icon: Award, section: 'FEEDBACK' },
+          { id: 'my-complaints', label: t('nav.myComplaints', 'My Complaints'), icon: AlertCircle, section: 'FEEDBACK' },
+          { id: 'report-problem', label: t('nav.reportProblem', 'Report a Problem'), icon: MessageSquare, section: 'FEEDBACK' },
+          { id: 'you-said-we-improved', label: t('nav.youSaidWeImproved', 'You Said, We Improved'), icon: Award, section: 'FEEDBACK' },
         ];
 
       case 'BULK_BUYER':
         return [
           { id: 'dashboard', label: t('nav.bulkProcurement', 'Bulk Procurement'), icon: LayoutDashboard, section: 'MAIN' },
           { id: 'bulk-demand', label: t('nav.bulkDemand', 'Bulk Demand'), icon: Users, section: 'MAIN' },
-          { id: 'market-price-prediction', label: 'AI Price Predictor', icon: LineChart, section: 'MAIN' },
+          { id: 'market-price-prediction', label: t('nav.aiPricePredictor', 'AI Price Predictor'), icon: LineChart, section: 'MAIN' },
           { id: 'tasks', label: t('nav.taskManagement', 'Task Management'), icon: CheckCircle2, section: 'OPERATIONS' },
           { id: 'tracking', label: t('nav.fleetTelematics', 'Fleet Telematics'), icon: Truck, section: 'OPERATIONS' },
           { id: 'orders', label: t('nav.orders'), icon: Package, section: 'OPERATIONS' },
@@ -129,9 +129,9 @@ export const Sidebar: React.FC = () => {
           { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
           { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' },
-          { id: 'my-complaints', label: 'My Complaints', icon: AlertCircle, section: 'FEEDBACK' },
-          { id: 'report-problem', label: 'Report a Problem', icon: MessageSquare, section: 'FEEDBACK' },
-          { id: 'you-said-we-improved', label: 'You Said, We Improved', icon: Award, section: 'FEEDBACK' },
+          { id: 'my-complaints', label: t('nav.myComplaints', 'My Complaints'), icon: AlertCircle, section: 'FEEDBACK' },
+          { id: 'report-problem', label: t('nav.reportProblem', 'Report a Problem'), icon: MessageSquare, section: 'FEEDBACK' },
+          { id: 'you-said-we-improved', label: t('nav.youSaidWeImproved', 'You Said, We Improved'), icon: Award, section: 'FEEDBACK' },
         ];
 
       case 'FPO_AGGREGATOR':
@@ -150,9 +150,9 @@ export const Sidebar: React.FC = () => {
           { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
           { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' },
-          { id: 'hub-feedback', label: 'Hub Feedback', icon: MessageSquare, section: 'FEEDBACK' },
-          { id: 'my-complaints', label: 'My Complaints', icon: AlertCircle, section: 'FEEDBACK' },
-          { id: 'you-said-we-improved', label: 'You Said, We Improved', icon: Award, section: 'FEEDBACK' },
+          { id: 'hub-feedback', label: t('nav.hubFeedback', 'Hub Feedback'), icon: MessageSquare, section: 'FEEDBACK' },
+          { id: 'my-complaints', label: t('nav.myComplaints', 'My Complaints'), icon: AlertCircle, section: 'FEEDBACK' },
+          { id: 'you-said-we-improved', label: t('nav.youSaidWeImproved', 'You Said, We Improved'), icon: Award, section: 'FEEDBACK' },
         ];
 
       case 'LOGISTICS':
@@ -169,9 +169,9 @@ export const Sidebar: React.FC = () => {
           { id: 'support', label: t('nav.support', 'Support & Assistance'), icon: Headphones, section: 'SUPPORT' },
           { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' },
-          { id: 'delivery-feedback', label: 'Delivery Feedback', icon: MessageSquare, section: 'FEEDBACK' },
-          { id: 'my-complaints', label: 'My Complaints', icon: AlertCircle, section: 'FEEDBACK' },
-          { id: 'you-said-we-improved', label: 'You Said, We Improved', icon: Award, section: 'FEEDBACK' },
+          { id: 'delivery-feedback', label: t('nav.deliveryFeedback', 'Delivery Feedback'), icon: MessageSquare, section: 'FEEDBACK' },
+          { id: 'my-complaints', label: t('nav.myComplaints', 'My Complaints'), icon: AlertCircle, section: 'FEEDBACK' },
+          { id: 'you-said-we-improved', label: t('nav.youSaidWeImproved', 'You Said, We Improved'), icon: Award, section: 'FEEDBACK' },
         ];
 
       case 'ADMIN':
@@ -192,9 +192,9 @@ export const Sidebar: React.FC = () => {
           { id: 'reports', label: t('nav.reports'), icon: FileText, section: 'OPERATIONS' },
           { id: 'notifications', label: t('nav.notifications'), icon: Bell, section: 'SETTINGS' },
           { id: 'profile', label: t('nav.profile'), icon: User, section: 'SETTINGS' },
-          { id: 'feedback-intelligence', label: 'Feedback Intelligence', icon: MessageSquare, section: 'FEEDBACK' },
-          { id: 'my-complaints', label: 'Complaints Desk', icon: AlertCircle, section: 'FEEDBACK' },
-          { id: 'you-said-we-improved', label: 'You Said, We Improved', icon: Award, section: 'FEEDBACK' },
+          { id: 'feedback-intelligence', label: t('nav.feedbackIntelligence', 'Feedback Intelligence'), icon: MessageSquare, section: 'FEEDBACK' },
+          { id: 'my-complaints', label: t('nav.complaintsDesk', 'Complaints Desk'), icon: AlertCircle, section: 'FEEDBACK' },
+          { id: 'you-said-we-improved', label: t('nav.youSaidWeImproved', 'You Said, We Improved'), icon: Award, section: 'FEEDBACK' },
         ];
 
       default:
@@ -275,7 +275,7 @@ export const Sidebar: React.FC = () => {
                 secName === 'OPERATIONS' ? t('nav.sectionOperations', 'OPERATIONS') :
                 secName === 'LOGISTICS' ? t('nav.sectionLogistics', 'LOGISTICS') :
                 secName === 'SETTINGS' ? t('nav.sectionSettings', 'SETTINGS') :
-                secName === 'FEEDBACK' ? 'FEEDBACK' : secName;
+                secName === 'FEEDBACK' ? t('nav.sectionFeedback', 'FEEDBACK') : secName;
 
               return (
                 <div key={secName} className="space-y-1">
@@ -329,7 +329,7 @@ export const Sidebar: React.FC = () => {
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium text-[#01472e] truncate">{currentUser.name}</p>
               <p className="text-[10px] text-[#5c7065] truncate font-normal">
-                {currentUser.organization || currentUser.email || 'Member'}
+                {currentUser.organization || currentUser.email || t('common.member', 'Member')}
               </p>
             </div>
           </div>

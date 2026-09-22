@@ -716,12 +716,12 @@ export const BuyerDashboard: React.FC = () => {
                     }}
                     className="input-modern"
                   >
-                    <option value="Tomato">Tomato</option>
-                    <option value="Green Chilli">Green Chilli</option>
-                    <option value="Capsicum">Capsicum</option>
-                    <option value="Maize">Maize (Sweet Corn)</option>
-                    <option value="Onion">Onion (Bellary)</option>
-                    <option value="Potato">Potato (Kufri Jyoti)</option>
+                    <option value="Tomato">{t('crops.tomato', 'Tomato')}</option>
+                    <option value="Green Chilli">{t('crops.greenChilli', 'Green Chilli')}</option>
+                    <option value="Capsicum">{t('crops.capsicum', 'Capsicum')}</option>
+                    <option value="Maize">{t('crops.maize', 'Maize (Sweet Corn)')}</option>
+                    <option value="Onion">{t('crops.onion', 'Onion (Bellary)')}</option>
+                    <option value="Potato">{t('crops.potato', 'Potato (Kufri Jyoti)')}</option>
                   </select>
                 </div>
 
@@ -760,10 +760,10 @@ export const BuyerDashboard: React.FC = () => {
                     onChange={(e) => setUnit(e.target.value as any)}
                     className="input-modern"
                   >
-                    <option value="kg">Kilograms (kg)</option>
-                    <option value="Quintal">Quintals (100 kg)</option>
-                    <option value="Crates">Crates (25 kg standard)</option>
-                    <option value="Ton">Metric Tonnes (1,000 kg)</option>
+                    <option value="kg">{t('units.kg', 'Kilograms (kg)')}</option>
+                    <option value="Quintal">{t('units.quintal', 'Quintals (100 kg)')}</option>
+                    <option value="Crates">{t('units.crates', 'Crates (25 kg standard)')}</option>
+                    <option value="Ton">{t('units.ton', 'Metric Tonnes (1,000 kg)')}</option>
                   </select>
                 </div>
               </div>
@@ -785,11 +785,11 @@ export const BuyerDashboard: React.FC = () => {
                     onChange={(e) => setQuality(e.target.value as any)}
                     className="input-modern"
                   >
-                    <option value="Grade A">Grade A (Premium Brix &gt; 4.5, Firm)</option>
-                    <option value="Grade B">Grade B (Standard Commercial)</option>
-                    <option value="Premium">Premium Export Standard</option>
-                    <option value="Standard">Standard Domestic Market</option>
-                    <option value="Any">Any Grade (Accept All)</option>
+                    <option value="Grade A">{t('quality.gradeA', 'Grade A (Premium Brix > 4.5, Firm)')}</option>
+                    <option value="Grade B">{t('quality.gradeB', 'Grade B (Standard Commercial)')}</option>
+                    <option value="Premium">{t('quality.premium', 'Premium Export Standard')}</option>
+                    <option value="Standard">{t('quality.standard', 'Standard Domestic Market')}</option>
+                    <option value="Any">{t('quality.any', 'Any Grade (Accept All)')}</option>
                   </select>
                 </div>
 

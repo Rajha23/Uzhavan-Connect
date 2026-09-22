@@ -136,14 +136,14 @@ export const Header: React.FC = () => {
           <button
             onClick={syncOfflineQueue}
             className="flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 px-3.5 py-1.5 rounded-2xl text-[11px] font-medium shadow-2xs transition cursor-pointer"
-            title="Offline Field Mode: Changes are saved locally on device. Click to retry synchronization."
+            title={t('network.offlineTooltip', 'Offline Field Mode: Changes are saved locally on device. Click to retry synchronization.')}
           >
             <WifiOff className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-            <span className="hidden sm:inline">Offline (Field Mode)</span>
-            <span className="sm:hidden">Offline</span>
+            <span className="hidden sm:inline">{t('network.offlineLong', 'Offline (Field Mode)')}</span>
+            <span className="sm:hidden">{t('network.offlineShort', 'Offline')}</span>
             {pendingSyncCount > 0 && (
               <span className="bg-amber-700 text-white rounded-full text-[9px] px-1.5 py-0.2 font-mono">
-                {pendingSyncCount} saved
+                {pendingSyncCount} {t('common.saved', 'saved')}
               </span>
             )}
           </button>
@@ -151,8 +151,8 @@ export const Header: React.FC = () => {
         {isOnline && syncStatus === 'syncing' && (
           <div className="flex items-center gap-1.5 bg-blue-50 text-blue-900 border border-blue-200 px-3.5 py-1.5 rounded-2xl text-[11px] font-medium animate-pulse">
             <RefreshCw className="w-3.5 h-3.5 text-blue-600 animate-spin shrink-0" />
-            <span className="hidden sm:inline">Syncing changes...</span>
-            <span className="sm:hidden">Syncing</span>
+            <span className="hidden sm:inline">{t('network.syncingLong', 'Syncing changes...')}</span>
+            <span className="sm:hidden">{t('network.syncingShort', 'Syncing')}</span>
           </div>
         )}
 
@@ -161,14 +161,14 @@ export const Header: React.FC = () => {
           type="button"
           onClick={openLanguageSelector}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-semibold bg-white/90 hover:bg-white text-[#01472e] border border-[#ccd5ae]/80 shadow-2xs hover:border-[#01472e]/60 transition hover:scale-[1.02] cursor-pointer"
-          title={isAutoDetect ? "Language Auto-Detected from device (Click to switch or configure)" : "Change platform language (22 Constitutional Languages supported)"}
-          aria-label="Change Language"
+          title={isAutoDetect ? t('nav.languageAutoTooltip', 'Language Auto-Detected from device (Click to switch or configure)') : t('nav.languageChangeTooltip', 'Change platform language (22 Constitutional Languages supported)')}
+          aria-label={t('nav.changeLanguage', 'Change Language')}
         >
           <Globe2 className="w-3.5 h-3.5 text-[#01472e] shrink-0" />
           <span className="font-bold tracking-tight">{currentLanguageDef.nativeName}</span>
           {isAutoDetect ? (
             <span className="hidden md:inline text-[9px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded-full border border-emerald-300">
-              Auto
+              {t('common.auto', 'Auto')}
             </span>
           ) : (
             <span className="hidden xl:inline text-[10px] text-slate-500 font-normal">({currentLanguageDef.name})</span>
@@ -183,10 +183,10 @@ export const Header: React.FC = () => {
           <button
             onClick={promptInstall}
             className="hidden md:flex items-center gap-1.5 bg-[#01472e] hover:bg-[#003b25] text-[#fefae0] px-3.5 py-1.5 rounded-2xl text-xs font-medium transition shadow-soft cursor-pointer"
-            title="Install UZHAVAN Connect to your home screen or desktop for fast offline field access"
+            title={t('nav.installTooltip', 'Install UZHAVAN Connect to your home screen or desktop for fast offline field access')}
           >
             <Download className="w-3.5 h-3.5 text-[#ccd5ae]" />
-            <span>Install App</span>
+            <span>{t('nav.installApp', 'Install App')}</span>
           </button>
         )}
 
@@ -211,7 +211,7 @@ export const Header: React.FC = () => {
             <div className="absolute right-0 top-full mt-2 w-60 bg-white rounded-[24px] shadow-forest-lg border border-[#ccd5ae]/60 z-50 overflow-hidden py-1.5 animate-in fade-in duration-150">
               {/* User info header */}
               <div className="px-4 py-3 border-b border-[#ccd5ae]/30 bg-[#faf9f5]">
-                <p className="text-xs font-medium text-[#01472e]">{currentUser.name || 'User'}</p>
+                <p className="text-xs font-medium text-[#01472e]">{currentUser.name || t('common.user', 'User')}</p>
                 <p className="text-[10px] text-[#5c7065] truncate">{currentUser.email || 'user@uzhavanconnect.gov.in'}</p>
                 {currentUser.organization && (
                   <p className="text-[10px] text-[#01472e]/70 truncate font-medium mt-0.5">{currentUser.organization}</p>

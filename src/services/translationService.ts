@@ -218,49 +218,36 @@ export const translateText = async (
     return memoryCache.get(cacheKey)!;
   }
 
-  // 1. Attempt Google GTX Translation Endpoint
   try {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(
-      trimmed
-    )}`;
-    const res = await fetch(url, { method: 'GET' });
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data) && Array.isArray(data[0])) {
-        const translated = data[0].map((item: any) => item[0]).join('');
-        if (translated && typeof translated === 'string') {
-          memoryCache.set(cacheKey, translated);
-          saveCache();
-          notifyTranslationListeners();
-          return translated;
-        }
-      }
-    }
-  } catch {
-    // Fallback to secondary service
-  }
+    const res = await fetch('/api/translate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        text: trimmed,
+        sourceLanguage: sourceLang,
+        targetLanguage: targetLang
+      })
+    });
 
-  // 2. Attempt MyMemory Translation Fallback API
-  try {
-    const sl = sourceLang === 'auto' ? 'en' : sourceLang;
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-      trimmed
-    )}&langpair=${sl}|${targetLang}`;
-    const res = await fetch(url, { method: 'GET' });
     if (res.ok) {
       const data = await res.json();
-      const translated = data?.responseData?.translatedText;
-      if (translated && typeof translated === 'string' && !translated.startsWith('MYMEMORY WARNING')) {
+      const translated = data?.translatedContent;
+      if (translated && typeof translated === 'string') {
         memoryCache.set(cacheKey, translated);
         saveCache();
         notifyTranslationListeners();
         return translated;
       }
+    } else {
+      console.warn(`[TranslationService] Bhashini proxy failed with status ${res.status}`);
     }
-  } catch {
-    // Ignore and return original
+  } catch (error) {
+    console.warn('[TranslationService] Error calling Bhashini proxy:', error);
   }
 
+  // Fallback to original text if Bhashini is unavailable
   return text;
 };
 

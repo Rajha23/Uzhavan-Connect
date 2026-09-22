@@ -50,14 +50,14 @@ export const Navbar: React.FC = () => {
               type="button"
               onClick={openLanguageSelector}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-semibold bg-white/90 hover:bg-white text-[#01472e] border border-[#ccd5ae]/80 shadow-2xs hover:border-[#01472e]/60 transition hover:scale-[1.02] cursor-pointer"
-              title={isAutoDetect ? "Language Auto-Detected from device (Click to switch)" : "Change Language (Click to switch or auto-detect)"}
-              aria-label="Select Language"
+              title={isAutoDetect ? t('nav.languageAutoTooltip', 'Language Auto-Detected from device (Click to switch)') : t('nav.languageChangeTooltip', 'Change Language (Click to switch or auto-detect)')}
+              aria-label={t('nav.selectLanguage', 'Select Language')}
             >
               <Globe2 className="w-3.5 h-3.5 text-[#01472e] shrink-0" />
               <span className="font-bold tracking-tight">{currentLanguageDef.nativeName}</span>
               {isAutoDetect ? (
                 <span className="hidden md:inline text-[9px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded-full border border-emerald-300">
-                  Auto
+                  {t('common.auto', 'Auto')}
                 </span>
               ) : (
                 <span className="hidden md:inline text-[10px] text-slate-500 font-normal">({currentLanguageDef.name})</span>

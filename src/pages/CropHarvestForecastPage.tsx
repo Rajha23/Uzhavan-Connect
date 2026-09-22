@@ -97,10 +97,10 @@ export const CropHarvestForecastPage: React.FC = () => {
             </div>
             <div>
               <h1 className="text-xl font-semibold text-[#01472e] tracking-tight">
-                Harvest Forecast & Calendar Intelligence
+                {t('harvestForecast.title', 'Harvest Forecast & Calendar Intelligence')}
               </h1>
               <p className="text-xs text-[#5c7065] mt-0.5">
-                Agronomic reference for 59 crops · Tamil Nadu &amp; South India agro-climates
+                {t('harvestForecast.subtitle', 'Agronomic reference for 59 crops · Tamil Nadu & South India agro-climates')}
               </p>
             </div>
           </div>
@@ -116,7 +116,7 @@ export const CropHarvestForecastPage: React.FC = () => {
               }`}
             >
               <CalendarDays className="w-3.5 h-3.5" />
-              Harvest Forecast
+              {t('harvestForecast.forecastTab', 'Harvest Forecast')}
             </button>
             <button
               onClick={() => setViewMode('browser')}
@@ -127,7 +127,7 @@ export const CropHarvestForecastPage: React.FC = () => {
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" />
-              Crop Calendar Browser
+              {t('harvestForecast.browserTab', 'Crop Calendar Browser')}
             </button>
           </div>
         </div>
@@ -157,25 +157,25 @@ export const CropHarvestForecastPage: React.FC = () => {
               <div className="bg-white rounded-[24px] border border-[#ccd5ae]/60 shadow-soft p-5">
                 <h3 className="text-xs font-semibold text-[#01472e] uppercase tracking-wider mb-4 flex items-center gap-2">
                   <BarChart3 className="w-4 h-4" />
-                  Database Summary
+                  {t('harvestForecast.databaseSummary', 'Database Summary')}
                 </h3>
                 <div className="space-y-3">
                   {[
-                    { label: 'Total Crops', value: cropList.length.toString(), icon: Sprout, color: 'text-emerald-700' },
+                    { label: t('harvestForecast.totalCrops', 'Total Crops'), value: cropList.length.toString(), icon: Sprout, color: 'text-emerald-700' },
                     {
-                      label: 'Repeated Harvest',
+                      label: t('harvestForecast.repeatedHarvest', 'Repeated Harvest'),
                       value: cropList.filter((c) => c.harvest_type !== 'One-time').length.toString(),
                       icon: Repeat2,
                       color: 'text-emerald-600',
                     },
                     {
-                      label: 'One-time Harvest',
+                      label: t('harvestForecast.oneTimeHarvest', 'One-time Harvest'),
                       value: cropList.filter((c) => c.harvest_type === 'One-time').length.toString(),
                       icon: Clock,
                       color: 'text-blue-600',
                     },
                     {
-                      label: 'Crop Categories',
+                      label: t('harvestForecast.cropCategories', 'Crop Categories'),
                       value: Array.from(new Set(cropList.map((c) => c.category))).length.toString(),
                       icon: Layers,
                       color: 'text-purple-600',
@@ -198,7 +198,7 @@ export const CropHarvestForecastPage: React.FC = () => {
               <div className="bg-white rounded-[24px] border border-purple-100 shadow-soft p-5">
                 <h3 className="text-xs font-semibold text-purple-800 uppercase tracking-wider mb-3 flex items-center gap-2">
                   <BarChart3 className="w-4 h-4" />
-                  Two-Layer Intelligence
+                  {t('harvestForecast.twoLayerTitle', 'Two-Layer Intelligence')}
                 </h3>
                 <div className="space-y-3">
                   <div className="p-3 bg-[#eaf4ec] rounded-xl border border-[#a3b18a]/30">
@@ -220,7 +220,7 @@ export const CropHarvestForecastPage: React.FC = () => {
               <div className="bg-white rounded-[24px] border border-[#ccd5ae]/60 shadow-soft p-5">
                 <h3 className="text-xs font-semibold text-[#01472e] uppercase tracking-wider mb-3 flex items-center gap-2">
                   <Sprout className="w-4 h-4" />
-                  Quick Crop Browse
+                  {t('harvestForecast.quickBrowse', 'Quick Crop Browse')}
                 </h3>
                 <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
                   {cropList.slice(0, 15).map((c) => (
@@ -243,7 +243,7 @@ export const CropHarvestForecastPage: React.FC = () => {
                       onClick={() => setViewMode('browser')}
                       className="w-full text-center text-xs text-[#01472e] hover:underline py-1 cursor-pointer"
                     >
-                      View all {cropList.length} crops →
+                      {t('harvestForecast.viewAll', 'View all {count} crops →', { count: cropList.length })}
                     </button>
                   )}
                 </div>
