@@ -33,7 +33,6 @@ import {
   Star
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { TransactionFeedbackModal } from '../components/feedback/TransactionFeedbackModal';
 
 export const ShipmentsPage: React.FC = () => {
   const { t, formatNumber } = useLanguage();
@@ -93,8 +92,6 @@ export const ShipmentsPage: React.FC = () => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState<boolean>(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState<boolean>(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState<boolean>(false);
-  const [selectedShipmentForFeedback, setSelectedShipmentForFeedback] = useState<Shipment | null>(null);
-  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState<boolean>(false);
   const [actionSuccessNotice, setActionSuccessNotice] = useState<string | null>(null);
 
   // Assignment Modal Form
@@ -841,19 +838,6 @@ export const ShipmentsPage: React.FC = () => {
                           >
                             <Navigation className="w-4 h-4" />
                           </button>
-
-                          {shipment.status === 'Delivered' && (
-                            <button
-                              onClick={() => {
-                                setSelectedShipmentForFeedback(shipment);
-                                setIsFeedbackModalOpen(true);
-                              }}
-                              className="p-1.5 text-amber-600 hover:text-amber-800 hover:bg-amber-50 rounded-xl transition cursor-pointer"
-                              title="Rate Delivery & Service Feedback"
-                            >
-                              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                            </button>
-                          )}
                         </div>
                       </td>
                     </tr>
@@ -1346,18 +1330,6 @@ export const ShipmentsPage: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Transaction Feedback Modal */}
-      {isFeedbackModalOpen && selectedShipmentForFeedback && (
-        <TransactionFeedbackModal
-          isOpen={isFeedbackModalOpen}
-          onClose={() => {
-            setIsFeedbackModalOpen(false);
-            setSelectedShipmentForFeedback(null);
-          }}
-          shipment={selectedShipmentForFeedback}
-        />
       )}
     </div>
   );
