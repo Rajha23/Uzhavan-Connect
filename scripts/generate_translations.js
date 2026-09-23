@@ -1,11 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-const enTsContent = fs.readFileSync(path.join(process.cwd(), 'src', 'i18n', 'locales', 'en.ts'), 'utf-8');
-
-let objStr = enTsContent.substring(enTsContent.indexOf('{', enTsContent.indexOf('enTranslations')));
-objStr = objStr.replace(/;\s*$/, '');
-const enTranslations = eval('(' + objStr + ')');
+const enTsContent = fs.readFileSync(path.join(process.cwd(), 'src', 'i18n', 'locales', 'en', 'translation.json'), 'utf-8');
+const enTranslations = JSON.parse(enTsContent);
 
 const languages = [
   'en', 'as', 'bn', 'brx', 'doi', 'gu', 'hi', 'kn', 'ks', 'kok', 'mai', 'ml', 
