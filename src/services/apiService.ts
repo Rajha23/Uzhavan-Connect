@@ -369,7 +369,8 @@ export const apiService = {
         .select('*')
         .order('created_at', { ascending: false });
         
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
+        if (data.length === 0) return [];
         let results = data.map(item => ({
           id: item.id,
           farmerId: item.farmer_id,

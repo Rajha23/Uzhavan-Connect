@@ -102,14 +102,17 @@ CREATE TABLE IF NOT EXISTS fpos (
 
 -- 4. PRODUCE LISTINGS
 CREATE TABLE IF NOT EXISTS produce_listings (
-    id VARCHAR(64) PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     farmer_id VARCHAR(64) REFERENCES users(id) ON DELETE SET NULL,
     fpo_id VARCHAR(64) REFERENCES fpos(id) ON DELETE SET NULL,
+    farmer_name VARCHAR(255),
     crop VARCHAR(128) NOT NULL,
-    quantity NUMERIC(12, 2) NOT NULL,
-    quality VARCHAR(64) DEFAULT 'Standard',
-    expected_price NUMERIC(10, 2) NOT NULL,
-    available_date DATE NOT NULL,
+    variety VARCHAR(255),
+    quantity_kg NUMERIC(12, 2) NOT NULL,
+    grade VARCHAR(64) DEFAULT 'Standard',
+    expected_price_per_kg NUMERIC(10, 2) NOT NULL,
+    harvest_date DATE,
+    availability_date DATE,
     location VARCHAR(255) NOT NULL,
     status VARCHAR(32) DEFAULT 'AVAILABLE' CHECK (status IN ('AVAILABLE', 'POOLED', 'MATCHED', 'SOLD', 'CANCELLED')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
