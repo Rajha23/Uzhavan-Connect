@@ -30,7 +30,7 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onTaskClick, onStat
   };
 
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4 h-full min-h-[500px]">
+    <div className="flex gap-4 overflow-x-auto pb-4 h-full">
       {statuses.map((status) => {
         const columnTasks = tasks.filter((task) => task.status === status);
 
