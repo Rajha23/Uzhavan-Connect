@@ -1,5 +1,5 @@
 import { getCropImageUrl } from '../utils/cropImages';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import {
