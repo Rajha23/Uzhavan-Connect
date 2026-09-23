@@ -80,6 +80,7 @@ export const FpoDashboard: React.FC = () => {
     recordBuyerPayment,
     processFpoSettlement,
     openPassportModal,
+    activeTab,
     setActiveTab,
     feedbackItems
   } = useApp();
@@ -101,6 +102,23 @@ export const FpoDashboard: React.FC = () => {
     | 'ALL';
 
   const [activeStage, setActiveStage] = useState<WorkflowStageKey>('STAGE_1_DEMAND');
+
+  useEffect(() => {
+    if (activeTab === 'my-crops' && activeStage !== 'MEMBER_SUPPLY' && activeStage !== 'CONSOLIDATION' && activeStage !== 'ALL') {
+      setActiveStage('MEMBER_SUPPLY');
+    } else if (activeTab === 'dashboard' && !activeStage.startsWith('STAGE_')) {
+      setActiveStage('STAGE_1_DEMAND');
+    }
+  }, [activeTab]);
+
+  const handleSetStage = (stage: WorkflowStageKey) => {
+    setActiveStage(stage);
+    if (stage === 'MEMBER_SUPPLY' || stage === 'CONSOLIDATION' || stage === 'ALL') {
+      setActiveTab('my-crops');
+    } else if (stage.startsWith('STAGE_')) {
+      setActiveTab('dashboard');
+    }
+  };
 
   // Stage 1: Demand Capture Modal & Form State
   const [showCreateDemandModal, setShowCreateDemandModal] = useState(false);
@@ -872,7 +890,7 @@ export const FpoDashboard: React.FC = () => {
             return (
               <button
                 key={step.id}
-                onClick={() => setActiveStage(step.id)}
+                onClick={() => handleSetStage(step.id as WorkflowStageKey)}
                 className={`p-3 rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between cursor-pointer ${
                   isActive
                     ? 'bg-[#01472e] text-white border-[#01472e] shadow-md ring-2 ring-[#01472e]/20'
@@ -911,7 +929,7 @@ export const FpoDashboard: React.FC = () => {
       {/* ── COMPLEMENTARY SUB-VIEWS TAB TOGGLE ────────────────────────────────── */}
       <div className="flex gap-2 border-b border-[#ccd5ae]/30 pb-3 overflow-x-auto text-xs">
         <button
-          onClick={() => setActiveStage('STAGE_1_DEMAND')}
+          onClick={() => handleSetStage('STAGE_1_DEMAND')}
           className={`px-3.5 py-2 rounded-xl font-semibold transition cursor-pointer ${
             activeStage.startsWith('STAGE_')
               ? 'bg-[#01472e] text-white'
@@ -921,7 +939,7 @@ export const FpoDashboard: React.FC = () => {
           {t('fpo.tab.10StepFlow', 'Demand-Driven 10-Step Workflow')}
         </button>
         <button
-          onClick={() => setActiveStage('MEMBER_SUPPLY')}
+          onClick={() => handleSetStage('MEMBER_SUPPLY')}
           className={`px-3.5 py-2 rounded-xl font-semibold transition cursor-pointer ${
             activeStage === 'MEMBER_SUPPLY'
               ? 'bg-[#01472e] text-white'
@@ -931,7 +949,7 @@ export const FpoDashboard: React.FC = () => {
           {t('fpo.tab.memberSupplyPool', 'Member Supply Pool ({{count}})', { count: produceListings.length })}
         </button>
         <button
-          onClick={() => setActiveStage('CONSOLIDATION')}
+          onClick={() => handleSetStage('CONSOLIDATION')}
           className={`px-3.5 py-2 rounded-xl font-semibold transition cursor-pointer ${
             activeStage === 'CONSOLIDATION'
               ? 'bg-[#01472e] text-white'
@@ -941,7 +959,7 @@ export const FpoDashboard: React.FC = () => {
           {t('fpo.tab.bulkConsolidation', 'Bulk Consolidation Hub ({{count}})', { count: bulkConsolidatedOrders.length })}
         </button>
         <button
-          onClick={() => setActiveStage('ALL')}
+          onClick={() => handleSetStage('ALL')}
           className={`px-3.5 py-2 rounded-xl font-semibold transition cursor-pointer ${
             activeStage === 'ALL'
               ? 'bg-[#01472e] text-white'
