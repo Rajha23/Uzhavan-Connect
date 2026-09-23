@@ -70,6 +70,11 @@ export const TaskManagementPage: React.FC = () => {
     { role: 'ADMIN', label: t('roles.admin', undefined, 'Admin Ops'), icon: ShieldCheck }
   ];
 
+  const visibleRoleOptions = useMemo(() => {
+    if (currentRole === 'ADMIN') return ROLE_OPTIONS;
+    return ROLE_OPTIONS.filter(opt => opt.role === currentRole);
+  }, [currentRole, t]);
+
   const filteredTasks = useMemo(() => {
     return tasks.filter(task => {
       const matchesRole = roleFilter === 'ALL' || task.assignedRole === roleFilter;
@@ -111,8 +116,9 @@ export const TaskManagementPage: React.FC = () => {
       </div>
 
       {/* Role Navigation Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
-        {ROLE_OPTIONS.map((opt) => {
+      {visibleRoleOptions.length > 1 && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
+          {visibleRoleOptions.map((opt) => {
           const Icon = opt.icon;
           const isActive = roleFilter === opt.role;
           const count = opt.role === 'ALL' 
@@ -139,7 +145,8 @@ export const TaskManagementPage: React.FC = () => {
             </button>
           );
         })}
-      </div>
+        </div>
+      )}
 
       {/* Summary Cards */}
       <TaskSummaryCards tasks={filteredTasks} />
