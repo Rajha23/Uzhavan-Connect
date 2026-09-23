@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Sprout, Globe2 } from 'lucide-react';
+import { Sprout, Globe2, Lock } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const {
@@ -23,8 +23,8 @@ export const Navbar: React.FC = () => {
               onClick={() => setActiveTab('home')}
               className="flex items-center gap-3 group text-left cursor-pointer"
             >
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#01472e] to-[#025a3b] border border-[#ccd5ae]/60 flex items-center justify-center text-[#fefae0] shadow-sm group-hover:scale-105 transition shrink-0">
-                <Sprout className="w-5 h-5 text-[#fefae0]" />
+              <div className="w-10 h-10 rounded-2xl border border-[#ccd5ae]/60 flex items-center justify-center shadow-sm group-hover:scale-105 transition shrink-0 overflow-hidden bg-white">
+                <img src="/logo.png" alt="Uzhavan Connect Logo" className="w-full h-full object-contain" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -78,9 +78,10 @@ export const Navbar: React.FC = () => {
               <div className="flex items-center gap-2.5">
                 <button
                   onClick={() => setActiveTab('login')}
-                  className="btn-primary text-xs shadow-soft"
+                  className="btn-primary text-xs shadow-soft flex items-center gap-1.5"
                 >
-                  {t('auth.signIn', undefined, 'Sign In')}
+                  <Lock className="w-3.5 h-3.5" />
+                  {t('auth.signIn', undefined, 'Login')}
                 </button>
                 <button
                   onClick={() => setActiveTab('register')}
