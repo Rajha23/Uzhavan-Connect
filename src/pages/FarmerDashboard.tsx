@@ -533,7 +533,7 @@ export const FarmerDashboard: React.FC = () => {
           <div>
             <div className="flex items-center gap-2.5">
               <h3 className="text-xl font-medium tracking-tight text-[#01472e]">
-                {t('farmer.inventoryTitle', 'My Crops & Produce Inventory ({count})', { count: listings.length })}
+                {t('farmer.inventoryTitle', 'My Crops & Produce Inventory ({{count}})', { count: listings.length })}
               </h3>
               <span className="ai-badge">
                 {t('farmer.connectedWorkflow', 'Connected Workflow')}
@@ -680,13 +680,18 @@ export const FarmerDashboard: React.FC = () => {
 
               <div className="lg:col-span-2">
                 <label className="font-medium text-[#01472e] block mb-1 text-xs">{t('farmer.fpoAssociation', 'FPO Association')}</label>
-                <input
-                  type="text"
+                <select
                   value={fpoName}
                   onChange={(e) => setFpoName(e.target.value)}
-                  placeholder="e.g. GreenHarvest FPO / Kaveri Farmers Collective"
                   className="input-modern"
-                />
+                >
+                  <option value="">None (Independent Farmer)</option>
+                  <option value="Kallakurichi Pasumai Farmers Producer Co.">Kallakurichi Pasumai Farmers Producer Co.</option>
+                  <option value="Thanjavur Delta Agri FPO">Thanjavur Delta Agri FPO</option>
+                  <option value="Cauvery Farmer Producer Company">Cauvery Farmer Producer Company</option>
+                  <option value="Nilgiris Organic FPO">Nilgiris Organic FPO</option>
+                  <option value="GreenHarvest FPO Cluster">GreenHarvest FPO Cluster</option>
+                </select>
               </div>
 
               <div className="flex items-end">
