@@ -359,7 +359,7 @@ export const FpoDashboard: React.FC = () => {
           location: 'Chennai',
           fpoId: 'fpo_1',
           fpoName: 'GreenHarvest FPO',
-          status: 'AVAILABLE'
+          status: 'AVAILABLE' as any
         },
         cropMatch: true,
         gradeCompatible: true,
