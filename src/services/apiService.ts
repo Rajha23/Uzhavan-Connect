@@ -377,11 +377,11 @@ export const apiService = {
           farmerName: item.farmer_name,
           crop: item.crop,
           variety: item.variety,
-          quantityKg: Number(item.quantity_kg),
-          grade: item.grade as any,
-          expectedPricePerKg: Number(item.expected_price_per_kg),
+          quantityKg: Number(item.quantity_kg || item.quantity),
+          grade: (item.grade || item.quality) as any,
+          expectedPricePerKg: Number(item.expected_price_per_kg || item.expected_price),
           harvestDate: item.harvest_date,
-          availabilityDate: item.availability_date,
+          availabilityDate: item.availability_date || item.available_date,
           location: item.location,
           status: item.status as any
         }));
@@ -409,18 +409,17 @@ export const apiService = {
       if (existing) return existing;
     }
     try {
+      const generateId = `LST-${Math.floor(1000 + Math.random() * 9000)}`;
       const { data, error } = await supabase
         .from('produce_listings')
         .insert([{
+          id: generateId,
           farmer_id: listing.farmerId,
-          farmer_name: listing.farmerName,
           crop: listing.crop,
-          variety: listing.variety,
-          quantity_kg: listing.quantityKg,
-          grade: listing.grade,
-          expected_price_per_kg: listing.expectedPricePerKg,
-          harvest_date: listing.harvestDate,
-          availability_date: listing.availabilityDate,
+          quantity: listing.quantityKg,
+          quality: listing.grade,
+          expected_price: listing.expectedPricePerKg,
+          available_date: listing.availabilityDate,
           location: listing.location,
           status: 'AVAILABLE'
         }])
