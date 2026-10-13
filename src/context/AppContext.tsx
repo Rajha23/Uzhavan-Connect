@@ -30,8 +30,12 @@ import {
   SettlementStatus,
   BuyerDeliveryConfirmation,
   NewsArticle,
-  HarvestRecord
+  HarvestRecord,
+  AggregatedSupplyLot,
+  DirectProcurementRequest,
+  ProcurementRequestStatus
 } from '../types';
+import { identifyCompatibleSupplyLots } from '../services/supplyAggregationService';
 import {
   DEMO_USERS,
   ROLE_PERMISSIONS,
@@ -128,6 +132,11 @@ interface AppContextType {
   produceListings: ProduceListing[];
   demandRequests: DemandRequest[];
   aggregatedDemandGroups: AggregatedDemandGroup[];
+  aggregatedSupplyLots: AggregatedSupplyLot[];
+  procurementRequests: DirectProcurementRequest[];
+  submitProcurementRequest: (req: Omit<DirectProcurementRequest, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => DirectProcurementRequest;
+  respondToProcurementRequest: (requestId: string, action: 'ACCEPT' | 'REJECT' | 'NEGOTIATE', counterPrice?: number, notes?: string) => Promise<boolean>;
+  buyerAcceptCounterOffer: (requestId: string) => Promise<boolean>;
   addProduceListing: (listing: ProduceListing) => void;
   deleteProduceListing: (id: string) => void;
   addDemandRequest: (demand: DemandRequest) => void;
@@ -286,7 +295,7 @@ const GUEST_USER: UserProfile = {
 };
 
 const UZHAVAN_DATASET_VERSION_KEY = 'uzhavan_dataset_version';
-const CURRENT_DATASET_VERSION = 'sih2026_tn_connected_v5';
+const CURRENT_DATASET_VERSION = 'sih2026_tn_connected_v6';
 
 // Ensure localStorage gets upgraded to the clean connected SIH2026 dataset
 if (typeof window !== 'undefined') {
@@ -299,6 +308,7 @@ if (typeof window !== 'undefined') {
       localStorage.removeItem('uzhavan_agreements');
       localStorage.removeItem('uzhavan_passports');
       localStorage.removeItem('uzhavan_settlements');
+      localStorage.removeItem('uzhavan_procurement_requests');
       localStorage.setItem(UZHAVAN_DATASET_VERSION_KEY, CURRENT_DATASET_VERSION);
     }
   } catch (e) {
@@ -419,6 +429,88 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
     return INITIAL_FARMER_LISTINGS;
   });
+
+  // Automated Farmer Produce Supply Aggregation Engine
+  const aggregatedSupplyLots = useMemo(() => {
+    return identifyCompatibleSupplyLots(produceListings);
+  }, [produceListings]);
+
+  // Persistent Direct Procurement Requests (Marketplace Discovery workflow)
+  const [procurementRequests, setProcurementRequests] = useState<DirectProcurementRequest[]>(() => {
+    try {
+      const saved = localStorage.getItem('uzhavan_procurement_requests');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved procurement requests', e);
+    }
+    return [
+      {
+        id: 'PR-2026-101',
+        buyerId: 'usr-retail-01',
+        buyerName: 'Anita Ramanathan',
+        buyerOrganization: 'FreshBasket Supermarkets Chennai',
+        buyerPhone: '+91 98800 11223',
+        targetType: 'INDIVIDUAL_LISTING',
+        targetId: 'PL-TN-101',
+        listingId: 'PL-TN-101',
+        farmerId: 'usr-farmer-01',
+        farmerName: 'Subramaniam Ramasamy',
+        fpoName: 'Kallakurichi Pasumai Farmers Producer Co.',
+        crop: 'Tomato',
+        variety: 'Sivam Hybrid',
+        grade: 'Grade A',
+        requestedQuantityKg: 150,
+        unit: 'kg',
+        proposedPricePerKg: 28.5,
+        totalProposedValue: 4275,
+        deliveryLocation: 'Koyambedu Wholesale Terminal, Chennai',
+        requestedDeliveryDate: '2026-09-18',
+        deliveryTimeWindow: 'Morning (06:00 AM - 09:00 AM)',
+        notes: 'Cold container requested. Farm-gate collection preferred.',
+        status: 'PENDING',
+        verificationStatus: 'SELF_DECLARED',
+        createdAt: '2026-09-14 09:30',
+        updatedAt: '2026-09-14 09:30'
+      },
+      {
+        id: 'PR-2026-102',
+        buyerId: 'usr-bulkbuyer-01',
+        buyerName: 'Vikramaditya Singhania',
+        buyerOrganization: 'WayCool Agri Processors',
+        buyerPhone: '+91 97700 33445',
+        targetType: 'AGGREGATED_LOT',
+        targetId: 'LOT-TOM-CHI-700',
+        supplyLotId: 'LOT-TOM-CHI-700',
+        fpoName: 'Kallakurichi Pasumai Farmers Producer Co.',
+        crop: 'Tomato',
+        variety: 'Sivam Hybrid',
+        grade: 'Grade A',
+        requestedQuantityKg: 700,
+        unit: 'kg',
+        proposedPricePerKg: 29.0,
+        totalProposedValue: 20300,
+        deliveryLocation: 'Ambattur Processing Terminal, Chennai',
+        requestedDeliveryDate: '2026-09-19',
+        deliveryTimeWindow: '05:00 AM - 08:30 AM',
+        notes: 'Institutional food processing batch. Require consolidated Reefer dispatch from Chinnasalem Hub.',
+        status: 'PENDING',
+        verificationStatus: 'MIXED',
+        createdAt: '2026-09-14 10:15',
+        updatedAt: '2026-09-14 10:15'
+      }
+    ];
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('uzhavan_procurement_requests', JSON.stringify(procurementRequests));
+    } catch (e) {
+      console.warn('Failed to save procurement requests', e);
+    }
+  }, [procurementRequests]);
 
   // Persistent Demand Requests — localStorage with INITIAL_DEMAND_REQUESTS fallback
   const [demandRequests, setDemandRequests] = useState<DemandRequest[]>(() => {
@@ -1283,6 +1375,288 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     return newOrder;
   };
+
+  const addNotificationEvent = useCallback((
+    notif: Omit<AppNotification, 'id' | 'read' | 'timestamp'> & { id?: string }
+  ) => {
+    const eventId = notif.id || `event-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+    const newNotif: AppNotification = {
+      ...notif,
+      id: eventId,
+      read: false,
+      timestamp: 'Just now',
+      createdAt: Date.now()
+    };
+    setEventNotifications((prev) => [newNotif, ...prev]);
+  }, []);
+
+  // Direct Marketplace Procurement Request Mutators
+  const submitProcurementRequest = useCallback(
+    (reqData: Omit<DirectProcurementRequest, 'id' | 'createdAt' | 'updatedAt' | 'status'>): DirectProcurementRequest => {
+      const id = `PR-${Date.now().toString().slice(-4)}`;
+      const now = new Date().toISOString().replace('T', ' ').slice(0, 16);
+      const newReq: DirectProcurementRequest = {
+        ...reqData,
+        id,
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now
+      };
+
+      setProcurementRequests((prev) => [newReq, ...prev]);
+
+      addNotificationEvent({
+        title: 'New Procurement Request Received!',
+        message: `${newReq.buyerName} requested ${newReq.requestedQuantityKg.toLocaleString()} kg of ${newReq.crop} (${newReq.grade}) @ ₹${newReq.proposedPricePerKg}/kg.`,
+        targetRole: newReq.targetType === 'AGGREGATED_LOT' ? 'FPO_AGGREGATOR' : 'FARMER',
+        type: 'ORDERS',
+        priority: 'URGENT',
+        actionTab: newReq.targetType === 'AGGREGATED_LOT' ? 'fpo' : 'farmer',
+        actionLabel: 'Review Request'
+      });
+
+      return newReq;
+    },
+    [addNotificationEvent]
+  );
+
+  const respondToProcurementRequest = useCallback(
+    async (
+      requestId: string,
+      action: 'ACCEPT' | 'REJECT' | 'NEGOTIATE',
+      counterPrice?: number,
+      notes?: string
+    ): Promise<boolean> => {
+      const req = procurementRequests.find((r) => r.id === requestId);
+      if (!req) return false;
+
+      const now = new Date().toISOString().replace('T', ' ').slice(0, 16);
+
+      if (action === 'REJECT') {
+        setProcurementRequests((prev) =>
+          prev.map((r) =>
+            r.id === requestId
+              ? { ...r, status: 'REJECTED', counterOfferNotes: notes, updatedAt: now }
+              : r
+          )
+        );
+        addNotificationEvent({
+          title: 'Procurement Request Declined',
+          message: `Request for ${req.requestedQuantityKg} kg of ${req.crop} was declined. ${notes ? `Reason: ${notes}` : ''}`,
+          targetRole: 'RETAIL_BUYER',
+          type: 'ORDERS',
+          priority: 'INFO',
+          actionTab: 'buyer'
+        });
+        return true;
+      }
+
+      if (action === 'NEGOTIATE') {
+        setProcurementRequests((prev) =>
+          prev.map((r) =>
+            r.id === requestId
+              ? {
+                  ...r,
+                  status: 'NEGOTIATION',
+                  counterOfferPrice: counterPrice || r.proposedPricePerKg,
+                  counterOfferNotes: notes,
+                  updatedAt: now
+                }
+              : r
+          )
+        );
+        addNotificationEvent({
+          title: 'Counter-Offer Received for Procurement',
+          message: `${req.farmerName || 'Supplier'} proposed ₹${counterPrice || req.proposedPricePerKg}/kg for ${req.requestedQuantityKg} kg of ${req.crop}.`,
+          targetRole: 'RETAIL_BUYER',
+          type: 'ORDERS',
+          priority: 'URGENT',
+          actionTab: 'buyer',
+          actionLabel: 'Review Terms'
+        });
+        return true;
+      }
+
+      if (action === 'ACCEPT') {
+        let createdOrder: WorkflowOrder | null = null;
+        if (req.targetType === 'INDIVIDUAL_LISTING' && req.listingId) {
+          const demandId = `DEM-DIR-${Date.now().toString().slice(-4)}`;
+          const syntheticDemand: DemandRequest = {
+            id: demandId,
+            buyerId: req.buyerId,
+            buyerName: req.buyerName,
+            buyerType: req.buyerOrganization?.toLowerCase().includes('bulk') ? 'Bulk Purchaser' : 'Supermarket',
+            crop: req.crop,
+            variety: req.variety,
+            quantityKg: req.requestedQuantityKg,
+            initialQuantityKg: req.requestedQuantityKg,
+            allocatedQuantityKg: 0,
+            unit: req.unit,
+            qualityRequirement: (req.grade as any) || 'Grade A',
+            location: req.deliveryLocation,
+            deliveryDate: req.requestedDeliveryDate,
+            deliveryTimeWindow: req.deliveryTimeWindow || '06:00 AM - 09:00 AM',
+            maxTargetPricePerKg: req.counterOfferPrice || req.proposedPricePerKg,
+            status: 'OPEN',
+            createdAt: now
+          };
+          setDemandRequests((prev) => [syntheticDemand, ...prev]);
+
+          createdOrder = await confirmMatchAndCreateOrder(
+            req.listingId,
+            demandId,
+            req.counterOfferPrice || req.proposedPricePerKg,
+            req.requestedQuantityKg
+          );
+        } else if (req.targetType === 'AGGREGATED_LOT' && req.supplyLotId) {
+          const lot = aggregatedSupplyLots.find((l) => l.id === req.supplyLotId);
+          const finalPrice = req.counterOfferPrice || req.proposedPricePerKg;
+          const finalQty = req.requestedQuantityKg;
+          const totalVal = Math.round(finalPrice * finalQty * 100) / 100;
+          const orderId = `ORD-LOT-${Date.now().toString().slice(-4)}`;
+          const batchId = `AGP-${req.crop.slice(0, 3).toUpperCase()}-LOT-${Date.now().toString().slice(-4)}`;
+
+          const farmerContributions: FarmerContribution[] = (lot?.contributions || []).map((c) => ({
+            farmerId: c.farmerId,
+            farmerName: c.farmerName,
+            farmerLocation: c.location,
+            produceListingId: c.listingId,
+            contributedQuantityKg: c.availableKg,
+            collectedQuantityKg: 0,
+            collectionStatus: 'PENDING',
+            agreedPricePerKg: c.pricePerKg
+          }));
+
+          const multiSupplierAllocations = (lot?.contributions || []).map((c) => ({
+            supplierId: c.farmerId,
+            supplierName: c.farmerName,
+            supplierType: 'FARMER' as const,
+            location: c.location,
+            crop: req.crop,
+            variety: req.variety,
+            availableKg: c.availableKg,
+            allocatedKg: c.availableKg,
+            pricePerKg: c.pricePerKg,
+            qualityGrade: req.grade,
+            distanceKm: 35,
+            confirmed: true
+          }));
+
+          const lotOrder: WorkflowOrder = {
+            id: orderId,
+            batchId,
+            demandRequestId: `DEM-LOT-${Date.now().toString().slice(-4)}`,
+            aggregatedGroupId: req.supplyLotId,
+            buyerId: req.buyerId,
+            buyerName: req.buyerName,
+            farmerId: lot?.contributions[0]?.farmerId || 'multi-farmer',
+            farmerName: `${lot?.farmersCount || 3} Smallholder Farmers (${lot?.fpoHub || 'Pasumai FPO'})`,
+            produceListingId: lot?.constituentListingIds[0] || 'lot-multi',
+            crop: req.crop,
+            variety: req.variety,
+            quantityKg: finalQty,
+            pricePerKg: finalPrice,
+            totalValue: totalVal,
+            status: 'Produce Collection Pending',
+            date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+            deliveryLocation: req.deliveryLocation,
+            farmerLocation: lot?.corridor || 'Regional Corridor',
+            fpoName: lot?.fpoHub || 'Pasumai FPO Hub',
+            qualityGrade: (req.grade as any) || 'Grade A',
+            isBulkOrder: true,
+            farmerContributions,
+            multiSupplierAllocations,
+            collectionStatus: 'Collection Pending',
+            collectedQuantityKg: 0,
+            remainingCollectionKg: finalQty,
+            qualityStatus: 'Pending',
+            acceptedQuantityKg: 0,
+            rejectedQuantityKg: 0,
+            packingStatus: 'Packing Pending',
+            packedQuantityKg: 0,
+            isReadyForTransport: false,
+            transportStatus: 'Transport Pending',
+            timeline: [
+              {
+                step: 'LOT_FORMED',
+                title: 'Aggregated Supply Lot Contracted',
+                location: lot?.corridor || 'Corridor Hub',
+                timestamp: now,
+                operator: 'Uzhavan Direct Procurement',
+                completed: true
+              },
+              {
+                step: 'COLLECTION_QUEUED',
+                title: 'Consolidated Multi-Stop Route Scheduled',
+                location: 'Farm Clusters',
+                timestamp: 'Pending Dispatch',
+                operator: 'FPO Logistics Dispatcher',
+                completed: false
+              }
+            ]
+          };
+
+          setOrders((prev) => [lotOrder, ...prev]);
+          createdOrder = lotOrder;
+
+          if (lot) {
+            setProduceListings((prev) =>
+              prev.map((p) => {
+                const match = lot.contributions.find((c) => c.listingId === p.id);
+                if (!match) return p;
+                const prevAlloc = p.allocatedQuantityKg || 0;
+                const newAlloc = prevAlloc + match.availableKg;
+                const rem = Math.max(0, p.quantityKg - match.availableKg);
+                return {
+                  ...p,
+                  allocatedQuantityKg: newAlloc,
+                  quantityKg: rem,
+                  status: rem <= 0 ? 'Confirmed' : 'Listed'
+                };
+              })
+            );
+          }
+        }
+
+        const confirmedOrderId = createdOrder ? createdOrder.id : `ORD-CONF-${Date.now().toString().slice(-4)}`;
+
+        setProcurementRequests((prev) =>
+          prev.map((r) =>
+            r.id === requestId
+              ? {
+                  ...r,
+                  status: 'ACCEPTED',
+                  confirmedOrderId,
+                  updatedAt: now
+                }
+              : r
+          )
+        );
+
+        addNotificationEvent({
+          title: 'Direct Procurement Request Accepted! 🎉',
+          message: `Order ${confirmedOrderId} has been confirmed for ${req.requestedQuantityKg.toLocaleString()} kg of ${req.crop} @ ₹${req.counterOfferPrice || req.proposedPricePerKg}/kg. Fulfilment has started!`,
+          targetRole: 'ALL',
+          type: 'ORDERS',
+          priority: 'SUCCESS',
+          actionTab: 'orders',
+          actionLabel: 'Track Fulfilment'
+        });
+
+        return true;
+      }
+
+      return false;
+    },
+    [procurementRequests, aggregatedSupplyLots, confirmMatchAndCreateOrder, addNotificationEvent]
+  );
+
+  const buyerAcceptCounterOffer = useCallback(
+    async (requestId: string): Promise<boolean> => {
+      return respondToProcurementRequest(requestId, 'ACCEPT');
+    },
+    [respondToProcurementRequest]
+  );
 
   // Step 6: FPO Collects Produce with Multi-Farmer Traceability & Partial Collection
   const fpoRecordCollection = (orderId: string, farmerId: string, quantityToCollect: number, notes?: string): boolean => {
@@ -2370,20 +2744,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     saveNotificationPreferences(DEFAULT_NOTIFICATION_PREFERENCES);
   };
 
-  const addNotificationEvent = (
-    notif: Omit<AppNotification, 'id' | 'read' | 'timestamp'> & { id?: string }
-  ) => {
-    const eventId = notif.id || `event-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
-    const newNotif: AppNotification = {
-      ...notif,
-      id: eventId,
-      read: false,
-      timestamp: 'Just now',
-      createdAt: Date.now()
-    };
-    setEventNotifications((prev) => [newNotif, ...prev]);
-  };
-
   const notifications = useMemo(() => {
     return generateRealNotifications({
       currentUser,
@@ -2532,6 +2892,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         produceListings,
         demandRequests,
         aggregatedDemandGroups,
+        aggregatedSupplyLots,
+        procurementRequests,
+        submitProcurementRequest,
+        respondToProcurementRequest,
+        buyerAcceptCounterOffer,
         addProduceListing: (listing) => { addProduceListing(listing); },
         deleteProduceListing,
         addDemandRequest: (demand) => { addDemandRequest(demand); },

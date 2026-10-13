@@ -40,7 +40,7 @@ export const SUPPORTED_LANGUAGES: LanguageDefinition[] = [
     regions: ['West Bengal', 'Tripura', 'Assam']
   },
   {
-    code: 'br',
+    code: 'brx',
     nameEnglish: 'Bodo',
     nativeName: 'बड़ो',
     iso6391: 'br',

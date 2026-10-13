@@ -55,7 +55,8 @@
     "kg": "kg",
     "perKg": "₹/kg",
     "entity": "Entity",
-    "entities": "Entities"
+    "entities": "Entities",
+    "decline": "अस्वीकार करें"
   },
   "network": {
     "offline": "You're offline. Changes will be saved and synced automatically.",
@@ -96,7 +97,17 @@
     "receivedQuantity": "Received Quantity (kg)",
     "reason": "Reason / Description",
     "reasonPlaceholder": "Please describe the issue...",
-    "reasonRequired": "A reason is required for mismatches."
+    "reasonRequired": "A reason is required for mismatches.",
+    "collectionVerified": "संग्रह में सत्यापित",
+    "collectionVerifiedDesc": "संग्रह प्रक्रिया के दौरान जांची गई जानकारी, जिसका दायरा प्रलेखित है।",
+    "farmerDeclared": "किसान द्वारा घोषित",
+    "farmerDeclaredDesc": "किसान द्वारा प्रदान की गई जानकारी, लेकिन स्वतंत्र रूप से सत्यापित नहीं है।",
+    "buyerConfirmed": "खरीदार द्वारा पुष्ट",
+    "buyerConfirmedDesc": "खरीदार ने डिलीवरी के समय विवरण की पुष्टि की है।",
+    "mixedStatus": "मिश्रित सत्यापन स्थिति",
+    "mixedStatusDesc": "विभिन्न सत्यापन स्तरों वाले कई किसानों का समूहित लॉट।",
+    "underReview": "समीक्षाधीन",
+    "underReviewDesc": "फील्ड एजेंट या हब निरीक्षक द्वारा सत्यापन प्रगति पर है।"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -135,7 +146,8 @@
     "register": "Register",
     "home": "Home",
     "support": "Support & Assistance",
-    "schemes": "Govt Schemes"
+    "schemes": "Govt Schemes",
+    "produceDiscovery": "उपज खोज और लॉट"
   },
   "stages": {
     "listed": "Listed",
@@ -275,7 +287,15 @@
     "addHarvestDesc": "Enter your verified harvest details to participate in immediate algorithmic buyer matching.",
     "editHarvest": "Edit Harvest Listing",
     "deleteConfirm": "Are you sure you want to remove this harvest listing from the national marketplace?",
-    "cropStageTracker": "Produce Lifecycle Journey"
+    "cropStageTracker": "Produce Lifecycle Journey",
+    "incomingRequests": "आवक खरीद अनुरोध",
+    "bilateralGate": "द्विपक्षीय बातचीत गेट",
+    "incomingRequestsDesc": "सत्यापित सुपरमार्केट और थोक खरीदारों द्वारा प्रस्तुत प्रत्यक्ष खरीद पूछताछ। शर्तों की समीक्षा करें, काउंटर-ऑफ़र भेजें, या ऑर्डर लॉक करने के लिए स्वीकार करें।",
+    "browseDiscoveryCatalog": "डिस्कवरी कैटलॉग देखें",
+    "noIncomingRequests": "कोई लंबित खरीद अनुरोध नहीं है",
+    "noIncomingRequestsDesc": "जब खरीदार आपकी उपज लिस्टिंग खोजकर अनुरोध भेजेंगे, तो वे समीक्षा के लिए यहां दिखाई देंगे।",
+    "negotiateCounter": "बातचीत / काउंटर-ऑफ़र",
+    "acceptAndLock": "स्वीकार करें और ऑर्डर लॉक करें"
   },
   "buyer": {
     "createDemand": "Post Forward Demand",
@@ -297,7 +317,21 @@
     "qualityRequirement": "Required Quality Grade",
     "deliveryLocation": "Warehouse / Store Location",
     "postDemandBtn": "Publish Demand to Aggregation Pool",
-    "demandStatus": "Procurement Status"
+    "demandStatus": "Procurement Status",
+    "feedbackCount": "आपके पास {{count}} ऑर्डर समीक्षा के लिए लंबित हैं",
+    "feedbackShareTip": "प्लेटफ़ॉर्म को बेहतर बनाने और रिवॉर्ड पॉइंट अर्जित करने के लिए अपना अनुभव साझा करें।",
+    "rateNow": "रेट करें",
+    "directProcurementRequests": "प्रत्यक्ष खरीद अनुरोध",
+    "directProcurementDesc": "किसानों और समूहित आपूर्ति लॉट के साथ सीधे मार्केटप्लेस ऑर्डर और द्विपक्षीय बातचीत।",
+    "browseProduceCatalog": "उपज कैटलॉग ब्राउज़ करें",
+    "noDirectRequests": "अभी तक कोई प्रत्यक्ष खरीद अनुरोध नहीं है",
+    "noDirectRequestsDesc": "प्रत्यक्ष खरीद अनुरोध सबमिट करने के लिए मार्केटप्लेस में उपलब्ध उपज लॉट देखें।",
+    "counterOfferReceived": "काउंटर-ऑफ़र प्राप्त हुआ",
+    "commodity": "कमोडिटी",
+    "unitPrice": "इकाई मूल्य",
+    "totalAgreedValue": "कुल सहमत मूल्य",
+    "farmerCounterOffer": "किसान द्वारा प्रस्तावित काउंटर-ऑफ़र",
+    "acceptCounterOffer": "काउंटर-ऑफ़र स्वीकार करें और ऑर्डर लॉक करें"
   },
   "bulkBuyer": {
     "institutionalProcurement": "Institutional Procurement Console",
@@ -1060,5 +1094,26 @@
       "cancel": "Cancel"
     },
     "emptyState": "No tasks found matching your criteria."
+  },
+  "discovery": {
+    "title": "खरीदार उपज खोज बाज़ार",
+    "subtitle": "उपलब्ध किसान उपज लिस्टिंग और बहु-किसान समूहित आपूर्ति पूलों का सीधे अन्वेषण करें। सत्यापित गुणवत्ता ग्रेड, पारदर्शी कीमतों की समीक्षा करें और प्रत्यक्ष खरीद अनुरोध भेजें।",
+    "availableSupply": "सक्रिय आपूर्ति",
+    "farmerListings": "किसान लॉट",
+    "aggregatedLots": "समूहित लॉट",
+    "viewPipeline": "ऑर्डर पाइपलाइन देखें",
+    "searchPlaceholder": "फसल, किस्म, किसान का नाम या हब स्थान से खोजें...",
+    "allSupplies": "सभी उपज",
+    "individualFarmers": "व्यक्तिगत लिस्टिंग",
+    "aggregatedLotsPill": "समूहित लॉट",
+    "filterCrop": "कमोडिटी",
+    "filterGrade": "गुणवत्ता ग्रेड",
+    "filterVerification": "सत्यापन स्तर",
+    "filterCorridor": "ट्रांजिट कॉरिडोर",
+    "filterMaxPrice": "अधिकतम मूल्य (₹/किलो)",
+    "viewLotBreakdown": "सदस्य किसानों को देखें",
+    "submitRequest": "अनुरोध भेजें",
+    "requestLot": "लॉट खरीदें",
+    "procurementModalTitle": "प्रत्यक्ष खरीद अनुरोध सबमिट करें"
   }
 }

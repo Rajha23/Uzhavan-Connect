@@ -715,10 +715,18 @@ export const FpoDashboard: React.FC = () => {
 
         <div className="relative z-10 flex flex-wrap items-center gap-3">
           <button
+            onClick={() => setActiveTab('produce-discovery')}
+            className="flex items-center gap-2 bg-[#fefae0] hover:bg-white text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-sm transition tracking-wide cursor-pointer"
+          >
+            <Layers className="w-4 h-4 text-[#01472e]" />
+            <span>{t('nav.produceDiscovery', 'Produce Discovery & Lots')}</span>
+          </button>
+
+          <button
             onClick={() => setShowCreateDemandModal(true)}
             className="flex items-center gap-2 bg-[#e9edc9] hover:bg-[#fefae0] text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-sm transition tracking-wide cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 text-[#01472e]" />
             <span>{t('fpo.captureNewDemand', 'Capture Buyer Demand')}</span>
           </button>
 

@@ -96,3 +96,87 @@ export interface QualityDispute {
   timestamp: string;
   status: 'OPEN' | 'UNDER_REVIEW' | 'RESOLVED';
 }
+
+export type VerificationDisplayLabel =
+  | 'Farmer-declared'
+  | 'Collection-verified'
+  | 'Buyer-confirmed'
+  | 'Mixed verification status'
+  | 'Under Review';
+
+export interface VerificationDisplayInfo {
+  status: QualityVerificationStatus | 'MIXED';
+  label: VerificationDisplayLabel;
+  shortLabel: string;
+  meaning: string;
+  badgeBg: string;
+  badgeBorder: string;
+  badgeText: string;
+  iconType: 'self' | 'verified' | 'buyer' | 'mixed' | 'pending';
+}
+
+export const getVerificationDisplayInfo = (
+  status?: QualityVerificationStatus | 'MIXED' | string
+): VerificationDisplayInfo => {
+  switch (status) {
+    case 'COLLECTION_VERIFIED':
+    case 'QR_GENERATED':
+    case 'DISPATCHED':
+      return {
+        status: 'COLLECTION_VERIFIED',
+        label: 'Collection-verified',
+        shortLabel: 'Verified',
+        meaning: 'Information checked during the collection process, with the verification scope documented.',
+        badgeBg: 'bg-emerald-50',
+        badgeBorder: 'border-emerald-300',
+        badgeText: 'text-emerald-800',
+        iconType: 'verified'
+      };
+    case 'BUYER_CONFIRMED':
+      return {
+        status: 'BUYER_CONFIRMED',
+        label: 'Buyer-confirmed',
+        shortLabel: 'Confirmed',
+        meaning: 'The buyer has confirmed the specified details or receipt upon physical handover.',
+        badgeBg: 'bg-blue-50',
+        badgeBorder: 'border-blue-300',
+        badgeText: 'text-blue-800',
+        iconType: 'buyer'
+      };
+    case 'MIXED':
+      return {
+        status: 'MIXED',
+        label: 'Mixed verification status',
+        shortLabel: 'Mixed Status',
+        meaning: 'Aggregated supply lot composed of multiple farmer contributions with varying verification levels.',
+        badgeBg: 'bg-amber-50',
+        badgeBorder: 'border-amber-300',
+        badgeText: 'text-amber-800',
+        iconType: 'mixed'
+      };
+    case 'COLLECTION_PENDING':
+    case 'REVIEW_REQUIRED':
+      return {
+        status: 'REVIEW_REQUIRED',
+        label: 'Under Review',
+        shortLabel: 'Review',
+        meaning: 'Verification in progress by field agent or aggregation hub inspector.',
+        badgeBg: 'bg-purple-50',
+        badgeBorder: 'border-purple-300',
+        badgeText: 'text-purple-800',
+        iconType: 'pending'
+      };
+    case 'SELF_DECLARED':
+    default:
+      return {
+        status: 'SELF_DECLARED',
+        label: 'Farmer-declared',
+        shortLabel: 'Self-declared',
+        meaning: 'Information provided by the farmer but not independently verified.',
+        badgeBg: 'bg-amber-50/80',
+        badgeBorder: 'border-amber-300/80',
+        badgeText: 'text-amber-900',
+        iconType: 'self'
+      };
+  }
+};

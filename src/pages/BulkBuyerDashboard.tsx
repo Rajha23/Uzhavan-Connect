@@ -274,6 +274,13 @@ export const BulkBuyerDashboard: React.FC = () => {
 
           <div className="flex items-center gap-3 shrink-0 flex-wrap">
             <button
+              onClick={() => setActiveTab('produce-discovery')}
+              className="px-5 py-3 bg-[#fefae0] hover:bg-white text-[#01472e] font-semibold rounded-2xl shadow-sm transition flex items-center gap-2 text-xs tracking-wide cursor-pointer"
+            >
+              <ShoppingBag className="w-4 h-4 text-[#01472e]" />
+              <span>{t('nav.produceDiscovery', 'Produce Discovery & Lots')}</span>
+            </button>
+            <button
               onClick={() => setIsCreateModalOpen(true)}
               className="px-5 py-3 bg-[#e9edc9] hover:bg-[#fefae0] text-[#01472e] font-semibold rounded-2xl shadow-sm transition flex items-center gap-2 text-xs tracking-wide cursor-pointer"
             >

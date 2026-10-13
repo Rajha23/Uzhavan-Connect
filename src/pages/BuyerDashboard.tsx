@@ -34,6 +34,7 @@ import { AiInsightCard } from '../components/AiInsightCard';
 import { UpcomingTasksWidget } from '../components/task';
 import confetti from 'canvas-confetti';
 import { BuyerConfirmationModal } from '../components/quality/BuyerConfirmationModal';
+import { VerificationBadge } from '../components/VerificationBadge';
 
 export const BuyerDashboard: React.FC = () => {
   const { t } = useLanguage();
@@ -46,7 +47,9 @@ export const BuyerDashboard: React.FC = () => {
     deleteDemandRequest,
     orders,
     buyerConfirmDelivery,
-    openPassportModal
+    openPassportModal,
+    procurementRequests,
+    buyerAcceptCounterOffer
   } = useApp();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -144,8 +147,16 @@ export const BuyerDashboard: React.FC = () => {
 
         <div className="relative z-10 flex flex-wrap items-center gap-3">
           <button
+            onClick={() => setActiveTab('discovery')}
+            className="flex items-center gap-2 bg-emerald-400 hover:bg-emerald-300 text-slate-950 text-xs font-bold px-5 py-3 rounded-2xl shadow-sm transition tracking-wide cursor-pointer"
+          >
+            <Sparkles className="w-4 h-4 text-slate-950" />
+            <span>{t('buyer.discoverProduceButton', 'Discover Produce & Lots')}</span>
+          </button>
+
+          <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 bg-[#e9edc9] hover:bg-[#fefae0] text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-sm transition tracking-wide"
+            className="flex items-center gap-2 bg-[#e9edc9] hover:bg-[#fefae0] text-[#01472e] text-xs font-semibold px-5 py-3 rounded-2xl shadow-sm transition tracking-wide cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>{t('buyer.createDemand', 'Create Demand')}</span>
@@ -153,7 +164,7 @@ export const BuyerDashboard: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('demand-pool')}
-            className="flex items-center gap-2 bg-white/10 hover:bg-white/15 text-white text-xs font-medium px-5 py-3 rounded-2xl border border-white/20 transition tracking-wide backdrop-blur-sm"
+            className="flex items-center gap-2 bg-white/10 hover:bg-white/15 text-white text-xs font-medium px-5 py-3 rounded-2xl border border-white/20 transition tracking-wide backdrop-blur-sm cursor-pointer"
           >
             <Layers className="w-4 h-4 text-[#ccd5ae]" />
             <span>{t('buyer.demandPool', 'Demand Pool')}</span>
@@ -218,9 +229,11 @@ export const BuyerDashboard: React.FC = () => {
             <span className="text-2xl">⭐</span>
             <div>
               <p className="text-sm font-semibold text-amber-800">
-                You have {orders.filter((o) => ['DELIVERED', 'RECEIPT_CONFIRMED'].includes(o.status) && !o.feedbackSubmitted).length} order(s) awaiting feedback
+                {t('buyer.feedbackCount', 'You have {{count}} order(s) awaiting feedback', {
+                  count: orders.filter((o) => ['DELIVERED', 'RECEIPT_CONFIRMED'].includes(o.status) && !o.feedbackSubmitted).length
+                })}
               </p>
-              <p className="text-xs text-amber-700">Share your experience to help improve the platform and earn loyalty points.</p>
+              <p className="text-xs text-amber-700">{t('buyer.feedbackShareTip', 'Share your experience to help improve the platform and earn loyalty points.')}</p>
             </div>
           </div>
           <button
@@ -230,7 +243,7 @@ export const BuyerDashboard: React.FC = () => {
             }}
             className="shrink-0 px-4 py-2 bg-amber-500 text-white text-xs font-semibold rounded-xl hover:bg-amber-600 transition cursor-pointer"
           >
-            Rate Now
+            {t('buyer.rateNow', 'Rate Now')}
           </button>
         </div>
       )}
@@ -247,6 +260,148 @@ export const BuyerDashboard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Direct Procurement Requests & Bilateral Negotiation Status */}
+      <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft overflow-hidden">
+        <div className="p-6 sm:p-8 border-b border-[#ccd5ae]/30 bg-gradient-to-r from-emerald-50/40 via-white to-amber-50/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="p-1.5 bg-emerald-100 text-emerald-800 rounded-xl">
+                <ShoppingBag className="w-4 h-4 text-emerald-700" />
+              </span>
+              <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#01472e]">
+                {t('buyer.directProcurementRequests', 'Direct Procurement Requests')} ({procurementRequests.length})
+              </h3>
+            </div>
+            <p className="text-xs text-[#01472e]/70 mt-1 font-normal">
+              {t('buyer.directProcurementDesc', 'Direct marketplace orders and bilateral negotiation threads with farmers & aggregated supply lots.')}
+            </p>
+          </div>
+
+          <button
+            onClick={() => setActiveTab('discovery')}
+            className="btn-primary text-xs py-2.5 px-5 rounded-2xl flex items-center gap-2 shadow-sm self-start sm:self-auto cursor-pointer"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>{t('buyer.browseProduceCatalog', 'Browse Produce Catalog')}</span>
+          </button>
+        </div>
+
+        <div className="p-6 sm:p-8 space-y-4">
+          {procurementRequests.length === 0 ? (
+            <div className="p-8 text-center text-slate-500 bg-[#faf9f5] rounded-2xl border border-slate-200/60">
+              <ShoppingBag className="w-8 h-8 mx-auto mb-2 text-slate-400" />
+              <p className="font-semibold text-slate-800 text-xs">{t('buyer.noDirectRequests', 'No direct procurement requests yet')}</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">{t('buyer.noDirectRequestsDesc', 'Explore available produce lots in the marketplace to submit direct procurement requests.')}</p>
+            </div>
+          ) : (
+            procurementRequests.map((req) => (
+              <div
+                key={req.id}
+                className="p-5 rounded-2xl border border-[#ccd5ae]/60 bg-[#faf9f5] hover:border-emerald-600/40 transition space-y-3"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#ccd5ae]/30 pb-3">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-[#01472e]">{req.id}</span>
+                      <span className="text-xs font-bold text-slate-900">• {req.targetType === 'AGGREGATED_LOT' ? `${t('discovery.aggregatedLotsPill', 'Aggregated Lot')} (${req.crop})` : `${req.farmerName || 'Farmer'}`}</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      {t('buyer.deliveryLocation', 'Destination')}: {req.deliveryLocation} • {t('buyer.targetDate', 'Target Date')}: {req.requestedDeliveryDate} ({req.deliveryTimeWindow || 'Morning'})
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <VerificationBadge status={req.verificationStatus} size="xs" />
+                    <span
+                      className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider ${
+                        req.status === 'PENDING'
+                          ? 'bg-amber-50 text-amber-900 border-amber-300'
+                          : req.status === 'NEGOTIATION'
+                          ? 'bg-purple-100 text-purple-950 border-purple-300'
+                          : req.status === 'ACCEPTED'
+                          ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
+                          : 'bg-rose-50 text-rose-900 border-rose-300'
+                      }`}
+                    >
+                      {req.status === 'NEGOTIATION' ? t('buyer.counterOfferReceived', 'Counter-Offer Received') : req.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div className="p-2.5 bg-white rounded-xl border border-slate-200/60">
+                    <span className="text-[10px] text-slate-500 block uppercase font-medium">{t('buyer.commodity', 'Commodity')}</span>
+                    <span className="font-semibold text-slate-900">{req.crop} ({req.grade})</span>
+                  </div>
+                  <div className="p-2.5 bg-white rounded-xl border border-slate-200/60">
+                    <span className="text-[10px] text-slate-500 block uppercase font-medium">{t('common.quantity', 'Quantity')}</span>
+                    <span className="font-bold font-mono text-slate-900">{req.requestedQuantityKg.toLocaleString()} {req.unit}</span>
+                  </div>
+                  <div className="p-2.5 bg-white rounded-xl border border-slate-200/60">
+                    <span className="text-[10px] text-slate-500 block uppercase font-medium">{t('buyer.unitPrice', 'Unit Price')}</span>
+                    <span className="font-bold font-mono text-emerald-800">
+                      ₹{req.counterOfferPrice || req.proposedPricePerKg} / kg
+                    </span>
+                  </div>
+                  <div className="p-2.5 bg-white rounded-xl border border-slate-200/60">
+                    <span className="text-[10px] text-slate-500 block uppercase font-medium">{t('buyer.totalAgreedValue', 'Total Agreed Value')}</span>
+                    <span className="font-bold font-mono text-slate-900">
+                      ₹{((req.counterOfferPrice || req.proposedPricePerKg) * req.requestedQuantityKg).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Counter-Offer Negotiation Banner */}
+                {req.status === 'NEGOTIATION' && (
+                  <div className="p-3 bg-purple-50 border border-purple-300 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                    <div>
+                      <p className="font-bold text-purple-950 flex items-center gap-1.5">
+                        <span>{t('buyer.farmerCounterOffer', 'Farmer Proposed Counter-Offer')}: ₹{req.counterOfferPrice}/kg</span>
+                      </p>
+                      {req.counterOfferNotes && (
+                        <p className="text-[11px] text-purple-800 mt-0.5">{req.counterOfferNotes}</p>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={async () => {
+                        await buyerAcceptCounterOffer(req.id);
+                        confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+                      }}
+                      className="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-xl font-bold shadow-2xs transition cursor-pointer shrink-0"
+                    >
+                      {t('buyer.acceptCounterOffer', 'Accept Counter-Offer & Lock Order')}
+                    </button>
+                  </div>
+                )}
+
+                {/* Accepted Order Confirmation link */}
+                {req.status === 'ACCEPTED' && (
+                  <div className="flex items-center justify-between pt-1 text-xs">
+                    <span className="text-emerald-800 font-semibold flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>Order Confirmed ({req.confirmedOrderId || 'ORD-TN'}). Fulfilment active.</span>
+                    </span>
+                    <button
+                      onClick={() => setActiveTab('orders')}
+                      className="px-3.5 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-950 rounded-xl font-semibold transition cursor-pointer"
+                    >
+                      Track in Orders Pipeline →
+                    </button>
+                  </div>
+                )}
+
+                {req.status === 'PENDING' && (
+                  <p className="text-[11px] text-amber-800 italic pt-1">
+                    Transmitted to supplier • Awaiting seller confirmation or counter-offer...
+                  </p>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
 
       {/* Active Demands Table */}
       <div className="agri-card rounded-[32px] border border-[#ccd5ae]/40 shadow-soft overflow-hidden">

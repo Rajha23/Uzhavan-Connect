@@ -77,15 +77,19 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     }
   }, []);
 
+  const [version, setVersion] = useState<number>(0);
+
   const setLanguage = useCallback(async (code: string) => {
     const lang = getLanguageByCode(code);
-    setCurrentLanguageState(lang);
-    setDirection(lang.direction);
     setIsAutoDetect(false);
     
     await loadLanguageResources(lang.code);
     await i18n.changeLanguage(lang.code);
+
+    setCurrentLanguageState(lang);
+    setDirection(lang.direction);
     applyDocumentLocale(lang);
+    setVersion((v) => v + 1);
 
     try {
       if (typeof window !== 'undefined') {
@@ -107,21 +111,38 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
     if (enable) {
       const detected = detectBrowserLanguage(SUPPORTED_LANGUAGES);
-      setCurrentLanguageState(detected);
-      setDirection(detected.direction);
       await loadLanguageResources(detected.code);
       await i18n.changeLanguage(detected.code);
+      setCurrentLanguageState(detected);
+      setDirection(detected.direction);
       applyDocumentLocale(detected);
+      setVersion((v) => v + 1);
     }
   }, [applyDocumentLocale, i18n]);
 
   useEffect(() => {
+    let active = true;
     // Initial sync
     loadLanguageResources(currentLanguage.code).then(() => {
-      i18n.changeLanguage(currentLanguage.code);
+      if (active) {
+        i18n.changeLanguage(currentLanguage.code);
+        setVersion((v) => v + 1);
+      }
     });
     applyDocumentLocale(currentLanguage);
-  }, []);
+
+    const handleLangChange = () => {
+      if (active) setVersion((v) => v + 1);
+    };
+    i18n.on('languageChanged', handleLangChange);
+    i18n.on('loaded', handleLangChange);
+
+    return () => {
+      active = false;
+      i18n.off('languageChanged', handleLangChange);
+      i18n.off('loaded', handleLangChange);
+    };
+  }, [currentLanguage.code, applyDocumentLocale, i18n]);
 
   const t = useCallback((
     key: string,
@@ -148,7 +169,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     // i18next interpolates {param} tags by default just like the old custom system
     const options = { ...params, defaultValue: defaultText || key };
     return i18nT(key, options);
-  }, [i18nT]);
+  }, [i18nT, currentLanguage.code, version]);
 
   const handleTranslateText = useCallback(
     async (text: string, targetLang?: string, sourceLang?: string): Promise<string> => {

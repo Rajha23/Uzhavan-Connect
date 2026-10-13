@@ -25,6 +25,7 @@ import { FindBuyersPage } from './pages/FindBuyersPage';
 
 import { BuyerDashboard } from './pages/BuyerDashboard';
 import { BulkBuyerDashboard } from './pages/BulkBuyerDashboard';
+import { ProduceDiscoveryPage } from './pages/ProduceDiscoveryPage';
 import { DemandPoolPage } from './pages/DemandPoolPage';
 import { ReverseAuctionPage } from './pages/ReverseAuctionPage';
 import { DemandIntelligencePage } from './pages/DemandIntelligencePage';
@@ -204,7 +205,13 @@ const PageContent: React.FC = () => {
       }
       return <MarketPricePredictionPage />;
 
-    // ── Buyer Operations (RBAC: RETAIL_BUYER, ADMIN) ─
+    // ── Buyer Operations (RBAC: RETAIL_BUYER, BULK_BUYER, FARMER, FPO, ADMIN) ─
+    case 'discovery':
+    case 'produce-discovery':
+    case 'marketplace':
+    case 'browse-produce':
+      return <ProduceDiscoveryPage />;
+
     case 'create-demand':
       if (!BUYER_ALLOWED_ROLES.includes(currentRole)) {
         return <AccessDenied attemptedFeature="Institutional Buyer Demand Portal" />;

@@ -25,6 +25,7 @@ import {
   Sprout,
   Scale
 } from 'lucide-react';
+import { VerificationBadge } from './VerificationBadge';
 
 export const ProducePassportModal: React.FC = () => {
   const { t } = useLanguage();
@@ -218,9 +219,25 @@ export const ProducePassportModal: React.FC = () => {
                   <p className="text-xs text-slate-500 font-medium">{variety}</p>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-emerald-100 text-emerald-900 px-3.5 py-1.5 rounded-full border border-emerald-300 text-xs font-medium">
-                  <Award className="w-4 h-4 text-emerald-700" />
-                  <span>{qualityGrade} {t('passport.certified', 'CERTIFIED')}</span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex items-center gap-1.5 bg-emerald-100 text-emerald-900 px-3.5 py-1.5 rounded-full border border-emerald-300 text-xs font-medium">
+                    <Award className="w-4 h-4 text-emerald-700" />
+                    <span>{qualityGrade} {t('passport.certified', 'CERTIFIED')}</span>
+                  </div>
+                  <VerificationBadge
+                    status={
+                      matchedOrder?.buyerConfirmation
+                        ? 'BUYER_CONFIRMED'
+                        : matchedOrder?.qualityRecord?.status
+                        ? matchedOrder.qualityRecord.status
+                        : farmerContributions && farmerContributions.length > 1
+                        ? 'MIXED'
+                        : matchedPassport?.inspectionMetrics
+                        ? 'COLLECTION_VERIFIED'
+                        : 'SELF_DECLARED'
+                    }
+                    size="sm"
+                  />
                 </div>
               </div>
 
@@ -278,9 +295,15 @@ export const ProducePassportModal: React.FC = () => {
                           <strong className="text-slate-800 block font-medium">{fc.farmerName}</strong>
                           <span className="text-[10px] text-slate-400">{fc.farmerLocation}</span>
                         </div>
-                        <span className="font-mono font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                          {fc.collectedQuantityKg || fc.contributedQuantityKg} {t('common.kg', 'kg')}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <VerificationBadge
+                            status={fc.collectionStatus === 'FULLY_COLLECTED' ? 'COLLECTION_VERIFIED' : 'SELF_DECLARED'}
+                            size="xs"
+                          />
+                          <span className="font-mono font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                            {fc.collectedQuantityKg || fc.contributedQuantityKg} {t('common.kg', 'kg')}
+                          </span>
+                        </div>
                       </div>
                     ))}
                   </div>

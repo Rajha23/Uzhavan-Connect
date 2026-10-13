@@ -27,6 +27,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { KPIGrid, KPIStatCard } from '../components/KPIGrid';
 import { feedbackService } from '../services/feedbackService';
 import { TransactionFeedbackModal } from '../components/feedback/TransactionFeedbackModal';
+import { VerificationBadge } from '../components/VerificationBadge';
 
 const STATUS_STYLES: Record<string, string> = {
   'Created': 'bg-[#faf9f5] text-slate-700 border-[#ccd5ae]/60',
@@ -328,6 +329,20 @@ export const OrdersPage: React.FC = () => {
                           <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${STATUS_STYLES[order.status] || 'bg-slate-100 text-slate-700'}`}>
                             {t('orderStatus.' + order.status, order.status)}
                           </span>
+                          <VerificationBadge
+                            status={
+                              order.buyerConfirmation
+                                ? 'BUYER_CONFIRMED'
+                                : order.qualityRecord?.status
+                                ? order.qualityRecord.status
+                                : order.farmerContributions && order.farmerContributions.length > 1
+                                ? 'MIXED'
+                                : order.status === 'Created' || order.status === 'Produce Collection Pending' || order.status === 'Pending'
+                                ? 'SELF_DECLARED'
+                                : 'COLLECTION_VERIFIED'
+                            }
+                            size="xs"
+                          />
                         </div>
 
                         <h4 className="text-base font-bold text-slate-900 mt-1.5">
@@ -444,9 +459,26 @@ export const OrdersPage: React.FC = () => {
                             <span>{t('orders.agreementId', 'Agreement ID')}:</span>
                             <strong className="font-mono text-slate-800 font-semibold">{order.agreementId || 'AGR-DIRECT'}</strong>
                           </div>
-                          <div className="flex justify-between text-slate-600">
+                          <div className="flex justify-between items-center text-slate-600">
                             <span>{t('common.grade', 'Quality Grade')}:</span>
                             <strong className="text-[#01472e] font-bold">{order.qualityGrade}</strong>
+                          </div>
+                          <div className="flex justify-between items-center text-slate-600">
+                            <span>{t('quality.verificationStatus', 'Verification Status')}:</span>
+                            <VerificationBadge
+                              status={
+                                order.buyerConfirmation
+                                  ? 'BUYER_CONFIRMED'
+                                  : order.qualityRecord?.status
+                                  ? order.qualityRecord.status
+                                  : order.farmerContributions && order.farmerContributions.length > 1
+                                  ? 'MIXED'
+                                  : order.status === 'Created' || order.status === 'Produce Collection Pending' || order.status === 'Pending'
+                                  ? 'SELF_DECLARED'
+                                  : 'COLLECTION_VERIFIED'
+                              }
+                              size="xs"
+                            />
                           </div>
                           <div className="flex justify-between text-slate-600">
                             <span>{t('orders.orderDate', 'Order Date')}:</span>

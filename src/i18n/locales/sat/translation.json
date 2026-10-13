@@ -55,7 +55,8 @@
     "kg": "[sat] kg",
     "perKg": "[sat] ₹/kg",
     "entity": "[sat] Entity",
-    "entities": "[sat] Entities"
+    "entities": "[sat] Entities",
+    "decline": "Decline"
   },
   "network": {
     "offline": "[sat] You're offline. Changes will be saved and synced automatically.",
@@ -96,7 +97,17 @@
     "receivedQuantity": "[sat] Received Quantity (kg)",
     "reason": "[sat] Reason / Description",
     "reasonPlaceholder": "[sat] Please describe the issue...",
-    "reasonRequired": "[sat] A reason is required for mismatches."
+    "reasonRequired": "[sat] A reason is required for mismatches.",
+    "collectionVerified": "Collection-verified",
+    "collectionVerifiedDesc": "Information checked during the collection process, with the verification scope documented.",
+    "farmerDeclared": "Farmer-declared",
+    "farmerDeclaredDesc": "Information provided by the farmer but not independently verified.",
+    "buyerConfirmed": "Buyer-confirmed",
+    "buyerConfirmedDesc": "The buyer has confirmed the specified details or receipt upon physical handover.",
+    "mixedStatus": "Mixed verification status",
+    "mixedStatusDesc": "Aggregated supply lot composed of multiple farmer contributions with varying verification levels.",
+    "underReview": "Under Review",
+    "underReviewDesc": "Verification in progress by field agent or aggregation hub inspector."
   },
   "nav": {
     "dashboard": "[sat] Dashboard",
@@ -135,7 +146,8 @@
     "register": "[sat] Register",
     "home": "[sat] Home",
     "support": "[sat] Support & Assistance",
-    "schemes": "[sat] Govt Schemes"
+    "schemes": "[sat] Govt Schemes",
+    "produceDiscovery": "Produce Discovery & Lots"
   },
   "stages": {
     "listed": "[sat] Listed",
@@ -275,7 +287,15 @@
     "addHarvestDesc": "[sat] Enter your verified harvest details to participate in immediate algorithmic buyer matching.",
     "editHarvest": "[sat] Edit Harvest Listing",
     "deleteConfirm": "[sat] Are you sure you want to remove this harvest listing from the national marketplace?",
-    "cropStageTracker": "[sat] Produce Lifecycle Journey"
+    "cropStageTracker": "[sat] Produce Lifecycle Journey",
+    "incomingRequests": "Incoming Procurement Requests",
+    "bilateralGate": "Bilateral Negotiation Gate",
+    "incomingRequestsDesc": "Direct procurement inquiries submitted by verified supermarket and wholesale buyers. Review terms, submit counter-offers, or accept to generate locked orders.",
+    "browseDiscoveryCatalog": "Browse Discovery Catalog",
+    "noIncomingRequests": "No pending procurement requests",
+    "noIncomingRequestsDesc": "When buyers discover your produce listings and submit requests, they will appear here for review.",
+    "negotiateCounter": "Negotiate / Counter-Offer",
+    "acceptAndLock": "Accept & Lock Order"
   },
   "buyer": {
     "createDemand": "[sat] Post Forward Demand",
@@ -297,7 +317,21 @@
     "qualityRequirement": "[sat] Required Quality Grade",
     "deliveryLocation": "[sat] Warehouse / Store Location",
     "postDemandBtn": "[sat] Publish Demand to Aggregation Pool",
-    "demandStatus": "[sat] Procurement Status"
+    "demandStatus": "[sat] Procurement Status",
+    "feedbackCount": "You have {{count}} order(s) awaiting feedback",
+    "feedbackShareTip": "Share your experience to help improve the platform and earn loyalty points.",
+    "rateNow": "Rate Now",
+    "directProcurementRequests": "Direct Procurement Requests",
+    "directProcurementDesc": "Direct marketplace orders and bilateral negotiation threads with farmers & aggregated supply lots.",
+    "browseProduceCatalog": "Browse Produce Catalog",
+    "noDirectRequests": "No direct procurement requests yet",
+    "noDirectRequestsDesc": "Explore available produce lots in the marketplace to submit direct procurement requests.",
+    "counterOfferReceived": "Counter-Offer Received",
+    "commodity": "Commodity",
+    "unitPrice": "Unit Price",
+    "totalAgreedValue": "Total Agreed Value",
+    "farmerCounterOffer": "Farmer Proposed Counter-Offer",
+    "acceptCounterOffer": "Accept Counter-Offer & Lock Order"
   },
   "bulkBuyer": {
     "institutionalProcurement": "[sat] Institutional Procurement Console",
@@ -1060,5 +1094,26 @@
       "cancel": "[sat] Cancel"
     },
     "emptyState": "[sat] No tasks found matching your criteria."
+  },
+  "discovery": {
+    "title": "Buyer Produce Discovery Marketplace",
+    "subtitle": "Directly explore available farmer produce listings and multi-farmer aggregated supply pools. Review verified quality grades, transparent prices, and submit binding procurement requests.",
+    "availableSupply": "Active Supply",
+    "farmerListings": "Farmer Lots",
+    "aggregatedLots": "Aggregated Lots",
+    "viewPipeline": "View Orders Pipeline",
+    "searchPlaceholder": "Search by crop, variety, farmer name, or hub location...",
+    "allSupplies": "All Produce",
+    "individualFarmers": "Individual Listings",
+    "aggregatedLotsPill": "Aggregated Lots",
+    "filterCrop": "Commodity",
+    "filterGrade": "Quality Grade",
+    "filterVerification": "Verification Level",
+    "filterCorridor": "Transit Corridor",
+    "filterMaxPrice": "Max Price (₹/kg)",
+    "viewLotBreakdown": "View Constituent Farmers",
+    "submitRequest": "Submit Request",
+    "requestLot": "Procure Lot",
+    "procurementModalTitle": "Submit Direct Procurement Request"
   }
 }

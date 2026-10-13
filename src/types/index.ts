@@ -1,5 +1,6 @@
 export * from './task';
-import { QualityVerificationRecord } from './quality';
+export * from './quality';
+import { QualityVerificationRecord, QualityVerificationStatus } from './quality';
 export type UserRole =
   | 'FARMER'
   | 'RETAIL_BUYER'
@@ -447,6 +448,84 @@ export interface DemandPool {
   buyersCount: number;
   status: 'FORMING' | 'POOLED' | 'IN_AUCTION' | 'MATCHED';
   priceBenchmarkPerKg: number;
+}
+
+export interface SupplyContribution {
+  listingId: string;
+  farmerId: string;
+  farmerName: string;
+  location: string;
+  fpoName?: string;
+  availableKg: number;
+  pricePerKg: number;
+  harvestDate: string;
+  availabilityDate: string;
+  verificationStatus: QualityVerificationStatus;
+  verificationLabel: string;
+}
+
+export interface AggregatedSupplyLot {
+  id: string;
+  crop: string;
+  variety: string;
+  grade: 'Grade A' | 'Grade B' | 'Grade C' | 'Standard' | 'Premium';
+  corridor: string;
+  fpoHub?: string;
+  availabilityStartDate: string;
+  availabilityEndDate: string;
+  totalAvailableKg: number;
+  initialTotalKg: number;
+  minPricePerKg: number;
+  maxPricePerKg: number;
+  avgPricePerKg: number;
+  farmersCount: number;
+  constituentListingIds: string[];
+  contributions: SupplyContribution[];
+  verificationSummary: {
+    hasSelfDeclared: boolean;
+    hasCollectionVerified: boolean;
+    hasBuyerConfirmed: boolean;
+    overallStatus: 'SELF_DECLARED' | 'COLLECTION_VERIFIED' | 'MIXED' | 'BUYER_CONFIRMED';
+    overallLabel: string;
+    description: string;
+  };
+  compatibilityReasons: string[];
+  status: 'PROPOSED' | 'RESERVED' | 'ALLOCATED';
+}
+
+export type ProcurementRequestStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'NEGOTIATION';
+
+export interface DirectProcurementRequest {
+  id: string;
+  buyerId: string;
+  buyerName: string;
+  buyerOrganization?: string;
+  buyerPhone?: string;
+  targetType: 'INDIVIDUAL_LISTING' | 'AGGREGATED_LOT';
+  targetId: string;
+  listingId?: string;
+  supplyLotId?: string;
+  farmerId?: string;
+  farmerName?: string;
+  fpoName?: string;
+  crop: string;
+  variety?: string;
+  grade: string;
+  requestedQuantityKg: number;
+  unit: string;
+  proposedPricePerKg: number;
+  totalProposedValue: number;
+  deliveryLocation: string;
+  requestedDeliveryDate: string;
+  deliveryTimeWindow?: string;
+  notes?: string;
+  status: ProcurementRequestStatus;
+  counterOfferPrice?: number;
+  counterOfferNotes?: string;
+  verificationStatus: QualityVerificationStatus | 'MIXED';
+  createdAt: string;
+  updatedAt: string;
+  confirmedOrderId?: string;
 }
 
 export interface ForecastSignal {
