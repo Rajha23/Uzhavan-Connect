@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import { CHENNAI_TOMATO_FORECAST } from '../data/mockData';
@@ -250,6 +250,7 @@ export const FarmerDashboard: React.FC = () => {
   };
 
   const [isAddingListing, setIsAddingListing] = useState(false);
+  const addListingFormRef = useRef<HTMLDivElement>(null);
   const [crop, setCrop] = useState('Tomato');
   const [cropId, setCropId] = useState('CROP-TOMATO');
   const [variety, setVariety] = useState('Arka Rakshak');
@@ -258,7 +259,11 @@ export const FarmerDashboard: React.FC = () => {
   const [quantity, setQuantity] = useState<number>(500);
   const [unit, setUnit] = useState<string>('kg');
   const [price, setPrice] = useState<number>(25.0);
-  const [harvestDate, setHarvestDate] = useState('2026-09-14');
+  const [harvestDate, setHarvestDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 5);
+    return d.toISOString().split('T')[0];
+  });
   const [quality, setQuality] = useState<'Grade A' | 'Grade B' | 'Standard' | 'Premium'>('Grade A');
   const [location, setLocation] = useState(currentUser.location || 'Chinnasalem Agro Hub, Kallakurichi');
   const [fpoName, setFpoName] = useState(currentUser.fpoName || 'Kallakurichi Pasumai Farmers Producer Co.');
@@ -269,14 +274,25 @@ export const FarmerDashboard: React.FC = () => {
   const [showHarvestForecaster, setShowHarvestForecaster] = useState(false);
   const [selectedListingForHarvest, setSelectedListingForHarvest] = useState<ProduceListing | null>(null);
 
+  const handleOpenAddCrop = () => {
+    setIsAddingListing(true);
+    setTimeout(() => {
+      addListingFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
   const handleListProduceFromYield = (data: { crop: string; variety?: string; estimatedKg: number; grade: string }) => {
     setCrop(data.crop);
+    setCropId(`CROP-${data.crop.toUpperCase().replace(/[^A-Z0-9]/g, '-')}`);
     if (data.variety) setVariety(data.variety);
     setQuantity(data.estimatedKg);
     setUnit('kg');
     setQuality(data.grade as any || 'Grade A');
     setIsAddingListing(true);
     setShowYieldEstimator(false);
+    setTimeout(() => {
+      addListingFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const forecast = CHENNAI_TOMATO_FORECAST;
@@ -284,22 +300,30 @@ export const FarmerDashboard: React.FC = () => {
   const handleAddCrop = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const cleanCrop = crop.trim();
+    if (!cleanCrop) {
+      alert('Please enter or select a valid crop name.');
+      return;
+    }
+
     let computedKg = Number(quantity);
     if (unit === 'Quintal') computedKg = computedKg * 100;
     else if (unit === 'Crates') computedKg = computedKg * 25;
     else if (unit === 'Ton') computedKg = computedKg * 1000;
 
     const finalVariety =
-      (variety === 'Other' || varietyId?.includes('OTHER')) && customVariety.trim()
+      (variety === 'Other' || varietyId?.includes('OTHER') || cropId?.includes('CUSTOM')) && customVariety.trim()
         ? customVariety.trim()
-        : (variety || 'Certified Regional Variety');
+        : (variety || 'Standard / Local Variety');
+
+    const generatedId = `LST-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
 
     const newCropItem: ProduceListing = {
-      id: `LST-${Date.now().toString().slice(-4)}`,
+      id: generatedId,
       farmerId: currentUser.id || 'usr-farmer-01',
       farmerName: currentUser.name || 'Farmer',
-      crop,
-      cropId: cropId || undefined,
+      crop: cleanCrop,
+      cropId: cropId || `CROP-${cleanCrop.toUpperCase().replace(/[^A-Z0-9]/g, '-')}`,
       variety: finalVariety,
       varietyId: varietyId || undefined,
       quantityKg: computedKg,
@@ -308,15 +332,32 @@ export const FarmerDashboard: React.FC = () => {
       unit: unit || 'kg',
       grade: quality,
       expectedPricePerKg: Number(price),
-      harvestDate,
-      availabilityDate: harvestDate,
+      harvestDate: harvestDate || new Date().toISOString().split('T')[0],
+      availabilityDate: harvestDate || new Date().toISOString().split('T')[0],
       location: location || currentUser.location || 'Salem Mandi Hub',
       fpoName: fpoName || 'GreenHarvest FPO',
-      status: 'Listed'
+      status: 'Listed',
+      qualityRecord: {
+        status: 'SELF_DECLARED',
+        confidence: 'LOW',
+        grade: quality === 'Premium' || quality === 'Grade A' ? 'PREMIUM' : 'STANDARD',
+        hasSeriousDefect: false,
+        versions: [],
+        auditLog: [{
+          action: 'BATCH_CREATED',
+          userId: currentUser.id || 'usr-farmer-01',
+          role: 'FARMER',
+          previousStatus: null,
+          newStatus: 'SELF_DECLARED',
+          timestamp: new Date().toISOString()
+        }]
+      }
     };
 
     addProduceListing(newCropItem);
     setIsAddingListing(false);
+    setCustomVariety('');
+    setExpandedCardId(generatedId);
 
     if (!isOnline) {
       setSuccessMessage(
@@ -409,7 +450,7 @@ export const FarmerDashboard: React.FC = () => {
         </span>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
           {[
-            { id: 'add-crop', label: t('farmer.addCrop', 'Add Crop'), icon: Plus, action: () => setIsAddingListing(true), badge: t('farmer.listBadge', 'List') },
+            { id: 'add-crop', label: t('farmer.addCrop', 'Add Crop'), icon: Plus, action: handleOpenAddCrop, badge: t('farmer.listBadge', 'List') },
             { id: 'yield-predict', label: t('farmer.yieldPredict', 'Yield Predict'), icon: Sprout, action: () => setShowYieldEstimator(!showYieldEstimator), badge: 'ML Model' },
             { id: 'harvest-forecast', label: t('farmer.harvestForecast', 'Harvest Forecast'), icon: CalendarDays, action: () => { setShowHarvestForecaster(!showHarvestForecaster); setShowYieldEstimator(false); }, badge: t('farmer.calendarAIBadge', 'Calendar AI') },
             { id: 'find-buyers', label: t('farmer.findBuyers', 'Find Buyers'), icon: ArrowRight, action: () => setActiveTab('find-buyers'), badge: t('farmer.directBadge', 'Direct') },
@@ -790,8 +831,14 @@ export const FarmerDashboard: React.FC = () => {
             </div>
 
             <button
-              onClick={() => setIsAddingListing(!isAddingListing)}
-              className="btn-primary text-xs"
+              onClick={() => {
+                if (isAddingListing) {
+                  setIsAddingListing(false);
+                } else {
+                  handleOpenAddCrop();
+                }
+              }}
+              className="btn-primary text-xs cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>{isAddingListing ? t('common.close', 'Close Form') : t('farmer.addCrop', 'Add Crop')}</span>
@@ -800,8 +847,9 @@ export const FarmerDashboard: React.FC = () => {
         </div>
 
         {/* Add Crop Form */}
-        {isAddingListing && (
-          <form onSubmit={handleAddCrop} className="p-6 sm:p-7 bg-[#faf9f5]/80 border-b border-[#ccd5ae]/40 space-y-4 text-xs">
+        <div ref={addListingFormRef}>
+          {isAddingListing && (
+            <form onSubmit={handleAddCrop} className="p-6 sm:p-7 bg-[#faf9f5]/80 border-b border-[#ccd5ae]/40 space-y-4 text-xs animate-in fade-in slide-in-from-top-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
               <div className="sm:col-span-2 lg:col-span-2 xl:col-span-2">
                 <CropVarietySearchDropdown
@@ -933,6 +981,7 @@ export const FarmerDashboard: React.FC = () => {
             </div>
           </form>
         )}
+        </div>
 
         {/* Listings Cards with Lifecycle View */}
         <div className="p-6 sm:p-7 space-y-5">
@@ -944,8 +993,8 @@ export const FarmerDashboard: React.FC = () => {
                 {t('farmer.startAdding', 'Start by adding your first harvest lot to discover real institutional buyer demand and bypass intermediary cuts.')}
               </p>
               <button
-                onClick={() => setIsAddingListing(true)}
-                className="mt-4 btn-primary text-xs"
+                onClick={handleOpenAddCrop}
+                className="mt-4 btn-primary text-xs cursor-pointer"
               >
                 {t('farmer.addYourFirstCrop', 'Add Your First Crop')}
               </button>
@@ -1299,7 +1348,7 @@ export const FarmerDashboard: React.FC = () => {
             </div>
           ) : drawerState?.type === 'listed-volume' ? (
             <div className="flex gap-2">
-              <button onClick={() => { setDrawerState(null); setIsAddingListing(true); }} className="btn-primary text-xs flex-1"><Plus className="w-3.5 h-3.5" /> Add New Crop</button>
+              <button onClick={() => { setDrawerState(null); handleOpenAddCrop(); }} className="btn-primary text-xs flex-1 cursor-pointer"><Plus className="w-3.5 h-3.5" /> Add New Crop</button>
               <button onClick={() => setDrawerState(null)} className="btn-ghost text-xs">Close</button>
             </div>
           ) : drawerState?.type === 'buyer-demand' ? (

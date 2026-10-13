@@ -1052,13 +1052,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, [isAuthenticated]);
 
   const addProduceListing = async (listing: ProduceListing) => {
+    // 1. Optimistic UI update immediately (zero latency for farmer)
+    setProduceListings((prev) => [listing, ...prev.filter(l => l.id !== listing.id)]);
+
+    // 2. Immediate localStorage persistence to ensure no data loss on refresh
     try {
-      // Use ProduceRepository which handles queueing and syncing automatically
+      const current = localStorage.getItem('uzhavan_produce_listings');
+      const parsed = current ? JSON.parse(current) : [];
+      const updated = [listing, ...parsed.filter((l: any) => l.id !== listing.id)];
+      localStorage.setItem('uzhavan_produce_listings', JSON.stringify(updated));
+    } catch (e) {
+      console.warn('Failed to immediately save listing to localStorage', e);
+    }
+
+    // 3. Background sync to repository / offline queue
+    try {
       await ProduceRepository.createProduceListing(listing);
-      // Optimistic UI update
-      setProduceListings((prev) => [listing, ...prev.filter(l => l.id !== listing.id)]);
     } catch (err) {
-      console.error("Failed to create listing", err);
+      console.error("Failed to sync listing to background repository", err);
     }
   };
 
