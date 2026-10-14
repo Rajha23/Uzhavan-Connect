@@ -185,8 +185,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       for (const [pKey, pVal] of Object.entries(params)) {
         const valStr = String(pVal !== undefined && pVal !== null ? pVal : '');
         result = result
-          .replaceAll(`{{${pKey}}}`, valStr)
-          .replaceAll(`{${pKey}}`, valStr);
+          .split(`{{${pKey}}}`).join(valStr)
+          .split(`{${pKey}}`).join(valStr);
       }
     }
 
