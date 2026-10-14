@@ -74,7 +74,7 @@ const PUBLIC_TABS = ['home', 'landing', 'login', 'register', 'traceability', 'tr
 const FARMER_ALLOWED_ROLES: UserRole[] = ['FARMER', 'FPO_AGGREGATOR', 'ADMIN'];
 const BUYER_ALLOWED_ROLES: UserRole[] = ['RETAIL_BUYER', 'BULK_BUYER', 'ADMIN'];
 const BULK_BUYER_ALLOWED_ROLES: UserRole[] = ['BULK_BUYER', 'ADMIN'];
-const MATCHING_ALLOWED_ROLES: UserRole[] = ['RETAIL_BUYER', 'BULK_BUYER', 'FPO_AGGREGATOR', 'ADMIN'];
+const MATCHING_ALLOWED_ROLES: UserRole[] = ['FARMER', 'RETAIL_BUYER', 'BULK_BUYER', 'FPO_AGGREGATOR', 'ADMIN'];
 const LOGISTICS_ALLOWED_ROLES: UserRole[] = ['LOGISTICS', 'ADMIN'];
 const REPORTS_ALLOWED_ROLES: UserRole[] = ['ADMIN', 'FPO_AGGREGATOR'];
 

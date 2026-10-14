@@ -8,6 +8,7 @@ import {
   detectTextLanguage,
   translateText,
 } from '../services/translationService';
+import { getTamilDirectTranslation, translateValue } from '../i18n/tamilDictionary';
 
 const LANGUAGE_STORAGE_KEY = 'uzhavan_language';
 const AUTODETECT_STORAGE_KEY = 'uzhavan_autodetect_language';
@@ -166,9 +167,30 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       defaultText = arg3;
     }
     
-    // i18next interpolates {param} tags by default just like the old custom system
     const options = { ...params, defaultValue: defaultText || key };
-    return i18nT(key, options);
+    let result = i18nT(key, options);
+
+    // Guaranteed Tamil translation fallback
+    if (currentLanguage.code === 'ta') {
+      if (result === key || result === defaultText || !/[\u0B80-\u0BFF]/.test(result)) {
+        const directTa = getTamilDirectTranslation(key, defaultText);
+        if (directTa) {
+          result = directTa;
+        }
+      }
+    }
+
+    // Replace both single {param} and double {{param}} variables
+    if (params && typeof result === 'string') {
+      for (const [pKey, pVal] of Object.entries(params)) {
+        const valStr = String(pVal !== undefined && pVal !== null ? pVal : '');
+        result = result
+          .replaceAll(`{{${pKey}}}`, valStr)
+          .replaceAll(`{${pKey}}`, valStr);
+      }
+    }
+
+    return result;
   }, [i18nT, currentLanguage.code, version]);
 
   const handleTranslateText = useCallback(
@@ -244,7 +266,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     detectedLanguage,
     setAutoDetect,
     translateText: handleTranslateText,
-    detectTextLanguage: handleDetectTextLanguage
+    detectTextLanguage: handleDetectTextLanguage,
+    translateDynamic: (val) => translateValue(val, currentLanguage.code)
   };
 
   return (

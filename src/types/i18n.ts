@@ -65,4 +65,5 @@ export interface LanguageContextType {
   setAutoDetect: (enable: boolean) => void;
   translateText: (text: string, targetLang?: string, sourceLang?: string) => Promise<string>;
   detectTextLanguage: (text: string) => LanguageDefinition | null;
+  translateDynamic: (val: string | undefined | null) => string;
 }

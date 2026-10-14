@@ -198,6 +198,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<UserRole, readonly string[]> = {
     'crop-yield-prediction',
     'harvest-forecast',
     'market-price-prediction',
+    'smart-matching',
     'tasks',
     'task-management',
     'orders',

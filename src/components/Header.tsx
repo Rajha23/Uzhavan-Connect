@@ -91,6 +91,14 @@ export const Header: React.FC = () => {
       case 'bulk-demand': return t('nav.bulkAggregation', undefined, 'Bulk Demand');
       case 'shipments': return t('nav.shipments', undefined, 'Shipments');
       case 'route-optimization': return t('nav.routeOptimization', undefined, 'Route Optimization');
+      case 'discovery': return t('nav.produceDiscovery', undefined, 'Produce Marketplace');
+      case 'crop-yield-prediction': return t('nav.cropYieldPrediction', undefined, 'Yield Predictor');
+      case 'harvest-forecast': return t('nav.harvestForecast', undefined, 'Harvest Forecast');
+      case 'market-price-prediction': return t('nav.aiPricePredictor', undefined, 'AI Price Predictor');
+      case 'news': return t('nav.news', undefined, 'News & Updates');
+      case 'schemes': return t('nav.schemes', undefined, 'Govt Schemes');
+      case 'subsidy': return t('nav.subsidy', undefined, 'Subsidy');
+      case 'support': return t('nav.support', undefined, 'Support & Assistance');
       case 'reports':
       case 'impact-kpis': return t('nav.reports', undefined, 'Reports & KPIs');
       default: return PAGE_TITLES[tab] || t('nav.dashboard', undefined, 'Dashboard');

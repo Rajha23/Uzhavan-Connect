@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 
 export const ProduceDiscoveryPage: React.FC = () => {
-  const { t, formatNumber } = useLanguage();
+  const { t, formatNumber, translateDynamic = (v: any) => v } = useLanguage();
   const {
     produceListings,
     aggregatedSupplyLots,
@@ -427,7 +427,7 @@ export const ProduceDiscoveryPage: React.FC = () => {
             >
               <option value="ALL">{t('common.all', 'All Crops')}</option>
               {uniqueCrops.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>{translateDynamic(c)}</option>
               ))}
             </select>
           </div>
@@ -441,8 +441,8 @@ export const ProduceDiscoveryPage: React.FC = () => {
               className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
             >
               <option value="ALL">{t('common.all', 'All Grades')}</option>
-              <option value="Grade A">Grade A ({t('common.premium', 'Premium')})</option>
-              <option value="Grade B">Grade B ({t('common.commercial', 'Commercial')})</option>
+              <option value="Grade A">{translateDynamic('Grade A')} ({t('common.premium', 'Premium')})</option>
+              <option value="Grade B">{translateDynamic('Grade B')} ({t('common.commercial', 'Commercial')})</option>
               <option value="Standard">{t('common.standard', 'Standard')}</option>
               <option value="Premium">{t('common.premium', 'Premium')}</option>
             </select>
@@ -473,7 +473,7 @@ export const ProduceDiscoveryPage: React.FC = () => {
             >
               <option value="ALL">{t('common.all', 'All Corridors')}</option>
               {uniqueCorridors.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>{translateDynamic(c)}</option>
               ))}
             </select>
           </div>
@@ -506,7 +506,7 @@ export const ProduceDiscoveryPage: React.FC = () => {
               <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <span>{t('discovery.catalogTitle', 'Available Agricultural Supply Catalog')}</span>
                 <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2.5 py-0.5 rounded-full">
-                  {filteredListings.length + filteredLots.length} items
+                  {filteredListings.length + filteredLots.length} {t('common.items', 'items')}
                 </span>
               </h2>
               <p className="text-xs text-slate-500 mt-0.5 font-normal">
@@ -547,25 +547,25 @@ export const ProduceDiscoveryPage: React.FC = () => {
                             <div className="flex items-center gap-1.5">
                               <span className="font-bold text-slate-900">{lot.id}</span>
                               <span className="text-[10px] bg-emerald-200/80 text-emerald-900 px-1.5 py-0.2 rounded font-semibold uppercase">
-                                Pooled Lot
+                                {t('discovery.pooledLot', 'Pooled Lot')}
                               </span>
                             </div>
                             <p className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
                               <Users className="w-3 h-3 text-slate-400" />
-                              <span>{lot.farmersCount} Farmers • {lot.corridor}</span>
+                              <span>{lot.farmersCount} {t('discovery.farmers', 'Farmers')} • {translateDynamic(lot.corridor)}</span>
                             </p>
                           </div>
                         </div>
                       </td>
 
                       <td className="py-3.5 px-4">
-                        <p className="font-semibold text-slate-900">{lot.crop}</p>
-                        <p className="text-[11px] text-slate-500">{lot.variety}</p>
+                        <p className="font-semibold text-slate-900">{translateDynamic(lot.crop)}</p>
+                        <p className="text-[11px] text-slate-500">{translateDynamic(lot.variety)}</p>
                       </td>
 
                       <td className="py-3.5 px-3 text-center">
                         <span className="px-2 py-0.5 bg-slate-100 text-slate-800 rounded-md font-semibold text-[11px] border border-slate-200">
-                          {lot.grade}
+                          {translateDynamic(lot.grade)}
                         </span>
                       </td>
 
@@ -638,13 +638,13 @@ export const ProduceDiscoveryPage: React.FC = () => {
                         </td>
 
                         <td className="py-3.5 px-4">
-                          <p className="font-semibold text-slate-900">{item.crop}</p>
-                          <p className="text-[11px] text-slate-500">{item.variety || 'Commercial Variety'}</p>
+                          <p className="font-semibold text-slate-900">{translateDynamic(item.crop)}</p>
+                          <p className="text-[11px] text-slate-500">{translateDynamic(item.variety || 'Commercial Variety')}</p>
                         </td>
 
                         <td className="py-3.5 px-3 text-center">
                           <span className="px-2 py-0.5 bg-slate-100 text-slate-800 rounded-md font-semibold text-[11px] border border-slate-200">
-                            {item.grade}
+                            {translateDynamic(item.grade)}
                           </span>
                         </td>
 
