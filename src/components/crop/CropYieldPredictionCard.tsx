@@ -25,9 +25,83 @@ import {
   Layers,
   ArrowRight,
   RefreshCw,
-  BarChart3
+  BarChart3,
+  RotateCcw,
+  History,
+  Clock
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+
+interface YieldPredictionHistoryItem {
+  id: string;
+  timestamp: number;
+  crop: string;
+  variety?: string;
+  season: string;
+  state: string;
+  areaUnit: 'hectare' | 'acre';
+  areaValue: number;
+  annualRainfall: number;
+  fertilizer: number;
+  pesticide: number;
+  cropYear: number;
+  result: CropYieldResponseDto;
+}
+
+const YIELD_HISTORY_STORAGE_KEY = 'uzhavan_yield_predictions_history_v1';
+
+const DEFAULT_YIELD_HISTORY: YieldPredictionHistoryItem[] = [
+  {
+    id: 'yield-seed-1',
+    timestamp: Date.now() - 1000 * 60 * 20,
+    crop: 'Rice',
+    variety: 'Ponni IR-20',
+    season: 'Kharif',
+    state: 'Tamil Nadu',
+    areaUnit: 'acre',
+    areaValue: 2.5,
+    annualRainfall: 950,
+    fertilizer: 120,
+    pesticide: 15,
+    cropYear: 2026,
+    result: {
+      success: true,
+      crop: 'Rice',
+      variety: 'Ponni IR-20',
+      predicted_yield: 2.85,
+      predicted_yield_unit: 't/ha',
+      estimated_total_production: 2.88,
+      estimated_total_production_unit: 'tonnes',
+      confidence_interval: { lower: 2.5, upper: 3.2, unit: 't/ha', confidence_level: 0.95 },
+      explainability: { top_factors: ['Annual Rainfall (950mm)', 'NPK Compound Fertilizer (120kg/ha)'] }
+    } as any
+  },
+  {
+    id: 'yield-seed-2',
+    timestamp: Date.now() - 1000 * 60 * 90,
+    crop: 'Sugarcane',
+    variety: 'Co 86032',
+    season: 'Kharif',
+    state: 'Tamil Nadu',
+    areaUnit: 'acre',
+    areaValue: 4.0,
+    annualRainfall: 1100,
+    fertilizer: 220,
+    pesticide: 25,
+    cropYear: 2026,
+    result: {
+      success: true,
+      crop: 'Sugarcane',
+      variety: 'Co 86032',
+      predicted_yield: 52.4,
+      predicted_yield_unit: 't/ha',
+      estimated_total_production: 84.8,
+      estimated_total_production_unit: 'tonnes',
+      confidence_interval: { lower: 48.0, upper: 56.5, unit: 't/ha', confidence_level: 0.95 },
+      explainability: { top_factors: ['Farm Scale (4.0 acres)', 'Irrigation & Moisture Balance'] }
+    } as any
+  }
+];
 
 interface CropYieldPredictionCardProps {
   onListProduce?: (cropData: { crop: string; variety?: string; estimatedKg: number; grade: string }) => void;
@@ -62,6 +136,49 @@ export const CropYieldPredictionCard: React.FC<CropYieldPredictionCardProps> = (
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showTechnicalDetails, setShowTechnicalDetails] = useState<boolean>(false);
   const [showExplainability, setShowExplainability] = useState<boolean>(false);
+  const [history, setHistory] = useState<YieldPredictionHistoryItem[]>([]);
+
+  // Load history from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(YIELD_HISTORY_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setHistory(parsed.slice(0, 5));
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load yield history', e);
+    }
+    setHistory(DEFAULT_YIELD_HISTORY);
+  }, []);
+
+  const saveYieldHistory = (newItem: YieldPredictionHistoryItem) => {
+    const updated = [newItem, ...history.filter(h => h.id !== newItem.id)].slice(0, 5);
+    setHistory(updated);
+    try {
+      localStorage.setItem(YIELD_HISTORY_STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.warn('Failed to persist yield history', e);
+    }
+  };
+
+  const restoreYieldItem = (item: YieldPredictionHistoryItem) => {
+    setSelectedCrop(item.crop);
+    setVariety(item.variety || '');
+    setSeason(item.season);
+    setState(item.state);
+    setAreaUnit(item.areaUnit);
+    setAreaValue(item.areaValue);
+    setAnnualRainfall(item.annualRainfall);
+    setFertilizer(item.fertilizer);
+    setPesticide(item.pesticide);
+    setCropYear(item.cropYear);
+    setResult(item.result);
+    setErrorMessage(null);
+  };
 
   // Initialize metadata & prefill
   useEffect(() => {
@@ -131,6 +248,23 @@ export const CropYieldPredictionCard: React.FC<CropYieldPredictionCardProps> = (
           spread: 50,
           origin: { y: 0.7 }
         });
+
+        const historyItem: YieldPredictionHistoryItem = {
+          id: 'yield-' + Date.now(),
+          timestamp: Date.now(),
+          crop: selectedCrop,
+          variety: variety.trim() || undefined,
+          season,
+          state,
+          areaUnit,
+          areaValue,
+          annualRainfall,
+          fertilizer,
+          pesticide,
+          cropYear,
+          result: response
+        };
+        saveYieldHistory(historyItem);
       } else {
         setErrorMessage(
           (response.errors && response.errors.join(' ')) || response.message || 'Yield prediction could not be computed.'
@@ -678,6 +812,79 @@ export const CropYieldPredictionCard: React.FC<CropYieldPredictionCardProps> = (
             </div>
           </div>
         )}
+
+        {/* Recently Predicted History (Last 5 Tries) Section */}
+        <div className="mt-8 pt-6 border-t border-[#ccd5ae]/50 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-emerald-50 text-[#01472e] flex items-center justify-center">
+                <History className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-[#01472e]">
+                  Recently Predicted History
+                </h4>
+                <p className="text-[11px] text-[#5c7065]">
+                  Last 5 estimation tries • Click any attempt to restore parameters & results
+                </p>
+              </div>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40">
+              {history.length} / 5 Tries
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {history.map((item, idx) => (
+              <div
+                key={item.id}
+                onClick={() => restoreYieldItem(item)}
+                className="p-3.5 rounded-2xl border border-[#ccd5ae]/60 bg-[#faf9f5] hover:bg-[#eaf4ec]/60 hover:border-[#01472e]/40 transition-all cursor-pointer group flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="w-6 h-6 rounded-full bg-white border border-[#ccd5ae] text-xs font-bold text-[#01472e] flex items-center justify-center shrink-0">
+                    {idx + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-xs text-[#01472e] truncate">
+                        {item.crop} {item.variety ? `(${item.variety})` : ''}
+                      </span>
+                      <span className="text-[10px] text-gray-400">•</span>
+                      <span className="text-[10px] text-[#5c7065]">
+                        {item.areaValue} {item.areaUnit}s
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] text-gray-500 mt-0.5">
+                      <Clock className="w-3 h-3 text-gray-400" />
+                      <span>{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span>•</span>
+                      <span>{item.state} ({item.season})</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 shrink-0 ml-2">
+                  <div className="text-right">
+                    <span className="text-xs font-bold font-mono text-[#01472e] block">
+                      {item.result.predicted_yield} t/ha
+                    </span>
+                    <span className="text-[10px] text-emerald-700 block">
+                      ≈ {Math.round((item.result.estimated_total_production || 0) * 1000).toLocaleString()} kg
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="p-1.5 rounded-lg bg-white border border-[#ccd5ae] text-gray-400 group-hover:text-[#01472e] group-hover:border-[#01472e] transition"
+                    title="Load this prediction"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

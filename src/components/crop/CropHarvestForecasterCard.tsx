@@ -40,7 +40,86 @@ import {
   Package,
   Wifi,
   WifiOff,
+  History,
+  RotateCcw,
 } from 'lucide-react';
+
+interface HarvestForecastHistoryItem {
+  id: string;
+  timestamp: number;
+  crop: string;
+  variety?: string;
+  sowingDate: string;
+  district: string;
+  soilType: string;
+  irrigation: string;
+  result: HarvestForecastResult;
+}
+
+const HARVEST_HISTORY_STORAGE_KEY = 'uzhavan_harvest_forecast_history_v1';
+
+const DEFAULT_HARVEST_HISTORY: HarvestForecastHistoryItem[] = [
+  {
+    id: 'harvest-seed-1',
+    timestamp: Date.now() - 1000 * 60 * 30,
+    crop: 'Tomato',
+    variety: 'PKM-1 / Arka Rakshak',
+    sowingDate: new Date().toISOString().split('T')[0],
+    district: 'Salem',
+    soilType: 'Well-drained loam',
+    irrigation: 'Borewell Drip Irrigation (Optimized)',
+    result: {
+      crop: 'Tomato',
+      variety: 'PKM-1 / Arka Rakshak',
+      category: 'Vegetable',
+      harvest_type: 'Repeated',
+      sowing_date: new Date().toISOString().split('T')[0],
+      expected_first_harvest_formatted: 'In 65–75 days',
+      first_harvest_window: { start_formatted: 'Day 65', end_formatted: 'Day 75' },
+      location: 'Salem',
+      soil_type: 'Well-drained loam',
+      irrigation: 'Borewell Drip Irrigation',
+      total_pickings: 8,
+      picking_interval_days: 5,
+      pests: 'Fruit borer, Whitefly',
+      diseases: 'Early blight, Leaf curl virus',
+      disclaimer: 'Based on Tamil Nadu Agriculture University agronomic standards.',
+      pickings: [
+        { picking_number: 1, date_formatted: 'First Harvest', expected_yield_pct: 12 },
+        { picking_number: 2, date_formatted: '+5 Days', expected_yield_pct: 18 },
+        { picking_number: 3, date_formatted: '+10 Days', expected_yield_pct: 22 },
+        { picking_number: 4, date_formatted: '+15 Days', expected_yield_pct: 20 }
+      ]
+    } as any
+  },
+  {
+    id: 'harvest-seed-2',
+    timestamp: Date.now() - 1000 * 60 * 110,
+    crop: 'Rice/Paddy',
+    variety: 'Ponni / BPT-5204',
+    sowingDate: new Date().toISOString().split('T')[0],
+    district: 'Thanjavur',
+    soilType: 'Clayey delta alluvium',
+    irrigation: 'Canal / River Basin Flow',
+    result: {
+      crop: 'Rice/Paddy',
+      variety: 'Ponni / BPT-5204',
+      category: 'Cereal',
+      harvest_type: 'One-time',
+      sowing_date: new Date().toISOString().split('T')[0],
+      expected_first_harvest_formatted: 'In 135–140 days',
+      first_harvest_window: { start_formatted: 'Day 135', end_formatted: 'Day 140' },
+      location: 'Thanjavur',
+      soil_type: 'Clayey delta alluvium',
+      irrigation: 'Canal Flow',
+      total_pickings: 1,
+      picking_interval_days: 0,
+      pests: 'Stem borer, Leaf folder',
+      diseases: 'Blast, Bacterial leaf blight',
+      disclaimer: 'Single-cutting field crop timing based on TN agronomy baseline.'
+    } as any
+  }
+];
 
 interface CropHarvestForecasterCardProps {
   /** Called when user clicks "Estimate Yield & List Produce" */
@@ -101,6 +180,45 @@ export const CropHarvestForecasterCard: React.FC<CropHarvestForecasterCardProps>
   const [showAllPickings, setShowAllPickings] = useState(false);
   const [taskAdded, setTaskAdded] = useState(false);
   const [taskAddLoading, setTaskAddLoading] = useState(false);
+  const [history, setHistory] = useState<HarvestForecastHistoryItem[]>([]);
+
+  // Load history from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(HARVEST_HISTORY_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setHistory(parsed.slice(0, 5));
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load harvest history', e);
+    }
+    setHistory(DEFAULT_HARVEST_HISTORY);
+  }, []);
+
+  const saveHarvestHistory = (newItem: HarvestForecastHistoryItem) => {
+    const updated = [newItem, ...history.filter(h => h.id !== newItem.id)].slice(0, 5);
+    setHistory(updated);
+    try {
+      localStorage.setItem(HARVEST_HISTORY_STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.warn('Failed to persist harvest history', e);
+    }
+  };
+
+  const restoreHarvestItem = (item: HarvestForecastHistoryItem) => {
+    setSelectedCrop(item.crop);
+    setVariety(item.variety || '');
+    setSowingDate(item.sowingDate);
+    setDistrict(item.district);
+    setSoilType(item.soilType);
+    setIrrigation(item.irrigation);
+    setResult(item.result);
+    setErrorMsg(null);
+  };
 
   // ─── Load crop list on mount ─────────────────────────────────────────────
   useEffect(() => {
@@ -144,6 +262,19 @@ export const CropHarvestForecasterCard: React.FC<CropHarvestForecasterCardProps>
     try {
       const forecast = await CropHarvestService.forecast(req);
       setResult(forecast);
+
+      const historyItem: HarvestForecastHistoryItem = {
+        id: 'harvest-' + Date.now(),
+        timestamp: Date.now(),
+        crop: selectedCrop,
+        variety: variety || undefined,
+        sowingDate,
+        district,
+        soilType,
+        irrigation,
+        result: forecast
+      };
+      saveHarvestHistory(historyItem);
     } catch (err: any) {
       setErrorMsg(err.message || 'Forecast failed. Please try again.');
     } finally {
@@ -720,6 +851,79 @@ export const CropHarvestForecasterCard: React.FC<CropHarvestForecasterCardProps>
             </p>
           </div>
         )}
+
+        {/* Recently Predicted History (Last 5 Tries) Section */}
+        <div className="mt-8 pt-6 border-t border-[#ccd5ae]/50 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-[#01472e]/10 text-[#01472e] flex items-center justify-center">
+                <History className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-[#01472e]">
+                  Recently Predicted History
+                </h4>
+                <p className="text-[11px] text-[#5c7065]">
+                  Last 5 harvest forecast tries • Click any attempt to reload parameters & windows
+                </p>
+              </div>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40">
+              {history.length} / 5 Tries
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {history.map((item, idx) => (
+              <div
+                key={item.id}
+                onClick={() => restoreHarvestItem(item)}
+                className="p-3.5 rounded-2xl border border-[#ccd5ae]/60 bg-[#faf9f5] hover:bg-[#eaf4ec]/60 hover:border-[#01472e]/40 transition-all cursor-pointer group flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="w-6 h-6 rounded-full bg-white border border-[#ccd5ae] text-xs font-bold text-[#01472e] flex items-center justify-center shrink-0">
+                    {idx + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-xs text-[#01472e] truncate">
+                        {item.crop} {item.variety ? `(${item.variety})` : ''}
+                      </span>
+                      <span className="text-[10px] text-gray-400">•</span>
+                      <span className="text-[10px] text-[#5c7065]">
+                        {item.district}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] text-gray-500 mt-0.5">
+                      <Clock className="w-3 h-3 text-gray-400" />
+                      <span>{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span>•</span>
+                      <span>Sown: {item.sowingDate}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 shrink-0 ml-2">
+                  <div className="text-right">
+                    <span className="text-xs font-bold font-mono text-[#01472e] block">
+                      {item.result.expected_first_harvest_formatted}
+                    </span>
+                    <span className="text-[10px] text-[#5c7065] block">
+                      {item.result.harvest_type}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="p-1.5 rounded-lg bg-white border border-[#ccd5ae] text-gray-400 group-hover:text-[#01472e] group-hover:border-[#01472e] transition"
+                    title="Load this prediction"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

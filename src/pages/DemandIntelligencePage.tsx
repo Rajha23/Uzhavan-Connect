@@ -22,7 +22,10 @@ import {
   MapPin,
   Activity,
   Gauge,
-  Award
+  Award,
+  History,
+  RotateCcw,
+  Clock
 } from 'lucide-react';
 
 import {
@@ -40,6 +43,70 @@ import {
   Legend
 } from 'recharts';
 
+interface DemandForecastHistoryItem {
+  id: string;
+  timestamp: number;
+  crop: string;
+  region: string;
+  horizonDays: number;
+  currentMandiPrice: number;
+  season: 'Kharif' | 'Rabi' | 'Monsoon' | 'Winter';
+  forecastResult: ForecastResponseDto;
+}
+
+const DEMAND_HISTORY_STORAGE_KEY = 'uzhavan_demand_forecast_history_v1';
+
+const DEFAULT_DEMAND_HISTORY: DemandForecastHistoryItem[] = [
+  {
+    id: 'demand-seed-1',
+    timestamp: Date.now() - 1000 * 60 * 25,
+    crop: 'Tomato',
+    region: 'Chennai Metropolitan',
+    horizonDays: 7,
+    currentMandiPrice: 25.0,
+    season: 'Kharif',
+    forecastResult: {
+      crop: 'Tomato',
+      location: 'Chennai Metropolitan',
+      forecast_date: '7-Day Forward Horizon',
+      predicted_demand_kg: 3400,
+      predicted_demand_tons: 3.4,
+      confidence_interval: { lower: 3100, upper: 3800 },
+      price_elasticity_index: 1.15,
+      metrics: {
+        total_contracted_demand_kg: 3100,
+        unmet_supply_gap_kg: 1800,
+        fulfillment_readiness_pct: 72,
+        projected_mandi_price_rs: 28.5
+      }
+    } as any
+  },
+  {
+    id: 'demand-seed-2',
+    timestamp: Date.now() - 1000 * 60 * 75,
+    crop: 'Green Chilli',
+    region: 'Coimbatore Agro Hub',
+    horizonDays: 14,
+    currentMandiPrice: 48.0,
+    season: 'Kharif',
+    forecastResult: {
+      crop: 'Green Chilli',
+      location: 'Coimbatore Agro Hub',
+      forecast_date: '14-Day Forward Horizon',
+      predicted_demand_kg: 1650,
+      predicted_demand_tons: 1.65,
+      confidence_interval: { lower: 1400, upper: 1900 },
+      price_elasticity_index: 0.95,
+      metrics: {
+        total_contracted_demand_kg: 1500,
+        unmet_supply_gap_kg: 650,
+        fulfillment_readiness_pct: 85,
+        projected_mandi_price_rs: 51.0
+      }
+    } as any
+  }
+];
+
 export const DemandIntelligencePage: React.FC = () => {
   const { t, formatNumber } = useLanguage();
   const { setActiveTab, produceListings, demandRequests } = useApp();
@@ -52,6 +119,44 @@ export const DemandIntelligencePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [forecastResult, setForecastResult] = useState<ForecastResponseDto | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<DemandForecastHistoryItem[]>([]);
+
+  // Load history from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DEMAND_HISTORY_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setHistory(parsed.slice(0, 5));
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load demand history', e);
+    }
+    setHistory(DEFAULT_DEMAND_HISTORY);
+  }, []);
+
+  const saveDemandHistory = (newItem: DemandForecastHistoryItem) => {
+    const updated = [newItem, ...history.filter(h => h.id !== newItem.id)].slice(0, 5);
+    setHistory(updated);
+    try {
+      localStorage.setItem(DEMAND_HISTORY_STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.warn('Failed to persist demand history', e);
+    }
+  };
+
+  const restoreDemandHistory = (item: DemandForecastHistoryItem) => {
+    setSelectedCrop(item.crop);
+    setSelectedRegion(item.region);
+    setHorizonDays(item.horizonDays);
+    setCurrentMandiPrice(item.currentMandiPrice);
+    setSeason(item.season);
+    setForecastResult(item.forecastResult);
+    setError(null);
+  };
 
   // Dynamic available crops from actual application data + core commodities
   const availableCrops = Array.from(
@@ -78,6 +183,18 @@ export const DemandIntelligencePage: React.FC = () => {
         days_ahead: horizonDays
       });
       setForecastResult(result);
+
+      const historyItem: DemandForecastHistoryItem = {
+        id: 'demand-' + Date.now(),
+        timestamp: Date.now(),
+        crop: selectedCrop,
+        region: selectedRegion,
+        horizonDays,
+        currentMandiPrice,
+        season,
+        forecastResult: result
+      };
+      saveDemandHistory(historyItem);
     } catch (err: any) {
       console.error('Forecast execution failed:', err);
       setError(err?.message || 'Failed to execute forecast. Please try again.');
@@ -219,6 +336,79 @@ export const DemandIntelligencePage: React.FC = () => {
               )}
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* RECENTLY PREDICTED HISTORY (LAST 5 TRIES) */}
+      <div className="agri-card rounded-[28px] border border-[#ccd5ae]/40 p-5 sm:p-6 shadow-soft space-y-4">
+        <div className="flex items-center justify-between border-b border-[#ccd5ae]/30 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-[#01472e] flex items-center justify-center">
+              <History className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-[#01472e]">
+                Recently Predicted History
+              </h4>
+              <p className="text-[11px] text-slate-500">
+                Last 5 demand projection tries • Click any item to restore parameters & forecast trends
+              </p>
+            </div>
+          </div>
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#eaf4ec] text-[#01472e] border border-[#a3b18a]/40">
+            {history.length} / 5 Tries
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {history.map((item, idx) => (
+            <div
+              key={item.id}
+              onClick={() => restoreDemandHistory(item)}
+              className="p-3.5 rounded-2xl border border-[#ccd5ae]/50 bg-white hover:bg-[#eaf4ec]/50 hover:border-[#01472e]/40 transition-all cursor-pointer group flex items-center justify-between shadow-xs"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="w-6 h-6 rounded-full bg-[#faf9f5] border border-[#ccd5ae] text-xs font-bold text-[#01472e] flex items-center justify-center shrink-0">
+                  {idx + 1}
+                </span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-semibold text-xs text-[#01472e] truncate">
+                      {item.crop}
+                    </span>
+                    <span className="text-[10px] text-gray-400">•</span>
+                    <span className="text-[10px] text-slate-500 truncate">
+                      {item.region.split(' ')[0]} ({item.horizonDays}d)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5">
+                    <Clock className="w-3 h-3 text-slate-400" />
+                    <span>{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span>•</span>
+                    <span>₹{item.currentMandiPrice}/kg</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0 ml-2">
+                <div className="text-right">
+                  <span className="text-xs font-bold font-mono text-[#01472e] block">
+                    {formatNumber(item.forecastResult.predicted_demand_kg)} kg
+                  </span>
+                  <span className="text-[10px] text-emerald-700 block">
+                    {(item.forecastResult.predicted_demand_kg / 1000).toFixed(1)} Tons
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="p-1.5 rounded-lg bg-[#faf9f5] border border-[#ccd5ae]/60 text-slate-400 group-hover:text-[#01472e] group-hover:border-[#01472e] transition"
+                  title="Load this prediction"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
