@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 export const DemandPoolPage: React.FC = () => {
-  const { t, formatNumber } = useLanguage();
+  const { t, formatNumber, translateDynamic = (v: any) => v } = useLanguage();
   const { setActiveTab, demandRequests, produceListings, aggregatedDemandGroups } = useApp();
 
   // Selected aggregated group ID (defaults to first group or fallback)
@@ -282,7 +282,7 @@ export const DemandPoolPage: React.FC = () => {
                 ]).map((reason: string, idx: number) => (
                   <div key={idx} className="flex items-start gap-2.5 text-xs bg-white/95 p-3 rounded-xl border border-emerald-900/10 shadow-2xs">
                     <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                    <span className="text-slate-800 font-normal">{reason}</span>
+                    <span className="text-slate-800 font-normal">{translateDynamic(reason)}</span>
                   </div>
                 ))}
               </div>
@@ -315,7 +315,7 @@ export const DemandPoolPage: React.FC = () => {
                 <span className="text-[10px] text-slate-300 font-medium uppercase tracking-wider block">{t('demand.combinedProcurementVolume', undefined, 'Combined Procurement Volume')}</span>
                 <p className="text-4xl sm:text-5xl font-semibold mt-2 tracking-tight text-emerald-400">{formatNumber(totalPooledQty)} {t('common.kg', undefined, 'kg')}</p>
                 <p className="text-xs text-slate-300 mt-1 font-normal">
-                  {activeCrop} ({activeGroup?.qualityRequirement || 'Grade A'}) for {activeCorridor}
+                  {translateDynamic(activeCrop)} ({translateDynamic(activeGroup?.qualityRequirement || 'Grade A')}) for {translateDynamic(activeCorridor)}
                 </p>
               </div>
 

@@ -1,5 +1,6 @@
 import { LanguageDefinition } from '../types/i18n';
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, getLanguageByCode } from '../i18n/languages';
+import { translateValue } from '../i18n/tamilDictionary';
 
 const TRANSLATION_CACHE_KEY = 'uzhavan_translation_cache_v1';
 const MAX_CACHE_SIZE = 3000;
@@ -308,7 +309,16 @@ export const getCachedTranslation = (
   const trimmed = text?.trim();
   if (!trimmed) return undefined;
   const cacheKey = `${sourceLang}_${targetLang}_${trimmed}`;
-  return memoryCache.get(cacheKey);
+  if (memoryCache.has(cacheKey)) {
+    return memoryCache.get(cacheKey);
+  }
+  if (targetLang === 'ta') {
+    const ta = translateValue(trimmed, 'ta');
+    if (ta && ta !== trimmed) {
+      return ta;
+    }
+  }
+  return undefined;
 };
 
 // ── Whole-App Dynamic DOM Translator ──────────────────────────────────────────
@@ -388,10 +398,16 @@ const processDOMSubtree = (root: Node, targetLang: string) => {
       } else {
         const cached = getCachedTranslation(orig.trim(), targetLang);
         if (cached) {
-          // Replace matching trimmed portion while preserving edge spaces
           const leadingSpace = orig.match(/^\s*/)?.[0] || '';
           const trailingSpace = orig.match(/\s*$/)?.[0] || '';
           currentNode.nodeValue = leadingSpace + cached + trailingSpace;
+        } else if (targetLang === 'ta') {
+          const ta = translateValue(orig, 'ta');
+          if (ta && ta !== orig) {
+            currentNode.nodeValue = ta;
+          } else {
+            textNodesToTranslate.push({ node: currentNode, originalText: orig.trim() });
+          }
         } else {
           textNodesToTranslate.push({ node: currentNode, originalText: orig.trim() });
         }

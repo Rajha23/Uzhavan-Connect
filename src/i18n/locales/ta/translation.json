@@ -65,22 +65,22 @@
     "member": "உறுப்பினர்",
     "gradeA": "தரம் A",
     "currentStatus": "தற்போதைய நிலை",
-    "instant": "Instant",
-    "order": "Order",
-    "passport": "Passport",
-    "hideEstimator": "Hide Estimator",
-    "fullPage": "Full Page →",
-    "hide": "Hide",
-    "email": "Email",
-    "read": "Read",
-    "hybrid": "Hybrid",
-    "from": "From",
+    "instant": "உடனடி",
+    "order": "ஆர்டர்",
+    "passport": "பாஸ்போர்ட்",
+    "hideEstimator": "கணிப்பானை மறை",
+    "fullPage": "முழு பக்கம் →",
+    "hide": "மறை",
+    "email": "மின்னஞ்சல்",
+    "read": "படிக்கப்பட்டது",
+    "hybrid": "ஹைப்ரிட்",
+    "from": "இருந்து",
     "to": "To",
     "by": "By",
-    "premium": "Premium",
-    "commercial": "Commercial",
-    "standard": "Standard",
-    "step": "STEP"
+    "premium": "பிரீமியம் தரம்",
+    "commercial": "வணிக தரம்",
+    "standard": "நிலையான தரம்",
+    "step": "படி"
   },
   "network": {
     "offline": "நீங்கள் ஆஃப்லைனில் இருக்கிறீர்கள். மாற்றங்கள் சேமிக்கப்பட்டு தானாகவே ஒத்திசைக்கப்படும்.",
@@ -137,12 +137,12 @@
     "mixedStatusDesc": "பல்வேறு சரிபார்ப்பு நிலைகளைக் கொண்ட பல விவசாயிகளின் ஒருங்கிணைந்த தொகுதி.",
     "underReview": "மதிப்பாய்வில் உள்ளது",
     "underReviewDesc": "கள முகவர் அல்லது மைய ஆய்வாளரால் சரிபார்ப்பு செயல்பாட்டில் உள்ளது.",
-    "gradeA": "Grade A (Premium Brix > 4.5, Firm)",
-    "gradeB": "Grade B (Standard Commercial)",
-    "premium": "Premium Export Standard",
-    "standard": "Standard Domestic Market",
-    "any": "Any Grade (Accept All)",
-    "verificationStatus": "Verification Status"
+    "gradeA": "தரம் A (பிரீமியம் பிரிக்ஸ் > 4.5, திடமானது)",
+    "gradeB": "தரம் B (நிலையான வணிக தரம்)",
+    "premium": "பிரீமியம் ஏற்றுமதி தரம்",
+    "standard": "நிலையான உள்நாட்டு சந்தை தரம்",
+    "any": "எந்த தரமும் (அனைத்தையும் ஏற்றுக்கொள்)",
+    "verificationStatus": "சரிபார்ப்பு நிலை"
   },
   "nav": {
     "dashboard": "டேஷ்போர்டு",
@@ -236,9 +236,36 @@
     "deliveredDesc": "வாங்குபவருக்கு டெலிவரி செய்யப்பட்டது",
     "paymentDesc": "வங்கிக்கு எஸ்க்ரோ வழங்கப்பட்டது",
     "Delivered": {
-      "label": "Buyer Confirmation Pending"
+      "label": "வாங்குபவர் உறுதிப்படுத்தல் நிலுவையில் உள்ளது"
     },
-    "": "stages."
+    "": "stages.",
+    "Listed": {
+      "label": "பட்டியலிடப்பட்டது"
+    },
+    "Matched": {
+      "label": "பொருத்தப்பட்டது"
+    },
+    "Agreement": {
+      "label": "ஒப்பந்தம்"
+    },
+    "Confirmed": {
+      "label": "உறுதிப்படுத்தப்பட்டது"
+    },
+    "Collection": {
+      "label": "சேகரிப்பு"
+    },
+    "QualityCheck": {
+      "label": "தர ஆய்வு"
+    },
+    "Packed": {
+      "label": "பேக் செய்யப்பட்டது"
+    },
+    "InTransit": {
+      "label": "போக்குவரத்தில் உள்ளது"
+    },
+    "Payment": {
+      "label": "பணம் செலுத்துதல்"
+    }
   },
   "landing": {
     "heroTitle": "விவசாயிகள், தொழில்நுட்பம் மற்றும் வாய்ப்பு இணைக்கும் இடம்.",
@@ -477,8 +504,8 @@
     "farmerCounterOffer": "விவசாயி முன்மொழிந்த எதிர்-சலுகை",
     "acceptCounterOffer": "எதிர்-சலுகையை ஏற்று ஆர்டரைப் பூட்டவும்",
     "shipmentId": "Shipment ID",
-    "producePassport": "Produce Passport",
-    "inspectConfirm": "Verify & Confirm Delivery",
+    "producePassport": "விளைபொருள் பாஸ்போர்ட்",
+    "inspectConfirm": "சரிபார்த்து விநியோகத்தை உறுதிப்படுத்தவும்",
     "institutionalProcurementHub": "Institutional Procurement Hub",
     "buyerDashboard": "Buyer Dashboard",
     "buyerSubtitle": "Real-Time Forward Demand & Procurement Pipeline",
@@ -492,9 +519,9 @@
     "aggregationReady": "Aggregation Ready",
     "coordinatedLogistics": "Coordinated Logistics",
     "activeInstitutionalDemands": "Active Institutional Demands",
-    "activeDemandsSubtitle": "Forward procurement commitments ready for multi-buyer aggregation and farmer matching",
-    "launchSmartMatching": "Launch Smart Matching",
-    "openReverseAuction": "Open Reverse Auction →",
+    "activeDemandsSubtitle": "பல வாங்குபவர் ஒருங்கிணைப்பு மற்றும் விவசாயி பொருத்தத்திற்கு தயாராக உள்ள முன்னோக்கி கொள்முதல் உறுதிப்பாடுகள்",
+    "launchSmartMatching": "ஸ்மார்ட் பொருத்தத்தைத் தொடங்கு",
+    "openReverseAuction": "தலைகீழ் ஏலத்தைத் திற →",
     "demandId": "Demand ID",
     "buyerEntity": "Buyer Entity",
     "cropVariety": "பயிர் & ரகம்",
@@ -503,22 +530,22 @@
     "deliveryCorridor": "Delivery Corridor",
     "ceilingPrice": "Ceiling Price",
     "status": "Status",
-    "inboundLogistics": "Inbound Logistics & Receiving Bay",
-    "activeShipments": "Active Procurement Shipments & Gate Receiving",
-    "shipmentsSubtitle": "Live traceability from FPO farm collections, quality inspection, cold-chain transit to dock receipt",
-    "totalOrders": "{count} Total Orders",
-    "arrivedAtDock": "{count} Arrived at Dock",
-    "noShipments": "No active procurement shipments yet",
-    "executeSmartMatchingHint": "Execute Smart Matching on forward demands to create fulfillment orders.",
-    "origin": "Origin",
-    "farmConsolidation": "Farm Consolidation ({count} Member Farmer{s})",
-    "qualitySignoff": "Quality Signoff",
-    "inspectionPending": "Inspection pending at hub",
-    "packingAndCrates": "Packing & Crates",
-    "packingInQueue": "Packing in queue",
-    "receiptConfirmedWithQty": "Receipt Confirmed ({count} kg)",
-    "escrowBtn": "Escrow →",
-    "awaitingDockDelivery": "Awaiting dock delivery",
+    "inboundLogistics": "உள்வரும் லாஜிஸ்டிக்ஸ் & பெறும் தளம்",
+    "activeShipments": "செயலில் உள்ள கொள்முதல் சரக்குகள் & வாயில் பெறுதல்",
+    "shipmentsSubtitle": "FPO பண்ணை சேகரிப்பு, தர ஆய்வு, குளிர்பதன போக்குவரத்து முதல் தளம் ரசீது வரை நேரடி கண்காணிப்பு",
+    "totalOrders": "{count} மொத்த ஆர்டர்கள்",
+    "arrivedAtDock": "{count} தளத்திற்கு வந்தடைந்தது",
+    "noShipments": "செயலில் உள்ள கொள்முதல் சரக்குகள் எதுவும் இல்லை",
+    "executeSmartMatchingHint": "நிறைவேற்றல் ஆர்டர்களை உருவாக்க முன்னோக்கி கோரிக்கைகளில் ஸ்மார்ட் பொருத்தத்தை இயக்கவும்.",
+    "origin": "தோற்றம்",
+    "farmConsolidation": "பண்ணை ஒருங்கிணைப்பு ({count} உறுப்பினர் விவசாயி{s})",
+    "qualitySignoff": "தர ஒப்புதல்",
+    "inspectionPending": "மையத்தில் ஆய்வு நிலுவையில் உள்ளது",
+    "packingAndCrates": "பேக்கிங் & கிரேட்கள்",
+    "packingInQueue": "பேக்கிங் வரிசையில் உள்ளது",
+    "receiptConfirmedWithQty": "ரசீது உறுதிப்படுத்தப்பட்டது ({count} கிலோ)",
+    "escrowBtn": "எஸ்க்ரோ →",
+    "awaitingDockDelivery": "தள டெலிவரி நிலுவையில் உள்ளது",
     "createForwardDemand": "Create Forward Demand Request",
     "createDemandModalSubtitle": "Register institutional procurement specifications for pooling and smart farmer matching.",
     "buyerEntityName": "Buyer Entity Name",
@@ -531,7 +558,24 @@
     "requiredDeliveryDate": "Required Delivery Date",
     "connectedLifecycle": "Connected Lifecycle Integration:",
     "connectedLifecycleDesc": "Once created, this demand is instantly persisted in shared storage, eligible for multi-buyer aggregation in the Demand Pool, and ranked in real-time by the Smart Matching Engine.",
-    "createDemandBtn": "Create Demand Request"
+    "createDemandBtn": "Create Demand Request",
+    "activeDemandsTitle": "செயலில் உள்ள நிறுவன தேவைகள்",
+    "tableDemandId": "தேவை எண்",
+    "tableBuyerEntity": "வாங்குபவர் நிறுவனம்",
+    "tableTargetQty": "இலக்கு அளவு",
+    "tableQuality": "தரம்",
+    "tableDeliveryCorridor": "டெலிவரி காரிடார்",
+    "tableCeilingPrice": "உச்ச வரம்பு விலை",
+    "tableStatus": "நிலை",
+    "tableActions": "நடவடிக்கைகள்",
+    "partiallyFulfilled": "பகுதியளவு நிறைவேற்றப்பட்டது",
+    "matchBtn": "பொருத்து",
+    "poolBtn": "குழு",
+    "completed": "நிறைவுற்றது",
+    "collected": "சேகரிக்கப்பட்டது",
+    "produceCollectionPending": "விளைபொருள் சேகரிப்பு நிலுவையில் உள்ளது",
+    "inTransit": "வழியில் உள்ளது",
+    "delivered": "டெலிவரி செய்யப்பட்டது"
   },
   "bulkBuyer": {
     "institutionalProcurement": "நிறுவன கொள்முதல் கன்சோல்",
@@ -1146,10 +1190,10 @@
     "stage2": "நிலை 2",
     "compatibilityVerified": "இணக்கம் சரிபார்க்கப்பட்டது",
     "aggregationRuleEngine": "ஒருங்கிணைப்பு விதி இயந்திரம்",
-    "aggregationRuleDesc": "4 முக்கிய விவசாய பொருந்தக்கூடிய மாறுபாடுகள் இருக்கும்போது மட்டுமே கோரிக்கைகள் தொகுக்கப்படுகின்றன:",
-    "integrityInvariant": "நேர்மை மாறுபடாது:",
-    "integrityInvariantDesc": "தனிப்பட்ட வாங்குபவரின் கோரிக்கைகள் ஒருபோதும் மாற்றியமைக்கப்படுவதில்லை, இணைக்கப்படுவதில்லை அல்லது இழக்கப்படுவதில்லை. ஒருங்கிணைப்பு ஒரு ஒருங்கிணைந்த கொள்முதல் குடையாக செயல்படுகிறது.",
-    "invariantsPassed": "4/4 இணக்கத்தன்மை மாறுபாடுகள் தேர்ச்சி",
+    "aggregationRuleDesc": "4 முக்கிய விவசாய இணக்கத்தன்மை மாறாதபோது மட்டுமே கோரிக்கைகள் தொகுக்கப்படுகின்றன:",
+    "integrityInvariant": "நேர்மை மாறாதது:",
+    "integrityInvariantDesc": "தனிப்பட்ட வாங்குபவரின் கோரிக்கைகள் ஒருபோதும் மாற்றியமைக்கப்படுவதோ அல்லது இழக்கப்படுவதோ இல்லை. ஒருங்கிணைப்பு ஒரு கூட்டு கொள்முதல் குடையாக செயல்படுகிறது.",
+    "invariantsPassed": "4 / 4 இணக்கத்தன்மை மாறாதவை தேர்ச்சி பெற்றன",
     "stage3": "நிலை 3",
     "singleDispatch": "ஒற்றை அனுப்புதல்",
     "combinedProcurementVolume": "ஒருங்கிணைந்த கொள்முதல் அளவு",
@@ -1919,5 +1963,12 @@
   },
   "sidebar": {
     "demandIntelligence": "Check Demand Forecast"
+  },
+  "status": {
+    "PRODUCE COLLECTION PENDING": "விளைபொருள் சேகரிப்பு நிலுவை",
+    "COLLECTED": "சேகரிக்கப்பட்டது",
+    "COMPLETED": "நிறைவுற்றது",
+    "DELIVERED": "டெலிவரி செய்யப்பட்டது",
+    "IN_TRANSIT": "வழியில் உள்ளது"
   }
 }

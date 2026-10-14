@@ -88,6 +88,41 @@ export const TAMIL_TRANSLATIONS: Record<string, string> = {
   'discovery.specialInstructions': 'கொள்முதல் குறிப்புகள் & கையாளுதல் தேவைகள்',
   'discovery.submitRequestButton': 'கொள்முதல் கோரிக்கையை அனுப்பவும்',
 
+  // Buyer Dashboard & Inbound Logistics
+  'buyer.inboundLogistics': 'உள்வரும் லாஜிஸ்டிக்ஸ் & பெறும் தளம்',
+  'buyer.activeShipments': 'செயலில் உள்ள கொள்முதல் சரக்குகள் & வாயில் பெறுதல்',
+  'buyer.shipmentsSubtitle': 'FPO பண்ணை சேகரிப்பு, தர ஆய்வு, குளிர்பதன போக்குவரத்து முதல் தளம் ரசீது வரை நேரடி கண்காணிப்பு',
+  'buyer.totalOrders': '{count} மொத்த ஆர்டர்கள்',
+  'buyer.arrivedAtDock': '{count} தளத்திற்கு வந்தடைந்தது',
+  'buyer.noShipments': 'செயலில் உள்ள கொள்முதல் சரக்குகள் எதுவும் இல்லை',
+  'buyer.executeSmartMatchingHint': 'நிறைவேற்றல் ஆர்டர்களை உருவாக்க முன்னோக்கி கோரிக்கைகளில் ஸ்மார்ட் பொருத்தத்தை இயக்கவும்.',
+  'buyer.origin': 'தோற்றம்',
+  'buyer.farmConsolidation': 'பண்ணை ஒருங்கிணைப்பு ({count} உறுப்பினர் விவசாயி{s})',
+  'buyer.qualitySignoff': 'தர ஒப்புதல்',
+  'buyer.inspectionPending': 'மையத்தில் ஆய்வு நிலுவையில் உள்ளது',
+  'buyer.packingAndCrates': 'பேக்கிங் & கிரேட்கள்',
+  'buyer.packingInQueue': 'பேக்கிங் வரிசையில் உள்ளது',
+  'buyer.producePassport': 'விளைபொருள் பாஸ்போர்ட்',
+  'buyer.inspectConfirm': 'சரிபார்த்து விநியோகத்தை உறுதிப்படுத்தவும்',
+  'buyer.receiptConfirmedWithQty': 'ரசீது உறுதிப்படுத்தப்பட்டது ({count} கிலோ)',
+  'buyer.escrowBtn': 'எஸ்க்ரோ →',
+  'buyer.awaitingDockDelivery': 'தள டெலிவரி நிலுவையில் உள்ளது',
+  'buyer.activeDemandsTitle': 'செயலில் உள்ள நிறுவன தேவைகள்',
+  'buyer.activeDemandsSubtitle': 'பல வாங்குபவர் ஒருங்கிணைப்பு மற்றும் விவசாயி பொருத்தத்திற்கு தயாராக உள்ள முன்னோக்கி கொள்முதல் உறுதிப்பாடுகள்',
+  'buyer.launchSmartMatching': 'ஸ்மார்ட் பொருத்தத்தைத் தொடங்கு',
+  'buyer.openReverseAuction': 'தலைகீழ் ஏலத்தைத் திற →',
+  'buyer.tableDemandId': 'தேவை எண்',
+  'buyer.tableBuyerEntity': 'வாங்குபவர் நிறுவனம்',
+  'buyer.tableTargetQty': 'இலக்கு அளவு',
+  'buyer.tableQuality': 'தரம்',
+  'buyer.tableDeliveryCorridor': 'டெலிவரி காரிடார்',
+  'buyer.tableCeilingPrice': 'உச்ச வரம்பு விலை',
+  'buyer.tableStatus': 'நிலை',
+  'buyer.tableActions': 'நடவடிக்கைகள்',
+  'buyer.partiallyFulfilled': 'பகுதியளவு நிறைவேற்றப்பட்டது',
+  'buyer.matchBtn': 'பொருத்து',
+  'buyer.poolBtn': 'குழு',
+
   // Farmer Dashboard
   'farmer.matchWithQty': 'பொருத்தம் ({count} கிலோ)',
   'farmer.connectedBuyerMatching': 'வாங்குபவர் நுண்ணறிவு பொருத்தம்',
@@ -134,6 +169,7 @@ export const TAMIL_TRANSLATIONS: Record<string, string> = {
 };
 
 export const TAMIL_PHRASES: Record<string, string> = {
+  // Discovery & Catalog
   'available agricultural supply catalog': 'கிடைக்கக்கூடிய விவசாய விநியோக பட்டியல்',
   'verified farm-gate produce lots and fpo aggregated pools ready for direct procurement.': 'நேரடி கொள்முதலுக்கான சரிபார்க்கப்பட்ட பண்ணை வாயில் விளைபொருட்கள் மற்றும் FPO ஒருங்கிணைந்த தொகுதிகள்.',
   'listing / source': 'பட்டியல் / ஆதாரம்',
@@ -150,6 +186,8 @@ export const TAMIL_PHRASES: Record<string, string> = {
   'pooled lot': 'ஒருங்கிணைந்த தொகுதி',
   'farmers': 'விவசாயிகள்',
   'items': 'உருப்படிகள்',
+
+  // Navigation Groups
   'main': 'முதன்மை',
   'market': 'சந்தை',
   'operations': 'செயல்பாடுகள்',
@@ -163,6 +201,59 @@ export const TAMIL_PHRASES: Record<string, string> = {
   'yield predictor': 'விளைச்சல் கணிப்பான்',
   'harvest forecast': 'அறுவடை முன்னறிவிப்பு',
   'agricultural intelligence': 'விவசாய நுண்ணறிவு மற்றும் நேரடி விநியோகம்',
+
+  // Buyer Dashboard & Inbound
+  'inbound logistics & receiving bay': 'உள்வரும் லாஜிஸ்டிக்ஸ் & பெறும் தளம்',
+  'active procurement shipments & gate receiving': 'செயலில் உள்ள கொள்முதல் சரக்குகள் & வாயில் பெறுதல்',
+  'live traceability from fpo farm collections, quality inspection, cold-chain transit to dock receipt': 'FPO பண்ணை சேகரிப்பு, தர ஆய்வு, குளிர்பதன போக்குவரத்து முதல் தளம் ரசீது வரை நேரடி கண்காணிப்பு',
+  'produce collection pending': 'விளைபொருள் சேகரிப்பு நிலுவையில் உள்ளது',
+  'produce collection': 'விளைபொருள் சேகரிப்பு',
+  'quality signoff': 'தர ஒப்புதல்',
+  'inspection pending at hub': 'மையத்தில் ஆய்வு நிலுவையில் உள்ளது',
+  'packing & crates': 'பேக்கிங் & கிரேட்கள்',
+  'packing in queue': 'பேக்கிங் வரிசையில் உள்ளது',
+  'produce passport': 'விளைபொருள் பாஸ்போர்ட்',
+  'awaiting dock delivery': 'தள டெலிவரி நிலுவையில் உள்ளது',
+  'awaiting seller confirmation or counter-offer...': 'விற்பனையாளர் உறுதிப்படுத்தல் அல்லது எதிர் சலுகைக்காக காத்திருக்கிறது...',
+  'transmitted to supplier': 'சப்ளையருக்கு அனுப்பப்பட்டது',
+  'farm consolidation': 'பண்ணை ஒருங்கிணைப்பு',
+  'member farmer': 'உறுப்பினர் விவசாயி',
+  'member farmers': 'உறுப்பினர் விவசாயிகள்',
+  'receipt confirmed': 'ரசீது உறுதிப்படுத்தப்பட்டது',
+  'escrow →': 'எஸ்க்ரோ →',
+  'escrow': 'எஸ்க்ரோ',
+  'completed': 'நிறைவுற்றது',
+  'collected': 'சேகரிக்கப்பட்டது',
+  'in transit': 'வழியில் உள்ளது',
+  'delivered': 'டெலிவரி செய்யப்பட்டது',
+
+  // Demand Table & Pool
+  'active institutional demands': 'செயலில் உள்ள நிறுவன தேவைகள்',
+  'forward procurement commitments ready for multi-buyer aggregation and farmer matching': 'பல வாங்குபவர் ஒருங்கிணைப்பு மற்றும் விவசாயி பொருத்தத்திற்கு தயாராக உள்ள முன்னோக்கி கொள்முதல் உறுதிப்பாடுகள்',
+  'launch smart matching': 'ஸ்மார்ட் பொருத்தத்தைத் தொடங்கு',
+  'open reverse auction →': 'தலைகீழ் ஏலத்தைத் திற →',
+  'open reverse auction': 'தலைகீழ் ஏலத்தைத் திற',
+  'demand id': 'தேவை எண்',
+  'buyer entity': 'வாங்குபவர் நிறுவனம்',
+  'target qty': 'இலக்கு அளவு',
+  'delivery corridor': 'டெலிவரி காரிடார்',
+  'ceiling price': 'உச்ச வரம்பு விலை',
+  'status': 'நிலை',
+  'partially fulfilled': 'பகுதியளவு நிறைவேற்றப்பட்டது',
+  'match': 'பொருத்து',
+  'pool': 'குழு',
+  'aggregation rule engine': 'ஒருங்கிணைப்பு விதி இயந்திரம்',
+  'identical commodity': 'ஒரே மாதிரியான பயிர்',
+  'quality standard alignment': 'தர நிலை சீரமைப்பு',
+  'institutional specifications': 'நிறுவன விவரக்குறிப்புகள்',
+  'logistics corridor consolidation': 'லாஜிஸ்டிக்ஸ் காரிடார் ஒருங்கிணைப்பு',
+  'synchronized delivery window': 'ஒத்திசைக்கப்பட்ட டெலிவரி நேரம்',
+  'buyers consolidated': 'வாங்குபவர்கள் ஒருங்கிணைக்கப்பட்டனர்',
+  'single dispatch': 'ஒற்றை அனுப்புதல்',
+  'combined procurement volume': 'ஒருங்கிணைந்த கொள்முதல் அளவு',
+  'origin': 'தோற்றம்',
+
+  // Crops
   'onion': 'வெங்காயம்',
   'tomato': 'தக்காளி',
   'green chilli': 'பச்சை மிளகாய்',
@@ -178,12 +269,16 @@ export const TAMIL_PHRASES: Record<string, string> = {
   'grade b': 'தரம் B',
   'grade c': 'தரம் C',
   'grade a+': 'தரம் A+',
+  'hybrid': 'ஹைப்ரிட்',
   'bellary red': 'பெல்லாரி சிவப்பு',
   'g4 hybrid': 'G4 ஹைப்ரிட்',
   'commercial variety': 'வணிக ரகம்',
+
+  // Corridors & Places
   'central agro corridor': 'மத்திய வேளாண் காரிடார்',
   'kongu corridor': 'கொங்கு காரிடார்',
   'cauvery delta corridor': 'காவிரி டெல்டா காரிடார்',
+  'chennai corridor': 'சென்னை காரிடார்',
   'salem': 'சேலம்',
   'coimbatore': 'கோயம்புத்தூர்',
   'chennai': 'சென்னை',
@@ -197,8 +292,11 @@ export const TAMIL_PHRASES: Record<string, string> = {
   'dharmapuri': 'தருமபுரி',
   'krishnagiri': 'கிருஷ்ணகிரி',
   'vellore': 'வேலூர்',
-  'the ni': 'தேனி',
-  'theni': 'தேனி'
+  'pollachi': 'பொள்ளாச்சி',
+  'pennagaram': 'பென்னாகரம்',
+  'kallakurichi': 'கள்ளக்குறிச்சி',
+  'chinnasalem': 'சின்னசேலம்',
+  'perambalur': 'பெரம்பலூர்'
 };
 
 export function getTamilDirectTranslation(key: string, fallbackText?: string): string | null {
@@ -211,7 +309,44 @@ export function getTamilDirectTranslation(key: string, fallbackText?: string): s
     return TAMIL_PHRASES[lookup];
   }
 
-  // Common patterns
+  // Common patterns & regex matches
+  if (lookup.endsWith(' total orders')) {
+    const num = lookup.replace(' total orders', '');
+    return `${num} மொத்த ஆர்டர்கள்`;
+  }
+  if (lookup.endsWith(' arrived at dock')) {
+    const num = lookup.replace(' arrived at dock', '');
+    return `${num} தளத்திற்கு வந்தடைந்தது`;
+  }
+  if (lookup.startsWith('farm consolidation')) {
+    return lookup
+      .replace(/farm consolidation/g, 'பண்ணை ஒருங்கிணைப்பு')
+      .replace(/member farmer/g, 'உறுப்பினர் விவசாயி')
+      .replace(/member farmers/g, 'உறுப்பினர் விவசாயிகள்');
+  }
+  if (lookup.startsWith('receipt confirmed')) {
+    return lookup
+      .replace(/receipt confirmed/g, 'ரசீது உறுதிப்படுத்தப்பட்டது')
+      .replace(/kg/g, 'கிலோ');
+  }
+  if (lookup.startsWith('identical commodity:')) {
+    return lookup
+      .replace('identical commodity:', 'ஒரே மாதிரியான பயிர்:')
+      .replace('compatible variety standard', 'இணக்கமான ரக தரநிலை');
+  }
+  if (lookup.startsWith('quality standard alignment:')) {
+    return lookup
+      .replace('quality standard alignment:', 'தர நிலை சீரமைப்பு:')
+      .replace('institutional specifications', 'நிறுவன விவரக்குறிப்புகள்');
+  }
+  if (lookup.startsWith('logistics corridor consolidation:')) {
+    return lookup.replace('logistics corridor consolidation:', 'லாஜிஸ்டிக்ஸ் காரிடார் ஒருங்கிணைப்பு:');
+  }
+  if (lookup.startsWith('synchronized delivery window:')) {
+    return lookup
+      .replace('synchronized delivery window:', 'ஒத்திசைக்கப்பட்ட டெலிவரி நேரம்:')
+      .replace('buyers consolidated', 'வாங்குபவர்கள் ஒருங்கிணைக்கப்பட்டனர்');
+  }
   if (lookup.endsWith(' kg')) {
     const num = lookup.replace(' kg', '');
     return `${num} கிலோ`;
@@ -227,6 +362,9 @@ export function translateValue(val: string | undefined | null, currentLang: stri
   if (!val || typeof val !== 'string') return '';
   if (currentLang !== 'ta') return val;
 
+  const direct = getTamilDirectTranslation(val, val);
+  if (direct) return direct;
+
   const trimmed = val.trim();
   const lower = trimmed.toLowerCase();
 
@@ -234,5 +372,16 @@ export function translateValue(val: string | undefined | null, currentLang: stri
     return TAMIL_PHRASES[lower];
   }
 
-  return val;
+  // In-line sentence word replacement for mixed text
+  let result = val;
+  for (const [enWord, taWord] of Object.entries(TAMIL_PHRASES)) {
+    if (enWord.length > 3) {
+      const regex = new RegExp(`\\b${enWord}\\b`, 'gi');
+      if (regex.test(result)) {
+        result = result.replace(regex, taWord);
+      }
+    }
+  }
+
+  return result;
 }

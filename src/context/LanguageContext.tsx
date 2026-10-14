@@ -7,6 +7,8 @@ import {
   detectBrowserLanguage,
   detectTextLanguage,
   translateText,
+  startDOMTranslation,
+  stopDOMTranslation,
 } from '../services/translationService';
 import { getTamilDirectTranslation, translateValue } from '../i18n/tamilDictionary';
 
@@ -92,6 +94,12 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     applyDocumentLocale(lang);
     setVersion((v) => v + 1);
 
+    if (lang.code !== 'en') {
+      startDOMTranslation(lang.code);
+    } else {
+      stopDOMTranslation();
+    }
+
     try {
       if (typeof window !== 'undefined') {
         localStorage.setItem(LANGUAGE_STORAGE_KEY, lang.code);
@@ -118,6 +126,11 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       setDirection(detected.direction);
       applyDocumentLocale(detected);
       setVersion((v) => v + 1);
+      if (detected.code !== 'en') {
+        startDOMTranslation(detected.code);
+      } else {
+        stopDOMTranslation();
+      }
     }
   }, [applyDocumentLocale, i18n]);
 
@@ -128,12 +141,24 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       if (active) {
         i18n.changeLanguage(currentLanguage.code);
         setVersion((v) => v + 1);
+        if (currentLanguage.code !== 'en') {
+          startDOMTranslation(currentLanguage.code);
+        } else {
+          stopDOMTranslation();
+        }
       }
     });
     applyDocumentLocale(currentLanguage);
 
     const handleLangChange = () => {
-      if (active) setVersion((v) => v + 1);
+      if (active) {
+        setVersion((v) => v + 1);
+        if (currentLanguage.code !== 'en') {
+          startDOMTranslation(currentLanguage.code);
+        } else {
+          stopDOMTranslation();
+        }
+      }
     };
     i18n.on('languageChanged', handleLangChange);
     i18n.on('loaded', handleLangChange);

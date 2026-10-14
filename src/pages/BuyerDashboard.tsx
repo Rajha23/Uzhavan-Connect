@@ -527,14 +527,14 @@ export const BuyerDashboard: React.FC = () => {
                           title="Smart Match this Demand"
                         >
                           <Sparkles className="w-3 h-3 text-[#ccd5ae]" />
-                          <span>Match</span>
+                          <span>{t('buyer.matchBtn', 'Match')}</span>
                         </button>
                         <button
                           onClick={() => setActiveTab('demand-pool')}
                           className="px-3 py-1.5 bg-[#e9edc9]/50 hover:bg-[#e9edc9] text-[#01472e] text-[11px] font-semibold rounded-xl transition"
                           title="View in Aggregation Pool"
                         >
-                          Pool
+                          {t('buyer.poolBtn', 'Pool')}
                         </button>
                         <button
                           onClick={() => deleteDemandRequest(dem.id)}
